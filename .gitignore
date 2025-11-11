@@ -1,0 +1,86 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Node modules
+node_modules/
+
+# Dependencies cache
+.npm
+.yarn
+.pnp.*
+.pnpm-debug.log*
+
+# Expo / React Native artifacts
+.expo/
+.expo-shared/
+.expo-dev-server/
+.expo-packager-cache/
+.expo-google-services.json
+web-build/
+dist/
+
+# Testing
+coverage/
+
+# Metro bundler
+metro-cache/
+.expo/__generated__/AppEntry.js
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# React Native Android build artifacts
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/keystores/
+*.keystore
+*.jks
+*.keystore.*
+
+# React Native iOS build artifacts
+ios/build/
+ios/DerivedData/
+ios/Pods/
+ios/*.xcworkspace
+*.xcodeproj/project.xcworkspace/
+*.xcuserstate
+*.xcuserdata/
+
+# CocoaPods
+Podfile.lock
+vendor/bundle/
+
+# Xcode user data
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Misc
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.env
+.env.*

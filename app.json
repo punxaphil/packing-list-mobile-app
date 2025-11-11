@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Packing List",
+    "slug": "packing-list-mobile-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.punxaphil.packinglist"
+    },
+    "android": {
+      "package": "com.punxaphil.packinglist"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
