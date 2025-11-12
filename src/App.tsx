@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { getAuth } from "firebase/auth";
@@ -13,12 +14,14 @@ import { NamedEntity } from "./types/NamedEntity.ts";
 const PRIMARY_COLOR = "#2563eb";
 
 const Layout = ({ children }: PropsWithChildren) => (
-  <SafeAreaProvider>
-    <SafeAreaView edges={["top", "bottom"]} style={homeStyles.container}>
-      <StatusBar style="auto" />
-      <View style={homeStyles.content}>{children}</View>
-    </SafeAreaView>
-  </SafeAreaProvider>
+  <GestureHandlerRootView style={homeStyles.container}>
+    <SafeAreaProvider>
+      <SafeAreaView edges={["top", "bottom"]} style={homeStyles.container}>
+        <StatusBar style="auto" />
+        <View style={homeStyles.content}>{children}</View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  </GestureHandlerRootView>
 );
 
 const LoadingView = () => (

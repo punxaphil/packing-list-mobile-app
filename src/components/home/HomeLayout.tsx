@@ -1,44 +1,38 @@
 import { View } from "react-native";
-import { HomeHeader } from "./HomeHeader.tsx";
 import { ListSection } from "./ListSection.tsx";
 import { ItemsSection } from "./ItemsSection.tsx";
-import { SignOutButton } from "./SignOutButton.tsx";
 import { EmptyList } from "./EmptyList.tsx";
 import { homeStyles } from "./styles.ts";
 import { HomeLayoutProps } from "./types.ts";
 
 export const HomeLayout = (props: HomeLayoutProps) => (
   <View style={homeStyles.home}>
-    <HomeHeader email={props.email} />
-    {props.hasLists ? (
-      <ListsAndItems
-        lists={props.lists}
-        selection={props.selection}
-        categoriesState={props.categoriesState}
-        itemsState={props.itemsState}
-      />
-    ) : (
-      <EmptyList />
-    )}
-    <SignOutButton onPress={props.onSignOut} />
+    {renderContent(props)}
   </View>
 );
 
-const ListsAndItems = ({
-  lists,
-  selection,
-  categoriesState,
-  itemsState,
-}: Pick<
-  HomeLayoutProps,
-  "lists" | "selection" | "categoriesState" | "itemsState"
->) => (
-  <>
-    <ListSection lists={lists} selection={selection} />
-    <ItemsSection
-      selection={selection}
-      categoriesState={categoriesState}
-      itemsState={itemsState}
-    />
-  </>
+const renderContent = (props: HomeLayoutProps) => {
+  if (!props.hasLists) return <EmptyList />;
+  return props.selection.hasSelection
+    ? renderItems(props)
+    : renderLists(props);
+};
+
+const renderItems = (props: HomeLayoutProps) => (
+  <ItemsSection
+    selection={props.selection}
+    categoriesState={props.categoriesState}
+    itemsState={props.itemsState}
+    email={props.email}
+    onSignOut={props.onSignOut}
+  />
+);
+
+const renderLists = (props: HomeLayoutProps) => (
+  <ListSection
+    lists={props.lists}
+    selection={props.selection}
+    email={props.email}
+    onSignOut={props.onSignOut}
+  />
 );

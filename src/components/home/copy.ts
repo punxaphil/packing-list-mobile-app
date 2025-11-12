@@ -1,31 +1,33 @@
 import { homeEmptyStateCopy } from "./theme.ts";
 
 export type HomeCopy = {
-  welcome: string;
-  signedInAs: string;
   unknownUser: string;
-  signOut: string;
+  signOutTitle: string;
+  signOutMessage: string;
+  signOutCancel: string;
+  signOutConfirm: string;
   loading: string;
   itemsLoading: string;
   empty: string;
-  emptyLists: string;
   emptyItems: string;
   listHeader: string;
   detailHeader: string;
-  selectList: string;
+  back: string;
+  avatarFallback: string;
 };
 
 export const homeCopy: HomeCopy = {
-  welcome: "Welcome back",
-  signedInAs: "Signed in as",
   unknownUser: "Unknown user",
-  signOut: "Sign out",
+  signOutTitle: "Sign out?",
+  signOutMessage: "Sign out as",
+  signOutCancel: "Stay signed in",
+  signOutConfirm: "Sign out",
   loading: "Loading...",
   itemsLoading: "Loading items...",
   empty: homeEmptyStateCopy,
-  emptyLists: homeEmptyStateCopy,
   emptyItems: "No items in this list.",
   listHeader: "Your Packing Lists",
   detailHeader: "Packing Items",
-  selectList: "Select a packing list to view its items.",
+  back: "< Back",
+  avatarFallback: "?",
 } as const;

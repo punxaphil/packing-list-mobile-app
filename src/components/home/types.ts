@@ -13,7 +13,9 @@ export type HomeScreenProps = {
 export type SelectionState = {
   selectedId: string;
   selectedList: NamedEntity | null;
+  hasSelection: boolean;
   select: (id: string) => void;
+  clear: () => void;
 };
 
 export type ItemsState = {
@@ -41,4 +43,6 @@ export type ItemsSectionProps = {
   selection: SelectionState;
   categoriesState: CategoriesState;
   itemsState: ItemsState;
+  email: string;
+  onSignOut: () => void;
 };

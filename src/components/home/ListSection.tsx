@@ -2,10 +2,13 @@ import { Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { SelectionState } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HomeHeader } from "./HomeHeader.tsx";
 
 type ListSectionProps = {
   lists: NamedEntity[];
   selection: SelectionState;
+  email: string;
+  onSignOut: () => void;
 };
 
 const getItemStyle = (selection: SelectionState, id: string) =>
@@ -28,9 +31,9 @@ const ListItem = ({
   </Text>
 );
 
-export const ListSection = ({ lists, selection }: ListSectionProps) => (
-  <View style={homeStyles.listContainer}>
-    <Text style={homeStyles.sectionTitle}>{HOME_COPY.listHeader}</Text>
+export const ListSection = ({ lists, selection, email, onSignOut }: ListSectionProps) => (
+  <View style={homeStyles.panel}>
+    <HomeHeader title={HOME_COPY.listHeader} email={email} onSignOut={onSignOut} />
     <View style={homeStyles.list}>
       {lists.map((list) => (
         <ListItem key={list.id} list={list} selection={selection} />

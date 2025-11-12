@@ -1,10 +1,16 @@
-import { Button, View } from "react-native";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { Alert } from "react-native";
+import { HOME_COPY } from "./styles.ts";
 
-type SignOutButtonProps = { onPress: () => void };
-
-export const SignOutButton = ({ onPress }: SignOutButtonProps) => (
-  <View style={homeStyles.button}>
-    <Button title={HOME_COPY.signOut} onPress={onPress} />
-  </View>
-);
+export const confirmSignOut = (email: string, onConfirm: () => void) =>
+  Alert.alert(
+    HOME_COPY.signOutTitle,
+    `${HOME_COPY.signOutMessage} ${email || HOME_COPY.unknownUser}?`,
+    [
+      { text: HOME_COPY.signOutCancel, style: "cancel" },
+      {
+        text: HOME_COPY.signOutConfirm,
+        style: "destructive",
+        onPress: onConfirm,
+      },
+    ],
+  );
