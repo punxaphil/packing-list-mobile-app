@@ -9,22 +9,15 @@
     "noEmit": true,
     "allowJs": false,
     "resolveJsonModule": true,
-    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "types": [
-      "expo-env"
-    ],
     "paths": {
       "~/*": ["./src/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": [
     "node_modules",
     "babel.config.js",

@@ -1,10 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  getReactNativePersistence,
-  initializeAuth,
-} from "firebase/auth";
+import { getAuth, initializeAuth, type Persistence } from "firebase/auth";
 import {
   DocumentData,
   QueryDocumentSnapshot,
@@ -32,6 +28,58 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { sortEntities } from "./utils.ts";
 
+type PersistenceLayer = Persistence & {
+  _isAvailable(): Promise<boolean>;
+  _set(key: string, value: unknown): Promise<void>;
+  _get<T>(key: string): Promise<T | null>;
+  _remove(key: string): Promise<void>;
+  _addListener(key: string, listener: unknown): void;
+  _removeListener(key: string, listener: unknown): void;
+};
+
+type PersistenceConstructor = new () => PersistenceLayer;
+
+const STORAGE_AVAILABLE_KEY = "__auth_storage_available__";
+
+const createAsyncStoragePersistence = (
+  storage: typeof AsyncStorage,
+): PersistenceConstructor => {
+  return class ReactNativeAsyncStoragePersistence implements PersistenceLayer {
+    static type = "LOCAL" as const;
+    type = "LOCAL" as const;
+
+    async _isAvailable() {
+      if (!storage) return false;
+      try {
+        await storage.setItem(STORAGE_AVAILABLE_KEY, "1");
+        await storage.removeItem(STORAGE_AVAILABLE_KEY);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    async _set(key: string, value: unknown) {
+      await storage.setItem(key, JSON.stringify(value));
+    }
+
+    async _get<T>(key: string) {
+      const json = await storage.getItem(key);
+      return json ? (JSON.parse(json) as T) : null;
+    }
+
+    async _remove(key: string) {
+      await storage.removeItem(key);
+    }
+
+    _addListener(_key: string, _listener: unknown) {}
+
+    _removeListener(_key: string, _listener: unknown) {}
+  };
+};
+
+const asyncStoragePersistence = createAsyncStoragePersistence(AsyncStorage);
+
 const firebaseConfig = {
   // This is the public key (used client side in browser), so it's safe to be here
   apiKey: "AIzaSyBB37kGiEQ2NBhHf9voJ6ugGRkUIyaOYAE",
@@ -46,7 +94,7 @@ const app = initializeApp(firebaseConfig);
 
 try {
   initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
+    persistence: asyncStoragePersistence as unknown as Persistence,
   });
 } catch (error) {
   const message =

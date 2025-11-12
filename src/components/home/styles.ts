@@ -1,46 +1,99 @@
 import { StyleSheet } from "react-native";
+import {
+  homeCardStyle,
+  homeColors,
+  homeMaxWidth,
+  homeRadius,
+  homeSpacing,
+} from "./theme.ts";
+import { homeCopy } from "./copy.ts";
 
-const COLORS = {
-  background: "#f2f2f2",
-  primary: "#2563eb",
-  textDark: "#1f2933",
-  textMuted: "#52616b",
-};
+const colors = homeColors;
+const spacing = homeSpacing;
+const maxWidth = homeMaxWidth;
 
-export const HOME_COPY = {
-  loading: "Loading...",
-  empty: "No packing lists yet.",
-};
+export const HOME_COPY = homeCopy;
 
 export const homeStyles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: colors.background },
   content: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
   },
-  loading: { alignItems: "center", gap: 12 },
-  loadingText: { fontSize: 16, color: COLORS.textMuted },
-  home: { gap: 16, width: "100%", maxWidth: 420, alignSelf: "center" },
+  loading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+  },
+  loadingText: { fontSize: 16, color: colors.muted, fontWeight: "500" },
+  home: {
+    flex: 1,
+    alignSelf: "center",
+    maxWidth,
+    width: "100%",
+    gap: spacing.lg,
+  },
+  header: { alignItems: "center", gap: spacing.sm },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "700",
-    color: COLORS.textDark,
+    color: colors.text,
     textAlign: "center",
   },
-  subtitle: { fontSize: 16, color: COLORS.textMuted, textAlign: "center" },
-  highlight: { fontWeight: "600", color: COLORS.primary },
-  button: { marginTop: 16, alignSelf: "center", width: "100%" },
-  listContainer: { gap: 8, paddingVertical: 8 },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: colors.muted,
+    textAlign: "center",
+  },
+  highlight: { color: colors.primary, fontWeight: "600" },
+  panels: { flex: 1, flexDirection: "column", gap: spacing.lg },
+  listContainer: { ...homeCardStyle },
+  detailContainer: { ...homeCardStyle },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: COLORS.textDark,
+    color: colors.text,
     textAlign: "center",
-    marginBottom: 4,
   },
-  listItem: { fontSize: 16, color: COLORS.textDark, paddingVertical: 4 },
-  empty: { alignItems: "center" },
-  emptyText: { fontSize: 16, color: COLORS.textMuted },
+  detailHeader: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: colors.text,
+    textAlign: "center",
+  },
+  list: { gap: spacing.xs },
+  listItem: {
+    fontSize: 16,
+    color: colors.text,
+    paddingVertical: spacing.xs,
+  },
+  activeItem: {
+    backgroundColor: colors.primary,
+    borderRadius: homeRadius / 2,
+    color: "#ffffff",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  detailItem: {
+    fontSize: 16,
+    color: colors.text,
+    paddingVertical: spacing.xs,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.sm,
+  },
+  hint: { fontSize: 14, color: colors.muted, textAlign: "center" },
+  empty: { alignItems: "center", paddingVertical: spacing.md },
+  emptyText: {
+    fontSize: 16,
+    color: colors.muted,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  button: { alignSelf: "center", marginTop: spacing.md, width: "100%" },
 });
