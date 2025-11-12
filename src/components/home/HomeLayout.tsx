@@ -10,39 +10,35 @@ import { HomeLayoutProps } from "./types.ts";
 export const HomeLayout = (props: HomeLayoutProps) => (
   <View style={homeStyles.home}>
     <HomeHeader email={props.email} />
-    <LayoutContent
-      hasLists={props.hasLists}
-      lists={props.lists}
-      selection={props.selection}
-      itemsState={props.itemsState}
-    />
+    {props.hasLists ? (
+      <ListsAndItems
+        lists={props.lists}
+        selection={props.selection}
+        categoriesState={props.categoriesState}
+        itemsState={props.itemsState}
+      />
+    ) : (
+      <EmptyList />
+    )}
     <SignOutButton onPress={props.onSignOut} />
   </View>
 );
 
-const LayoutContent = ({
-  hasLists,
-  lists,
-  selection,
-  itemsState,
-}: Pick<HomeLayoutProps, "hasLists" | "lists" | "selection" | "itemsState">) =>
-  hasLists ? (
-    <ListsAndItems
-      lists={lists}
-      selection={selection}
-      itemsState={itemsState}
-    />
-  ) : (
-    <EmptyList />
-  );
-
 const ListsAndItems = ({
   lists,
   selection,
+  categoriesState,
   itemsState,
-}: Pick<HomeLayoutProps, "lists" | "selection" | "itemsState">) => (
+}: Pick<
+  HomeLayoutProps,
+  "lists" | "selection" | "categoriesState" | "itemsState"
+>) => (
   <>
     <ListSection lists={lists} selection={selection} />
-    <ItemsSection selection={selection} itemsState={itemsState} />
+    <ItemsSection
+      selection={selection}
+      categoriesState={categoriesState}
+      itemsState={itemsState}
+    />
   </>
 );

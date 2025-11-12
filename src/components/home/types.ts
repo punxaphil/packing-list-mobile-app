@@ -22,16 +22,23 @@ export type ItemsState = {
   hasItems: boolean;
 };
 
+export type CategoriesState = {
+  categories: NamedEntity[];
+  loading: boolean;
+};
+
 export type HomeLayoutProps = {
   email: string;
   hasLists: boolean;
   lists: NamedEntity[];
   selection: SelectionState;
+  categoriesState: CategoriesState;
   itemsState: ItemsState;
   onSignOut: () => void;
 };
 
 export type ItemsSectionProps = {
   selection: SelectionState;
+  categoriesState: CategoriesState;
   itemsState: ItemsState;
 };
