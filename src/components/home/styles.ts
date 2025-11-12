@@ -35,7 +35,7 @@ export const homeStyles = StyleSheet.create({
     width: "100%",
     gap: spacing.lg,
   },
-  panel: { ...homeCardStyle, gap: spacing.md },
+  panel: { ...homeCardStyle, flex: 1, gap: spacing.md },
   panelHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -69,6 +69,9 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarLabel: { color: "#ffffff", fontWeight: "700" },
+  scroll: { flex: 1 },
+  swipeWrapper: { flex: 1 },
+  swipeContainer: { flex: 1 },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
