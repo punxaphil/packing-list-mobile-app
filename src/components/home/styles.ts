@@ -7,20 +7,11 @@ import {
   homeSpacing,
 } from "./theme.ts";
 import { homeCopy } from "./copy.ts";
-
-const colors = homeColors;
-const spacing = homeSpacing;
-const maxWidth = homeMaxWidth;
-
+const colors = homeColors, spacing = homeSpacing, maxWidth = homeMaxWidth;
 export const HOME_COPY = homeCopy;
-
 export const homeStyles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
+  content: { flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
   loading: {
     flex: 1,
     alignItems: "center",
@@ -42,12 +33,7 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "space-between",
     gap: spacing.sm,
   },
-  panelTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.text,
-  },
+  panelTitle: { flex: 1, fontSize: 20, fontWeight: "700", color: colors.text },
   backButton: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -55,10 +41,7 @@ export const homeStyles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
   },
-  backPlaceholder: {
-    width: spacing.lg * 3,
-    height: spacing.lg,
-  },
+  backPlaceholder: { width: spacing.lg * 3, height: spacing.lg },
   backText: { color: colors.primary, fontWeight: "600" },
   avatar: {
     width: spacing.lg,
@@ -92,10 +75,18 @@ export const homeStyles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   detailItem: {
-    fontSize: 16,
-    color: colors.text,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
     paddingVertical: spacing.xs,
   },
+  checkbox: {
+    width: spacing.md,
+    height: spacing.md,
+    borderRadius: spacing.xs,
+  },
+  detailLabel: { flex: 1, fontSize: 16, color: colors.text },
+  detailLabelChecked: { color: colors.muted, textDecorationLine: "line-through" },
   empty: { alignItems: "center", paddingVertical: spacing.md },
   emptyText: {
     fontSize: 16,
