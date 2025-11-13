@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
-import { NamedEntity } from "~/types/NamedEntity.ts";
-import { SelectionState } from "./types.ts";
+import { PackingListSummary, SelectionState } from "./types.ts";
 
-const EMPTY_LIST: NamedEntity[] = [];
+const EMPTY_LIST: PackingListSummary[] = [];
 
-const filterSelection = (
-  lists: NamedEntity[],
-  id: string,
-  hasLists: boolean,
-) => (!hasLists ? "" : lists.some((item) => item.id === id) ? id : "");
+const filterSelection = (lists: PackingListSummary[], id: string, hasLists: boolean) => (!hasLists ? "" : lists.some((item) => item.id === id) ? id : "");
 
 export function useSelectedList(
-  lists: NamedEntity[] | undefined,
+  lists: PackingListSummary[] | undefined,
   hasLists: boolean,
 ): SelectionState {
   const safeLists = lists ?? EMPTY_LIST;

@@ -1,9 +1,14 @@
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
+export type PackingListSummary = NamedEntity & {
+  itemCount?: number;
+  packedCount?: number;
+};
+
 export type HomeScreenProps = {
   email: string;
-  lists: NamedEntity[];
+  lists: PackingListSummary[];
   loading: boolean;
   hasLists: boolean;
   userId: string;
@@ -32,7 +37,7 @@ export type CategoriesState = {
 export type HomeLayoutProps = {
   email: string;
   hasLists: boolean;
-  lists: NamedEntity[];
+  lists: PackingListSummary[];
   selection: SelectionState;
   categoriesState: CategoriesState;
   itemsState: ItemsState;

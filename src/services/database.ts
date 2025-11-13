@@ -72,9 +72,9 @@ const createAsyncStoragePersistence = (
       await storage.removeItem(key);
     }
 
-    _addListener(_key: string, _listener: unknown) {}
+    _addListener(_key: string, _listener: unknown) { }
 
-    _removeListener(_key: string, _listener: unknown) {}
+    _removeListener(_key: string, _listener: unknown) { }
   };
 };
 
@@ -198,6 +198,14 @@ export const readDb = {
     }
   },
 };
+
+const deletePackItemsForList = async (listId: string, userId: string, batch: WriteBatch) => {
+  const queryRef = query(collection(firestore, USERS_KEY, userId, PACK_ITEMS_KEY), where("packingList", "==", listId));
+  const items = fromQueryResult<PackItem>(await getDocs(queryRef));
+  for (const item of items) {
+    batch.delete(doc(firestore, USERS_KEY, userId, PACK_ITEMS_KEY, item.id));
+  }
+};
 export const writeDb = {
   addPackItem: async (
     name: string,
@@ -229,6 +237,13 @@ export const writeDb = {
   },
   deletePackItem: async (id: string) => {
     await del(PACK_ITEMS_KEY, id);
+  },
+  deletePackingList: async (id: string) => {
+    const userId = getUserId();
+    const batch = writeBatch(firestore);
+    await deletePackItemsForList(id, userId, batch);
+    writeDb.deletePackingListBatch(id, batch);
+    await batch.commit();
   },
   addMember: async (name: string): Promise<string> => {
     const docRef = await add(MEMBERS_KEY, { name });

@@ -1,14 +1,16 @@
 import { StyleSheet } from "react-native";
-import {
-  homeCardStyle,
-  homeColors,
-  homeMaxWidth,
-  homeRadius,
-  homeSpacing,
-} from "./theme.ts";
 import { homeCopy } from "./copy.ts";
-const colors = homeColors, spacing = homeSpacing, maxWidth = homeMaxWidth;
+import { homeCardStyle, homeColors, homeMaxWidth, homeRadius, homeSpacing } from "./theme.ts";
+
+const colors = homeColors;
+const spacing = homeSpacing;
+const maxWidth = homeMaxWidth;
+const alternatingPalette = ["#eff6ff", "#ecfdf5", "#f5f3ff", "#fff7ed", "#fef2f2"] as const;
+
+export const listCardPalette = alternatingPalette;
+
 export const HOME_COPY = homeCopy;
+
 export const homeStyles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
@@ -26,8 +28,18 @@ export const homeStyles = StyleSheet.create({
   scroll: { flex: 1 },
   swipeWrapper: { flex: 1 },
   swipeContainer: { flex: 1 },
-  sectionTitle: { fontSize: 20, fontWeight: "600", color: colors.text, textAlign: "center" },
   list: { gap: spacing.xs },
+  listActions: { gap: spacing.sm },
+  listActionButton: { alignSelf: "center", paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: homeRadius, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  listActionLabel: { fontSize: 16, fontWeight: "600", color: colors.text },
+  listCard: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: homeRadius, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, gap: spacing.sm },
+  listCardSelected: { borderColor: colors.primary, shadowColor: colors.primary, shadowOpacity: 0.15, shadowRadius: spacing.sm, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  listCardText: { flex: 1, gap: spacing.xs },
+  listName: { fontSize: 18, fontWeight: "600", color: colors.text },
+  listEditable: { flex: 1 },
+  listSummary: { fontSize: 14, color: colors.muted },
+  listDeleteButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  listDeleteIcon: { fontSize: 18 },
   listItem: { fontSize: 16, color: colors.text, paddingVertical: spacing.xs },
   activeItem: { backgroundColor: colors.primary, borderRadius: homeRadius / 2, color: "#ffffff", paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   category: { gap: spacing.xs, padding: spacing.sm, borderRadius: homeRadius, borderWidth: 1, borderColor: colors.border },
@@ -50,4 +62,11 @@ export const homeStyles = StyleSheet.create({
   empty: { alignItems: "center", paddingVertical: spacing.md },
   emptyText: { fontSize: 16, color: colors.muted, fontWeight: "500", textAlign: "center" },
   swipeAction: { width: spacing.lg * 3 },
+  modalBackdrop: { flex: 1, backgroundColor: "rgba(17,24,39,0.4)", justifyContent: "center", alignItems: "center", padding: spacing.lg },
+  modalCard: { width: "100%", maxWidth, backgroundColor: colors.surface, borderRadius: homeRadius, padding: spacing.lg, gap: spacing.md },
+  modalTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
+  modalInput: { borderWidth: 1, borderColor: colors.border, borderRadius: homeRadius / 2, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, fontSize: 16, color: colors.text },
+  modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing.sm },
+  modalAction: { fontSize: 16, fontWeight: "600", color: colors.muted },
+  modalActionPrimary: { color: colors.primary },
 });

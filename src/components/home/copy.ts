@@ -17,6 +17,21 @@ export type HomeCopy = {
   addItem: string;
   deleteItem: string;
   newItem: string;
+  listNoItems: string;
+  itemSingular: string;
+  itemPlural: string;
+  packedSingular: string;
+  packedPlural: string;
+  createList: string;
+  deleteList: string;
+  deleteListAction: string;
+  cancel: string;
+  createListPrompt: string;
+  createListConfirm: string;
+  createListPlaceholder: string;
+  deleteConfirmTitle: string;
+  deleteConfirmMessage: string;
+  deleteIcon: string;
 };
 
 export const homeCopy: HomeCopy = {
@@ -36,4 +51,19 @@ export const homeCopy: HomeCopy = {
   addItem: "Add item",
   deleteItem: "Remove item",
   newItem: "New item",
+  listNoItems: "No items",
+  itemSingular: "item",
+  itemPlural: "items",
+  packedSingular: "packed",
+  packedPlural: "packed",
+  createList: "Create new Packing List",
+  deleteList: "Delete packing list",
+  deleteListAction: "Delete",
+  cancel: "Cancel",
+  createListPrompt: "Name your new packing list",
+  createListConfirm: "Create",
+  createListPlaceholder: "Summer getaway",
+  deleteConfirmTitle: "Delete this list?",
+  deleteConfirmMessage: "Delete \"{name}\"? This removes the list and its items.",
+  deleteIcon: "\u{1F5D1}",
 } as const;
