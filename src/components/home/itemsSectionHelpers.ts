@@ -8,7 +8,12 @@ export type SectionGroup = {
 };
 
 const orderItems = (items: PackItem[]) =>
-  [...items].sort((first, second) => second.rank - first.rank);
+  [...items].sort((first, second) => {
+    if (first.checked !== second.checked) {
+      return Number(first.checked) - Number(second.checked);
+    }
+    return second.rank - first.rank;
+  });
 
 const groupItems = (items: PackItem[]) =>
   items.reduce<Map<string, PackItem[]>>((groups, item) => {
@@ -19,14 +24,29 @@ const groupItems = (items: PackItem[]) =>
     return groups;
   }, new Map());
 
+const createCategoryMap = (categories: NamedEntity[]) => {
+  const map = new Map<string, NamedEntity>();
+  map.set(UNCATEGORIZED.id, UNCATEGORIZED);
+  for (const category of categories) {
+    map.set(category.id, category);
+  }
+  return map;
+};
+
 const getOrderedCategories = (
   categories: NamedEntity[],
   groups: Map<string, PackItem[]>,
 ) => {
-  const sorted = categories
-    .filter((category) => category.id && groups.has(category.id))
-    .sort((a, b) => b.rank - a.rank);
-  return groups.has(UNCATEGORIZED.id) ? [UNCATEGORIZED, ...sorted] : sorted;
+  const map = createCategoryMap(categories);
+  for (const [id] of groups.entries()) {
+    if (id && !map.has(id)) {
+      const found = categories.find((category) => category.id === id);
+      if (found) {
+        map.set(id, found);
+      }
+    }
+  }
+  return [...map.values()].sort((a, b) => b.rank - a.rank);
 };
 
 export const buildSections = (
@@ -34,10 +54,11 @@ export const buildSections = (
   categories: NamedEntity[],
 ): SectionGroup[] => {
   const grouped = groupItems(orderItems(items));
-  return getOrderedCategories(categories, grouped)
-    .map((category) => ({
-      category,
-      items: grouped.get(category.id) ?? [],
-    }))
-    .filter((section) => section.items.length);
+  return getOrderedCategories(categories, grouped).map((category) => ({
+    category,
+    items: grouped.get(category.id) ?? [],
+  }));
 };
+
+export const getNextItemRank = (items: Pick<PackItem, "rank">[]) =>
+  Math.max(...items.map((item) => item.rank).filter((rank) => Number.isFinite(rank)), 0) + 1;

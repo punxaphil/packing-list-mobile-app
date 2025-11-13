@@ -14,6 +14,9 @@ export type HomeCopy = {
   detailHeader: string;
   back: string;
   avatarFallback: string;
+  addItem: string;
+  deleteItem: string;
+  newItem: string;
 };
 
 export const homeCopy: HomeCopy = {
@@ -30,4 +33,7 @@ export const homeCopy: HomeCopy = {
   detailHeader: "Packing Items",
   back: "< Back",
   avatarFallback: "?",
+  addItem: "Add item",
+  deleteItem: "Remove item",
+  newItem: "New item",
 } as const;

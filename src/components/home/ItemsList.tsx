@@ -1,10 +1,9 @@
-import Checkbox from "expo-checkbox";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { buildSections, SectionGroup } from "./itemsSectionHelpers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
-import { homeColors } from "./theme.ts";
+import { CategorySection } from "./CategorySection.tsx";
 
 type ItemsListProps = {
   loading: boolean;
@@ -12,50 +11,72 @@ type ItemsListProps = {
   items: PackItem[];
   categories: NamedEntity[];
   onToggle: (item: PackItem) => void;
+  onRenameItem: (item: PackItem, name: string) => void;
+  onDeleteItem: (id: string) => void;
+  onAddItem: (category: NamedEntity) => Promise<PackItem>;
+  onRenameCategory: (category: NamedEntity, name: string) => void;
+  onToggleCategory: (items: PackItem[], checked: boolean) => void;
 };
 
-type CategoryProps = SectionGroup & { onToggle: (item: PackItem) => void };
-type RenderItemsProps = Pick<ItemsListProps, "items" | "categories" | "onToggle">;
+type RenderItemsProps = {
+  sections: SectionGroup[];
+  hasItems: boolean;
+  onToggle: (item: PackItem) => void;
+  onRenameItem: (item: PackItem, name: string) => void;
+  onDeleteItem: (id: string) => void;
+  onAddItem: (category: NamedEntity) => Promise<PackItem>;
+  onRenameCategory: (category: NamedEntity, name: string) => void;
+  onToggleCategory: (items: PackItem[], checked: boolean) => void;
+};
 
-const CHECK_COLOR = homeColors.primary;
+const FALLBACK_TOKENS = ["blue.50", "green.50", "purple.50", "orange.50", "red.50"] as const;
+const COLOR_TOKENS: Record<string, string> = {
+  "blue.50": "#eff6ff",
+  "green.50": "#ecfdf5",
+  "purple.50": "#f5f3ff",
+  "orange.50": "#fff7ed",
+  "red.50": "#fef2f2",
+  "gray.50": "#f9fafb",
+};
 
 export const ItemsList = (props: ItemsListProps) => {
   if (props.loading) return <ItemsLoader />;
-  if (!props.hasItems) return <EmptyItems />;
-  return renderItems(props);
+  const sections = buildSections(props.items, props.categories).filter((section) => section.items.length);
+  return renderItems({
+    sections,
+    hasItems: props.hasItems,
+    onToggle: props.onToggle,
+    onRenameItem: props.onRenameItem,
+    onDeleteItem: props.onDeleteItem,
+    onAddItem: props.onAddItem,
+    onRenameCategory: props.onRenameCategory,
+    onToggleCategory: props.onToggleCategory,
+  });
 };
 
-const renderItems = ({ items, categories, onToggle }: RenderItemsProps) => (
+const resolveColor = (token: string) => COLOR_TOKENS[token] ?? token;
+const sectionColor = (category: NamedEntity, index: number) =>
+  resolveColor(category.color ?? FALLBACK_TOKENS[index % FALLBACK_TOKENS.length]);
+
+const renderItems = ({ sections, hasItems, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
   <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
     <View style={homeStyles.list}>
-      {buildSections(items, categories).map((section) => (
-        <CategorySection key={section.category.id || "uncategorized"} {...section} onToggle={onToggle} />
+      {!hasItems && <EmptyItems />}
+      {sections.map((section, index) => (
+        <CategorySection
+          key={section.category.id || `uncategorized-${index}`}
+          section={section}
+          color={sectionColor(section.category, index)}
+          onToggle={onToggle}
+          onRenameItem={onRenameItem}
+          onDeleteItem={onDeleteItem}
+          onAddItem={onAddItem}
+          onRenameCategory={onRenameCategory}
+          onToggleCategory={onToggleCategory}
+        />
       ))}
     </View>
   </ScrollView>
-);
-
-const CategorySection = ({ category, items, onToggle }: CategoryProps) => (
-  <View style={homeStyles.list}>
-    <Text style={homeStyles.sectionTitle}>{category.name}</Text>
-    {items.map((item) => (
-      <ItemRow key={item.id} item={item} onToggle={onToggle} />
-    ))}
-  </View>
-);
-
-const ItemRow = ({ item, onToggle }: { item: PackItem; onToggle: (item: PackItem) => void }) => {
-  const toggle = () => onToggle(item);
-  return <CheckboxRow checked={item.checked} label={item.name} onToggle={toggle} />;
-};
-
-const CheckboxRow = ({ checked, label, onToggle }: { checked: boolean; label: string; onToggle: () => void }) => (
-  <Pressable style={homeStyles.detailItem} onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked }} hitSlop={8}>
-    <Checkbox value={checked} onValueChange={onToggle} color={checked ? CHECK_COLOR : undefined} style={homeStyles.checkbox} />
-    <Text style={[homeStyles.detailLabel, checked && homeStyles.detailLabelChecked]} numberOfLines={1}>
-      {label}
-    </Text>
-  </Pressable>
 );
 
 const EmptyItems = () => (
