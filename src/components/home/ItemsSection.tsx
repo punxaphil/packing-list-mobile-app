@@ -1,17 +1,14 @@
-import { useCallback, useRef, useEffect } from "react";
-import { Animated, Dimensions, View } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { useCallback, useRef, useEffect, useState } from "react";
+import { Animated } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
-import { HomeHeader } from "./HomeHeader.tsx";
+import { HOME_COPY } from "./styles.ts";
 import { writeDb } from "~/services/database.ts";
-import { ItemsList } from "./ItemsList.tsx";
 import { getNextItemRank } from "./itemsSectionHelpers.ts";
 import { animateLayout } from "./layoutAnimation.ts";
-const CLEAR_DELAY = 120;
-const SWIPE_THRESHOLD = Math.round(Dimensions.get("window").width * 0.5);
+import { ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
+import { UNCATEGORIZED } from "~/services/utils.ts";
 const FADE_DURATION = 1000;
 
 const useItemToggle = () => useCallback((item: PackItem) => { animateLayout(); void writeDb.updatePackItem({ ...item, checked: !item.checked }); }, []);
@@ -29,40 +26,15 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const handlers = useItemsSectionHandlers(props);
   const fade = useSelectionFade(props.selection.selectedId);
   const list = props.selection.selectedList;
+  const renameList = useListRenamer();
+  const quickAddDialog = useQuickAddDialog(props.itemsState.items, list, props.selection.selectedList?.id);
   if (!list) return null;
-  return renderSwipeable({ ...props, title: list.name ?? HOME_COPY.detailHeader, ...handlers, fade });
+  const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
+  const renameDialog = useRenameDialog(list, renameList);
+  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} quickAddDialog={quickAddDialog} fade={fade} />;
 };
-type ListHandlers = { onToggle: (item: PackItem) => void; onRenameItem: (item: PackItem, name: string) => void; onDeleteItem: (id: string) => void; onAddItem: (category: NamedEntity) => Promise<PackItem>; onRenameCategory: (category: NamedEntity, name: string) => void; onToggleCategory: (items: PackItem[], checked: boolean) => void };
 
-const renderSwipeable = ({ title, selection, categoriesState, itemsState, email, onSignOut, fade, ...handlers }: ItemsSectionProps & { title: string; fade: FadeStyle } & ListHandlers) => (
-  <Animated.View style={[homeStyles.swipeWrapper, fade]}>
-    <Swipeable containerStyle={homeStyles.swipeContainer} childrenContainerStyle={homeStyles.swipeContainer} renderLeftActions={LeftAction} leftThreshold={SWIPE_THRESHOLD} overshootLeft={false} onSwipeableLeftOpen={() => scheduleClear(selection.clear)}>
-      {renderPanel({ title, selection, categoriesState, itemsState, email, onSignOut, ...handlers })}
-    </Swipeable>
-  </Animated.View>
-);
-
-const LeftAction = () => <View style={homeStyles.swipeAction} />;
-const renderPanel = ({ title, selection, categoriesState, itemsState, email, onSignOut, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: ItemsSectionProps & { title: string } & ListHandlers) => (
-  <View style={homeStyles.panel}>
-    <HomeHeader title={title} email={email} onSignOut={onSignOut} onBack={selection.clear} />
-    <ItemsList
-      loading={categoriesState.loading || itemsState.loading}
-      hasItems={itemsState.hasItems}
-      items={itemsState.items}
-      categories={categoriesState.categories}
-      onToggle={onToggle}
-      onRenameItem={onRenameItem}
-      onDeleteItem={onDeleteItem}
-      onAddItem={onAddItem}
-      onRenameCategory={onRenameCategory}
-      onToggleCategory={onToggleCategory}
-    />
-  </View>
-);
-const scheduleClear = (clear: () => void) => setTimeout(clear, CLEAR_DELAY);
-
-const useItemsSectionHandlers = (props: ItemsSectionProps) => ({
+const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
   onToggle: useItemToggle(),
   onRenameItem: useItemRename(),
   onDeleteItem: useItemDelete(),
@@ -80,4 +52,44 @@ const useSelectionFade = (selectedId: string) => {
   return { opacity } as const;
 };
 
-type FadeStyle = ReturnType<typeof useSelectionFade>;
+const useListRenamer = () =>
+  useCallback((list: NamedEntity, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === list.name) return;
+    void writeDb.updatePackingList({ ...list, name: trimmed });
+  }, []);
+
+const useRenameDialog = (list: NamedEntity, rename: (target: NamedEntity, name: string) => void): TextDialogState => {
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState(list.name ?? "");
+  useEffect(() => setValue(list.name ?? ""), [list.id, list.name]);
+  const open = useCallback(() => setVisible(true), []);
+  const close = useCallback(() => setVisible(false), []);
+  const submit = useCallback(() => {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === list.name) {
+      close();
+      return;
+    }
+    rename(list, trimmed);
+    close();
+  }, [value, list, rename, close]);
+  return { visible, value, setValue, open, close, submit };
+};
+
+const useQuickAddDialog = (items: PackItem[], list: NamedEntity | null, listId?: string | null): TextDialogState => {
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState("");
+  useEffect(() => setValue(""), [list?.id]);
+  const open = useCallback(() => { setValue(""); setVisible(true); }, []);
+  const close = useCallback(() => { setVisible(false); setValue(""); }, []);
+  const submit = useCallback(() => {
+    const trimmed = value.trim();
+    const target = listId ?? list?.id;
+    if (!trimmed || !target) return close();
+    animateLayout();
+    void writeDb.addPackItem(trimmed, [], UNCATEGORIZED.id, target, getNextItemRank(items));
+    close();
+  }, [value, items, listId, list?.id, close]);
+  return { visible, value, setValue, open, close, submit };
+};

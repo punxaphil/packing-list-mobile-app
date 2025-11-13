@@ -1,13 +1,11 @@
 import { Pressable, Text, View } from "react-native";
-import { EditableText } from "./EditableText.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
-import { ListActions, ListEditing } from "./listSectionState.ts";
+import { ListActions } from "./listSectionState.ts";
 
 type ListCardProps = {
   list: PackingListSummary;
   selection: SelectionState;
-  editing: ListEditing;
   actions: ListActions;
   color: string;
 };
@@ -15,44 +13,23 @@ type ListCardProps = {
 type ListCardTextProps = {
   list: PackingListSummary;
   summary: string;
-  editing: ListEditing;
-  onRename: (list: PackingListSummary, name: string) => void;
-};
-
-type ListNameEditorProps = {
-  list: PackingListSummary;
-  editing: ListEditing;
-  onRename: (list: PackingListSummary, name: string) => void;
 };
 
 export const ListCard = (props: ListCardProps) => {
   const summary = formatSummary(props.list);
   return (
     <Pressable style={getCardStyle(props.selection.selectedId === props.list.id, props.color)} onPress={() => props.selection.select(props.list.id)} accessibilityRole="button" accessibilityLabel={props.list.name} accessibilityHint={summary}>
-      <ListCardText list={props.list} summary={summary} editing={props.editing} onRename={props.actions.onRename} />
+      <ListCardText list={props.list} summary={summary} />
       <ListDeleteButton onDelete={() => props.actions.onDelete(props.list)} />
     </Pressable>
   );
 };
 
-const ListCardText = ({ list, summary, editing, onRename }: ListCardTextProps) => (
+const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
-    <ListNameEditor list={list} editing={editing} onRename={onRename} />
+    <Text style={homeStyles.listName}>{list.name}</Text>
     <Text style={homeStyles.listSummary}>{summary}</Text>
   </View>
-);
-
-const ListNameEditor = ({ list, editing, onRename }: ListNameEditorProps) => (
-  <EditableText
-    value={list.name}
-    onSubmit={(name) => onRename(list, name)}
-    textStyle={homeStyles.listName}
-    inputStyle={homeStyles.listName}
-    containerStyle={homeStyles.listEditable}
-    autoFocus={editing.editingId === list.id}
-    onStart={() => editing.start(list.id)}
-    onEnd={() => editing.stop(list.id)}
-  />
 );
 
 const ListDeleteButton = ({ onDelete }: { onDelete: () => Promise<void> }) => (

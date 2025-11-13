@@ -3,6 +3,7 @@ import { Pressable, StyleProp, Text, TextInput, TextStyle, View, ViewStyle } fro
 
 export type EditableTextProps = {
   value: string;
+  displayValue?: string;
   onSubmit: (value: string) => void;
   textStyle: StyleProp<TextStyle>;
   inputStyle?: StyleProp<TextStyle>;
@@ -25,7 +26,7 @@ export const EditableText = (props: EditableTextProps) => {
   const finish = createFinishHandler(props, state);
   return (
     <View style={props.containerStyle}>
-      {state.editing ? <EditableInput {...props} {...state} onFinish={finish} /> : <EditableLabel {...props} onStart={() => handleStart(props, state)} />}
+      {state.editing ? <EditableInput {...props} {...state} onFinish={finish} /> : <EditableLabel value={props.value} displayValue={props.displayValue} textStyle={props.textStyle} onStart={() => handleStart(props, state)} />}
     </View>
   );
 };
@@ -57,10 +58,10 @@ const EditableInput = ({ text, setText, inputRef, onFinish, textStyle, inputStyl
   <TextInput ref={inputRef} value={text} onChangeText={setText} onBlur={onFinish} onSubmitEditing={onFinish} style={[textStyle, inputStyle]} returnKeyType="done" />
 );
 
-const EditableLabel = ({ value, textStyle, onStart }: Pick<EditableTextProps, "value" | "textStyle" | "onStart">) => (
+const EditableLabel = ({ value, displayValue, textStyle, onStart }: Pick<EditableTextProps, "value" | "displayValue" | "textStyle" | "onStart">) => (
   <Pressable onPress={onStart} accessibilityRole="button">
     <Text style={textStyle} numberOfLines={1}>
-      {value}
+      {displayValue ?? value}
     </Text>
   </Pressable>
 );

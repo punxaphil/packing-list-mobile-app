@@ -5,10 +5,6 @@ import { homeCardStyle, homeColors, homeMaxWidth, homeRadius, homeSpacing } from
 const colors = homeColors;
 const spacing = homeSpacing;
 const maxWidth = homeMaxWidth;
-const alternatingPalette = ["#eff6ff", "#ecfdf5", "#f5f3ff", "#fff7ed", "#fef2f2"] as const;
-
-export const listCardPalette = alternatingPalette;
-
 export const HOME_COPY = homeCopy;
 
 export const homeStyles = StyleSheet.create({
@@ -20,6 +16,8 @@ export const homeStyles = StyleSheet.create({
   panel: { ...homeCardStyle, flex: 1, gap: spacing.md },
   panelHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm },
   panelTitle: { flex: 1, fontSize: 20, fontWeight: "700", color: colors.text },
+  quickAdd: { alignSelf: "flex-start", paddingVertical: spacing.xs / 2 },
+  quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.primary },
   backButton: { paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, minWidth: spacing.lg * 3, alignItems: "flex-start", justifyContent: "center" },
   backPlaceholder: { width: spacing.lg * 3, height: spacing.lg },
   backText: { color: colors.primary, fontWeight: "600" },
@@ -36,7 +34,6 @@ export const homeStyles = StyleSheet.create({
   listCardSelected: { borderColor: colors.primary, shadowColor: colors.primary, shadowOpacity: 0.15, shadowRadius: spacing.sm, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   listCardText: { flex: 1, gap: spacing.xs },
   listName: { fontSize: 18, fontWeight: "600", color: colors.text },
-  listEditable: { flex: 1 },
   listSummary: { fontSize: 14, color: colors.muted },
   listDeleteButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   listDeleteIcon: { fontSize: 18 },

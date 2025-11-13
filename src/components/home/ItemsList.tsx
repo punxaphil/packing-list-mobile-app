@@ -4,6 +4,7 @@ import { PackItem } from "~/types/PackItem.ts";
 import { buildSections, SectionGroup } from "./itemsSectionHelpers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { CategorySection } from "./CategorySection.tsx";
+import { buildCategoryColors } from "./listColors.ts";
 
 type ItemsListProps = {
   loading: boolean;
@@ -21,6 +22,7 @@ type ItemsListProps = {
 type RenderItemsProps = {
   sections: SectionGroup[];
   hasItems: boolean;
+  colors: Record<string, string>;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -29,22 +31,14 @@ type RenderItemsProps = {
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
 };
 
-const FALLBACK_TOKENS = ["blue.50", "green.50", "purple.50", "orange.50", "red.50"] as const;
-const COLOR_TOKENS: Record<string, string> = {
-  "blue.50": "#eff6ff",
-  "green.50": "#ecfdf5",
-  "purple.50": "#f5f3ff",
-  "orange.50": "#fff7ed",
-  "red.50": "#fef2f2",
-  "gray.50": "#f9fafb",
-};
-
 export const ItemsList = (props: ItemsListProps) => {
   if (props.loading) return <ItemsLoader />;
   const sections = buildSections(props.items, props.categories).filter((section) => section.items.length);
+  const colors = buildCategoryColors(sections.map((section) => section.category));
   return renderItems({
     sections,
     hasItems: props.hasItems,
+    colors,
     onToggle: props.onToggle,
     onRenameItem: props.onRenameItem,
     onDeleteItem: props.onDeleteItem,
@@ -54,11 +48,7 @@ export const ItemsList = (props: ItemsListProps) => {
   });
 };
 
-const resolveColor = (token: string) => COLOR_TOKENS[token] ?? token;
-const sectionColor = (category: NamedEntity, index: number) =>
-  resolveColor(category.color ?? FALLBACK_TOKENS[index % FALLBACK_TOKENS.length]);
-
-const renderItems = ({ sections, hasItems, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
   <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -66,7 +56,7 @@ const renderItems = ({ sections, hasItems, onToggle, onRenameItem, onDeleteItem,
         <CategorySection
           key={section.category.id || `uncategorized-${index}`}
           section={section}
-          color={sectionColor(section.category, index)}
+          color={section.category.color ?? colors[section.category.id]}
           onToggle={onToggle}
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}

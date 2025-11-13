@@ -15,6 +15,10 @@ export type HomeCopy = {
   back: string;
   avatarFallback: string;
   addItem: string;
+  addItemQuick: string;
+  addItemPrompt: string;
+  addItemConfirm: string;
+  addItemPlaceholder: string;
   deleteItem: string;
   newItem: string;
   listNoItems: string;
@@ -29,6 +33,8 @@ export type HomeCopy = {
   createListPrompt: string;
   createListConfirm: string;
   createListPlaceholder: string;
+  renameListPrompt: string;
+  renameListConfirm: string;
   deleteConfirmTitle: string;
   deleteConfirmMessage: string;
   deleteIcon: string;
@@ -49,6 +55,10 @@ export const homeCopy: HomeCopy = {
   back: "< Back",
   avatarFallback: "?",
   addItem: "Add item",
+  addItemQuick: "Add item...",
+  addItemPrompt: "Add a packing item",
+  addItemConfirm: "Add",
+  addItemPlaceholder: "Travel adapter",
   deleteItem: "Remove item",
   newItem: "New item",
   listNoItems: "No items",
@@ -63,6 +73,8 @@ export const homeCopy: HomeCopy = {
   createListPrompt: "Name your new packing list",
   createListConfirm: "Create",
   createListPlaceholder: "Summer getaway",
+  renameListPrompt: "Rename packing list",
+  renameListConfirm: "Save",
   deleteConfirmTitle: "Delete this list?",
   deleteConfirmMessage: "Delete \"{name}\"? This removes the list and its items.",
   deleteIcon: "\u{1F5D1}",

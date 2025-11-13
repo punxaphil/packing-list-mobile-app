@@ -7,6 +7,7 @@ type HeaderProps = {
   email: string;
   onSignOut: () => void;
   onBack?: () => void;
+  onPressTitle?: () => void;
 };
 
 const BackButton = ({ onBack }: { onBack?: () => void }) =>
@@ -23,13 +24,7 @@ const BackButton = ({ onBack }: { onBack?: () => void }) =>
     <View style={homeStyles.backPlaceholder} />
   );
 
-const AvatarButton = ({
-  email,
-  onSignOut,
-}: {
-  email: string;
-  onSignOut: () => void;
-}) => (
+const AvatarButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
   <Pressable
     style={homeStyles.avatar}
     onPress={() => confirmSignOut(email, onSignOut)}
@@ -46,12 +41,24 @@ const buildInitial = (email: string) => {
   return trimmed[0]?.toUpperCase() ?? HOME_COPY.avatarFallback;
 };
 
-export const HomeHeader = ({ title, email, onSignOut, onBack }: HeaderProps) => (
-  <View style={homeStyles.panelHeader}>
-    <BackButton onBack={onBack} />
+const Title = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+  onPress ? (
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8}>
+      <Text style={homeStyles.panelTitle} numberOfLines={1}>
+        {title}
+      </Text>
+    </Pressable>
+  ) : (
     <Text style={homeStyles.panelTitle} numberOfLines={1}>
       {title}
     </Text>
+  )
+);
+
+export const HomeHeader = ({ title, email, onSignOut, onBack, onPressTitle }: HeaderProps) => (
+  <View style={homeStyles.panelHeader}>
+    <BackButton onBack={onBack} />
+    <Title title={title} onPress={onPressTitle} />
     <AvatarButton email={email} onSignOut={onSignOut} />
   </View>
 );
