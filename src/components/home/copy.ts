@@ -38,6 +38,7 @@ export type HomeCopy = {
   deleteConfirmTitle: string;
   deleteConfirmMessage: string;
   deleteIcon: string;
+  dragHandleLabel: string;
 };
 
 export const homeCopy: HomeCopy = {
@@ -78,4 +79,5 @@ export const homeCopy: HomeCopy = {
   deleteConfirmTitle: "Delete this list?",
   deleteConfirmMessage: "Delete \"{name}\"? This removes the list and its items.",
   deleteIcon: "\u{1F5D1}",
+  dragHandleLabel: "Drag handle",
 } as const;
