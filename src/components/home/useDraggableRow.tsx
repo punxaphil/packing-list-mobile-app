@@ -25,10 +25,11 @@ type DragOptions = {
 export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOptions = {}) => {
     const position = useRef(new Animated.ValueXY()).current;
     const [active, setActive] = useState(false);
+    const hasEnded = useRef(false);
     const longPressRef = useRef<LongPressGestureHandler>(null);
     const panRef = useRef<PanGestureHandler>(null);
-    const reset = useReset(position, callbacks.onEnd);
-    const longPress = useLongPress(setActive, callbacks.onStart, reset);
+    const reset = useReset(position, hasEnded, callbacks.onEnd);
+    const longPress = useLongPress(setActive, callbacks.onStart, reset, hasEnded);
     const pan = usePan(position, active, callbacks.onMove, setActive, reset);
     const applyTranslation = options.applyTranslation ?? true;
     const style = useMemo(() => (applyTranslation ? [{ transform: position.getTranslateTransform() }] : undefined), [applyTranslation, position]);
@@ -36,15 +37,19 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
     return { wrap, dragging: active } as const;
 };
 
-const useReset = (position: Animated.ValueXY, onEnd?: () => void) =>
+const useReset = (position: Animated.ValueXY, hasEnded: MutableRefObject<boolean>, onEnd?: () => void) =>
     useCallback(() => {
-        Animated.spring(position, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start(() => onEnd?.());
-    }, [position, onEnd]);
+        if (hasEnded.current) return;
+        hasEnded.current = true;
+        onEnd?.();
+        Animated.spring(position, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
+    }, [position, onEnd, hasEnded]);
 
 const useLongPress = (
     setActive: (value: boolean) => void,
     onStart: DragCallbacks["onStart"],
     reset: () => void,
+    hasEnded: MutableRefObject<boolean>,
 ) =>
     useMemo(
         () => ({
@@ -52,9 +57,9 @@ const useLongPress = (
             maxDist: Number.MAX_SAFE_INTEGER,
             shouldCancelWhenOutside: false,
             onHandlerStateChange: ({ nativeEvent }: LongPressGestureHandlerStateChangeEvent) =>
-                handleLongPress(nativeEvent.state, setActive, onStart, reset),
+                handleLongPress(nativeEvent.state, setActive, onStart, reset, hasEnded),
         }),
-        [setActive, onStart, reset],
+        [setActive, onStart, reset, hasEnded],
     );
 
 const handleLongPress = (
@@ -62,8 +67,10 @@ const handleLongPress = (
     setActive: (value: boolean) => void,
     onStart: DragCallbacks["onStart"],
     reset: () => void,
+    hasEnded: MutableRefObject<boolean>,
 ) => {
     if (state === State.ACTIVE) {
+        hasEnded.current = false;
         setActive(true);
         onStart?.();
         return;

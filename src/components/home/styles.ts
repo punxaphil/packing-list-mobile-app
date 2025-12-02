@@ -26,7 +26,7 @@ export const homeStyles = StyleSheet.create({
   scroll: { flex: 1 },
   swipeWrapper: { flex: 1 },
   swipeContainer: { flex: 1 },
-  list: { gap: spacing.xs },
+  list: { gap: spacing.xs, paddingTop: spacing.xs },
   listActions: { gap: spacing.sm },
   listActionButton: { alignSelf: "center", paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: homeRadius, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   listActionLabel: { fontSize: 16, fontWeight: "600", color: colors.text },

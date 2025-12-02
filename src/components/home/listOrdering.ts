@@ -163,7 +163,5 @@ export const computeDropIndex = (
     if (draggedIndex < 0) return null;
     const draggedLayout = layouts[snapshot.id];
     if (!draggedLayout) return null;
-    const targetIndex = resolveTargetIndex(orderedIds, draggedIndex, draggedLayout, snapshot.offsetY, layouts);
-    if (targetIndex === draggedIndex) return null;
-    return targetIndex;
+    return resolveTargetIndex(orderedIds, draggedIndex, draggedLayout, snapshot.offsetY, layouts);
 };

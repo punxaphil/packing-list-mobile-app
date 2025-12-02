@@ -16,14 +16,11 @@ export const buildCategoryColors = (categories: NamedEntity[]) => {
 
 const assignColors = (entities: RankedEntity[]) => {
     const colors: Record<string, string> = {};
-    entities.forEach((entity, index) => {
-        const seed = buildSeed(entity, index);
-        colors[entity.id] = createPastel(seed);
+    entities.forEach((entity) => {
+        colors[entity.id] = createPastel(hashId(entity.id));
     });
     return colors;
 };
-
-const buildSeed = (entity: RankedEntity, index: number) => (hashId(entity.id) << 5) ^ ((Math.abs(entity.rank ?? index) << 2) ^ index);
 
 const hashId = (id: string) => {
     let total = 0;

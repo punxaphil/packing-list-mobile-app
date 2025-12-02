@@ -68,8 +68,11 @@ type ScrollProps = {
 };
 
 const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollProps) => {
-  const dropIndex = computeDropIndex(lists.map((l) => l.id), drag.snapshot, drag.layouts);
-  const draggingDown = (drag.snapshot?.offsetY ?? 0) > 0;
+  const listIds = lists.map((l) => l.id);
+  const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
+  const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
+  const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
+  const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   return (
     <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
       <View style={[homeStyles.list, dragStyles.relative]}>
@@ -87,7 +90,7 @@ const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollP
             onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
           />
         ))}
-        <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={draggingDown} />
+        <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
         <DragDebugPanel snapshot={drag.snapshot} layout={drag.snapshot ? drag.layouts[drag.snapshot.id] : undefined} />
       </View>
@@ -145,7 +148,6 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   if (!layout) return null;
   const list = lists.find((entry) => entry.id === drag.id);
   if (!list) return null;
-  console.log("ghost layout", layout);
   return (
     <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height, width: layout.width }]}>
       <ListCardPreview list={list} color={colors[list.id]} />
@@ -176,15 +178,16 @@ const dragStyles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
     elevation: 5,
+    opacity: 0.85,
   },
   indicator: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: "#007AFF",
-    borderRadius: 2,
-    zIndex: 5,
+    left: -12,
+    right: -12,
+    height: 2,
+    backgroundColor: "#000000",
+    borderRadius: 1,
+    zIndex: 15,
   },
   debug: {
     position: "absolute",
