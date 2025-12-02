@@ -86,7 +86,7 @@ export const formatSummary = (list: PackingListSummary) => {
 };
 
 export const ListCardPreview = ({ list, color }: { list: PackingListSummary; color: string }) => (
-  <View style={getCardStyle(false, color)}>
+  <View style={[getCardStyle(false, color), { flex: 1 }]}>
     <View style={homeStyles.listCardInner}>
       <View style={homeStyles.listDragHandle}>
         <Text style={homeStyles.listDragHandleIcon}>{DRAG_HANDLE_ICON}</Text>

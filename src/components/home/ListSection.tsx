@@ -142,8 +142,9 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   if (!layout) return null;
   const list = lists.find((entry) => entry.id === drag.id);
   if (!list) return null;
+  console.log("ghost layout", layout);
   return (
-    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height }]}>
+    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height, width: layout.width }]}>
       <ListCardPreview list={list} color={colors[list.id]} />
     </Animated.View>
   );
@@ -153,8 +154,6 @@ const dragStyles = StyleSheet.create({
   relative: { position: "relative" },
   ghost: {
     position: "absolute",
-    left: 0,
-    right: 0,
     zIndex: 10,
     elevation: 5,
   },
