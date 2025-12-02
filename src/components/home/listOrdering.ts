@@ -153,5 +153,17 @@ const buildRankUpdate = (id: string, index: number, length: number, lists: Packi
 
 const buildRank = (index: number, length: number) => length - index;
 
-const arraysEqual = (a: string[], b: string[]) =>
-    a.length === b.length && a.every((value, index) => value === b[index]);
+export const computeDropIndex = (
+    orderedIds: string[],
+    snapshot: DragSnapshot,
+    layouts: LayoutMap,
+): number | null => {
+    if (!snapshot) return null;
+    const draggedIndex = orderedIds.indexOf(snapshot.id);
+    if (draggedIndex < 0) return null;
+    const draggedLayout = layouts[snapshot.id];
+    if (!draggedLayout) return null;
+    const targetIndex = resolveTargetIndex(orderedIds, draggedIndex, draggedLayout, snapshot.offsetY, layouts);
+    if (targetIndex === draggedIndex) return null;
+    return targetIndex;
+};

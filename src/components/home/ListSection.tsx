@@ -9,7 +9,7 @@ import { buildListColors } from "./listColors.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { DragOffset } from "./useDraggableRow.tsx";
 import { useDragDebug } from "./useDragDebug.ts";
-import { DragSnapshot, useListOrdering } from "./listOrdering.ts";
+import { DragSnapshot, useListOrdering, computeDropIndex } from "./listOrdering.ts";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -68,6 +68,8 @@ type ScrollProps = {
 };
 
 const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollProps) => {
+  const dropIndex = computeDropIndex(lists.map((l) => l.id), drag.snapshot, drag.layouts);
+  const draggingDown = (drag.snapshot?.offsetY ?? 0) > 0;
   return (
     <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
       <View style={[homeStyles.list, dragStyles.relative]}>
@@ -85,6 +87,7 @@ const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollP
             onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
           />
         ))}
+        <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={draggingDown} />
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
         <DragDebugPanel snapshot={drag.snapshot} layout={drag.snapshot ? drag.layouts[drag.snapshot.id] : undefined} />
       </View>
@@ -150,12 +153,38 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   );
 };
 
+type DropIndicatorProps = {
+  dropIndex: number | null;
+  lists: PackingListSummary[];
+  layouts: Record<string, LayoutRectangle>;
+  below: boolean;
+};
+
+const DropIndicator = ({ dropIndex, lists, layouts, below }: DropIndicatorProps) => {
+  if (dropIndex === null) return null;
+  const targetId = lists[dropIndex]?.id;
+  if (!targetId) return null;
+  const layout = layouts[targetId];
+  if (!layout) return null;
+  const top = below ? layout.y + layout.height - 2 : layout.y - 2;
+  return <View style={[dragStyles.indicator, { top }]} />;
+};
+
 const dragStyles = StyleSheet.create({
   relative: { position: "relative" },
   ghost: {
     position: "absolute",
     zIndex: 10,
     elevation: 5,
+  },
+  indicator: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    height: 4,
+    backgroundColor: "#007AFF",
+    borderRadius: 2,
+    zIndex: 5,
   },
   debug: {
     position: "absolute",
