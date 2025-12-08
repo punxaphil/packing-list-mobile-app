@@ -70,4 +70,8 @@ export const homeStyles = StyleSheet.create({
   modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing.sm },
   modalAction: { fontSize: 16, fontWeight: "600", color: colors.muted },
   modalActionPrimary: { color: colors.primary },
+  itemDragHandle: { width: spacing.lg, alignItems: "center", justifyContent: "center" },
+  itemDragHandleIcon: { fontSize: 18, color: colors.muted },
+  itemGhost: { position: "absolute", zIndex: 10, elevation: 5, opacity: 0.85, backgroundColor: colors.surface, borderRadius: homeRadius / 2, left: spacing.xs, right: spacing.xs },
+  itemIndicator: { position: "absolute", left: 0, right: 0, height: 2, backgroundColor: "#000000", borderRadius: 1, zIndex: 15 },
 });

@@ -9,7 +9,8 @@ import { buildListColors } from "./listColors.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { DragOffset } from "./useDraggableRow.tsx";
 import { useDragDebug } from "./useDragDebug.ts";
-import { DragSnapshot, useListOrdering, computeDropIndex } from "./listOrdering.ts";
+import { useListOrdering, computeDropIndex } from "./listOrdering.ts";
+import { useDragState, DragSnapshot } from "./useDragState.ts";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -112,28 +113,6 @@ const useCreateListDialog = (create: (name: string) => Promise<void>) => {
   return { visible, value, setValue, open, close, submit } as const;
 };
 
-const useDragState = () => {
-  const [snapshot, setSnapshot] = useState<DragSnapshot>(null);
-  const [layouts, setLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const recordLayout = useCallback((id: string, layout: LayoutRectangle) => {
-    setLayouts((current) => {
-      const previous = current[id];
-      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
-      return { ...current, [id]: layout };
-    });
-  }, []);
-  const start = useCallback((id: string) => setSnapshot({ id, offsetY: 0 }), []);
-  const move = useCallback((id: string, offset: DragOffset) => {
-    setSnapshot((current) => (current && current.id === id ? { ...current, offsetY: offset.y } : current));
-  }, []);
-  const end = useCallback((onComplete?: (value: DragSnapshot) => void) => {
-    setSnapshot((current) => {
-      if (onComplete) onComplete(current);
-      return null;
-    });
-  }, []);
-  return { snapshot, layouts, recordLayout, start, move, end } as const;
-};
 
 type GhostProps = {
   lists: PackingListSummary[];
