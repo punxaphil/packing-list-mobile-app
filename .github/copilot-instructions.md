@@ -1,15 +1,16 @@
-- Apply Clean Code™️
+- Apply Clean Code™️.
 - Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
 - Prefer direct returns, destructuring, and small helper functions.
 - If a variable adds clarity, name it descriptively and keep its scope minimal.
 - Files should never be longer than 100 lines.
 - Methods should never be longer than 10 lines.
-- Never use `eslint-disable` or `/* eslint-disable */` comments to silence linter errors; instead fix the underlying issue
+- Never use `eslint-disable` or `/* eslint-disable */` comments to silence linter errors; instead fix the underlying issue.
 - No README or documentation needed.
-- No jsdoc. No comments needed. Code explains itself
+- No jsdoc. No comments needed. Code explains itself.
 - Prefer composition to inheritance.
 - Use constants for fixed values instead of magic numbers or strings.
 - Use descriptive variable and function names.
 - Avoid side effects in functions. Write pure functions whenever possible.
-- No unused code. No unused variables, functions, imports, or exports
+- No unused code. No unused variables, functions, imports, or exports.
+- Compile after each change.
