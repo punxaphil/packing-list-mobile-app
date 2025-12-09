@@ -86,7 +86,7 @@ const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollP
             color={colors[list.id]}
             hidden={drag.snapshot?.id === list.id}
             onLayout={(layout: LayoutRectangle) => drag.recordLayout(list.id, layout)}
-            onDragStart={() => drag.start(list.id)}
+            onDragStart={() => drag.start(list.id, "")}
             onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
             onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
           />

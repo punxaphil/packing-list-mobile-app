@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Animated, Dimensions, Pressable, Text, View } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { Animated, Pressable, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
@@ -8,9 +7,6 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsList } from "./ItemsList.tsx";
-
-const CLEAR_DELAY = 120;
-const SWIPE_THRESHOLD = Math.round(Dimensions.get("window").width * 0.5);
 
 export type TextDialogState = {
     visible: boolean;
@@ -41,16 +37,7 @@ type ItemsPanelProps = ItemsSectionProps &
 
 export const ItemsPanel = (props: ItemsPanelProps) => (
     <Animated.View style={[homeStyles.swipeWrapper, props.fade]}>
-        <Swipeable
-            containerStyle={homeStyles.swipeContainer}
-            childrenContainerStyle={homeStyles.swipeContainer}
-            renderLeftActions={LeftAction}
-            leftThreshold={SWIPE_THRESHOLD}
-            overshootLeft={false}
-            onSwipeableLeftOpen={() => scheduleClear(props.selection.clear)}
-        >
-            <PanelCard {...props} />
-        </Swipeable>
+        <PanelCard {...props} />
     </Animated.View>
 );
 
@@ -94,6 +81,3 @@ const QuickAddDialog = ({ dialog }: { dialog: TextDialogState }) => (
 const ItemsListView = ({ categoriesState, itemsState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: ItemsPanelProps) => (
     <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} />
 );
-
-const LeftAction = () => <View style={homeStyles.swipeAction} />;
-const scheduleClear = (clear: () => void) => setTimeout(clear, CLEAR_DELAY);

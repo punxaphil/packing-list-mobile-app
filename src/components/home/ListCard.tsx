@@ -1,4 +1,4 @@
-import { GestureResponderEvent, LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
 import { ListActions } from "./listSectionState.ts";
@@ -27,41 +27,32 @@ export const ListCard = (props: ListCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
   const summary = formatSummary(props.list);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
-  const dragHandle = (
-    <Pressable
-      style={homeStyles.listDragHandle}
-      onPress={stopPropagation}
-      onPressIn={stopPropagation}
-      onPressOut={stopPropagation}
-      accessibilityRole="button"
-      accessibilityLabel={HOME_COPY.dragHandleLabel}
-      hitSlop={8}
-    >
-      <Text style={homeStyles.listDragHandleIcon}>{DRAG_HANDLE_ICON}</Text>
-    </Pressable>
-  );
   return (
     <View onLayout={handleLayout}>
-      {wrap(
-        <Pressable
-          style={[getCardStyle(props.selection.selectedId === props.list.id, props.color), props.hidden ? { opacity: 0 } : null]}
-          onPress={() => props.selection.select(props.list.id)}
-          accessibilityRole="button"
-          accessibilityLabel={props.list.name}
-          accessibilityHint={summary}
-        >
-          <View style={homeStyles.listCardInner}>
-            {dragHandle}
-            <View style={homeStyles.listCardBody}>
-              <ListCardText list={props.list} summary={summary} />
-            </View>
-            <ListDeleteButton onDelete={() => props.actions.onDelete(props.list)} />
+      <Pressable
+        style={[getCardStyle(props.selection.selectedId === props.list.id, props.color), props.hidden ? { opacity: 0 } : null]}
+        onPress={() => props.selection.select(props.list.id)}
+        accessibilityRole="button"
+        accessibilityLabel={props.list.name}
+        accessibilityHint={summary}
+      >
+        <View style={homeStyles.listCardInner}>
+          {wrap(<DragHandle />)}
+          <View style={homeStyles.listCardBody}>
+            <ListCardText list={props.list} summary={summary} />
           </View>
-        </Pressable>,
-      )}
+          <ListDeleteButton onDelete={() => props.actions.onDelete(props.list)} />
+        </View>
+      </Pressable>
     </View>
   );
 };
+
+const DragHandle = () => (
+  <View style={homeStyles.listDragHandle}>
+    <Text style={homeStyles.listDragHandleIcon}>{DRAG_HANDLE_ICON}</Text>
+  </View>
+);
 
 export const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
@@ -100,10 +91,6 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
     </View>
   </View>
 );
-
-const stopPropagation = (event: GestureResponderEvent) => {
-  event.stopPropagation();
-};
 
 const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 

@@ -157,28 +157,30 @@ const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, o
 };
 
 const CategoryItemRow = (props: CategoryItemRowProps) => {
-  const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
+  const { wrap, dragging } = useDraggableRow(
+    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
+    { applyTranslation: false },
+  );
+  const rowStyle = [homeStyles.detailItem, props.hidden ? { opacity: 0 } : null, dragging ? { opacity: 0.5 } : null];
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
-      {wrap(
-        <View style={[homeStyles.detailItem, props.hidden ? { opacity: 0 } : null]}>
-          <DragHandle />
-          <Checkbox value={props.item.checked} onValueChange={() => props.onToggle(props.item)} color={props.item.checked ? homeColors.primary : undefined} style={homeStyles.checkbox} />
-          <EditableText
-            value={props.item.name}
-            onSubmit={(name) => props.onRenameItem(props.item, name)}
-            textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
-            inputStyle={homeStyles.itemInput}
-            autoFocus={props.editing.active(props.item.id)}
-            onStart={() => props.editing.start(props.item.id)}
-            onEnd={() => props.editing.stop(props.item.id)}
-            containerStyle={homeStyles.editable}
-          />
-          <Pressable style={homeStyles.deleteButton} onPress={() => { props.onDeleteItem(props.item.id); props.editing.stop(props.item.id); }} accessibilityRole="button" accessibilityLabel={HOME_COPY.deleteItem}>
-            <Text style={homeStyles.deleteLabel}>×</Text>
-          </Pressable>
-        </View>
-      )}
+      <Pressable style={rowStyle}>
+        {wrap(<DragHandle />)}
+        <Checkbox value={props.item.checked} onValueChange={() => props.onToggle(props.item)} color={props.item.checked ? homeColors.primary : undefined} style={homeStyles.checkbox} />
+        <EditableText
+          value={props.item.name}
+          onSubmit={(name) => props.onRenameItem(props.item, name)}
+          textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
+          inputStyle={homeStyles.itemInput}
+          autoFocus={props.editing.active(props.item.id)}
+          onStart={() => props.editing.start(props.item.id)}
+          onEnd={() => props.editing.stop(props.item.id)}
+          containerStyle={homeStyles.editable}
+        />
+        <Pressable style={homeStyles.deleteButton} onPress={() => { props.onDeleteItem(props.item.id); props.editing.stop(props.item.id); }} accessibilityRole="button" accessibilityLabel={HOME_COPY.deleteItem}>
+          <Text style={homeStyles.deleteLabel}>×</Text>
+        </Pressable>
+      </Pressable>
     </View>
   );
 };
