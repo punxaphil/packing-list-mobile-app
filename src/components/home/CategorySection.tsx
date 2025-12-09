@@ -8,12 +8,14 @@ import { homeColors } from "./theme.ts";
 import { SectionGroup } from "./itemsSectionHelpers.ts";
 import { EditableText } from "./EditableText.tsx";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
-import { useItemOrdering, computeDropIndex } from "./itemOrdering.ts";
+import { computeDropIndex } from "./itemOrdering.ts";
 import { useDraggableRow, DragOffset } from "./useDraggableRow.tsx";
 
 type CategorySectionProps = {
   section: SectionGroup;
   color: string;
+  drag: ReturnType<typeof useDragState>;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -43,7 +45,7 @@ type CategoryItemsProps = CategorySectionProps & {
   items: PackItem[];
   editing: CategoryEditing;
   drag: ReturnType<typeof useDragState>;
-  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
 };
 
 type CategoryItemRowProps = {
@@ -61,13 +63,14 @@ type CategoryItemRowProps = {
 
 export const CategorySection = (props: CategorySectionProps) => {
   const editing = useCategoryEditing();
-  const ordering = useItemOrdering(props.section.items);
-  const drag = useDragState();
   const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
   return (
-    <View style={[homeStyles.category, { backgroundColor: props.color }]}>
+    <View
+      style={[homeStyles.category, { backgroundColor: props.color }]}
+      onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
+    >
       <CategoryHeader {...props} editing={editing} onAdd={onAdd} />
-      <CategoryItems {...props} items={ordering.items} editing={editing} drag={drag} onDrop={ordering.drop} />
+      <CategoryItems {...props} items={props.section.items} editing={editing} drag={props.drag} onDrop={props.onDrop} />
     </View>
   );
 };
@@ -107,13 +110,31 @@ const CategoryCheckbox = ({ items, status, onToggleCategory }: { items: PackItem
   </View>
 );
 
-const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, onDeleteItem }: CategoryItemsProps) => {
+const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, onDeleteItem, section }: CategoryItemsProps) => {
   const itemIds = items.map((i) => i.id);
-  const dropIndex = computeDropIndex(itemIds, drag.snapshot, drag.layouts);
+  const dropIndex = computeDropIndex(itemIds, drag.snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts, section.category.id);
   const originalIndex = drag.snapshot ? itemIds.indexOf(drag.snapshot.id) : -1;
-  const showBelow = dropIndex !== null && dropIndex !== originalIndex && (drag.snapshot?.offsetY ?? 0) > 0;
+
+  let indicatorTargetId: string | null = null;
+  let indicatorBelow = false;
+
+  if (dropIndex !== null) {
+    if (dropIndex === items.length) {
+      if (items.length > 0) {
+        indicatorTargetId = items[items.length - 1].id;
+        indicatorBelow = true;
+      }
+    } else {
+      indicatorTargetId = items[dropIndex]?.id ?? null;
+      indicatorBelow = false;
+    }
+  }
+
   return (
-    <View style={[homeStyles.categoryBody, { position: "relative" }]}>
+    <View
+      style={[homeStyles.categoryBody, { position: "relative" }]}
+      onLayout={(e) => drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)}
+    >
       {items.map((item) => (
         <CategoryItemRow
           key={item.id}
@@ -121,15 +142,15 @@ const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, o
           editing={editing}
           hidden={drag.snapshot?.id === item.id}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
-          onDragStart={() => drag.start(item.id)}
+          onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
-          onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
+          onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
           onToggle={onToggle}
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
         />
       ))}
-      <DropIndicator dropIndex={dropIndex} items={items} layouts={drag.layouts} below={showBelow} />
+      <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
       <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} />
     </View>
   );
@@ -185,9 +206,7 @@ const GhostRow = ({ items, drag, layouts }: { items: PackItem[]; drag: DragSnaps
   );
 };
 
-const DropIndicator = ({ dropIndex, items, layouts, below }: { dropIndex: number | null; items: PackItem[]; layouts: Record<string, LayoutRectangle>; below: boolean }) => {
-  if (dropIndex === null) return null;
-  const targetId = items[dropIndex]?.id;
+const DropIndicator = ({ targetId, layouts, below }: { targetId: string | null; layouts: Record<string, LayoutRectangle>; below: boolean }) => {
   if (!targetId) return null;
   const layout = layouts[targetId];
   if (!layout) return null;

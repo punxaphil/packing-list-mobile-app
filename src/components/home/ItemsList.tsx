@@ -1,10 +1,12 @@
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, LayoutRectangle, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { buildSections, SectionGroup } from "./itemsSectionHelpers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { buildCategoryColors } from "./listColors.ts";
+import { useDragState, DragSnapshot } from "./useDragState.ts";
+import { useItemOrdering } from "./itemOrdering.ts";
 
 type ItemsListProps = {
   loading: boolean;
@@ -23,6 +25,8 @@ type RenderItemsProps = {
   sections: SectionGroup[];
   hasItems: boolean;
   colors: Record<string, string>;
+  drag: ReturnType<typeof useDragState>;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -33,12 +37,16 @@ type RenderItemsProps = {
 
 export const ItemsList = (props: ItemsListProps) => {
   if (props.loading) return <ItemsLoader />;
-  const sections = buildSections(props.items, props.categories).filter((section) => section.items.length);
+  const drag = useDragState();
+  const ordering = useItemOrdering(props.items);
+  const sections = buildSections(ordering.items, props.categories).filter((section) => section.items.length);
   const colors = buildCategoryColors(sections.map((section) => section.category));
   return renderItems({
     sections,
     hasItems: props.hasItems,
     colors,
+    drag,
+    onDrop: ordering.drop,
     onToggle: props.onToggle,
     onRenameItem: props.onRenameItem,
     onDeleteItem: props.onDeleteItem,
@@ -48,7 +56,7 @@ export const ItemsList = (props: ItemsListProps) => {
   });
 };
 
-const renderItems = ({ sections, hasItems, colors, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
   <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -57,6 +65,8 @@ const renderItems = ({ sections, hasItems, colors, onToggle, onRenameItem, onDel
           key={section.category.id || `uncategorized-${index}`}
           section={section}
           color={section.category.color ?? colors[section.category.id]}
+          drag={drag}
+          onDrop={onDrop}
           onToggle={onToggle}
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
