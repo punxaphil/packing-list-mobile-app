@@ -1,7 +1,7 @@
 # Mobile App - Missing Features
 
 - [x] Profile Page
-- [ ] Image Upload
+- [x] Image Upload
 - [ ] Categories Page
 - [ ] Members CRUD
 - [ ] Assign Members to Items

@@ -57,7 +57,7 @@ function buildView(params: ViewParams) {
   if (params.loggingIn) return <LoadingView />;
   if (!params.userId) return <Login />;
   if (params.screen === "profile") {
-    return <ProfileScreen email={params.email} onSignOut={signOut} onBack={() => params.onNavigate("home")} />;
+    return <ProfileScreen email={params.email} userId={params.userId} onSignOut={signOut} onBack={() => params.onNavigate("home")} />;
   }
   return <HomeScreen email={params.email} lists={params.lists} loading={params.loading} hasLists={params.hasLists} userId={params.userId} onSignOut={signOut} onProfile={() => params.onNavigate("profile")} />;
 }
