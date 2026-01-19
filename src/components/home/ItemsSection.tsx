@@ -5,9 +5,9 @@ import { PackItem } from "~/types/PackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
 import { HOME_COPY } from "./styles.ts";
 import { writeDb } from "~/services/database.ts";
-import { getNextItemRank } from "./itemsSectionHelpers.ts";
+import { getNextItemRank, getNextCategoryRank } from "./itemsSectionHelpers.ts";
 import { animateLayout } from "./layoutAnimation.ts";
-import { ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
+import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialogState } from "./ItemsPanel.tsx";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 const FADE_DURATION = 1000;
 
@@ -27,11 +27,11 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const fade = useSelectionFade(props.selection.selectedId);
   const list = props.selection.selectedList;
   const renameList = useListRenamer();
-  const quickAddDialog = useQuickAddDialog(props.itemsState.items, list, props.selection.selectedList?.id);
+  const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, props.selection.selectedList?.id);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const renameDialog = useRenameDialog(list, renameList);
-  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} quickAddDialog={quickAddDialog} fade={fade} />;
+  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} fade={fade} />;
 };
 
 const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
@@ -77,19 +77,20 @@ const useRenameDialog = (list: NamedEntity, rename: (target: NamedEntity, name: 
   return { visible, value, setValue, open, close, submit };
 };
 
-const useQuickAddDialog = (items: PackItem[], list: NamedEntity | null, listId?: string | null): TextDialogState => {
+const useAddItemDialog = (items: PackItem[], categories: NamedEntity[], listId?: string | null): AddItemDialogState => {
   const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState("");
-  useEffect(() => setValue(""), [list?.id]);
-  const open = useCallback(() => { setValue(""); setVisible(true); }, []);
-  const close = useCallback(() => { setVisible(false); setValue(""); }, []);
-  const submit = useCallback(() => {
-    const trimmed = value.trim();
-    const target = listId ?? list?.id;
-    if (!trimmed || !target) return close();
+  const open = useCallback(() => setVisible(true), []);
+  const close = useCallback(() => setVisible(false), []);
+  const submit = useCallback(async (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => {
+    if (!listId) return close();
     animateLayout();
-    void writeDb.addPackItem(trimmed, [], UNCATEGORIZED.id, target, getNextItemRank(items));
+    let categoryId = category?.id ?? UNCATEGORIZED.id;
+    if (newCategoryName) {
+      const newCategory = await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories));
+      categoryId = newCategory.id;
+    }
+    void writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
     close();
-  }, [value, items, listId, list?.id, close]);
-  return { visible, value, setValue, open, close, submit };
+  }, [items, categories, listId, close]);
+  return { visible, open, close, submit };
 };

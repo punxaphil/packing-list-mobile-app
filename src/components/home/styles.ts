@@ -66,6 +66,7 @@ export const homeStyles = StyleSheet.create({
   modalBackdrop: { flex: 1, backgroundColor: "rgba(17,24,39,0.4)", justifyContent: "center", alignItems: "center", padding: spacing.lg },
   modalCard: { width: "100%", maxWidth, backgroundColor: colors.surface, borderRadius: homeRadius, padding: spacing.lg, gap: spacing.md },
   modalTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
+  modalLabel: { fontSize: 14, fontWeight: "500", color: colors.muted },
   modalInput: { borderWidth: 1, borderColor: colors.border, borderRadius: homeRadius / 2, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, fontSize: 16, color: colors.text },
   modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing.sm },
   modalAction: { fontSize: 16, fontWeight: "600", color: colors.muted },

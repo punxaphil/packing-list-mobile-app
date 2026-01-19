@@ -62,3 +62,6 @@ export const buildSections = (
 
 export const getNextItemRank = (items: Pick<PackItem, "rank">[]) =>
   Math.max(...items.map((item) => item.rank).filter((rank) => Number.isFinite(rank)), 0) + 1;
+
+export const getNextCategoryRank = (categories: Pick<NamedEntity, "rank">[]) =>
+  Math.max(...categories.map((c) => c.rank ?? 0).filter((rank) => Number.isFinite(rank)), 0) + 1;

@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -10,8 +10,11 @@ import { HomeScreen } from "./components/home/HomeScreen.tsx";
 import { HOME_COPY, homeStyles } from "./components/home/styles.ts";
 import { usePackingLists } from "./hooks/usePackingLists.ts";
 import { NamedEntity } from "./types/NamedEntity.ts";
+import { APP_VERSION } from "./version.ts";
 
 const PRIMARY_COLOR = "#2563eb";
+const versionStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
+const VersionFooter = () => <View style={versionStyles.footer}><Text style={versionStyles.text}>v{APP_VERSION}</Text></View>;
 
 const Layout = ({ children }: PropsWithChildren) => (
   <GestureHandlerRootView style={homeStyles.container}>
@@ -19,6 +22,7 @@ const Layout = ({ children }: PropsWithChildren) => (
       <SafeAreaView edges={["top", "bottom"]} style={homeStyles.container}>
         <StatusBar style="auto" />
         <View style={homeStyles.content}>{children}</View>
+        <VersionFooter />
       </SafeAreaView>
     </SafeAreaProvider>
   </GestureHandlerRootView>

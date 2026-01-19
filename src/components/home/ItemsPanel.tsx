@@ -7,6 +7,7 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsList } from "./ItemsList.tsx";
+import { AddItemDialog } from "./AddItemDialog.tsx";
 
 export type TextDialogState = {
     visible: boolean;
@@ -15,6 +16,13 @@ export type TextDialogState = {
     open: () => void;
     close: () => void;
     submit: () => void;
+};
+
+export type AddItemDialogState = {
+    visible: boolean;
+    open: () => void;
+    close: () => void;
+    submit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
 };
 
 export type ListHandlers = {
@@ -31,7 +39,7 @@ type ItemsPanelProps = ItemsSectionProps &
         list: NamedEntity;
         displayName: string;
         renameDialog: TextDialogState;
-        quickAddDialog: TextDialogState;
+        addItemDialog: AddItemDialogState;
         fade: { opacity: Animated.Value };
     };
 
@@ -44,9 +52,9 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
     <View style={homeStyles.panel}>
         <HeaderRow {...props} />
-        <QuickAddRow dialog={props.quickAddDialog} />
+        <QuickAddRow dialog={props.addItemDialog} />
         <RenameDialog dialog={props.renameDialog} />
-        <QuickAddDialog dialog={props.quickAddDialog} />
+        <AddItemDialogView {...props} />
         <ItemsListView {...props} />
     </View>
 );
@@ -55,7 +63,7 @@ const HeaderRow = ({ displayName, email, onSignOut, selection, renameDialog }: I
     <HomeHeader title={displayName} email={email} onSignOut={onSignOut} onBack={selection.clear} onPressTitle={renameDialog.open} />
 );
 
-const QuickAddRow = ({ dialog }: { dialog: TextDialogState }) => (
+const QuickAddRow = ({ dialog }: { dialog: AddItemDialogState }) => (
     <Pressable style={homeStyles.quickAdd} onPress={dialog.open} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItemQuick} hitSlop={8}>
         <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
     </Pressable>
@@ -65,16 +73,12 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
     <TextPromptDialog visible={dialog.visible} title={HOME_COPY.renameListPrompt} confirmLabel={HOME_COPY.renameListConfirm} value={dialog.value} onChange={dialog.setValue} onCancel={dialog.close} onSubmit={dialog.submit} />
 );
 
-const QuickAddDialog = ({ dialog }: { dialog: TextDialogState }) => (
-    <TextPromptDialog
-        visible={dialog.visible}
-        title={HOME_COPY.addItemPrompt}
-        confirmLabel={HOME_COPY.addItemConfirm}
-        value={dialog.value}
-        placeholder={HOME_COPY.addItemPlaceholder}
-        onChange={dialog.setValue}
-        onCancel={dialog.close}
-        onSubmit={dialog.submit}
+const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) => (
+    <AddItemDialog
+        visible={addItemDialog.visible}
+        categories={categoriesState.categories}
+        onCancel={addItemDialog.close}
+        onSubmit={addItemDialog.submit}
     />
 );
 

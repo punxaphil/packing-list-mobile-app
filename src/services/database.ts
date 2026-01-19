@@ -252,9 +252,9 @@ export const writeDb = {
   updateMembers: async (toUpdate: NamedEntity[] | NamedEntity) => {
     await updateNamedEntities(MEMBERS_KEY, toUpdate);
   },
-  addCategory: async (name: string): Promise<string> => {
-    const docRef = await add(CATEGORIES_KEY, { name });
-    return docRef.id;
+  addCategory: async (name: string, rank = 0): Promise<NamedEntity> => {
+    const docRef = await add(CATEGORIES_KEY, { name, rank });
+    return { id: docRef.id, name, rank };
   },
   updateCategories: async (categories: NamedEntity[] | NamedEntity) => {
     await updateNamedEntities(CATEGORIES_KEY, categories);

@@ -14,3 +14,4 @@
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
 - Compile after each change.
+- After making any code change, increment the patch version in `src/version.ts` (e.g., 0.0.1 → 0.0.2).
