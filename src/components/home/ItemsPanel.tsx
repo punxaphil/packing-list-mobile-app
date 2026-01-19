@@ -59,8 +59,8 @@ const PanelCard = (props: ItemsPanelProps) => (
     </View>
 );
 
-const HeaderRow = ({ displayName, email, onSignOut, selection, renameDialog }: ItemsPanelProps) => (
-    <HomeHeader title={displayName} email={email} onSignOut={onSignOut} onBack={selection.clear} onPressTitle={renameDialog.open} />
+const HeaderRow = ({ displayName, email, onSignOut, selection, renameDialog, onProfile }: ItemsPanelProps) => (
+    <HomeHeader title={displayName} email={email} onSignOut={onSignOut} onBack={selection.clear} onPressTitle={renameDialog.open} onProfile={onProfile} />
 );
 
 const QuickAddRow = ({ dialog }: { dialog: AddItemDialogState }) => (

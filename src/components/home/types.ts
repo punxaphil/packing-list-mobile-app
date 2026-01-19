@@ -13,6 +13,7 @@ export type HomeScreenProps = {
   hasLists: boolean;
   userId: string;
   onSignOut: () => void;
+  onProfile: () => void;
 };
 
 export type SelectionState = {
@@ -42,6 +43,7 @@ export type HomeLayoutProps = {
   categoriesState: CategoriesState;
   itemsState: ItemsState;
   onSignOut: () => void;
+  onProfile: () => void;
 };
 
 export type ItemsSectionProps = {
@@ -50,4 +52,5 @@ export type ItemsSectionProps = {
   itemsState: ItemsState;
   email: string;
   onSignOut: () => void;
+  onProfile: () => void;
 };

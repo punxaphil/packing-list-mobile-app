@@ -25,6 +25,7 @@ const renderItems = (props: HomeLayoutProps) => (
     itemsState={props.itemsState}
     email={props.email}
     onSignOut={props.onSignOut}
+    onProfile={props.onProfile}
   />
 );
 
@@ -34,5 +35,6 @@ const renderLists = (props: HomeLayoutProps) => (
     selection={props.selection}
     email={props.email}
     onSignOut={props.onSignOut}
+    onProfile={props.onProfile}
   />
 );

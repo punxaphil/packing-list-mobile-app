@@ -18,7 +18,7 @@ const useLayoutProps = (props: HomeScreenProps) => {
   const selection = useSelectedList(lists, props.hasLists);
   const categoriesState = useCategories(props.userId);
   const itemsState = usePackingItems(props.userId, selection.selectedId);
-  return { email: props.email, hasLists: props.hasLists, lists, selection, categoriesState, itemsState, onSignOut: props.onSignOut };
+  return { email: props.email, hasLists: props.hasLists, lists, selection, categoriesState, itemsState, onSignOut: props.onSignOut, onProfile: props.onProfile };
 };
 
 const mergeListCounts = (lists: PackingListSummary[], counts: PackItemCountRecord) =>

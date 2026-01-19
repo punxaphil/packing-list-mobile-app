@@ -1,5 +1,4 @@
 import { Pressable, Text, View } from "react-native";
-import { confirmSignOut } from "./SignOutButton.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type HeaderProps = {
@@ -8,6 +7,7 @@ type HeaderProps = {
   onSignOut: () => void;
   onBack?: () => void;
   onPressTitle?: () => void;
+  onProfile?: () => void;
 };
 
 const BackButton = ({ onBack }: { onBack?: () => void }) =>
@@ -24,10 +24,10 @@ const BackButton = ({ onBack }: { onBack?: () => void }) =>
     <View style={homeStyles.backPlaceholder} />
   );
 
-const AvatarButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
+const AvatarButton = ({ email, onProfile }: { email: string; onProfile?: () => void }) => (
   <Pressable
     style={homeStyles.avatar}
-    onPress={() => confirmSignOut(email, onSignOut)}
+    onPress={onProfile}
     accessibilityRole="button"
     hitSlop={8}
   >
@@ -55,10 +55,10 @@ const Title = ({ title, onPress }: { title: string; onPress?: () => void }) => (
   )
 );
 
-export const HomeHeader = ({ title, email, onSignOut, onBack, onPressTitle }: HeaderProps) => (
+export const HomeHeader = ({ title, email, onBack, onPressTitle, onProfile }: HeaderProps) => (
   <View style={homeStyles.panelHeader}>
     <BackButton onBack={onBack} />
     <Title title={title} onPress={onPressTitle} />
-    <AvatarButton email={email} onSignOut={onSignOut} />
+    <AvatarButton email={email} onProfile={onProfile} />
   </View>
 );
