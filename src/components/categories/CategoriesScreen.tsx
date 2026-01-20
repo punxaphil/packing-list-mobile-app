@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { LayoutRectangle, Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
+import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
@@ -18,6 +19,7 @@ type CategoriesScreenProps = {
 
 export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
   const { categories } = useCategories(userId);
+  const itemCounts = useCategoryItemCounts();
   const actions = useCategoryActions(categories);
   const creation = useCreateCategoryDialog(actions.onAdd);
   const drag = useDragState();
@@ -30,7 +32,7 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
       <View style={categoryStyles.panel}>
         <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
         <CategoryHeader onAdd={creation.open} sortByAlpha={sortByAlpha} onToggleSort={() => setSortByAlpha(!sortByAlpha)} />
-        <CategoryScroll categories={sortedCategories} actions={actions} drag={drag} onDrop={ordering.drop} dragEnabled={!sortByAlpha} />
+        <CategoryScroll categories={sortedCategories} actions={actions} drag={drag} onDrop={ordering.drop} dragEnabled={!sortByAlpha} itemCounts={itemCounts} />
         <TextPromptDialog
           visible={creation.visible}
           title={CATEGORY_COPY.createPrompt}

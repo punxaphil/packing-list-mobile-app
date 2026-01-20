@@ -30,6 +30,7 @@ export const categoryStyles = StyleSheet.create({
   cardInner: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm },
   cardBody: { flex: 1 },
   cardName: { fontSize: 16, fontWeight: "600", color: homeColors.text },
+  itemCount: { fontSize: 14, color: homeColors.muted, marginRight: homeSpacing.xs },
   dragHandle: { paddingVertical: homeSpacing.xs, paddingHorizontal: homeSpacing.xs, alignItems: "center", justifyContent: "center" },
   dragHandleIcon: { fontSize: 20, color: homeColors.muted },
   dragHandleDisabled: { color: "#d3d3d3" },

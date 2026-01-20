@@ -13,9 +13,10 @@ type CategoryScrollProps = {
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   dragEnabled?: boolean;
+  itemCounts: Record<string, number>;
 };
 
-export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled = true }: CategoryScrollProps) => {
+export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled = true, itemCounts }: CategoryScrollProps) => {
   const categoryIds = categories.map((c) => c.id);
   const dropIndex = dragEnabled ? computeCategoryDropIndex(categoryIds, drag.snapshot, drag.layouts) : null;
   const originalIndex = drag.snapshot ? categoryIds.indexOf(drag.snapshot.id) : -1;
@@ -32,6 +33,7 @@ export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled 
             actions={actions}
             hidden={drag.snapshot?.id === category.id}
             dragEnabled={dragEnabled}
+            itemCount={itemCounts[category.id] ?? 0}
             onLayout={(layout: LayoutRectangle) => drag.recordLayout(category.id, layout)}
             onDragStart={dragEnabled ? () => drag.start(category.id, "") : undefined}
             onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(category.id, offset) : undefined}

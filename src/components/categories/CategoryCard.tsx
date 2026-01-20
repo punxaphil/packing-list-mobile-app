@@ -12,6 +12,7 @@ type CategoryCardProps = {
   actions: CategoryActions;
   hidden?: boolean;
   dragEnabled?: boolean;
+  itemCount: number;
   onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
@@ -30,6 +31,7 @@ export const CategoryCard = (props: CategoryCardProps) => {
           <View style={categoryStyles.cardBody}>
             <EditableText value={props.category.name} onSubmit={handleRename} textStyle={categoryStyles.cardName} />
           </View>
+          <Text style={categoryStyles.itemCount}>{props.itemCount}</Text>
           <DeleteButton onDelete={() => props.actions.onDelete(props.category)} />
         </View>
       </Pressable>
