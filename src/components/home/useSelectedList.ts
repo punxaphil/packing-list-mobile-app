@@ -1,17 +1,37 @@
-import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PackingListSummary, SelectionState } from "./types.ts";
 
-const EMPTY_LIST: PackingListSummary[] = [];
+const STORAGE_KEY = "selectedListId";
 
-const filterSelection = (lists: PackingListSummary[], id: string, hasLists: boolean) => (!hasLists ? "" : lists.some((item) => item.id === id) ? id : "");
-
-export function useSelectedList(
-  lists: PackingListSummary[] | undefined,
-  hasLists: boolean,
-): SelectionState {
-  const safeLists = lists ?? EMPTY_LIST;
+export function useSelectedList(lists: PackingListSummary[] | undefined, hasLists: boolean): SelectionState {
+  const safeLists = lists ?? [];
   const [selectedId, setSelectedId] = useState("");
-  useEffect(() => setSelectedId((value) => filterSelection(safeLists, value, hasLists)), [safeLists, hasLists]);
-  const selectedList = safeLists.find((item) => item.id === selectedId) ?? null;
-  return { selectedId, selectedList, hasSelection: selectedId.length > 0, select: setSelectedId, clear: () => setSelectedId("") };
+  const didInit = useRef(false);
+
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+    AsyncStorage.getItem(STORAGE_KEY).then((id) => {
+      if (id) setSelectedId(id);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (safeLists.length === 0) return;
+    if (selectedId === "") return;
+    const valid = safeLists.some((l) => l.id === selectedId);
+    if (!valid) setSelectedId(safeLists[0].id);
+  }, [safeLists, selectedId]);
+
+  const select = useCallback((id: string) => {
+    setSelectedId(id);
+    AsyncStorage.setItem(STORAGE_KEY, id);
+  }, []);
+
+  const clear = useCallback(() => select(""), [select]);
+
+  const selectedList = safeLists.find((l) => l.id === selectedId) ?? null;
+
+  return { selectedId, selectedList, hasSelection: !!selectedId, select, clear };
 }
