@@ -11,6 +11,7 @@ type CategoryCardProps = {
   category: NamedEntity;
   actions: CategoryActions;
   hidden?: boolean;
+  dragEnabled?: boolean;
   onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
@@ -25,7 +26,7 @@ export const CategoryCard = (props: CategoryCardProps) => {
     <View onLayout={handleLayout}>
       <Pressable style={[categoryStyles.card, props.hidden ? { opacity: 0 } : null]} accessibilityRole="button" accessibilityLabel={props.category.name}>
         <View style={categoryStyles.cardInner}>
-          {wrap(<DragHandle />)}
+          {wrap(<DragHandle disabled={!props.dragEnabled} />)}
           <View style={categoryStyles.cardBody}>
             <EditableText value={props.category.name} onSubmit={handleRename} textStyle={categoryStyles.cardName} />
           </View>
@@ -36,9 +37,9 @@ export const CategoryCard = (props: CategoryCardProps) => {
   );
 };
 
-const DragHandle = () => (
+const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   <View style={categoryStyles.dragHandle}>
-    <Text style={categoryStyles.dragHandleIcon}>{DRAG_HANDLE_ICON}</Text>
+    <Text style={[categoryStyles.dragHandleIcon, disabled && categoryStyles.dragHandleDisabled]}>{DRAG_HANDLE_ICON}</Text>
   </View>
 );
 

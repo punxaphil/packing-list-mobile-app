@@ -12,11 +12,12 @@ type CategoryScrollProps = {
   actions: CategoryActions;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
+  dragEnabled?: boolean;
 };
 
-export const CategoryScroll = ({ categories, actions, drag, onDrop }: CategoryScrollProps) => {
+export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled = true }: CategoryScrollProps) => {
   const categoryIds = categories.map((c) => c.id);
-  const dropIndex = computeCategoryDropIndex(categoryIds, drag.snapshot, drag.layouts);
+  const dropIndex = dragEnabled ? computeCategoryDropIndex(categoryIds, drag.snapshot, drag.layouts) : null;
   const originalIndex = drag.snapshot ? categoryIds.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
@@ -30,14 +31,15 @@ export const CategoryScroll = ({ categories, actions, drag, onDrop }: CategorySc
             category={category}
             actions={actions}
             hidden={drag.snapshot?.id === category.id}
+            dragEnabled={dragEnabled}
             onLayout={(layout: LayoutRectangle) => drag.recordLayout(category.id, layout)}
-            onDragStart={() => drag.start(category.id, "")}
-            onDragMove={(offset: DragOffset) => drag.move(category.id, offset)}
-            onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
+            onDragStart={dragEnabled ? () => drag.start(category.id, "") : undefined}
+            onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(category.id, offset) : undefined}
+            onDragEnd={dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts)) : undefined}
           />
         ))}
-        <DropIndicator dropIndex={dropIndex} categories={categories} layouts={drag.layouts} below={showBelow} />
-        <GhostRow categories={categories} drag={drag.snapshot} layouts={drag.layouts} />
+        {dragEnabled && <DropIndicator dropIndex={dropIndex} categories={categories} layouts={drag.layouts} below={showBelow} />}
+        {dragEnabled && <GhostRow categories={categories} drag={drag.snapshot} layouts={drag.layouts} />}
       </View>
     </ScrollView>
   );

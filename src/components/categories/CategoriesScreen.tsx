@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
-import { LayoutRectangle, Pressable, Text, View } from "react-native";
+import { LayoutRectangle, Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
+import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { useDragState } from "../home/useDragState.ts";
 import { useCategoryOrdering } from "./categoryOrdering";
@@ -21,13 +22,15 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   const creation = useCreateCategoryDialog(actions.onAdd);
   const drag = useDragState();
   const ordering = useCategoryOrdering(categories);
+  const [sortByAlpha, setSortByAlpha] = useState(false);
+  const sortedCategories = sortByAlpha ? [...ordering.categories].sort((a, b) => a.name.localeCompare(b.name)) : ordering.categories;
 
   return (
     <View style={categoryStyles.container}>
       <View style={categoryStyles.panel}>
         <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
-        <CategoryHeader onAdd={creation.open} />
-        <CategoryScroll categories={ordering.categories} actions={actions} drag={drag} onDrop={ordering.drop} />
+        <CategoryHeader onAdd={creation.open} sortByAlpha={sortByAlpha} onToggleSort={() => setSortByAlpha(!sortByAlpha)} />
+        <CategoryScroll categories={sortedCategories} actions={actions} drag={drag} onDrop={ordering.drop} dragEnabled={!sortByAlpha} />
         <TextPromptDialog
           visible={creation.visible}
           title={CATEGORY_COPY.createPrompt}
@@ -43,8 +46,15 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   );
 };
 
-const CategoryHeader = ({ onAdd }: { onAdd: () => void }) => (
+type CategoryHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort: () => void };
+
+const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={categoryStyles.actions}>
+    <View style={categoryStyles.sortToggle}>
+      <Text style={categoryStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+      <Switch value={sortByAlpha} onValueChange={onToggleSort} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
+    </View>
+    <View style={categoryStyles.spacer} />
     <Pressable style={categoryStyles.actionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.createCategory}>
       <Text style={categoryStyles.actionLabel}>{CATEGORY_COPY.createCategory}</Text>
     </Pressable>
