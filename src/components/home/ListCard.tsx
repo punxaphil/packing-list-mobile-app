@@ -1,6 +1,6 @@
 import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { HOME_COPY, homeStyles } from "./styles.ts";
-import { PackingListSummary, SelectionState } from "./types.ts";
+import { PackingListSummary } from "./types.ts";
 import { ListActions } from "./listSectionState.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
 
@@ -8,7 +8,7 @@ const DRAG_HANDLE_ICON = "≡";
 
 type ListCardProps = {
   list: PackingListSummary;
-  selection: SelectionState;
+  isSelected: boolean;
   actions: ListActions;
   color: string;
   hidden?: boolean;
@@ -16,6 +16,7 @@ type ListCardProps = {
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
   onDragEnd?: () => void;
+  onSelect: (id: string) => void;
 };
 
 export type ListCardTextProps = {
@@ -30,8 +31,8 @@ export const ListCard = (props: ListCardProps) => {
   return (
     <View onLayout={handleLayout}>
       <Pressable
-        style={[getCardStyle(props.selection.selectedId === props.list.id, props.color), props.hidden ? { opacity: 0 } : null]}
-        onPress={() => props.selection.select(props.list.id)}
+        style={[getCardStyle(props.isSelected, props.color), props.hidden ? { opacity: 0 } : null]}
+        onPress={() => props.onSelect(props.list.id)}
         accessibilityRole="button"
         accessibilityLabel={props.list.name}
         accessibilityHint={summary}

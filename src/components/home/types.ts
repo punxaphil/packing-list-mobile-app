@@ -6,15 +6,6 @@ export type PackingListSummary = NamedEntity & {
   packedCount?: number;
 };
 
-export type HomeScreenProps = {
-  email: string;
-  lists: PackingListSummary[];
-  loading: boolean;
-  hasLists: boolean;
-  userId: string;
-  onProfile: () => void;
-};
-
 export type SelectionState = {
   selectedId: string;
   selectedList: NamedEntity | null;
@@ -32,16 +23,6 @@ export type ItemsState = {
 export type CategoriesState = {
   categories: NamedEntity[];
   loading: boolean;
-};
-
-export type HomeLayoutProps = {
-  email: string;
-  hasLists: boolean;
-  lists: PackingListSummary[];
-  selection: SelectionState;
-  categoriesState: CategoriesState;
-  itemsState: ItemsState;
-  onProfile: () => void;
 };
 
 export type ItemsSectionProps = {

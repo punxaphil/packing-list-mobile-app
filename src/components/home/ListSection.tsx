@@ -16,6 +16,7 @@ type ListSectionProps = {
   selection: SelectionState;
   email: string;
   onProfile: () => void;
+  onListSelect: (id: string) => void;
 };
 export const ListSection = (props: ListSectionProps) => {
   const actions = useListActions(props.lists, props.selection);
@@ -29,11 +30,12 @@ export const ListSection = (props: ListSectionProps) => {
       <ListHeader onAdd={creation.open} />
       <ListScroll
         lists={ordering.lists}
-        selection={props.selection}
+        selectedId={props.selection.selectedId}
         actions={actions}
         colors={colors}
         drag={drag}
         onDrop={ordering.drop}
+        onListSelect={props.onListSelect}
       />
       <TextPromptDialog
         visible={creation.visible}
@@ -59,14 +61,15 @@ const ListHeader = ({ onAdd }: { onAdd: () => void }) => (
 
 type ScrollProps = {
   lists: PackingListSummary[];
-  selection: SelectionState;
+  selectedId: string;
   actions: ListActions;
   colors: Record<string, string>;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
+  onListSelect: (id: string) => void;
 };
 
-const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollProps) => {
+const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSelect }: ScrollProps) => {
   const listIds = lists.map((l) => l.id);
   const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
@@ -79,7 +82,7 @@ const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollP
           <ListCard
             key={list.id}
             list={list}
-            selection={selection}
+            isSelected={selectedId === list.id}
             actions={actions}
             color={colors[list.id]}
             hidden={drag.snapshot?.id === list.id}
@@ -87,6 +90,7 @@ const ListScroll = ({ lists, selection, actions, colors, drag, onDrop }: ScrollP
             onDragStart={() => drag.start(list.id, "")}
             onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
             onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
+            onSelect={onListSelect}
           />
         ))}
         <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />
