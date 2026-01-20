@@ -4,7 +4,6 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 type HeaderProps = {
   title: string;
   email: string;
-  onSignOut: () => void;
   onBack?: () => void;
   onPressTitle?: () => void;
   onProfile?: () => void;

@@ -6,14 +6,17 @@ import { StatusBar } from "expo-status-bar";
 import { getAuth } from "firebase/auth";
 import "./services/database.ts";
 import { Login, useCurrentUser } from "./components/auth/Auth.tsx";
+import { CategoriesScreen } from "./components/categories/CategoriesScreen.tsx";
 import { HomeScreen } from "./components/home/HomeScreen.tsx";
 import { HOME_COPY, homeStyles } from "./components/home/styles.ts";
+import { MembersScreen } from "./components/members/MembersScreen.tsx";
+import { FooterNav, Tab } from "./components/navigation/FooterNav.tsx";
 import { ProfileScreen } from "./components/profile/ProfileScreen.tsx";
 import { usePackingLists } from "./hooks/usePackingLists.ts";
 import { NamedEntity } from "./types/NamedEntity.ts";
 import { APP_VERSION } from "./version.ts";
 
-type Screen = "home" | "profile";
+type Screen = "main" | "profile";
 
 const PRIMARY_COLOR = "#2563eb";
 const versionStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
@@ -42,6 +45,36 @@ const withLayout = (node: React.ReactNode) => <Layout>{node}</Layout>;
 
 const signOut = () => getAuth().signOut().catch(console.error);
 
+type MainScreenProps = {
+  userId: string;
+  email: string;
+  lists: NamedEntity[];
+  loading: boolean;
+  hasLists: boolean;
+  onProfile: () => void;
+};
+
+const MainScreen = ({ userId, email, lists, loading, hasLists, onProfile }: MainScreenProps) => {
+  const [tab, setTab] = useState<Tab>("home");
+
+  const renderTab = () => {
+    if (tab === "home") {
+      return <HomeScreen email={email} lists={lists} loading={loading} hasLists={hasLists} userId={userId} onProfile={onProfile} />;
+    }
+    if (tab === "categories") {
+      return <CategoriesScreen userId={userId} email={email} onProfile={onProfile} />;
+    }
+    return <MembersScreen userId={userId} email={email} onProfile={onProfile} />;
+  };
+
+  return (
+    <View style={homeStyles.container}>
+      {renderTab()}
+      <FooterNav active={tab} onSelect={setTab} />
+    </View>
+  );
+};
+
 type ViewParams = {
   loggingIn: boolean;
   userId: string;
@@ -57,15 +90,15 @@ function buildView(params: ViewParams) {
   if (params.loggingIn) return <LoadingView />;
   if (!params.userId) return <Login />;
   if (params.screen === "profile") {
-    return <ProfileScreen email={params.email} userId={params.userId} onSignOut={signOut} onBack={() => params.onNavigate("home")} />;
+    return <ProfileScreen email={params.email} userId={params.userId} onSignOut={signOut} onBack={() => params.onNavigate("main")} />;
   }
-  return <HomeScreen email={params.email} lists={params.lists} loading={params.loading} hasLists={params.hasLists} userId={params.userId} onSignOut={signOut} onProfile={() => params.onNavigate("profile")} />;
+  return <MainScreen userId={params.userId} email={params.email} lists={params.lists} loading={params.loading} hasLists={params.hasLists} onProfile={() => params.onNavigate("profile")} />;
 }
 
 export default function App() {
   const { userId, email, loggingIn } = useCurrentUser();
   const { packingLists, loading, hasLists } = usePackingLists(userId);
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>("main");
   const view = buildView({ loggingIn, userId, email, lists: packingLists, loading, hasLists, screen, onNavigate: setScreen });
   return withLayout(view);
 }

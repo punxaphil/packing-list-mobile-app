@@ -16,7 +16,6 @@ type ListSectionProps = {
   lists: PackingListSummary[];
   selection: SelectionState;
   email: string;
-  onSignOut: () => void;
   onProfile: () => void;
 };
 export const ListSection = (props: ListSectionProps) => {
@@ -28,7 +27,7 @@ export const ListSection = (props: ListSectionProps) => {
   useDragDebug({ snapshot: drag.snapshot, layouts: drag.layouts, lists: props.lists });
   return (
     <View style={homeStyles.panel}>
-      <HomeHeader title={HOME_COPY.listHeader} email={props.email} onSignOut={props.onSignOut} onProfile={props.onProfile} />
+      <HomeHeader title={HOME_COPY.listHeader} email={props.email} onProfile={props.onProfile} />
       <ListHeader onAdd={creation.open} />
       <ListScroll
         lists={ordering.lists}

@@ -29,7 +29,10 @@ export function useSelectedList(lists: PackingListSummary[] | undefined, hasList
     AsyncStorage.setItem(STORAGE_KEY, id);
   }, []);
 
-  const clear = useCallback(() => select(""), [select]);
+  const clear = useCallback(() => {
+    setSelectedId("");
+    AsyncStorage.setItem(STORAGE_KEY, "");
+  }, []);
 
   const selectedList = safeLists.find((l) => l.id === selectedId) ?? null;
 
