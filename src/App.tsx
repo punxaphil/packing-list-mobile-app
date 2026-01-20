@@ -17,9 +17,13 @@ import { NamedEntity } from "./types/NamedEntity.ts";
 type Screen = "main" | "profile";
 
 const PRIMARY_COLOR = "#2563eb";
-const BUILD_TIMESTAMP = "2026-01-20 15:46:16";
+const formatTimestamp = () => {
+  const d = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
 const timestampStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
-const DevTimestamp = () => __DEV__ ? <View style={timestampStyles.footer}><Text style={timestampStyles.text}>{BUILD_TIMESTAMP}</Text></View> : null;
+const DevTimestamp = () => __DEV__ ? <View style={timestampStyles.footer}><Text style={timestampStyles.text}>{formatTimestamp()}</Text></View> : null;
 
 const Layout = ({ children }: PropsWithChildren) => (
   <GestureHandlerRootView style={homeStyles.container}>

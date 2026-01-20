@@ -19,12 +19,14 @@ type MainScreenProps = {
 
 export const MainScreen = ({ userId, email, lists, hasLists, onProfile }: MainScreenProps) => {
   const [tab, setTab] = useState<Tab>("items");
-  const [visited, setVisited] = useState<Set<Tab>>(new Set(["items"]));
+  const [visitCount, setVisitCount] = useState({ lists: 0, categories: 0 });
   const selection = useSelectedList(lists, hasLists);
 
   const handleTabSelect = (newTab: Tab) => {
     setTab(newTab);
-    setVisited((prev) => new Set(prev).add(newTab));
+    if (newTab === "lists" || newTab === "categories") {
+      setVisitCount((prev) => ({ ...prev, [newTab]: prev[newTab] + 1 }));
+    }
   };
 
   const handleListSelect = useCallback(
@@ -35,26 +37,23 @@ export const MainScreen = ({ userId, email, lists, hasLists, onProfile }: MainSc
     [selection.select]
   );
 
+  const hidden = { flex: 1, display: "none" } as const;
+  const visible = { flex: 1, display: "flex" } as const;
+
   return (
     <View style={homeStyles.container}>
-      <View style={{ flex: 1, display: tab === "items" ? "flex" : "none" }}>
+      <View style={tab === "items" ? visible : hidden}>
         <ItemsScreen userId={userId} email={email} hasLists={hasLists} selection={selection} onProfile={onProfile} />
       </View>
-      {visited.has("lists") && (
-        <View style={{ flex: 1, display: tab === "lists" ? "flex" : "none" }}>
-          <ListsScreen email={email} lists={lists} hasLists={hasLists} selection={selection} onListSelect={handleListSelect} onProfile={onProfile} />
-        </View>
-      )}
-      {visited.has("categories") && (
-        <View style={{ flex: 1, display: tab === "categories" ? "flex" : "none" }}>
-          <CategoriesScreen userId={userId} email={email} onProfile={onProfile} />
-        </View>
-      )}
-      {visited.has("members") && (
-        <View style={{ flex: 1, display: tab === "members" ? "flex" : "none" }}>
-          <MembersScreen userId={userId} email={email} onProfile={onProfile} />
-        </View>
-      )}
+      <View style={tab === "lists" ? visible : hidden}>
+        <ListsScreen key={visitCount.lists} email={email} lists={lists} hasLists={hasLists} selection={selection} onListSelect={handleListSelect} onProfile={onProfile} />
+      </View>
+      <View style={tab === "categories" ? visible : hidden}>
+        <CategoriesScreen key={visitCount.categories} userId={userId} email={email} onProfile={onProfile} />
+      </View>
+      <View style={tab === "members" ? visible : hidden}>
+        <MembersScreen userId={userId} email={email} onProfile={onProfile} />
+      </View>
       <FooterNav active={tab} onSelect={handleTabSelect} />
     </View>
   );
