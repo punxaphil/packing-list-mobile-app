@@ -14,13 +14,13 @@ import { FooterNav, Tab } from "./components/navigation/FooterNav.tsx";
 import { ProfileScreen } from "./components/profile/ProfileScreen.tsx";
 import { usePackingLists } from "./hooks/usePackingLists.ts";
 import { NamedEntity } from "./types/NamedEntity.ts";
-import { APP_VERSION } from "./version.ts";
 
 type Screen = "main" | "profile";
 
 const PRIMARY_COLOR = "#2563eb";
-const versionStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
-const VersionFooter = () => <View style={versionStyles.footer}><Text style={versionStyles.text}>v{APP_VERSION}</Text></View>;
+const BUILD_TIMESTAMP = "2026-01-20 13:53:16";
+const timestampStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
+const DevTimestamp = () => __DEV__ ? <View style={timestampStyles.footer}><Text style={timestampStyles.text}>{BUILD_TIMESTAMP}</Text></View> : null;
 
 const Layout = ({ children }: PropsWithChildren) => (
   <GestureHandlerRootView style={homeStyles.container}>
@@ -28,7 +28,7 @@ const Layout = ({ children }: PropsWithChildren) => (
       <SafeAreaView edges={["top", "bottom"]} style={homeStyles.container}>
         <StatusBar style="auto" />
         <View style={homeStyles.content}>{children}</View>
-        <VersionFooter />
+        <DevTimestamp />
       </SafeAreaView>
     </SafeAreaProvider>
   </GestureHandlerRootView>
@@ -55,22 +55,35 @@ type MainScreenProps = {
 };
 
 const MainScreen = ({ userId, email, lists, loading, hasLists, onProfile }: MainScreenProps) => {
-  const [tab, setTab] = useState<Tab>("home");
+  const [tab, setTab] = useState<Tab>("items");
+  const [visited, setVisited] = useState<Set<Tab>>(new Set(["items"]));
 
-  const renderTab = () => {
-    if (tab === "home") {
-      return <HomeScreen email={email} lists={lists} loading={loading} hasLists={hasLists} userId={userId} onProfile={onProfile} />;
-    }
-    if (tab === "categories") {
-      return <CategoriesScreen userId={userId} email={email} onProfile={onProfile} />;
-    }
-    return <MembersScreen userId={userId} email={email} onProfile={onProfile} />;
+  const handleSelect = (newTab: Tab) => {
+    setTab(newTab);
+    setVisited((prev) => new Set(prev).add(newTab));
   };
 
   return (
     <View style={homeStyles.container}>
-      {renderTab()}
-      <FooterNav active={tab} onSelect={setTab} />
+      <View style={{ flex: 1, display: tab === "items" ? "flex" : "none" }}>
+        <HomeScreen email={email} lists={lists} loading={loading} hasLists={hasLists} userId={userId} onProfile={onProfile} />
+      </View>
+      {visited.has("lists") && (
+        <View style={{ flex: 1, display: tab === "lists" ? "flex" : "none", justifyContent: "center", alignItems: "center" }}>
+          <Text>Lists - coming soon</Text>
+        </View>
+      )}
+      {visited.has("categories") && (
+        <View style={{ flex: 1, display: tab === "categories" ? "flex" : "none" }}>
+          <CategoriesScreen userId={userId} email={email} onProfile={onProfile} />
+        </View>
+      )}
+      {visited.has("members") && (
+        <View style={{ flex: 1, display: tab === "members" ? "flex" : "none" }}>
+          <MembersScreen userId={userId} email={email} onProfile={onProfile} />
+        </View>
+      )}
+      <FooterNav active={tab} onSelect={handleSelect} />
     </View>
   );
 };
