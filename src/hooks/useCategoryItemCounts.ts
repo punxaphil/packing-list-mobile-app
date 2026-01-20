@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { writeDb } from "~/services/database.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
 export const useCategoryItemCounts = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     writeDb.getPackItemsForAllPackingLists().then((items) => setCounts(computeCounts(items)));
   }, []);
 
-  return counts;
+  useEffect(() => { refresh(); }, [refresh]);
+
+  return { counts, refresh };
 };
 
 const computeCounts = (items: PackItem[]): Record<string, number> => {

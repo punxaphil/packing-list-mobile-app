@@ -11,11 +11,24 @@ export const CATEGORY_COPY = {
   deleteIcon: "×",
   deleteConfirmTitle: "Delete Category",
   deleteConfirmMessage: 'Delete "{name}"?',
-  deleteBlockedTitle: "Cannot Delete",
-  deleteBlockedMessage: '"{name}" has {count} items. Remove or reassign items first.',
+  deleteBlockedTitle: "Has Items",
+  deleteBlockedMessage: '"{name}" has {count} items. Move them first?',
   cancel: "Cancel",
   deleteAction: "Delete",
   ok: "OK",
+  moveItems: "Move Items",
+};
+
+export const MOVE_COPY = {
+  title: "Move Items",
+  subtitle: 'Move {count} items from "{name}":',
+  noItems: 'No items in "{name}"',
+  selectTarget: "Select target:",
+  noCategories: "No other categories",
+  selectCategory: "Select a category",
+  moveTo: "Move to {name}",
+  cancel: "Cancel",
+  close: "Close",
 };
 
 export const categoryStyles = StyleSheet.create({
@@ -42,4 +55,28 @@ export const categoryStyles = StyleSheet.create({
   relative: { position: "relative" as const },
   ghost: { position: "absolute" as const, zIndex: 10, elevation: 5, opacity: 0.85 },
   indicator: { position: "absolute" as const, left: -12, right: -12, height: 2, backgroundColor: "#000000", borderRadius: 1, zIndex: 15 },
+});
+
+export const moveStyles = StyleSheet.create({
+  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", padding: homeSpacing.lg },
+  modal: { backgroundColor: homeColors.surface, borderRadius: 16, padding: homeSpacing.lg, width: "100%", maxHeight: "80%" },
+  title: { fontSize: 18, fontWeight: "700", color: homeColors.text, marginBottom: homeSpacing.sm },
+  subtitle: { fontSize: 14, color: homeColors.text, marginBottom: homeSpacing.sm },
+  itemsList: { maxHeight: 120, borderWidth: 1, borderColor: homeColors.border, borderRadius: 8, padding: homeSpacing.sm, marginBottom: homeSpacing.md },
+  itemText: { fontSize: 13, color: homeColors.muted, paddingVertical: 2 },
+  sortRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: homeSpacing.sm },
+  sortLabel: { fontSize: 14, fontWeight: "600", color: homeColors.text },
+  categoryList: { maxHeight: 150, marginBottom: homeSpacing.md },
+  categoryItem: { padding: homeSpacing.sm, borderRadius: 8, borderWidth: 1, borderColor: homeColors.border, marginBottom: homeSpacing.xs },
+  categorySelected: { borderColor: homeColors.primary, borderWidth: 2, backgroundColor: homeColors.primaryLight },
+  categoryName: { fontSize: 14, color: homeColors.text },
+  empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
+  actions: { flexDirection: "row", gap: homeSpacing.sm },
+  cancelButton: { flex: 1, padding: homeSpacing.sm, borderRadius: 8, borderWidth: 1, borderColor: homeColors.border, alignItems: "center" },
+  cancelLabel: { fontSize: 14, color: homeColors.text },
+  moveButton: { flex: 2, padding: homeSpacing.sm, borderRadius: 8, backgroundColor: homeColors.primary, alignItems: "center" },
+  moveButtonDisabled: { backgroundColor: homeColors.muted },
+  moveLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
+  closeButton: { padding: homeSpacing.sm, borderRadius: 8, backgroundColor: homeColors.primary, alignItems: "center", marginTop: homeSpacing.sm },
+  closeLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
 });

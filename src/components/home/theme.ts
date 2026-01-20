@@ -2,6 +2,7 @@ export const homeColors = {
   background: "#f5f5f5",
   surface: "#ffffff",
   primary: "#2563eb",
+  primaryLight: "#dbeafe",
   text: "#111827",
   muted: "#6b7280",
   border: "#e5e7eb",

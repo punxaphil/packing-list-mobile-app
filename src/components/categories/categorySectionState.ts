@@ -11,9 +11,13 @@ export type CategoryActions = {
   onRename: (category: NamedEntity, name: string) => Promise<void>;
 };
 
-export const useCategoryActions = (categories: NamedEntity[], itemCounts: Record<string, number>): CategoryActions => ({
+export const useCategoryActions = (
+  categories: NamedEntity[],
+  itemCounts: Record<string, number>,
+  onMoveItems: (category: NamedEntity) => void,
+): CategoryActions => ({
   onAdd: useAddCategory(categories),
-  onDelete: useDeleteCategory(itemCounts),
+  onDelete: useDeleteCategory(itemCounts, onMoveItems),
   onRename: useRenameCategory(),
 });
 
@@ -32,11 +36,12 @@ const useAddCategory = (categories: NamedEntity[]) =>
     await writeDb.addCategory(trimmed, getNextRank(categories));
   }, [categories]);
 
-const useDeleteCategory = (itemCounts: Record<string, number>) =>
+const useDeleteCategory = (itemCounts: Record<string, number>, onMoveItems: (category: NamedEntity) => void) =>
   useCallback(async (category: NamedEntity) => {
     const count = itemCounts[category.id] ?? 0;
     if (count > 0) {
-      showDeleteBlocked(category.name, count);
+      const action = await showHasItemsAlert(category.name, count);
+      if (action === "move") onMoveItems(category);
       return;
     }
     const label = category.name?.trim() ? category.name : CATEGORY_COPY.delete;
@@ -44,15 +49,20 @@ const useDeleteCategory = (itemCounts: Record<string, number>) =>
     if (!confirmed) return;
     animateLayout();
     await writeDb.deleteCategory(category.id, [], true);
-  }, [itemCounts]);
+  }, [itemCounts, onMoveItems]);
 
-const showDeleteBlocked = (name: string, count: number) => {
-  Alert.alert(
-    CATEGORY_COPY.deleteBlockedTitle,
-    CATEGORY_COPY.deleteBlockedMessage.replace("{name}", name).replace("{count}", String(count)),
-    [{ text: CATEGORY_COPY.ok }],
-  );
-};
+const showHasItemsAlert = (name: string, count: number): Promise<"move" | "cancel"> =>
+  new Promise((resolve) => {
+    Alert.alert(
+      CATEGORY_COPY.deleteBlockedTitle,
+      CATEGORY_COPY.deleteBlockedMessage.replace("{name}", name).replace("{count}", String(count)),
+      [
+        { text: CATEGORY_COPY.cancel, style: "cancel", onPress: () => resolve("cancel") },
+        { text: CATEGORY_COPY.moveItems, onPress: () => resolve("move") },
+      ],
+      { cancelable: true, onDismiss: () => resolve("cancel") },
+    );
+  });
 
 const getNextRank = (categories: NamedEntity[]) =>
   Math.max(...categories.map((c) => c.rank ?? 0), 0) + 1;

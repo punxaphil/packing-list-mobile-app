@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { LayoutRectangle, Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
+import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
@@ -9,6 +10,7 @@ import { useDragState } from "../home/useDragState.ts";
 import { useCategoryOrdering } from "./categoryOrdering";
 import { useCategoryActions } from "./categorySectionState.ts";
 import { CategoryScroll } from "./CategoryScroll.tsx";
+import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 import { categoryStyles, CATEGORY_COPY } from "./styles.ts";
 
 type CategoriesScreenProps = {
@@ -19,8 +21,9 @@ type CategoriesScreenProps = {
 
 export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
   const { categories } = useCategories(userId);
-  const itemCounts = useCategoryItemCounts();
-  const actions = useCategoryActions(categories, itemCounts);
+  const { counts: itemCounts, refresh: refreshCounts } = useCategoryItemCounts();
+  const [moveCategory, setMoveCategory] = useState<NamedEntity | null>(null);
+  const actions = useCategoryActions(categories, itemCounts, setMoveCategory);
   const creation = useCreateCategoryDialog(actions.onAdd);
   const drag = useDragState();
   const ordering = useCategoryOrdering(categories);
@@ -43,6 +46,15 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
           onCancel={creation.close}
           onSubmit={creation.submit}
         />
+        {moveCategory && (
+          <MoveCategoryItemsModal
+            visible={true}
+            sourceCategory={moveCategory}
+            categories={categories}
+            onClose={() => setMoveCategory(null)}
+            onMoved={refreshCounts}
+          />
+        )}
       </View>
     </View>
   );
