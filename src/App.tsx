@@ -18,7 +18,7 @@ import { NamedEntity } from "./types/NamedEntity.ts";
 type Screen = "main" | "profile";
 
 const PRIMARY_COLOR = "#2563eb";
-const BUILD_TIMESTAMP = "2026-01-20 13:53:16";
+const BUILD_TIMESTAMP = "2026-01-20 15:24:37";
 const timestampStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
 const DevTimestamp = () => __DEV__ ? <View style={timestampStyles.footer}><Text style={timestampStyles.text}>{BUILD_TIMESTAMP}</Text></View> : null;
 

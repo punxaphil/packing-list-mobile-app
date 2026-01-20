@@ -56,7 +56,7 @@ const CategoryDropdown = ({ categories, selected, onSelect, disabled }: { catego
   const toggle = () => !disabled && setOpen((v) => !v);
   const handleSelect = (cat: NamedEntity) => { onSelect(cat); setOpen(false); };
   return (
-    <View style={[STYLES.dropdownContainer, disabled && STYLES.pickerDisabled]}>
+    <View style={[STYLES.dropdownContainer, disabled ? STYLES.pickerDisabled : null]}>
       <Pressable style={STYLES.dropdownButton} onPress={toggle}>
         <Text style={STYLES.dropdownText}>{selected.name}</Text>
         <Text style={STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
@@ -66,7 +66,7 @@ const CategoryDropdown = ({ categories, selected, onSelect, disabled }: { catego
           <ScrollView style={STYLES.dropdownScroll} nestedScrollEnabled>
             {allCategories.map((c) => (
               <Pressable key={getCategoryKey(c)} style={STYLES.dropdownItem} onPress={() => handleSelect(c)}>
-                <Text style={[STYLES.dropdownItemText, getCategoryKey(c) === getCategoryKey(selected) && STYLES.dropdownItemSelected]}>{c.name}</Text>
+                <Text style={[STYLES.dropdownItemText, getCategoryKey(c) === getCategoryKey(selected) ? STYLES.dropdownItemSelected : null]}>{c.name}</Text>
               </Pressable>
             ))}
           </ScrollView>

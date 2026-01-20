@@ -1,5 +1,4 @@
-import { useCallback, useRef, useEffect, useState } from "react";
-import { Animated } from "react-native";
+import { useCallback, useEffect, useState } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
@@ -9,7 +8,6 @@ import { getNextItemRank, getNextCategoryRank } from "./itemsSectionHelpers.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialogState } from "./ItemsPanel.tsx";
 import { UNCATEGORIZED } from "~/services/utils.ts";
-const FADE_DURATION = 1000;
 
 const useItemToggle = () => useCallback((item: PackItem) => { animateLayout(); void writeDb.updatePackItem({ ...item, checked: !item.checked }); }, []);
 const useItemRename = () => useCallback((item: PackItem, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === item.name) return; void writeDb.updatePackItem({ ...item, name: trimmed }); }, []);
@@ -24,14 +22,13 @@ const useCategoryToggle = () => useCallback((items: PackItem[], checked: boolean
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const handlers = useItemsSectionHandlers(props);
-  const fade = useSelectionFade(props.selection.selectedId);
   const list = props.selection.selectedList;
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, props.selection.selectedList?.id);
+  const renameDialog = useRenameDialog(list, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
-  const renameDialog = useRenameDialog(list, renameList);
-  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} fade={fade} />;
+  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} />;
 };
 
 const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
@@ -43,15 +40,6 @@ const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
   onToggleCategory: useCategoryToggle(),
 });
 
-const useSelectionFade = (selectedId: string) => {
-  const opacity = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    opacity.setValue(0);
-    Animated.timing(opacity, { toValue: 1, duration: FADE_DURATION, useNativeDriver: true }).start();
-  }, [selectedId, opacity]);
-  return { opacity } as const;
-};
-
 const useListRenamer = () =>
   useCallback((list: NamedEntity, name: string) => {
     const trimmed = name.trim();
@@ -59,15 +47,15 @@ const useListRenamer = () =>
     void writeDb.updatePackingList({ ...list, name: trimmed });
   }, []);
 
-const useRenameDialog = (list: NamedEntity, rename: (target: NamedEntity, name: string) => void): TextDialogState => {
+const useRenameDialog = (list: NamedEntity | null, rename: (target: NamedEntity, name: string) => void): TextDialogState => {
   const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState(list.name ?? "");
-  useEffect(() => setValue(list.name ?? ""), [list.id, list.name]);
+  const [value, setValue] = useState(list?.name ?? "");
+  useEffect(() => setValue(list?.name ?? ""), [list?.id, list?.name]);
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!trimmed || trimmed === list.name) {
+    if (!list || !trimmed || trimmed === list.name) {
       close();
       return;
     }

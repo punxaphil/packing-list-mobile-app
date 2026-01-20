@@ -8,7 +8,6 @@ import { ListActions, useListActions } from "./listSectionState.ts";
 import { buildListColors } from "./listColors.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { DragOffset } from "./useDraggableRow.tsx";
-import { useDragDebug } from "./useDragDebug.ts";
 import { useListOrdering, computeDropIndex } from "./listOrdering.ts";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
 
@@ -24,7 +23,6 @@ export const ListSection = (props: ListSectionProps) => {
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
-  useDragDebug({ snapshot: drag.snapshot, layouts: drag.layouts, lists: props.lists });
   return (
     <View style={homeStyles.panel}>
       <HomeHeader title={HOME_COPY.listHeader} email={props.email} onProfile={props.onProfile} />

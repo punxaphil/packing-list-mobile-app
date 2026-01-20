@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
@@ -40,13 +40,12 @@ type ItemsPanelProps = ItemsSectionProps &
         displayName: string;
         renameDialog: TextDialogState;
         addItemDialog: AddItemDialogState;
-        fade: { opacity: Animated.Value };
     };
 
 export const ItemsPanel = (props: ItemsPanelProps) => (
-    <Animated.View style={[homeStyles.swipeWrapper, props.fade]}>
+    <View style={homeStyles.swipeWrapper}>
         <PanelCard {...props} />
-    </Animated.View>
+    </View>
 );
 
 const PanelCard = (props: ItemsPanelProps) => (
