@@ -34,7 +34,6 @@ export const CategoryScroll = ({ categories, actions, drag, onDrop }: CategorySc
             onDragStart={() => drag.start(category.id, "")}
             onDragMove={(offset: DragOffset) => drag.move(category.id, offset)}
             onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
-            onSelect={() => {}}
           />
         ))}
         <DropIndicator dropIndex={dropIndex} categories={categories} layouts={drag.layouts} below={showBelow} />

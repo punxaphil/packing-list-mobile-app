@@ -8,12 +8,21 @@ import { animateLayout, animateListEntry } from "../home/layoutAnimation.ts";
 export type CategoryActions = {
   onAdd: (name: string) => Promise<void>;
   onDelete: (category: NamedEntity) => Promise<void>;
+  onRename: (category: NamedEntity, name: string) => Promise<void>;
 };
 
 export const useCategoryActions = (categories: NamedEntity[]): CategoryActions => ({
   onAdd: useAddCategory(categories),
   onDelete: useDeleteCategory(),
+  onRename: useRenameCategory(),
 });
+
+const useRenameCategory = () =>
+  useCallback(async (category: NamedEntity, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === category.name) return;
+    await writeDb.updateCategories({ ...category, name: trimmed });
+  }, []);
 
 const useAddCategory = (categories: NamedEntity[]) =>
   useCallback(async (name: string) => {

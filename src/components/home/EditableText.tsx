@@ -26,7 +26,7 @@ export const EditableText = (props: EditableTextProps) => {
   const finish = createFinishHandler(props, state);
   return (
     <View style={props.containerStyle}>
-      {state.editing ? <EditableInput {...props} {...state} onFinish={finish} /> : <EditableLabel value={props.value} displayValue={props.displayValue} textStyle={props.textStyle} onStart={() => handleStart(props, state)} />}
+      {state.editing ? <EditableInput {...props} {...state} onFinish={finish} /> : <EditableLabel value={state.text} displayValue={props.displayValue} textStyle={props.textStyle} onStart={() => handleStart(props, state)} />}
     </View>
   );
 };

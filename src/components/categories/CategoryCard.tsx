@@ -1,5 +1,6 @@
 import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { EditableText } from "../home/EditableText.tsx";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { categoryStyles, CATEGORY_COPY } from "./styles.ts";
 import { CategoryActions } from "./categorySectionState.ts";
@@ -14,24 +15,19 @@ type CategoryCardProps = {
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
   onDragEnd?: () => void;
-  onSelect: (id: string) => void;
 };
 
 export const CategoryCard = (props: CategoryCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
+  const handleRename = (name: string) => props.actions.onRename(props.category, name);
   return (
     <View onLayout={handleLayout}>
-      <Pressable
-        style={[categoryStyles.card, props.hidden ? { opacity: 0 } : null]}
-        onPress={() => props.onSelect(props.category.id)}
-        accessibilityRole="button"
-        accessibilityLabel={props.category.name}
-      >
+      <Pressable style={[categoryStyles.card, props.hidden ? { opacity: 0 } : null]} accessibilityRole="button" accessibilityLabel={props.category.name}>
         <View style={categoryStyles.cardInner}>
           {wrap(<DragHandle />)}
           <View style={categoryStyles.cardBody}>
-            <Text style={categoryStyles.cardName}>{props.category.name}</Text>
+            <EditableText value={props.category.name} onSubmit={handleRename} textStyle={categoryStyles.cardName} />
           </View>
           <DeleteButton onDelete={() => props.actions.onDelete(props.category)} />
         </View>
