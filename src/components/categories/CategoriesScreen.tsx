@@ -20,7 +20,7 @@ type CategoriesScreenProps = {
 export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
   const { categories } = useCategories(userId);
   const itemCounts = useCategoryItemCounts();
-  const actions = useCategoryActions(categories);
+  const actions = useCategoryActions(categories, itemCounts);
   const creation = useCreateCategoryDialog(actions.onAdd);
   const drag = useDragState();
   const ordering = useCategoryOrdering(categories);

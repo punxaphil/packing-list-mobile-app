@@ -10,9 +10,12 @@ export const CATEGORY_COPY = {
   delete: "Delete category",
   deleteIcon: "×",
   deleteConfirmTitle: "Delete Category",
-  deleteConfirmMessage: 'Delete "{name}"? Items using this category will become uncategorized.',
+  deleteConfirmMessage: 'Delete "{name}"?',
+  deleteBlockedTitle: "Cannot Delete",
+  deleteBlockedMessage: '"{name}" has {count} items. Remove or reassign items first.',
   cancel: "Cancel",
   deleteAction: "Delete",
+  ok: "OK",
 };
 
 export const categoryStyles = StyleSheet.create({
