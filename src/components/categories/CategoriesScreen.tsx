@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
-import { LayoutRectangle, Pressable, Switch, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
+import { useImages } from "~/hooks/useImages.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { homeColors } from "../home/theme.ts";
@@ -12,6 +13,8 @@ import { useCategoryActions } from "./categorySectionState.ts";
 import { CategoryScroll } from "./CategoryScroll.tsx";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 import { categoryStyles, CATEGORY_COPY } from "./styles.ts";
+import { useCategoryImageActions } from "./useCategoryImageActions.ts";
+import { useCreateCategoryDialog } from "./useCreateCategoryDialog.ts";
 
 type CategoriesScreenProps = {
   userId: string;
@@ -21,6 +24,7 @@ type CategoriesScreenProps = {
 
 export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
   const { categories } = useCategories(userId);
+  const { images } = useImages(userId);
   const { counts: itemCounts, refresh: refreshCounts } = useCategoryItemCounts();
   const [moveCategory, setMoveCategory] = useState<NamedEntity | null>(null);
   const actions = useCategoryActions(categories, itemCounts, setMoveCategory);
@@ -29,13 +33,24 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   const ordering = useCategoryOrdering(categories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sortedCategories = sortByAlpha ? [...ordering.categories].sort((a, b) => a.name.localeCompare(b.name)) : ordering.categories;
+  const categoryImages = images.filter((img) => img.type === "categories");
+  const imageActions = useCategoryImageActions();
 
   return (
     <View style={categoryStyles.container}>
       <View style={categoryStyles.panel}>
         <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
         <CategoryHeader onAdd={creation.open} sortByAlpha={sortByAlpha} onToggleSort={() => setSortByAlpha(!sortByAlpha)} />
-        <CategoryScroll categories={sortedCategories} actions={actions} drag={drag} onDrop={ordering.drop} dragEnabled={!sortByAlpha} itemCounts={itemCounts} />
+        <CategoryScroll
+          categories={sortedCategories}
+          actions={actions}
+          drag={drag}
+          onDrop={ordering.drop}
+          dragEnabled={!sortByAlpha}
+          itemCounts={itemCounts}
+          images={categoryImages}
+          onImagePress={imageActions.handleImagePress}
+        />
         <TextPromptDialog
           visible={creation.visible}
           title={CATEGORY_COPY.createPrompt}
@@ -74,17 +89,3 @@ const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProp
     </Pressable>
   </View>
 );
-
-const useCreateCategoryDialog = (create: (name: string) => Promise<void>) => {
-  const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState("");
-  const open = useCallback(() => { setValue(""); setVisible(true); }, []);
-  const close = useCallback(() => setVisible(false), []);
-  const submit = useCallback(() => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    void create(trimmed);
-    close();
-  }, [value, create, close]);
-  return { visible, value, setValue, open, close, submit } as const;
-};

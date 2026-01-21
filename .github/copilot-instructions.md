@@ -14,5 +14,3 @@
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
 - Compile after each change.
-- After making any code change, update BUILD_TIMESTAMP in `src/App.tsx` to current time (format: YYYY-MM-DD HH:MM:SS). This shows in dev mode only.
-- After making any code change, increment the patch version in `src/version.ts` (e.g., 0.0.1 → 0.0.2).

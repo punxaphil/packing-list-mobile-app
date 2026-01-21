@@ -1,4 +1,5 @@
 import { Animated, LayoutRectangle, ScrollView, View } from "react-native";
+import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DragOffset } from "../home/useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "../home/useDragState.ts";
@@ -14,9 +15,11 @@ type CategoryScrollProps = {
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   dragEnabled?: boolean;
   itemCounts: Record<string, number>;
+  images: Image[];
+  onImagePress: (categoryId: string, image?: Image) => void;
 };
 
-export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled = true, itemCounts }: CategoryScrollProps) => {
+export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled = true, itemCounts, images, onImagePress }: CategoryScrollProps) => {
   const categoryIds = categories.map((c) => c.id);
   const dropIndex = dragEnabled ? computeCategoryDropIndex(categoryIds, drag.snapshot, drag.layouts) : null;
   const originalIndex = drag.snapshot ? categoryIds.indexOf(drag.snapshot.id) : -1;
@@ -26,20 +29,25 @@ export const CategoryScroll = ({ categories, actions, drag, onDrop, dragEnabled 
   return (
     <ScrollView style={categoryStyles.scroll} showsVerticalScrollIndicator={false}>
       <View style={[categoryStyles.list, categoryStyles.relative]}>
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            actions={actions}
-            hidden={drag.snapshot?.id === category.id}
-            dragEnabled={dragEnabled}
-            itemCount={itemCounts[category.id] ?? 0}
-            onLayout={(layout: LayoutRectangle) => drag.recordLayout(category.id, layout)}
-            onDragStart={dragEnabled ? () => drag.start(category.id, "") : undefined}
-            onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(category.id, offset) : undefined}
-            onDragEnd={dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts)) : undefined}
-          />
-        ))}
+        {categories.map((category) => {
+          const image = images.find((img) => img.typeId === category.id);
+          return (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              actions={actions}
+              hidden={drag.snapshot?.id === category.id}
+              dragEnabled={dragEnabled}
+              itemCount={itemCounts[category.id] ?? 0}
+              image={image}
+              onImagePress={() => onImagePress(category.id, image)}
+              onLayout={(layout: LayoutRectangle) => drag.recordLayout(category.id, layout)}
+              onDragStart={dragEnabled ? () => drag.start(category.id, "") : undefined}
+              onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(category.id, offset) : undefined}
+              onDragEnd={dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts)) : undefined}
+            />
+          );
+        })}
         {dragEnabled && <DropIndicator dropIndex={dropIndex} categories={categories} layouts={drag.layouts} below={showBelow} />}
         {dragEnabled && <GhostRow categories={categories} drag={drag.snapshot} layouts={drag.layouts} />}
       </View>
