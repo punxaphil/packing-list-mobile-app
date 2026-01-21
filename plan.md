@@ -4,8 +4,8 @@
 - [x] Image Upload
 - [x] Categories Page
 - [x] Members CRUD
-- [ ] Fix react-native-screens version (4.20.0 -> ~4.16.0)
-- [ ] Fade to indicate scrollable content
+- [x] Fix react-native-screens version (4.20.0 -> ~4.16.0)
+- [x] Fade to indicate scrollable content
 - [ ] Assign Members to Items
 - [ ] Display Members on Items
 - [ ] Filter by Category

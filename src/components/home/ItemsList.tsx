@@ -1,4 +1,4 @@
-import { ActivityIndicator, LayoutRectangle, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, LayoutRectangle, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { buildSections, SectionGroup } from "./itemsSectionHelpers.ts";
@@ -7,6 +7,7 @@ import { CategorySection } from "./CategorySection.tsx";
 import { buildCategoryColors } from "./listColors.ts";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
 import { useItemOrdering } from "./itemOrdering.ts";
+import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 
 type ItemsListProps = {
   loading: boolean;
@@ -57,7 +58,7 @@ export const ItemsList = (props: ItemsListProps) => {
 };
 
 const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
-  <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
+  <FadeScrollView style={homeStyles.scroll}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
       {sections.map((section, index) => (
@@ -76,7 +77,7 @@ const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRen
         />
       ))}
     </View>
-  </ScrollView>
+  </FadeScrollView>
 );
 
 const EmptyItems = () => (

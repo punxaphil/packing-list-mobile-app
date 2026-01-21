@@ -1,15 +1,17 @@
-import { Animated, LayoutRectangle, ScrollView, View } from "react-native";
+import { Animated, LayoutRectangle, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DragOffset } from "../home/useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "../home/useDragState.ts";
 import { EntityCard, EntityCardPreview, EntityActions } from "./EntityCard.tsx";
 import { entityStyles, EntityCopy } from "./entityStyles.ts";
+import { FadeScrollView } from "./FadeScrollView.tsx";
 
 type EntityScrollProps = {
   entities: NamedEntity[];
   actions: EntityActions;
   copy: EntityCopy;
+  colors: Record<string, string>;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   computeDropIndex: (ids: string[], snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => number | null;
@@ -20,7 +22,7 @@ type EntityScrollProps = {
 };
 
 export const EntityScroll = (props: EntityScrollProps) => {
-  const { entities, actions, copy, drag, onDrop, computeDropIndex, dragEnabled = true, itemCounts, images, onImagePress } = props;
+  const { entities, actions, copy, colors, drag, onDrop, computeDropIndex, dragEnabled = true, itemCounts, images, onImagePress } = props;
   const ids = entities.map((e) => e.id);
   const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
   const originalIndex = drag.snapshot ? ids.indexOf(drag.snapshot.id) : -1;
@@ -28,7 +30,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
 
   return (
-    <ScrollView style={entityStyles.scroll} showsVerticalScrollIndicator={false}>
+    <FadeScrollView style={entityStyles.scroll}>
       <View style={[entityStyles.list, entityStyles.relative]}>
         {entities.map((entity) => {
           const image = images.find((img) => img.typeId === entity.id);
@@ -38,6 +40,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
               entity={entity}
               actions={actions}
               copy={copy}
+              color={colors[entity.id]}
               hidden={drag.snapshot?.id === entity.id}
               dragEnabled={dragEnabled}
               itemCount={itemCounts[entity.id] ?? 0}
@@ -53,7 +56,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
         {dragEnabled && <DropIndicator dropIndex={dropIndex} entities={entities} layouts={drag.layouts} below={showBelow} />}
         {dragEnabled && <GhostRow entities={entities} drag={drag.snapshot} layouts={drag.layouts} />}
       </View>
-    </ScrollView>
+    </FadeScrollView>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Animated, LayoutRectangle, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, LayoutRectangle, Pressable, StyleSheet, Text, View } from "react-native";
 import { PackingListSummary, SelectionState } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -10,6 +10,7 @@ import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { DragOffset } from "./useDraggableRow.tsx";
 import { useListOrdering, computeDropIndex } from "./listOrdering.ts";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
+import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -76,7 +77,7 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   return (
-    <ScrollView style={homeStyles.scroll} showsVerticalScrollIndicator={false}>
+    <FadeScrollView style={homeStyles.scroll}>
       <View style={[homeStyles.list, dragStyles.relative]}>
         {lists.map((list) => (
           <ListCard
@@ -97,7 +98,7 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
         <DragDebugPanel snapshot={drag.snapshot} layout={drag.snapshot ? drag.layouts[drag.snapshot.id] : undefined} />
       </View>
-    </ScrollView>
+    </FadeScrollView>
   );
 };
 

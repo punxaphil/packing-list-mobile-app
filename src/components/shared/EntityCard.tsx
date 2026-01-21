@@ -18,6 +18,7 @@ type EntityCardProps = {
   entity: NamedEntity;
   actions: EntityActions;
   copy: EntityCopy;
+  color: string;
   hidden?: boolean;
   dragEnabled?: boolean;
   itemCount: number;
@@ -33,9 +34,10 @@ export const EntityCard = (props: EntityCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const handleRename = (name: string) => props.actions.onRename(props.entity, name);
+  const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   return (
     <View onLayout={handleLayout}>
-      <Pressable style={[entityStyles.card, props.hidden ? { opacity: 0 } : null]} accessibilityRole="button" accessibilityLabel={props.entity.name}>
+      <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
         <View style={entityStyles.cardInner}>
           {wrap(<DragHandle disabled={!props.dragEnabled} />)}
           <EntityImage imageUrl={props.image?.url} onPress={props.onImagePress} copy={props.copy} />

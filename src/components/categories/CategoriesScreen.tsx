@@ -6,6 +6,7 @@ import { useImages } from "~/hooks/useImages.ts";
 import { writeDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
+import { buildCategoryColors } from "../home/listColors.ts";
 import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { useDragState } from "../home/useDragState.ts";
@@ -42,6 +43,7 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   const ordering = useEntityOrdering(categories, writeDb.updateCategories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
+  const colors = buildCategoryColors(categories);
   const categoryImages = images.filter((img) => img.type === "categories");
   const imageActions = useEntityImageActions("categories", CATEGORY_COPY, imageDb);
 
@@ -54,6 +56,7 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
           entities={sorted}
           actions={actions}
           copy={CATEGORY_COPY}
+          colors={colors}
           drag={drag}
           onDrop={ordering.drop}
           computeDropIndex={computeEntityDropIndex}
