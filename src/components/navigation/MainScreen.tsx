@@ -20,12 +20,12 @@ type MainScreenProps = {
 
 export const MainScreen = ({ userId, email, lists, hasLists, listsLoading, onProfile }: MainScreenProps) => {
   const [tab, setTab] = useState<Tab>("items");
-  const [visitCount, setVisitCount] = useState({ lists: 0, categories: 0 });
+  const [visitCount, setVisitCount] = useState({ lists: 0, categories: 0, members: 0 });
   const selection = useSelectedList(lists, hasLists);
 
   const handleTabSelect = (newTab: Tab) => {
     setTab(newTab);
-    if (newTab === "lists" || newTab === "categories") {
+    if (newTab === "lists" || newTab === "categories" || newTab === "members") {
       setVisitCount((prev) => ({ ...prev, [newTab]: prev[newTab] + 1 }));
     }
   };
@@ -53,7 +53,7 @@ export const MainScreen = ({ userId, email, lists, hasLists, listsLoading, onPro
         <CategoriesScreen key={visitCount.categories} userId={userId} email={email} onProfile={onProfile} />
       </View>
       <View style={tab === "members" ? visible : hidden}>
-        <MembersScreen userId={userId} email={email} onProfile={onProfile} />
+        <MembersScreen key={visitCount.members} userId={userId} email={email} onProfile={onProfile} />
       </View>
       <FooterNav active={tab} onSelect={handleTabSelect} />
     </View>

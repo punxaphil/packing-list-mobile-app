@@ -245,9 +245,9 @@ export const writeDb = {
     writeDb.deletePackingListBatch(id, batch);
     await batch.commit();
   },
-  addMember: async (name: string): Promise<string> => {
-    const docRef = await add(MEMBERS_KEY, { name });
-    return docRef.id;
+  addMember: async (name: string, rank = 0): Promise<NamedEntity> => {
+    const docRef = await add(MEMBERS_KEY, { name, rank });
+    return { id: docRef.id, name, rank };
   },
   updateMembers: async (toUpdate: NamedEntity[] | NamedEntity) => {
     await updateNamedEntities(MEMBERS_KEY, toUpdate);

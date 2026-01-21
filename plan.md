@@ -1,23 +1,27 @@
-# Mobile App - Missing Features
+# done
 
-- [x] Profile Page
-- [x] Image Upload
-- [x] Categories Page
-- [x] Members CRUD
-- [x] Fix react-native-screens version (4.20.0 -> ~4.16.0)
-- [x] Fade to indicate scrollable content
-- [ ] Assign Members to Items
-- [ ] Display Members on Items
-- [ ] Filter by Category
-- [ ] Filter by Member
-- [ ] Filter by Status
-- [ ] Copy to Other List
-- [ ] Templates
-- [ ] Delete Checked Items
-- [ ] Simple Search
-- [ ] Select Mode
-- [ ] Bulk Move Category
-- [ ] Bulk Assign Members
-- [ ] Undo System
-- [ ] Version History
-- [ ] Text Mode
+- Profile Page
+- Image Upload
+- Categories Page
+- Members CRUD
+- Fix react-native-screens version
+- Fade to indicate scrollable content
+
+# todo
+
+- DnD not working in Members (works in Categories)
+- Assign Members to Items
+- Display Members on Items
+- Filter by Category
+- Filter by Member
+- Filter by Status
+- Copy to Other List
+- Templates
+- Delete Checked Items
+- Simple Search
+- Select Mode
+- Bulk Move Category
+- Bulk Assign Members
+- Undo System
+- Version History
+- Text Mode
