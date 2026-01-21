@@ -3,23 +3,32 @@ import { Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { useImages } from "~/hooks/useImages.ts";
+import { writeDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { useDragState } from "../home/useDragState.ts";
-import { useCategoryOrdering } from "./categoryOrdering";
-import { useCategoryActions } from "./categorySectionState.ts";
-import { CategoryScroll } from "./CategoryScroll.tsx";
+import { entityStyles, CATEGORY_COPY } from "../shared/entityStyles.ts";
+import { EntityScroll } from "../shared/EntityScroll.tsx";
+import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
+import { useEntityActions } from "../shared/useEntityActions.ts";
+import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
+import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
-import { categoryStyles, CATEGORY_COPY } from "./styles.ts";
-import { useCategoryImageActions } from "./useCategoryImageActions.ts";
-import { useCreateCategoryDialog } from "./useCreateCategoryDialog.ts";
 
-type CategoriesScreenProps = {
-  userId: string;
-  email: string;
-  onProfile: () => void;
+type CategoriesScreenProps = { userId: string; email: string; onProfile: () => void };
+
+const categoryDb = {
+  add: writeDb.addCategory,
+  update: (c: NamedEntity) => writeDb.updateCategories(c),
+  delete: writeDb.deleteCategory,
+};
+
+const imageDb = {
+  add: writeDb.addImage,
+  update: writeDb.updateImage,
+  delete: writeDb.deleteImage,
 };
 
 export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
@@ -27,25 +36,27 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   const { images } = useImages(userId);
   const { counts: itemCounts, refresh: refreshCounts } = useCategoryItemCounts();
   const [moveCategory, setMoveCategory] = useState<NamedEntity | null>(null);
-  const actions = useCategoryActions(categories, itemCounts, setMoveCategory);
-  const creation = useCreateCategoryDialog(actions.onAdd);
+  const actions = useEntityActions(categories, itemCounts, CATEGORY_COPY, categoryDb, setMoveCategory);
+  const creation = useCreateEntityDialog(actions.onAdd);
   const drag = useDragState();
-  const ordering = useCategoryOrdering(categories);
+  const ordering = useEntityOrdering(categories, writeDb.updateCategories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
-  const sortedCategories = sortByAlpha ? [...ordering.categories].sort((a, b) => a.name.localeCompare(b.name)) : ordering.categories;
+  const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
   const categoryImages = images.filter((img) => img.type === "categories");
-  const imageActions = useCategoryImageActions();
+  const imageActions = useEntityImageActions("categories", CATEGORY_COPY, imageDb);
 
   return (
-    <View style={categoryStyles.container}>
-      <View style={categoryStyles.panel}>
+    <View style={entityStyles.container}>
+      <View style={entityStyles.panel}>
         <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
         <CategoryHeader onAdd={creation.open} sortByAlpha={sortByAlpha} onToggleSort={() => setSortByAlpha(!sortByAlpha)} />
-        <CategoryScroll
-          categories={sortedCategories}
+        <EntityScroll
+          entities={sorted}
           actions={actions}
+          copy={CATEGORY_COPY}
           drag={drag}
           onDrop={ordering.drop}
+          computeDropIndex={computeEntityDropIndex}
           dragEnabled={!sortByAlpha}
           itemCounts={itemCounts}
           images={categoryImages}
@@ -78,14 +89,14 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
 type CategoryHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort: () => void };
 
 const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
-  <View style={categoryStyles.actions}>
-    <View style={categoryStyles.sortToggle}>
-      <Text style={categoryStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+  <View style={entityStyles.actions}>
+    <View style={entityStyles.sortToggle}>
+      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
       <Switch value={sortByAlpha} onValueChange={onToggleSort} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
     </View>
-    <View style={categoryStyles.spacer} />
-    <Pressable style={categoryStyles.actionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.createCategory}>
-      <Text style={categoryStyles.actionLabel}>{CATEGORY_COPY.createCategory}</Text>
+    <View style={entityStyles.spacer} />
+    <Pressable style={entityStyles.actionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.addButton}>
+      <Text style={entityStyles.actionLabel}>{CATEGORY_COPY.addButton}</Text>
     </Pressable>
   </View>
 );

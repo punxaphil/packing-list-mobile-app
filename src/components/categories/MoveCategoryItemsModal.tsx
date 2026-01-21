@@ -4,7 +4,8 @@ import { writeDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeColors } from "../home/theme.ts";
-import { categoryStyles, MOVE_COPY, moveStyles } from "./styles.ts";
+import { entityStyles } from "../shared/entityStyles.ts";
+import { MOVE_COPY, moveStyles } from "./styles.ts";
 
 type MoveCategoryItemsModalProps = {
   visible: boolean;
@@ -89,8 +90,8 @@ const ItemsList = ({ items }: { items: PackItem[] }) => (
 const SortToggle = ({ sortByAlpha, onToggle }: { sortByAlpha: boolean; onToggle: () => void }) => (
   <View style={moveStyles.sortRow}>
     <Text style={moveStyles.sortLabel}>{MOVE_COPY.selectTarget}</Text>
-    <View style={categoryStyles.sortToggle}>
-      <Text style={categoryStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+    <View style={entityStyles.sortToggle}>
+      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
       <Switch value={sortByAlpha} onValueChange={onToggle} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
     </View>
   </View>

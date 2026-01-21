@@ -1,42 +1,42 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import { LayoutRectangle } from "react-native";
-import { writeDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DragSnapshot } from "../home/useDragState.ts";
 
 type LayoutMap = Record<string, LayoutRectangle>;
 type DropHandler = (snapshot: DragSnapshot, layouts: LayoutMap) => void;
 type OrderedIdsState = [string[], Dispatch<SetStateAction<string[]>>];
+type PersistFn = (updates: NamedEntity[]) => Promise<void>;
 
-export const useCategoryOrdering = (categories: NamedEntity[]) => {
-  const [orderedIds, setOrderedIds] = useOrderedIds(categories);
-  const ordered = orderedIds.map((id) => categories.find((c) => c.id === id)).filter((c): c is NamedEntity => Boolean(c));
-  const drop = useDropHandler(categories, setOrderedIds);
-  return { categories: ordered, drop } as const;
+export const useEntityOrdering = (entities: NamedEntity[], persist: PersistFn) => {
+  const [orderedIds, setOrderedIds] = useOrderedIds(entities);
+  const ordered = orderedIds.map((id) => entities.find((e) => e.id === id)).filter((e): e is NamedEntity => Boolean(e));
+  const drop = useDropHandler(entities, setOrderedIds, persist);
+  return { entities: ordered, drop } as const;
 };
 
-const useOrderedIds = (categories: NamedEntity[]): OrderedIdsState => {
-  const [orderedIds, setOrderedIds] = useState(() => categories.map((c) => c.id));
+const useOrderedIds = (entities: NamedEntity[]): OrderedIdsState => {
+  const [orderedIds, setOrderedIds] = useState(() => entities.map((e) => e.id));
   useEffect(() => {
     setOrderedIds((current) => {
-      const incoming = categories.map((c) => c.id);
+      const incoming = entities.map((e) => e.id);
       const filtered = current.filter((id) => incoming.includes(id));
       return [...filtered, ...incoming.filter((id) => !filtered.includes(id))];
     });
-  }, [categories]);
+  }, [entities]);
   return [orderedIds, setOrderedIds];
 };
 
-const useDropHandler = (categories: NamedEntity[], setOrderedIds: OrderedIdsState[1]): DropHandler =>
+const useDropHandler = (entities: NamedEntity[], setOrderedIds: OrderedIdsState[1], persist: PersistFn): DropHandler =>
   useCallback((snapshot, layouts) => {
     if (!snapshot) return;
     setOrderedIds((current) => {
       const preview = buildDropPreview(current, snapshot, layouts);
       if (!preview.changed) return current;
-      persistRanks(preview.ids, categories);
+      persistRanks(preview.ids, entities, persist);
       return preview.ids;
     });
-  }, [categories, setOrderedIds]);
+  }, [entities, setOrderedIds, persist]);
 
 const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: LayoutMap) => {
   if (!snapshot) return { ids: current, changed: false };
@@ -72,17 +72,17 @@ const resolveTargetIndex = (ids: string[], fromIndex: number, layout: LayoutRect
   return target;
 };
 
-const persistRanks = (orderedIds: string[], categories: NamedEntity[]) => {
+const persistRanks = (orderedIds: string[], entities: NamedEntity[], persist: PersistFn) => {
   const updates = orderedIds
     .map((id, i) => {
-      const match = categories.find((c) => c.id === id);
+      const match = entities.find((e) => e.id === id);
       return match ? { ...match, rank: orderedIds.length - i } : null;
     })
     .filter((u): u is NamedEntity => Boolean(u));
-  if (updates.length) void writeDb.updateCategories(updates);
+  if (updates.length) void persist(updates);
 };
 
-export const computeCategoryDropIndex = (ids: string[], snapshot: DragSnapshot, layouts: LayoutMap): number | null => {
+export const computeEntityDropIndex = (ids: string[], snapshot: DragSnapshot, layouts: LayoutMap): number | null => {
   if (!snapshot) return null;
   const idx = ids.indexOf(snapshot.id);
   const layout = layouts[snapshot.id];

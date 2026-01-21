@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export const useCreateCategoryDialog = (create: (name: string) => Promise<void>) => {
+export const useCreateEntityDialog = (create: (name: string) => Promise<void>) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
   const open = useCallback(() => { setValue(""); setVisible(true); }, []);
