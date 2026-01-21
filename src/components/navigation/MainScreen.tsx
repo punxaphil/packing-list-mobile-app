@@ -14,10 +14,11 @@ type MainScreenProps = {
   email: string;
   lists: PackingListSummary[];
   hasLists: boolean;
+  listsLoading: boolean;
   onProfile: () => void;
 };
 
-export const MainScreen = ({ userId, email, lists, hasLists, onProfile }: MainScreenProps) => {
+export const MainScreen = ({ userId, email, lists, hasLists, listsLoading, onProfile }: MainScreenProps) => {
   const [tab, setTab] = useState<Tab>("items");
   const [visitCount, setVisitCount] = useState({ lists: 0, categories: 0 });
   const selection = useSelectedList(lists, hasLists);
@@ -43,10 +44,10 @@ export const MainScreen = ({ userId, email, lists, hasLists, onProfile }: MainSc
   return (
     <View style={homeStyles.container}>
       <View style={tab === "items" ? visible : hidden}>
-        <ItemsScreen userId={userId} email={email} hasLists={hasLists} selection={selection} onProfile={onProfile} />
+        <ItemsScreen userId={userId} email={email} hasLists={hasLists} listsLoading={listsLoading} selection={selection} onProfile={onProfile} />
       </View>
       <View style={tab === "lists" ? visible : hidden}>
-        <ListsScreen key={visitCount.lists} email={email} lists={lists} hasLists={hasLists} selection={selection} onListSelect={handleListSelect} onProfile={onProfile} />
+        <ListsScreen key={visitCount.lists} email={email} lists={lists} hasLists={hasLists} listsLoading={listsLoading} selection={selection} onListSelect={handleListSelect} onProfile={onProfile} />
       </View>
       <View style={tab === "categories" ? visible : hidden}>
         <CategoriesScreen key={visitCount.categories} userId={userId} email={email} onProfile={onProfile} />

@@ -57,6 +57,7 @@ type ViewParams = {
   email: string;
   lists: PackingListSummary[];
   hasLists: boolean;
+  listsLoading: boolean;
   screen: Screen;
   onNavigate: (screen: Screen) => void;
 };
@@ -67,15 +68,15 @@ function buildView(params: ViewParams) {
   if (params.screen === "profile") {
     return <ProfileScreen email={params.email} userId={params.userId} onSignOut={signOut} onBack={() => params.onNavigate("main")} />;
   }
-  return <MainScreen userId={params.userId} email={params.email} lists={params.lists} hasLists={params.hasLists} onProfile={() => params.onNavigate("profile")} />;
+  return <MainScreen userId={params.userId} email={params.email} lists={params.lists} hasLists={params.hasLists} listsLoading={params.listsLoading} onProfile={() => params.onNavigate("profile")} />;
 }
 
 export default function App() {
   const { userId, email, loggingIn } = useCurrentUser();
-  const { packingLists, hasLists } = usePackingLists(userId);
+  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(userId);
   const { counts } = usePackItemCounts(userId);
   const [screen, setScreen] = useState<Screen>("main");
   const lists = mergeListCounts(packingLists, counts);
-  const view = buildView({ loggingIn, userId, email, lists, hasLists, screen, onNavigate: setScreen });
+  const view = buildView({ loggingIn, userId, email, lists, hasLists, listsLoading, screen, onNavigate: setScreen });
   return withLayout(view);
 }

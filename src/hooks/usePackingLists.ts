@@ -113,7 +113,7 @@ function buildResult(state: HookState) {
   return {
     packingLists: state.lists,
     loading: state.loading,
-    hasLists: state.lists.length > 0,
+    hasLists: !state.loading && state.lists.length > 0,
   };
 }
 
