@@ -14,3 +14,5 @@
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
 - Compile after each change.
+- Never commit without user approval.
+- When user corrects general behavior, update these instructions accordingly.
