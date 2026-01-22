@@ -88,49 +88,41 @@ const buildDropPreview = (
     }
 
     // 3. Determine target index in the global list
-    // We want to insert logically into the target category's items.
-    // However, `current` is a global list.
-    // If we drop into "Uncategorized", we need to find where in "Uncategorized" it fits.
-    // And "Uncategorized" items might be scattered in `current` if previous corruption happened,
-    // but assuming good state, they are grouped.
+    // Build a list of items sorted by their visual Y position
+    const visualOrder = current
+        .filter(id => id !== snapshot.id)
+        .map(id => {
+            const item = items.find(it => it.id === id);
+            if (!item) return null;
+            const absY = getAbsoluteY(id, item.category, layouts, sectionLayouts, bodyLayouts);
+            if (absY === null) return null;
+            const height = layouts[id]?.height ?? 0;
+            return { id, centerY: absY + height / 2 };
+        })
+        .filter((entry): entry is { id: string; centerY: number } => entry !== null)
+        .sort((a, b) => a.centerY - b.centerY);
 
-    // Simpler approach: 
-    // Just iterate all items and find the insertion point as before.
-    // BUT we must filter the candidate items to checks against.
-    // If we are dropping into "Uncategorized", we should compare Y against items currently in "Uncategorized"?
-    // OR we compare Y against ALL items, but `computeDropIndex` already does that.
-
-    // The previous logic for `targetIndex` in `buildDropPreview` was mostly correct for finding WHERE in the shuffled list it goes.
-    // The visual order (Y) dictates the new rank.
-    // So finding `targetIndex` by simple Y comparison is "okay" IF we assume vertical list.
-
-    let targetIndex = current.length;
-    let found = false;
-
-    // Find the first item whose center is below the ghost center
-    for (let i = 0; i < current.length; i++) {
-        const itemId = current[i];
-        if (itemId === snapshot.id) continue;
-
-        const item = items.find(it => it.id === itemId);
-        if (!item) continue;
-
-        const itemAbsY = getAbsoluteY(itemId, item.category, layouts, sectionLayouts, bodyLayouts);
-        if (itemAbsY === null) continue;
-
-        const itemHeight = layouts[itemId]?.height ?? 0;
-        const itemCenterY = itemAbsY + itemHeight / 2;
-
-        if (ghostAbsCenterY < itemCenterY) {
-            targetIndex = i;
-            found = true;
+    // Find insertion point based on visual position
+    let insertAfterId: string | null = null;
+    for (const entry of visualOrder) {
+        if (ghostAbsCenterY > entry.centerY) {
+            insertAfterId = entry.id;
+        } else {
             break;
         }
     }
 
-    // If we didn't find a target (i.e. we are below everyone), targetIndex is length.
-
+    // Build new order: find where to insert in current array
     const draggedIndex = current.indexOf(snapshot.id);
+    let targetIndex: number;
+    
+    if (insertAfterId === null) {
+        // Insert at beginning (before all items in visual order)
+        targetIndex = visualOrder.length > 0 ? current.indexOf(visualOrder[0].id) : 0;
+    } else {
+        // Insert after the found item
+        targetIndex = current.indexOf(insertAfterId) + 1;
+    }
     const categoryChanged = draggedItem.category !== targetCategoryId;
 
     if (targetIndex === draggedIndex) {

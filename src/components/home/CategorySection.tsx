@@ -181,7 +181,7 @@ const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragStat
 const CategoryItemRow = (props: CategoryItemRowProps) => {
   const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
-  const containerStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
+  const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
   const hasMembers = props.item.members.length > 0;
   const showMenu = () =>
     Alert.alert(props.item.name, undefined, [
@@ -190,37 +190,39 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
       { text: "Cancel", style: "cancel" },
     ]);
   return (
-    <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)} style={containerStyle}>
-      {wrap(<DragHandle />)}
-      {hasMembers ? (
-        <MultiCheckbox item={props.item} onToggle={props.onToggleAllMembers} />
-      ) : (
-        <Checkbox
-          value={props.item.checked}
-          onValueChange={() => props.onToggle(props.item)}
-          color={props.item.checked ? homeColors.primary : undefined}
-          style={homeStyles.checkbox}
-        />
-      )}
-      <View style={homeStyles.itemContent}>
-        <EditableText
-          value={props.item.name}
-          onSubmit={(name) => props.onRenameItem(props.item, name)}
-          textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
-          inputStyle={homeStyles.itemInput}
-          autoFocus={props.editing.active(props.item.id)}
-          onStart={() => props.editing.start(props.item.id)}
-          onEnd={() => props.editing.stop(props.item.id)}
-        />
-        <MemberInitials
-          item={props.item}
-          members={props.members}
-          memberImages={props.memberImages}
-          onToggle={props.onToggleMemberPacked}
-        />
-      </View>
-      <Pressable style={homeStyles.menuButton} onPress={showMenu} accessibilityRole="button" accessibilityLabel="Item menu">
-        <Text style={homeStyles.menuIcon}>⋮</Text>
+    <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
+      <Pressable style={rowStyle}>
+        {wrap(<DragHandle />)}
+        {hasMembers ? (
+          <MultiCheckbox item={props.item} onToggle={props.onToggleAllMembers} />
+        ) : (
+          <Checkbox
+            value={props.item.checked}
+            onValueChange={() => props.onToggle(props.item)}
+            color={props.item.checked ? homeColors.primary : undefined}
+            style={homeStyles.checkbox}
+          />
+        )}
+        <View style={homeStyles.itemContent}>
+          <EditableText
+            value={props.item.name}
+            onSubmit={(name) => props.onRenameItem(props.item, name)}
+            textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
+            inputStyle={homeStyles.itemInput}
+            autoFocus={props.editing.active(props.item.id)}
+            onStart={() => props.editing.start(props.item.id)}
+            onEnd={() => props.editing.stop(props.item.id)}
+          />
+          <MemberInitials
+            item={props.item}
+            members={props.members}
+            memberImages={props.memberImages}
+            onToggle={props.onToggleMemberPacked}
+          />
+        </View>
+        <Pressable style={homeStyles.menuButton} onPress={showMenu} accessibilityRole="button" accessibilityLabel="Item menu">
+          <Text style={homeStyles.menuIcon}>⋮</Text>
+        </Pressable>
       </Pressable>
     </View>
   );
