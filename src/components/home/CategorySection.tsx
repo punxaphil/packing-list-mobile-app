@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Checkbox from "expo-checkbox";
-import { Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Alert, Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
 import { SectionGroup } from "./itemsSectionHelpers.ts";
@@ -10,18 +12,31 @@ import { EditableText } from "./EditableText.tsx";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { useDraggableRow, DragOffset } from "./useDraggableRow.tsx";
+import { AssignMembersModal } from "./AssignMembersModal.tsx";
+import { MultiCheckbox } from "./MultiCheckbox.tsx";
+import { MemberInitials } from "./MemberInitials.tsx";
 
 type CategorySectionProps = {
   section: SectionGroup;
   color: string;
+  members: NamedEntity[];
+  memberImages: Image[];
   drag: ReturnType<typeof useDragState>;
-  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
+  onDrop: (
+    snapshot: DragSnapshot,
+    layouts: Record<string, LayoutRectangle>,
+    sectionLayouts: Record<string, LayoutRectangle>,
+    bodyLayouts: Record<string, LayoutRectangle>
+  ) => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
   onAddItem: (category: NamedEntity) => Promise<PackItem>;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
+  onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
+  onToggleMemberPacked: (item: PackItem, memberId: string) => void;
+  onToggleAllMembers: (item: PackItem, checked: boolean) => void;
 };
 
 type CategoryEditing = {
@@ -31,25 +46,10 @@ type CategoryEditing = {
   active: (id: string) => boolean;
 };
 
-type CategoryStatus = {
-  allChecked: boolean;
-  indeterminate: boolean;
-};
-
-type CategoryHeaderProps = CategorySectionProps & {
-  editing: CategoryEditing;
-  onAdd: () => void;
-};
-
-type CategoryItemsProps = CategorySectionProps & {
-  items: PackItem[];
-  editing: CategoryEditing;
-  drag: ReturnType<typeof useDragState>;
-  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
-};
-
 type CategoryItemRowProps = {
   item: PackItem;
+  members: NamedEntity[];
+  memberImages: Image[];
   editing: CategoryEditing;
   hidden: boolean;
   onToggle: (item: PackItem) => void;
@@ -59,10 +59,14 @@ type CategoryItemRowProps = {
   onDragStart: () => void;
   onDragMove: (offset: DragOffset) => void;
   onDragEnd: () => void;
+  onOpenAssignMembers: () => void;
+  onToggleMemberPacked: (memberId: string) => void;
+  onToggleAllMembers: (checked: boolean) => void;
 };
 
 export const CategorySection = (props: CategorySectionProps) => {
   const editing = useCategoryEditing();
+  const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
   return (
     <View
@@ -70,7 +74,14 @@ export const CategorySection = (props: CategorySectionProps) => {
       onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
     >
       <CategoryHeader {...props} editing={editing} onAdd={onAdd} />
-      <CategoryItems {...props} items={props.section.items} editing={editing} drag={props.drag} onDrop={props.onDrop} />
+      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} />
+      <AssignMembersModal
+        visible={!!assignItem}
+        item={assignItem}
+        members={props.members}
+        onClose={() => setAssignItem(null)}
+        onSave={props.onAssignMembers}
+      />
     </View>
   );
 };
@@ -85,17 +96,31 @@ const useCategoryEditing = (): CategoryEditing => {
   };
 };
 
-const getCategoryStatus = (items: PackItem[]): CategoryStatus => {
-  const allChecked = items.every((item) => item.checked);
-  return { allChecked, indeterminate: !allChecked && items.some((item) => item.checked) };
-};
+type CategoryHeaderProps = CategorySectionProps & { editing: CategoryEditing; onAdd: () => void };
 
 const CategoryHeader = ({ section, onToggleCategory, onRenameCategory, onAdd, editing }: CategoryHeaderProps) => {
-  const status = getCategoryStatus(section.items);
+  const allChecked = section.items.every((item) => item.checked);
+  const indeterminate = !allChecked && section.items.some((item) => item.checked);
   return (
     <View style={homeStyles.categoryHeader}>
-      <CategoryCheckbox items={section.items} status={status} onToggleCategory={onToggleCategory} />
-      <EditableText value={section.category.name} onSubmit={(name) => onRenameCategory(section.category, name)} textStyle={homeStyles.categoryTitle} inputStyle={homeStyles.categoryInput} containerStyle={homeStyles.editable} onStart={() => editing.start(section.category.id)} onEnd={() => editing.stop(section.category.id)} />
+      <View style={homeStyles.categoryCheckboxWrapper}>
+        <Checkbox
+          value={allChecked}
+          onValueChange={(checked) => onToggleCategory(section.items, checked)}
+          style={homeStyles.checkbox}
+          color={allChecked ? homeColors.primary : undefined}
+        />
+        {indeterminate && <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />}
+      </View>
+      <EditableText
+        value={section.category.name}
+        onSubmit={(name) => onRenameCategory(section.category, name)}
+        textStyle={homeStyles.categoryTitle}
+        inputStyle={homeStyles.categoryInput}
+        containerStyle={homeStyles.editable}
+        onStart={() => editing.start(section.category.id)}
+        onEnd={() => editing.stop(section.category.id)}
+      />
       <Pressable style={homeStyles.addButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItem}>
         <Text style={homeStyles.addLabel}>+</Text>
       </Pressable>
@@ -103,33 +128,15 @@ const CategoryHeader = ({ section, onToggleCategory, onRenameCategory, onAdd, ed
   );
 };
 
-const CategoryCheckbox = ({ items, status, onToggleCategory }: { items: PackItem[]; status: CategoryStatus; onToggleCategory: (items: PackItem[], checked: boolean) => void }) => (
-  <View style={homeStyles.categoryCheckboxWrapper}>
-    <Checkbox value={status.allChecked} onValueChange={(checked) => onToggleCategory(items, checked)} style={homeStyles.checkbox} color={status.allChecked ? homeColors.primary : undefined} />
-    {status.indeterminate && <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />}
-  </View>
-);
+type CategoryItemsProps = CategorySectionProps & {
+  editing: CategoryEditing;
+  onOpenAssignMembers: (item: PackItem) => void;
+};
 
-const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, onDeleteItem, section }: CategoryItemsProps) => {
-  const itemIds = items.map((i) => i.id);
-  const dropIndex = computeDropIndex(itemIds, drag.snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts, section.category.id);
-  const originalIndex = drag.snapshot ? itemIds.indexOf(drag.snapshot.id) : -1;
-
-  let indicatorTargetId: string | null = null;
-  let indicatorBelow = false;
-
-  if (dropIndex !== null) {
-    if (dropIndex === items.length) {
-      if (items.length > 0) {
-        indicatorTargetId = items[items.length - 1].id;
-        indicatorBelow = true;
-      }
-    } else {
-      indicatorTargetId = items[dropIndex]?.id ?? null;
-      indicatorBelow = false;
-    }
-  }
-
+const CategoryItems = (props: CategoryItemsProps) => {
+  const { section, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onDrop } = props;
+  const items = section.items;
+  const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
@@ -139,15 +146,20 @@ const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, o
         <CategoryItemRow
           key={item.id}
           item={item}
+          members={members}
+          memberImages={memberImages}
           editing={editing}
           hidden={drag.snapshot?.id === item.id}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
-          onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
+          onDragEnd={() => drag.end((s) => s && onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
           onToggle={onToggle}
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
+          onOpenAssignMembers={() => onOpenAssignMembers(item)}
+          onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
+          onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
       ))}
       <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
@@ -156,17 +168,41 @@ const CategoryItems = ({ items, editing, drag, onDrop, onToggle, onRenameItem, o
   );
 };
 
+const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragState>, categoryId: string) => {
+  const itemIds = items.map((i) => i.id);
+  const dropIndex = computeDropIndex(itemIds, drag.snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts, categoryId);
+  if (dropIndex === null) return { indicatorTargetId: null, indicatorBelow: false };
+  if (dropIndex === items.length && items.length > 0) {
+    return { indicatorTargetId: items[items.length - 1].id, indicatorBelow: true };
+  }
+  return { indicatorTargetId: items[dropIndex]?.id ?? null, indicatorBelow: false };
+};
+
 const CategoryItemRow = (props: CategoryItemRowProps) => {
-  const { wrap, dragging } = useDraggableRow(
-    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
-    { applyTranslation: false },
-  );
-  const rowStyle = [homeStyles.detailItem, props.hidden ? { opacity: 0 } : null, dragging ? { opacity: 0.5 } : null];
+  const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
+  const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
+  const containerStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
+  const hasMembers = props.item.members.length > 0;
+  const showMenu = () =>
+    Alert.alert(props.item.name, undefined, [
+      { text: "Edit Members", onPress: props.onOpenAssignMembers },
+      { text: "Delete", style: "destructive", onPress: () => handleDelete(props) },
+      { text: "Cancel", style: "cancel" },
+    ]);
   return (
-    <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
-      <Pressable style={rowStyle}>
-        {wrap(<DragHandle />)}
-        <Checkbox value={props.item.checked} onValueChange={() => props.onToggle(props.item)} color={props.item.checked ? homeColors.primary : undefined} style={homeStyles.checkbox} />
+    <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)} style={containerStyle}>
+      {wrap(<DragHandle />)}
+      {hasMembers ? (
+        <MultiCheckbox item={props.item} onToggle={props.onToggleAllMembers} />
+      ) : (
+        <Checkbox
+          value={props.item.checked}
+          onValueChange={() => props.onToggle(props.item)}
+          color={props.item.checked ? homeColors.primary : undefined}
+          style={homeStyles.checkbox}
+        />
+      )}
+      <View style={homeStyles.itemContent}>
         <EditableText
           value={props.item.name}
           onSubmit={(name) => props.onRenameItem(props.item, name)}
@@ -175,14 +211,24 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
           autoFocus={props.editing.active(props.item.id)}
           onStart={() => props.editing.start(props.item.id)}
           onEnd={() => props.editing.stop(props.item.id)}
-          containerStyle={homeStyles.editable}
         />
-        <Pressable style={homeStyles.deleteButton} onPress={() => { props.onDeleteItem(props.item.id); props.editing.stop(props.item.id); }} accessibilityRole="button" accessibilityLabel={HOME_COPY.deleteItem}>
-          <Text style={homeStyles.deleteLabel}>×</Text>
-        </Pressable>
+        <MemberInitials
+          item={props.item}
+          members={props.members}
+          memberImages={props.memberImages}
+          onToggle={props.onToggleMemberPacked}
+        />
+      </View>
+      <Pressable style={homeStyles.menuButton} onPress={showMenu} accessibilityRole="button" accessibilityLabel="Item menu">
+        <Text style={homeStyles.menuIcon}>⋮</Text>
       </Pressable>
     </View>
   );
+};
+
+const handleDelete = (props: CategoryItemRowProps) => {
+  props.onDeleteItem(props.item.id);
+  props.editing.stop(props.item.id);
 };
 
 const DragHandle = () => (
@@ -191,14 +237,19 @@ const DragHandle = () => (
   </View>
 );
 
-const GhostRow = ({ items, drag, layouts }: { items: PackItem[]; drag: DragSnapshot; layouts: Record<string, LayoutRectangle> }) => {
+type GhostRowProps = { items: PackItem[]; drag: DragSnapshot; layouts: Record<string, LayoutRectangle> };
+
+const GhostRow = ({ items, drag, layouts }: GhostRowProps) => {
   if (!drag) return null;
   const layout = layouts[drag.id];
   if (!layout) return null;
   const item = items.find((i) => i.id === drag.id);
   if (!item) return null;
   return (
-    <Animated.View pointerEvents="none" style={[homeStyles.itemGhost, { top: layout.y + drag.offsetY, height: layout.height }]}>
+    <Animated.View
+      pointerEvents="none"
+      style={[homeStyles.itemGhost, { top: layout.y + drag.offsetY, height: layout.height }]}
+    >
       <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 0, height: "100%" }}>
         <DragHandle />
         <View style={[homeStyles.checkbox, { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 }]} />
@@ -208,7 +259,9 @@ const GhostRow = ({ items, drag, layouts }: { items: PackItem[]; drag: DragSnaps
   );
 };
 
-const DropIndicator = ({ targetId, layouts, below }: { targetId: string | null; layouts: Record<string, LayoutRectangle>; below: boolean }) => {
+type DropIndicatorProps = { targetId: string | null; layouts: Record<string, LayoutRectangle>; below: boolean };
+
+const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   if (!targetId) return null;
   const layout = layouts[targetId];
   if (!layout) return null;

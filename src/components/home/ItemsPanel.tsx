@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { Pressable, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -32,6 +33,9 @@ export type ListHandlers = {
     onAddItem: (category: NamedEntity) => Promise<PackItem>;
     onRenameCategory: (category: NamedEntity, name: string) => void;
     onToggleCategory: (items: PackItem[], checked: boolean) => void;
+    onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
+    onToggleMemberPacked: (item: PackItem, memberId: string) => void;
+    onToggleAllMembers: (item: PackItem, checked: boolean) => void;
 };
 
 type ItemsPanelProps = ItemsSectionProps &
@@ -81,6 +85,9 @@ const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) 
     />
 );
 
-const ItemsListView = ({ categoriesState, itemsState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: ItemsPanelProps) => (
-    <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} />
-);
+const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers }: ItemsPanelProps) => {
+    const memberImages = imagesState.images.filter((img) => img.type === "members");
+    return (
+        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} />
+    );
+};

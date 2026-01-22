@@ -1,6 +1,8 @@
 import { ActivityIndicator, LayoutRectangle, Text, View } from "react-native";
+import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { buildSections, SectionGroup } from "./itemsSectionHelpers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { CategorySection } from "./CategorySection.tsx";
@@ -14,18 +16,25 @@ type ItemsListProps = {
   hasItems: boolean;
   items: PackItem[];
   categories: NamedEntity[];
+  members: NamedEntity[];
+  memberImages: Image[];
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
   onAddItem: (category: NamedEntity) => Promise<PackItem>;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
+  onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
+  onToggleMemberPacked: (item: PackItem, memberId: string) => void;
+  onToggleAllMembers: (item: PackItem, checked: boolean) => void;
 };
 
 type RenderItemsProps = {
   sections: SectionGroup[];
   hasItems: boolean;
   colors: Record<string, string>;
+  members: NamedEntity[];
+  memberImages: Image[];
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
@@ -34,6 +43,9 @@ type RenderItemsProps = {
   onAddItem: (category: NamedEntity) => Promise<PackItem>;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
+  onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
+  onToggleMemberPacked: (item: PackItem, memberId: string) => void;
+  onToggleAllMembers: (item: PackItem, checked: boolean) => void;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
@@ -46,6 +58,8 @@ export const ItemsList = (props: ItemsListProps) => {
     sections,
     hasItems: props.hasItems,
     colors,
+    members: props.members,
+    memberImages: props.memberImages,
     drag,
     onDrop: ordering.drop,
     onToggle: props.onToggle,
@@ -54,10 +68,13 @@ export const ItemsList = (props: ItemsListProps) => {
     onAddItem: props.onAddItem,
     onRenameCategory: props.onRenameCategory,
     onToggleCategory: props.onToggleCategory,
+    onAssignMembers: props.onAssignMembers,
+    onToggleMemberPacked: props.onToggleMemberPacked,
+    onToggleAllMembers: props.onToggleAllMembers,
   });
 };
 
-const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, members, memberImages, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers }: RenderItemsProps) => (
   <FadeScrollView style={homeStyles.scroll}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -66,6 +83,8 @@ const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRen
           key={section.category.id || `uncategorized-${index}`}
           section={section}
           color={section.category.color ?? colors[section.category.id]}
+          members={members}
+          memberImages={memberImages}
           drag={drag}
           onDrop={onDrop}
           onToggle={onToggle}
@@ -74,6 +93,9 @@ const renderItems = ({ sections, hasItems, colors, drag, onDrop, onToggle, onRen
           onAddItem={onAddItem}
           onRenameCategory={onRenameCategory}
           onToggleCategory={onToggleCategory}
+          onAssignMembers={onAssignMembers}
+          onToggleMemberPacked={onToggleMemberPacked}
+          onToggleAllMembers={onToggleAllMembers}
         />
       ))}
     </View>

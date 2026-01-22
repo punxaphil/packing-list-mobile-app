@@ -1,3 +1,4 @@
+import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
@@ -25,10 +26,22 @@ export type CategoriesState = {
   loading: boolean;
 };
 
+export type MembersState = {
+  members: NamedEntity[];
+  loading: boolean;
+};
+
+export type ImagesState = {
+  images: Image[];
+  loading: boolean;
+};
+
 export type ItemsSectionProps = {
   selection: SelectionState;
   categoriesState: CategoriesState;
   itemsState: ItemsState;
+  membersState: MembersState;
+  imagesState: ImagesState;
   email: string;
   onProfile: () => void;
 };

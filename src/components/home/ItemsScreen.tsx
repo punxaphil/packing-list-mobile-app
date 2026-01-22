@@ -1,5 +1,7 @@
 import { ActivityIndicator, View, Text } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
+import { useImages } from "~/hooks/useImages.ts";
+import { useMembers } from "~/hooks/useMembers.ts";
 import { usePackingItems } from "~/hooks/usePackingItems.ts";
 import { homeColors } from "./theme.ts";
 import { homeStyles } from "./styles.ts";
@@ -17,6 +19,8 @@ type ItemsScreenProps = {
 
 export const ItemsScreen = ({ userId, email, hasLists, listsLoading, selection, onProfile }: ItemsScreenProps) => {
   const categoriesState = useCategories(userId);
+  const membersState = useMembers(userId);
+  const imagesState = useImages(userId);
   const itemsState = usePackingItems(userId, selection.selectedId);
 
   if (listsLoading) {
@@ -41,7 +45,7 @@ export const ItemsScreen = ({ userId, email, hasLists, listsLoading, selection, 
 
   return (
     <View style={homeStyles.home}>
-      <ItemsSection selection={selection} categoriesState={categoriesState} itemsState={itemsState} email={email} onProfile={onProfile} />
+      <ItemsSection selection={selection} categoriesState={categoriesState} itemsState={itemsState} membersState={membersState} imagesState={imagesState} email={email} onProfile={onProfile} />
     </View>
   );
 };
