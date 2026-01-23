@@ -1,47 +1,54 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
 import { HOME_COPY } from "./styles.ts";
 import { writeDb } from "~/services/database.ts";
 import { getNextItemRank, getNextCategoryRank } from "./itemsSectionHelpers.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialogState } from "./ItemsPanel.tsx";
+import { FilterSheet } from "./FilterSheet.tsx";
+import { useFilterDialog } from "./useFilterDialog.ts";
+import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer } from "./itemHandlers.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 
-const useItemToggle = () => useCallback((item: PackItem) => { animateLayout(); void writeDb.updatePackItem({ ...item, checked: !item.checked }); }, []);
-const useItemRename = () => useCallback((item: PackItem, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === item.name) return; void writeDb.updatePackItem({ ...item, name: trimmed }); }, []);
-const useItemDelete = () => useCallback((id: string) => { animateLayout(); void writeDb.deletePackItem(id); }, []);
 const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCallback(async (category: NamedEntity) => {
   if (!packingListId) throw new Error("Missing packing list");
   animateLayout();
   return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
 }, [items, packingListId]);
-const useCategoryRename = () => useCallback((category: NamedEntity, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === category.name) return; void writeDb.updateCategories({ ...category, name: trimmed }); }, []);
-const useCategoryToggle = () => useCallback((items: PackItem[], checked: boolean) => { animateLayout(); const updates = items.map((item) => writeDb.updatePackItem({ ...item, checked })); void Promise.all(updates); }, []);
-const useAssignMembers = () => useCallback(async (item: PackItem, members: MemberPackItem[]) => { await writeDb.updatePackItem({ ...item, members }); }, []);
-const useToggleMemberPacked = () => useCallback((item: PackItem, memberId: string) => {
-  const members = item.members.map((m) => m.id === memberId ? { ...m, checked: !m.checked } : m);
-  const checked = members.every((m) => m.checked);
-  if (checked !== item.checked) animateLayout();
-  void writeDb.updatePackItem({ ...item, members, checked });
-}, []);
-const useToggleAllMembers = () => useCallback((item: PackItem, checked: boolean) => {
-  if (checked !== item.checked) animateLayout();
-  const members = item.members.map((m) => ({ ...m, checked }));
-  void writeDb.updatePackItem({ ...item, members, checked });
-}, []);
+
+const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
+  const categoryIds = new Set(items.map((i) => i.category));
+  const result = categories.filter((c) => categoryIds.has(c.id));
+  if (categoryIds.has("")) result.push(UNCATEGORIZED);
+  return result.sort((a, b) => b.rank - a.rank);
+};
+
+const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) => {
+  if (selectedCategories.length === 0) return items;
+  return items.filter((item) => selectedCategories.includes(item.category));
+};
 
 export const ItemsSection = (props: ItemsSectionProps) => {
-  const handlers = useItemsSectionHandlers(props);
   const list = props.selection.selectedList;
+  const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, props.itemsState.items), [props.categoriesState.categories, props.itemsState.items]);
+  const filterDialog = useFilterDialog(categoriesInList);
+  const filteredItems = useMemo(() => filterItemsByCategory(props.itemsState.items, filterDialog.selectedCategories), [props.itemsState.items, filterDialog.selectedCategories]);
+  const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
+  const filteredProps = { ...props, itemsState: filteredItemsState };
+  const handlers = useItemsSectionHandlers(filteredProps);
   const renameList = useListRenamer();
-  const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, props.selection.selectedList?.id);
+  const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, list?.id);
   const renameDialog = useRenameDialog(list, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
-  return <ItemsPanel {...props} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} />;
+  return (
+    <>
+      <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} />
+      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggle={filterDialog.onToggle} onClear={filterDialog.onClear} onClose={filterDialog.close} />
+    </>
+  );
 };
 
 const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
@@ -56,13 +63,6 @@ const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
   onToggleAllMembers: useToggleAllMembers(),
 });
 
-const useListRenamer = () =>
-  useCallback((list: NamedEntity, name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed || trimmed === list.name) return;
-    void writeDb.updatePackingList({ ...list, name: trimmed });
-  }, []);
-
 const useRenameDialog = (list: NamedEntity | null, rename: (target: NamedEntity, name: string) => void): TextDialogState => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState(list?.name ?? "");
@@ -71,10 +71,7 @@ const useRenameDialog = (list: NamedEntity | null, rename: (target: NamedEntity,
   const close = useCallback(() => setVisible(false), []);
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!list || !trimmed || trimmed === list.name) {
-      close();
-      return;
-    }
+    if (!list || !trimmed || trimmed === list.name) { close(); return; }
     rename(list, trimmed);
     close();
   }, [value, list, rename, close]);

@@ -1,14 +1,17 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { homeColors, homeSpacing } from "./theme.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import { AddItemDialog } from "./AddItemDialog.tsx";
+import type { FilterDialogState } from "./useFilterDialog.ts";
 
 export type TextDialogState = {
     visible: boolean;
@@ -44,6 +47,7 @@ type ItemsPanelProps = ItemsSectionProps &
         displayName: string;
         renameDialog: TextDialogState;
         addItemDialog: AddItemDialogState;
+        filterDialog: FilterDialogState;
     };
 
 export const ItemsPanel = (props: ItemsPanelProps) => (
@@ -55,7 +59,7 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
     <View style={homeStyles.panel}>
         <HeaderRow {...props} />
-        <QuickAddRow dialog={props.addItemDialog} />
+        <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} />
         <RenameDialog dialog={props.renameDialog} />
         <AddItemDialogView {...props} />
         <ItemsListView {...props} />
@@ -66,10 +70,15 @@ const HeaderRow = ({ displayName, email, renameDialog, onProfile }: ItemsPanelPr
     <HomeHeader title={displayName} email={email} onPressTitle={renameDialog.open} onProfile={onProfile} />
 );
 
-const QuickAddRow = ({ dialog }: { dialog: AddItemDialogState }) => (
-    <Pressable style={homeStyles.quickAdd} onPress={dialog.open} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItemQuick} hitSlop={8}>
-        <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
-    </Pressable>
+const QuickAddRow = ({ addDialog, filterDialog }: { addDialog: AddItemDialogState; filterDialog: FilterDialogState }) => (
+    <View style={quickAddStyles.row}>
+        <Pressable style={homeStyles.quickAdd} onPress={addDialog.open} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItemQuick} hitSlop={8}>
+            <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
+        </Pressable>
+        <Pressable style={quickAddStyles.filterButton} onPress={filterDialog.open} hitSlop={8}>
+            <MaterialCommunityIcons name="filter-variant" size={20} color={filterDialog.hasActiveFilter ? homeColors.primary : homeColors.muted} />
+        </Pressable>
+    </View>
 );
 
 const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
@@ -91,3 +100,8 @@ const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState,
         <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} />
     );
 };
+
+const quickAddStyles = StyleSheet.create({
+    row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    filterButton: { padding: homeSpacing.xs },
+});

@@ -13,11 +13,10 @@
 - DnD not working in items
 - Smooth animation when checking items (LayoutAnimation)
 - Fix laggy item move between categories (batch writes)
+- bug: no list selected -> empty items panel shown
+- Filter items by Category
 
 # todo
-
-- bug: no list selected -> empty items panel shown
-- Filter by Category
 - Filter by Member
 - Filter by Status
 - Copy to Other List
