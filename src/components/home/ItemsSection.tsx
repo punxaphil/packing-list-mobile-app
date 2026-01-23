@@ -24,9 +24,11 @@ const useAssignMembers = () => useCallback(async (item: PackItem, members: Membe
 const useToggleMemberPacked = () => useCallback((item: PackItem, memberId: string) => {
   const members = item.members.map((m) => m.id === memberId ? { ...m, checked: !m.checked } : m);
   const checked = members.every((m) => m.checked);
+  if (checked !== item.checked) animateLayout();
   void writeDb.updatePackItem({ ...item, members, checked });
 }, []);
 const useToggleAllMembers = () => useCallback((item: PackItem, checked: boolean) => {
+  if (checked !== item.checked) animateLayout();
   const members = item.members.map((m) => ({ ...m, checked }));
   void writeDb.updatePackItem({ ...item, members, checked });
 }, []);
