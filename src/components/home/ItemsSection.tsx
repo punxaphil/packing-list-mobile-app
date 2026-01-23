@@ -8,15 +8,10 @@ import { getNextItemRank, getNextCategoryRank } from "./itemsSectionHelpers.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialogState } from "./ItemsPanel.tsx";
 import { FilterSheet } from "./FilterSheet.tsx";
+import { applyFilters } from "./filterUtils.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
 import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer } from "./itemHandlers.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
-
-const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCallback(async (category: NamedEntity) => {
-  if (!packingListId) throw new Error("Missing packing list");
-  animateLayout();
-  return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
-}, [items, packingListId]);
 
 const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   const categoryIds = new Set(items.map((i) => i.category));
@@ -25,26 +20,17 @@ const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   return result.sort((a, b) => b.rank - a.rank);
 };
 
-const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) => {
-  if (selectedCategories.length === 0) return items;
-  return items.filter((item) => selectedCategories.includes(item.category));
-};
-
-const filterItemsByMember = (items: PackItem[], selectedMembers: string[]) => {
-  if (selectedMembers.length === 0) return items;
-  return items.filter((item) => item.members.some((m) => selectedMembers.includes(m.id)));
-};
-
-const applyFilters = (items: PackItem[], selectedCategories: string[], selectedMembers: string[]) => {
-  const byCategory = filterItemsByCategory(items, selectedCategories);
-  return filterItemsByMember(byCategory, selectedMembers);
-};
+const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCallback(async (category: NamedEntity) => {
+  if (!packingListId) throw new Error("Missing packing list");
+  animateLayout();
+  return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
+}, [items, packingListId]);
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
   const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, props.itemsState.items), [props.categoriesState.categories, props.itemsState.items]);
   const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, props.itemsState.items);
-  const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers]);
+  const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const handlers = useItemsSectionHandlers(filteredProps);
@@ -56,7 +42,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   return (
     <>
       <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} />
-      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggleCategory={filterDialog.onToggleCategory} members={filterDialog.members} selectedMembers={filterDialog.selectedMembers} onToggleMember={filterDialog.onToggleMember} onClear={filterDialog.onClear} onClose={filterDialog.close} />
+      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggleCategory={filterDialog.onToggleCategory} members={filterDialog.members} selectedMembers={filterDialog.selectedMembers} onToggleMember={filterDialog.onToggleMember} statusFilter={filterDialog.statusFilter} onSetStatus={filterDialog.onSetStatus} onClear={filterDialog.onClear} onClose={filterDialog.close} />
     </>
   );
 };

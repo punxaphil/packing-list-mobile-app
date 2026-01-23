@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { FilterRow, MemberSection } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
+import { StatusSection } from "./StatusSection.tsx";
+import type { StatusFilter } from "./useFilterDialog.ts";
 
 type FilterSheetProps = {
   visible: boolean;
@@ -11,12 +14,14 @@ type FilterSheetProps = {
   members: NamedEntity[];
   selectedMembers: string[];
   onToggleMember: (memberId: string) => void;
+  statusFilter: StatusFilter;
+  onSetStatus: (status: StatusFilter) => void;
   onClear: () => void;
   onClose: () => void;
 };
 
 export const FilterSheet = (props: FilterSheetProps) => {
-  const totalCount = props.selectedCategories.length + props.selectedMembers.length;
+  const totalCount = props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -53,6 +58,7 @@ type FilterContentProps = FilterSheetProps & { scrollRef: React.RefObject<Scroll
 
 const FilterContent = ({ scrollRef, ...props }: FilterContentProps) => (
   <ScrollView ref={scrollRef} style={styles.list}>
+    <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
     <CategorySection categories={props.categories} selectedCategories={props.selectedCategories} onToggle={props.onToggleCategory} />
     <MemberSection members={props.members} selectedMembers={props.selectedMembers} onToggle={props.onToggleMember} />
   </ScrollView>
@@ -68,29 +74,6 @@ const CategorySection = ({ categories, selectedCategories, onToggle }: CategoryS
     ))}
     {categories.length === 0 && <Text style={styles.empty}>No categories in this list</Text>}
   </>
-);
-
-type MemberSectionProps = { members: NamedEntity[]; selectedMembers: string[]; onToggle: (id: string) => void };
-
-const MemberSection = ({ members, selectedMembers, onToggle }: MemberSectionProps) => (
-  <>
-    <Text style={styles.sectionTitle}>Members</Text>
-    {members.map((member) => (
-      <FilterRow key={member.id} item={member} selected={selectedMembers.includes(member.id)} onToggle={() => onToggle(member.id)} />
-    ))}
-    {members.length === 0 && <Text style={styles.empty}>No members assigned in this list</Text>}
-  </>
-);
-
-type FilterRowProps = { item: NamedEntity; selected: boolean; onToggle: () => void };
-
-const FilterRow = ({ item, selected, onToggle }: FilterRowProps) => (
-  <Pressable style={styles.row} onPress={onToggle}>
-    <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
-      {selected && <Text style={styles.checkmark}>✓</Text>}
-    </View>
-    <Text style={styles.rowText}>{item.name}</Text>
-  </Pressable>
 );
 
 const DoneButton = ({ onPress }: { onPress: () => void }) => (
