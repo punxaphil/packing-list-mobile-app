@@ -12,10 +12,10 @@
 - Upgrade expo@54.0.32
 - DnD not working in items
 - Smooth animation when checking items (LayoutAnimation)
+- Fix laggy item move between categories (batch writes)
 
 # todo
 
-- laggy item move between categories
 - bug: no list selected -> empty items panel shown
 - Filter by Category
 - Filter by Member

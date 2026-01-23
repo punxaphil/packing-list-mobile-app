@@ -258,12 +258,13 @@ const persistRanks = (orderedIds: string[], items: PackItem[], draggedId: string
 
     if (!updates.length) return;
 
-    const promises = updates.map(update => {
+    const batch = writeDb.initBatch();
+    for (const update of updates) {
         const original = items.find(i => i.id === update.id);
-        if (!original) return Promise.resolve();
-        return writeDb.updatePackItem({ ...original, rank: update.rank, category: update.category ?? original.category });
-    });
-    void Promise.all(promises);
+        if (!original) continue;
+        writeDb.updatePackItemBatch({ ...original, rank: update.rank, category: update.category ?? original.category }, batch);
+    }
+    void batch.commit();
 };
 
 
