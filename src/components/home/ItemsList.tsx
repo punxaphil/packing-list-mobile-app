@@ -27,6 +27,7 @@ type ItemsListProps = {
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
+  onMoveCategory: (item: PackItem, categoryId: string) => void;
 };
 
 type RenderItemsProps = {
@@ -35,6 +36,7 @@ type RenderItemsProps = {
   colors: Record<string, string>;
   members: NamedEntity[];
   memberImages: Image[];
+  categories: NamedEntity[];
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
@@ -46,6 +48,7 @@ type RenderItemsProps = {
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
+  onMoveCategory: (item: PackItem, categoryId: string) => void;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
@@ -60,6 +63,7 @@ export const ItemsList = (props: ItemsListProps) => {
     colors,
     members: props.members,
     memberImages: props.memberImages,
+    categories: props.categories,
     drag,
     onDrop: ordering.drop,
     onToggle: props.onToggle,
@@ -71,10 +75,11 @@ export const ItemsList = (props: ItemsListProps) => {
     onAssignMembers: props.onAssignMembers,
     onToggleMemberPacked: props.onToggleMemberPacked,
     onToggleAllMembers: props.onToggleAllMembers,
+    onMoveCategory: props.onMoveCategory,
   });
 };
 
-const renderItems = ({ sections, hasItems, colors, members, memberImages, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, members, memberImages, categories, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory }: RenderItemsProps) => (
   <FadeScrollView style={homeStyles.scroll}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -85,6 +90,7 @@ const renderItems = ({ sections, hasItems, colors, members, memberImages, drag, 
           color={section.category.color ?? colors[section.category.id]}
           members={members}
           memberImages={memberImages}
+          categories={categories}
           drag={drag}
           onDrop={onDrop}
           onToggle={onToggle}
@@ -96,6 +102,7 @@ const renderItems = ({ sections, hasItems, colors, members, memberImages, drag, 
           onAssignMembers={onAssignMembers}
           onToggleMemberPacked={onToggleMemberPacked}
           onToggleAllMembers={onToggleAllMembers}
+          onMoveCategory={onMoveCategory}
         />
       ))}
     </View>

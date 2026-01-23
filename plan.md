@@ -17,9 +17,9 @@
 - Filter items by Category
 - Filter by Member
 - Filter by Status
+- item dialog should include option to move to another category (or uncategorized)
 
 # todo
-- item dialog should include option to move to another category (or uncategorized)
 - flash scrollbar instead of fade for scrollable content indication
 - Copy to Other List
 - Templates

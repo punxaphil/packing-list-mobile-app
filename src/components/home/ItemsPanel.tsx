@@ -39,6 +39,7 @@ export type ListHandlers = {
     onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
     onToggleMemberPacked: (item: PackItem, memberId: string) => void;
     onToggleAllMembers: (item: PackItem, checked: boolean) => void;
+    onMoveCategory: (item: PackItem, categoryId: string) => void;
 };
 
 type ItemsPanelProps = ItemsSectionProps &
@@ -94,10 +95,10 @@ const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) 
     />
 );
 
-const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers }: ItemsPanelProps) => {
+const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory }: ItemsPanelProps) => {
     const memberImages = imagesState.images.filter((img) => img.type === "members");
     return (
-        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} />
+        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} />
     );
 };
 

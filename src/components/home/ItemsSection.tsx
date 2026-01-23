@@ -10,7 +10,7 @@ import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialog
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
-import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer } from "./itemHandlers.ts";
+import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer, useMoveCategory } from "./itemHandlers.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 
 const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
@@ -57,6 +57,7 @@ const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
   onAssignMembers: useAssignMembers(),
   onToggleMemberPacked: useToggleMemberPacked(),
   onToggleAllMembers: useToggleAllMembers(),
+  onMoveCategory: useMoveCategory(),
 });
 
 const useRenameDialog = (list: NamedEntity | null, rename: (target: NamedEntity, name: string) => void): TextDialogState => {

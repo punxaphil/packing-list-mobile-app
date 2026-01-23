@@ -31,3 +31,5 @@ export const useToggleAllMembers = () => useCallback((item: PackItem, checked: b
 }, []);
 
 export const useListRenamer = () => useCallback((list: NamedEntity, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === list.name) return; void writeDb.updatePackingList({ ...list, name: trimmed }); }, []);
+
+export const useMoveCategory = () => useCallback((item: PackItem, categoryId: string) => { void writeDb.updatePackItem({ ...item, category: categoryId }); }, []);

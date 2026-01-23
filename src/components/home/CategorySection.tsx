@@ -13,6 +13,7 @@ import { useDragState, DragSnapshot } from "./useDragState.ts";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { useDraggableRow, DragOffset } from "./useDraggableRow.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
+import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitials } from "./MemberInitials.tsx";
 
@@ -21,6 +22,7 @@ type CategorySectionProps = {
   color: string;
   members: NamedEntity[];
   memberImages: Image[];
+  categories: NamedEntity[];
   drag: ReturnType<typeof useDragState>;
   onDrop: (
     snapshot: DragSnapshot,
@@ -37,6 +39,7 @@ type CategorySectionProps = {
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
+  onMoveCategory: (item: PackItem, categoryId: string) => void;
 };
 
 type CategoryEditing = {
@@ -60,6 +63,7 @@ type CategoryItemRowProps = {
   onDragMove: (offset: DragOffset) => void;
   onDragEnd: () => void;
   onOpenAssignMembers: () => void;
+  onOpenMoveCategory: () => void;
   onToggleMemberPacked: (memberId: string) => void;
   onToggleAllMembers: (checked: boolean) => void;
 };
@@ -67,20 +71,31 @@ type CategoryItemRowProps = {
 export const CategorySection = (props: CategorySectionProps) => {
   const editing = useCategoryEditing();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
+  const [moveItem, setMoveItem] = useState<PackItem | null>(null);
   const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
+  const handleMoveCategory = (category: NamedEntity) => {
+    if (moveItem) props.onMoveCategory(moveItem, category.id);
+  };
   return (
     <View
       style={[homeStyles.category, { backgroundColor: props.color }]}
       onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
     >
       <CategoryHeader {...props} editing={editing} onAdd={onAdd} />
-      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} />
+      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} onOpenMoveCategory={setMoveItem} />
       <AssignMembersModal
         visible={!!assignItem}
         item={assignItem}
         members={props.members}
         onClose={() => setAssignItem(null)}
         onSave={props.onAssignMembers}
+      />
+      <MoveCategoryModal
+        visible={!!moveItem}
+        categories={props.categories}
+        currentCategoryId={moveItem?.category ?? ""}
+        onClose={() => setMoveItem(null)}
+        onSelect={handleMoveCategory}
       />
     </View>
   );
@@ -131,10 +146,11 @@ const CategoryHeader = ({ section, onToggleCategory, onRenameCategory, onAdd, ed
 type CategoryItemsProps = CategorySectionProps & {
   editing: CategoryEditing;
   onOpenAssignMembers: (item: PackItem) => void;
+  onOpenMoveCategory: (item: PackItem) => void;
 };
 
 const CategoryItems = (props: CategoryItemsProps) => {
-  const { section, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onDrop } = props;
+  const { section, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onDrop } = props;
   const items = section.items;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
   return (
@@ -158,6 +174,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
+          onOpenMoveCategory={() => onOpenMoveCategory(item)}
           onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
@@ -186,6 +203,7 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
   const showMenu = () =>
     Alert.alert(props.item.name, undefined, [
       { text: "Edit Members", onPress: props.onOpenAssignMembers },
+      { text: "Change Category", onPress: props.onOpenMoveCategory },
       { text: "Delete", style: "destructive", onPress: () => handleDelete(props) },
       { text: "Cancel", style: "cancel" },
     ]);
