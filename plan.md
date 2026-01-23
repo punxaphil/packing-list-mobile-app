@@ -15,10 +15,11 @@
 - Fix laggy item move between categories (batch writes)
 - bug: no list selected -> empty items panel shown
 - Filter items by Category
+- Filter by Member
 
 # todo
-- Filter by Member
 - Filter by Status
+- flash scrollbar instead of fade for scrollable content indication
 - Copy to Other List
 - Templates
 - Delete Checked Items

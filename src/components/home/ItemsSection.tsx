@@ -30,11 +30,21 @@ const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) 
   return items.filter((item) => selectedCategories.includes(item.category));
 };
 
+const filterItemsByMember = (items: PackItem[], selectedMembers: string[]) => {
+  if (selectedMembers.length === 0) return items;
+  return items.filter((item) => item.members.some((m) => selectedMembers.includes(m.id)));
+};
+
+const applyFilters = (items: PackItem[], selectedCategories: string[], selectedMembers: string[]) => {
+  const byCategory = filterItemsByCategory(items, selectedCategories);
+  return filterItemsByMember(byCategory, selectedMembers);
+};
+
 export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
   const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, props.itemsState.items), [props.categoriesState.categories, props.itemsState.items]);
-  const filterDialog = useFilterDialog(categoriesInList);
-  const filteredItems = useMemo(() => filterItemsByCategory(props.itemsState.items, filterDialog.selectedCategories), [props.itemsState.items, filterDialog.selectedCategories]);
+  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, props.itemsState.items);
+  const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers]);
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const handlers = useItemsSectionHandlers(filteredProps);
@@ -46,7 +56,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   return (
     <>
       <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} />
-      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggle={filterDialog.onToggle} onClear={filterDialog.onClear} onClose={filterDialog.close} />
+      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggleCategory={filterDialog.onToggleCategory} members={filterDialog.members} selectedMembers={filterDialog.selectedMembers} onToggleMember={filterDialog.onToggleMember} onClear={filterDialog.onClear} onClose={filterDialog.close} />
     </>
   );
 };

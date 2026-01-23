@@ -8,6 +8,7 @@ export const filterSheetStyles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: "700", color: homeColors.text },
   clearText: { fontSize: 14, fontWeight: "600", color: homeColors.primary },
   list: { flexGrow: 0 },
+  sectionTitle: { fontSize: 14, fontWeight: "600", color: homeColors.muted, marginTop: homeSpacing.sm, marginBottom: homeSpacing.xs },
   row: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm, paddingVertical: homeSpacing.sm, borderBottomWidth: 1, borderBottomColor: homeColors.border },
   checkbox: { width: 22, height: 22, borderRadius: 4, borderWidth: 2, borderColor: homeColors.border, alignItems: "center", justifyContent: "center" },
   checkboxSelected: { backgroundColor: homeColors.primary, borderColor: homeColors.primary },

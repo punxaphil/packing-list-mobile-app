@@ -13,6 +13,5 @@
 - Use descriptive variable and function names.
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
-- Compile and fix after each change.
-- Never commit without user approval.
 - When user corrects general behavior, update these instructions accordingly.
+- After each change, compile and fix errors, then ask me to verify. If I approve, perform code review and cleanup. After that suggest commit message and wait for my approval before committing.
