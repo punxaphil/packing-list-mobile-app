@@ -14,4 +14,9 @@
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
 - When user corrects general behavior, update these instructions accordingly.
-- After each change, compile and fix errors, then ask me to verify. If I approve, perform code review and cleanup. After that suggest commit message and wait for my approval before committing.
+- After each change:
+  1. compile and fix errors
+  2. ask me to verify. 
+  3. If I approve, perform code review and cleanup. 
+  4. After that suggest commit message (conventional commits style, descriptive commit body ~5 lines)
+  5. Wait for my approval before committing.
