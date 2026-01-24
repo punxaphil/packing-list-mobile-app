@@ -29,7 +29,7 @@ const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCa
 export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
   const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, props.itemsState.items), [props.categoriesState.categories, props.itemsState.items]);
-  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, props.itemsState.items);
+  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, props.itemsState.items, list?.id);
   const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
