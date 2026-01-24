@@ -14,6 +14,8 @@ import { computeDropIndex } from "./itemOrdering.ts";
 import { useDraggableRow, DragOffset } from "./useDraggableRow.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
+import { CopyToListModal } from "./CopyToListModal.tsx";
+import { PackingListSummary } from "./types.ts";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitials } from "./MemberInitials.tsx";
 
@@ -23,6 +25,8 @@ type CategorySectionProps = {
   members: NamedEntity[];
   memberImages: Image[];
   categories: NamedEntity[];
+  lists: NamedEntity[];
+  currentListId: string;
   drag: ReturnType<typeof useDragState>;
   onDrop: (
     snapshot: DragSnapshot,
@@ -40,6 +44,7 @@ type CategorySectionProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onCopyToList: (item: PackItem, listId: string) => Promise<void>;
 };
 
 type CategoryEditing = {
@@ -55,6 +60,7 @@ type CategoryItemRowProps = {
   memberImages: Image[];
   editing: CategoryEditing;
   hidden: boolean;
+  hasOtherLists: boolean;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -64,6 +70,7 @@ type CategoryItemRowProps = {
   onDragEnd: () => void;
   onOpenAssignMembers: () => void;
   onOpenMoveCategory: () => void;
+  onOpenCopyToList: () => void;
   onToggleMemberPacked: (memberId: string) => void;
   onToggleAllMembers: (checked: boolean) => void;
 };
@@ -72,9 +79,13 @@ export const CategorySection = (props: CategorySectionProps) => {
   const editing = useCategoryEditing();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
+  const [copyItem, setCopyItem] = useState<PackItem | null>(null);
   const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
   const handleMoveCategory = (category: NamedEntity) => {
     if (moveItem) props.onMoveCategory(moveItem, category.id);
+  };
+  const handleCopyToList = async (list: PackingListSummary) => {
+    if (copyItem) await props.onCopyToList(copyItem, list.id);
   };
   return (
     <View
@@ -82,7 +93,7 @@ export const CategorySection = (props: CategorySectionProps) => {
       onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
     >
       <CategoryHeader {...props} editing={editing} onAdd={onAdd} />
-      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} onOpenMoveCategory={setMoveItem} />
+      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} onOpenMoveCategory={setMoveItem} onOpenCopyToList={setCopyItem} />
       <AssignMembersModal
         visible={!!assignItem}
         item={assignItem}
@@ -96,6 +107,13 @@ export const CategorySection = (props: CategorySectionProps) => {
         currentCategoryId={moveItem?.category ?? ""}
         onClose={() => setMoveItem(null)}
         onSelect={handleMoveCategory}
+      />
+      <CopyToListModal
+        visible={!!copyItem}
+        lists={props.lists}
+        currentListId={props.currentListId}
+        onClose={() => setCopyItem(null)}
+        onSelect={handleCopyToList}
       />
     </View>
   );
@@ -147,11 +165,13 @@ type CategoryItemsProps = CategorySectionProps & {
   editing: CategoryEditing;
   onOpenAssignMembers: (item: PackItem) => void;
   onOpenMoveCategory: (item: PackItem) => void;
+  onOpenCopyToList: (item: PackItem) => void;
 };
 
 const CategoryItems = (props: CategoryItemsProps) => {
-  const { section, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onDrop } = props;
+  const { section, lists, currentListId, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop } = props;
   const items = section.items;
+  const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
   return (
     <View
@@ -166,6 +186,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           memberImages={memberImages}
           editing={editing}
           hidden={drag.snapshot?.id === item.id}
+          hasOtherLists={hasOtherLists}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
@@ -175,6 +196,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
           onOpenMoveCategory={() => onOpenMoveCategory(item)}
+          onOpenCopyToList={() => onOpenCopyToList(item)}
           onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
@@ -200,13 +222,16 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
   const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
   const hasMembers = props.item.members.length > 0;
-  const showMenu = () =>
-    Alert.alert(props.item.name, undefined, [
+  const showMenu = () => {
+    const buttons = [
       { text: "Edit Members", onPress: props.onOpenAssignMembers },
       { text: "Change Category", onPress: props.onOpenMoveCategory },
-      { text: "Delete", style: "destructive", onPress: () => handleDelete(props) },
-      { text: "Cancel", style: "cancel" },
-    ]);
+      ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
+      { text: "Delete", style: "destructive" as const, onPress: () => handleDelete(props) },
+      { text: "Cancel", style: "cancel" as const },
+    ];
+    Alert.alert(props.item.name, undefined, buttons);
+  };
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
       <Pressable style={rowStyle}>

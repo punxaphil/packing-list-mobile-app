@@ -18,6 +18,8 @@ type ItemsListProps = {
   categories: NamedEntity[];
   members: NamedEntity[];
   memberImages: Image[];
+  lists: NamedEntity[];
+  currentListId: string;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -28,6 +30,7 @@ type ItemsListProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onCopyToList: (item: PackItem, listId: string) => Promise<void>;
 };
 
 type RenderItemsProps = {
@@ -37,6 +40,8 @@ type RenderItemsProps = {
   members: NamedEntity[];
   memberImages: Image[];
   categories: NamedEntity[];
+  lists: NamedEntity[];
+  currentListId: string;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
@@ -49,6 +54,7 @@ type RenderItemsProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onCopyToList: (item: PackItem, listId: string) => Promise<void>;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
@@ -64,6 +70,8 @@ export const ItemsList = (props: ItemsListProps) => {
     members: props.members,
     memberImages: props.memberImages,
     categories: props.categories,
+    lists: props.lists,
+    currentListId: props.currentListId,
     drag,
     onDrop: ordering.drop,
     onToggle: props.onToggle,
@@ -76,10 +84,11 @@ export const ItemsList = (props: ItemsListProps) => {
     onToggleMemberPacked: props.onToggleMemberPacked,
     onToggleAllMembers: props.onToggleAllMembers,
     onMoveCategory: props.onMoveCategory,
+    onCopyToList: props.onCopyToList,
   });
 };
 
-const renderItems = ({ sections, hasItems, colors, members, memberImages, categories, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, members, memberImages, categories, lists, currentListId, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: RenderItemsProps) => (
   <FadeScrollView style={homeStyles.scroll}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -91,6 +100,8 @@ const renderItems = ({ sections, hasItems, colors, members, memberImages, catego
           members={members}
           memberImages={memberImages}
           categories={categories}
+          lists={lists}
+          currentListId={currentListId}
           drag={drag}
           onDrop={onDrop}
           onToggle={onToggle}
@@ -103,6 +114,7 @@ const renderItems = ({ sections, hasItems, colors, members, memberImages, catego
           onToggleMemberPacked={onToggleMemberPacked}
           onToggleAllMembers={onToggleAllMembers}
           onMoveCategory={onMoveCategory}
+          onCopyToList={onCopyToList}
         />
       ))}
     </View>

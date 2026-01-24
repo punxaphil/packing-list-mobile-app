@@ -23,6 +23,7 @@ const renderItems = (props: HomeLayoutProps) => (
     itemsState={props.itemsState}
     membersState={props.membersState}
     imagesState={props.imagesState}
+    lists={props.lists}
     email={props.email}
     onProfile={props.onProfile}
   />

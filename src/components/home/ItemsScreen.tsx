@@ -5,19 +5,20 @@ import { useMembers } from "~/hooks/useMembers.ts";
 import { usePackingItems } from "~/hooks/usePackingItems.ts";
 import { homeColors } from "./theme.ts";
 import { homeStyles } from "./styles.ts";
-import { SelectionState } from "./types.ts";
+import { SelectionState, PackingListSummary } from "./types.ts";
 import { ItemsSection } from "./ItemsSection.tsx";
 
 type ItemsScreenProps = {
   userId: string;
   email: string;
+  lists: PackingListSummary[];
   hasLists: boolean;
   listsLoading: boolean;
   selection: SelectionState;
   onProfile: () => void;
 };
 
-export const ItemsScreen = ({ userId, email, hasLists, listsLoading, selection, onProfile }: ItemsScreenProps) => {
+export const ItemsScreen = ({ userId, email, lists, hasLists, listsLoading, selection, onProfile }: ItemsScreenProps) => {
   const categoriesState = useCategories(userId);
   const membersState = useMembers(userId);
   const imagesState = useImages(userId);
@@ -45,7 +46,7 @@ export const ItemsScreen = ({ userId, email, hasLists, listsLoading, selection, 
 
   return (
     <View style={homeStyles.home}>
-      <ItemsSection selection={selection} categoriesState={categoriesState} itemsState={itemsState} membersState={membersState} imagesState={imagesState} email={email} onProfile={onProfile} />
+      <ItemsSection selection={selection} categoriesState={categoriesState} itemsState={itemsState} membersState={membersState} imagesState={imagesState} lists={lists} email={email} onProfile={onProfile} />
     </View>
   );
 };

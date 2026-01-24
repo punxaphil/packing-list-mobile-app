@@ -19,9 +19,9 @@
 - Filter by Status
 - item dialog should include option to move to another category (or uncategorized)
 - flash scrollbar instead of fade for scrollable content indication
+- Copy to Other List
 
 # todo
-- Copy to Other List
 - Templates
 - Delete Checked Items
 - Simple Search

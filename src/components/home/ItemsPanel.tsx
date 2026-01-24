@@ -40,6 +40,7 @@ export type ListHandlers = {
     onToggleMemberPacked: (item: PackItem, memberId: string) => void;
     onToggleAllMembers: (item: PackItem, checked: boolean) => void;
     onMoveCategory: (item: PackItem, categoryId: string) => void;
+    onCopyToList: (item: PackItem, listId: string) => Promise<void>;
 };
 
 type ItemsPanelProps = ItemsSectionProps &
@@ -95,10 +96,10 @@ const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) 
     />
 );
 
-const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory }: ItemsPanelProps) => {
+const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, lists, selection, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: ItemsPanelProps) => {
     const memberImages = imagesState.images.filter((img) => img.type === "members");
     return (
-        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} />
+        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} lists={lists} currentListId={selection.selectedId} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} onCopyToList={onCopyToList} />
     );
 };
 

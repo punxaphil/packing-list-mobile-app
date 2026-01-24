@@ -44,7 +44,7 @@ export const MainScreen = ({ userId, email, lists, hasLists, listsLoading, onPro
   return (
     <View style={homeStyles.container}>
       <View style={tab === "items" ? visible : hidden}>
-        <ItemsScreen userId={userId} email={email} hasLists={hasLists} listsLoading={listsLoading} selection={selection} onProfile={onProfile} />
+        <ItemsScreen userId={userId} email={email} lists={lists} hasLists={hasLists} listsLoading={listsLoading} selection={selection} onProfile={onProfile} />
       </View>
       <View style={tab === "lists" ? visible : hidden}>
         <ListsScreen key={visitCount.lists} email={email} lists={lists} hasLists={hasLists} listsLoading={listsLoading} selection={selection} onListSelect={handleListSelect} onProfile={onProfile} />

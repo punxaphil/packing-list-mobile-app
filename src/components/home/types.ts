@@ -42,6 +42,7 @@ export type ItemsSectionProps = {
   itemsState: ItemsState;
   membersState: MembersState;
   imagesState: ImagesState;
+  lists: NamedEntity[];
   email: string;
   onProfile: () => void;
 };
