@@ -13,6 +13,7 @@
 - Use descriptive variable and function names.
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
+- Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
 - When user corrects general behavior, update these instructions accordingly.
 - After each change:
   1. compile and fix errors

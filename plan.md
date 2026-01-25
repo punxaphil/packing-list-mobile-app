@@ -21,9 +21,9 @@
 - flash scrollbar instead of fade for scrollable content indication
 - Copy to Other List
 - Templates
+- clicking outside a dialog, any dialog, should close it
 
 # todo
-- clicking outside a dialog, any dialog, should close it
 - creating a new list: top rank it, and open it immediately
 - Pin Lists
 - Archive Lists

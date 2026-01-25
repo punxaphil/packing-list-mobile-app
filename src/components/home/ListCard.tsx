@@ -1,8 +1,10 @@
-import { Alert, LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { PackingListSummary } from "./types.ts";
 import { ListActions } from "./listSectionState.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
+import { ActionMenu } from "./ActionMenu.tsx";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
@@ -27,19 +29,17 @@ export type ListCardTextProps = {
 
 export const ListCard = (props: ListCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
+  const [menuVisible, setMenuVisible] = useState(false);
   const summary = formatSummary(props.list);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
-  const showMenu = () => {
-    const isTemplate = props.list.isTemplate === true;
-    const templateAction = isTemplate
+  const isTemplate = props.list.isTemplate === true;
+  const menuItems = [
+    isTemplate
       ? { text: "Remove Template", onPress: () => void props.actions.onRemoveTemplate(props.list) }
-      : { text: "Set as Template", onPress: () => void props.actions.onSetTemplate(props.list) };
-    Alert.alert(props.list.name, undefined, [
-      templateAction,
-      { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
-      { text: "Cancel", style: "cancel" as const },
-    ]);
-  };
+      : { text: "Set as Template", onPress: () => void props.actions.onSetTemplate(props.list) },
+    { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
+    { text: "Cancel", style: "cancel" as const },
+  ];
   return (
     <View onLayout={handleLayout}>
       <Pressable
@@ -54,9 +54,10 @@ export const ListCard = (props: ListCardProps) => {
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
-          <ListMenuButton onPress={showMenu} />
+          <ListMenuButton onPress={() => setMenuVisible(true)} />
         </View>
       </Pressable>
+      <ActionMenu visible={menuVisible} title={props.list.name} items={menuItems} onClose={() => setMenuVisible(false)} />
     </View>
   );
 };

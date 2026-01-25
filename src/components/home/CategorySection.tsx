@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Checkbox from "expo-checkbox";
-import { Alert, Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -18,6 +18,7 @@ import { CopyToListModal } from "./CopyToListModal.tsx";
 import { PackingListSummary } from "./types.ts";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitials } from "./MemberInitials.tsx";
+import { ActionMenu } from "./ActionMenu.tsx";
 
 type CategorySectionProps = {
   section: SectionGroup;
@@ -224,18 +225,16 @@ const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragStat
 const CategoryItemRow = (props: CategoryItemRowProps) => {
   const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
+  const [menuVisible, setMenuVisible] = useState(false);
   const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
   const hasMembers = props.item.members.length > 0;
-  const showMenu = () => {
-    const buttons = [
-      { text: "Edit Members", onPress: props.onOpenAssignMembers },
-      { text: "Change Category", onPress: props.onOpenMoveCategory },
-      ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
-      { text: "Delete", style: "destructive" as const, onPress: () => handleDelete(props) },
-      { text: "Cancel", style: "cancel" as const },
-    ];
-    Alert.alert(props.item.name, undefined, buttons);
-  };
+  const menuItems = [
+    { text: "Edit Members", onPress: props.onOpenAssignMembers },
+    { text: "Change Category", onPress: props.onOpenMoveCategory },
+    ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
+    { text: "Delete", style: "destructive" as const, onPress: () => handleDelete(props) },
+    { text: "Cancel", style: "cancel" as const },
+  ];
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
       <Pressable style={rowStyle}>
@@ -268,10 +267,11 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
             onToggle={props.onToggleMemberPacked}
           />
         </View>
-        <Pressable style={homeStyles.menuButton} onPress={showMenu} accessibilityRole="button" accessibilityLabel="Item menu">
+        <Pressable style={homeStyles.menuButton} onPress={() => setMenuVisible(true)} accessibilityRole="button" accessibilityLabel="Item menu">
           <Text style={homeStyles.menuIcon}>⋮</Text>
         </Pressable>
       </Pressable>
+      <ActionMenu visible={menuVisible} title={props.item.name} items={menuItems} onClose={() => setMenuVisible(false)} />
     </View>
   );
 };

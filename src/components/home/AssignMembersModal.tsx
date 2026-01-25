@@ -53,14 +53,14 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
           <Text style={styles.title}>{COPY.title}</Text>
           <Text style={styles.subtitle}>{item.name}</Text>
           <MemberList members={members} selected={selected} onToggle={toggle} />
           <Actions onCancel={onClose} onSave={handleSave} />
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };

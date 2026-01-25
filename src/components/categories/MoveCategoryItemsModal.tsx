@@ -50,31 +50,31 @@ export const MoveCategoryItemsModal = ({ visible, sourceCategory, categories, on
   if (items.length === 0 && visible) {
     return (
       <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-        <View style={moveStyles.overlay}>
-          <View style={moveStyles.modal}>
+        <Pressable style={moveStyles.overlay} onPress={onClose}>
+          <Pressable style={moveStyles.modal} onPress={(e) => e.stopPropagation()}>
             <Text style={moveStyles.title}>{MOVE_COPY.title}</Text>
             <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
             <Pressable style={moveStyles.closeButton} onPress={onClose}>
               <Text style={moveStyles.closeLabel}>{MOVE_COPY.close}</Text>
             </Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     );
   }
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={moveStyles.overlay}>
-        <View style={moveStyles.modal}>
+      <Pressable style={moveStyles.overlay} onPress={onClose}>
+        <Pressable style={moveStyles.modal} onPress={(e) => e.stopPropagation()}>
           <Text style={moveStyles.title}>{MOVE_COPY.title}</Text>
           <Text style={moveStyles.subtitle}>{MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}</Text>
           <ItemsList items={items} />
           <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
           <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
           <ActionButtons selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 };
