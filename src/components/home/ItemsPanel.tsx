@@ -12,6 +12,7 @@ import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import { AddItemDialog } from "./AddItemDialog.tsx";
 import type { FilterDialogState } from "./useFilterDialog.ts";
+import { useTemplate } from "~/providers/TemplateContext.ts";
 
 export type TextDialogState = {
     visible: boolean;
@@ -98,8 +99,10 @@ const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) 
 
 const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, lists, selection, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: ItemsPanelProps) => {
     const memberImages = imagesState.images.filter((img) => img.type === "members");
+    const { isTemplateList } = useTemplate();
+    const isTemplate = isTemplateList(selection.selectedId);
     return (
-        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} lists={lists} currentListId={selection.selectedId} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} onCopyToList={onCopyToList} />
+        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} lists={lists} currentListId={selection.selectedId} isTemplateList={isTemplate} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} onCopyToList={onCopyToList} />
     );
 };
 

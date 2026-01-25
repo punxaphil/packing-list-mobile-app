@@ -1,10 +1,11 @@
-import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Alert, LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { PackingListSummary } from "./types.ts";
 import { ListActions } from "./listSectionState.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
 
 const DRAG_HANDLE_ICON = "≡";
+const MENU_ICON = "⋮";
 
 type ListCardProps = {
   list: PackingListSummary;
@@ -28,6 +29,17 @@ export const ListCard = (props: ListCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
   const summary = formatSummary(props.list);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
+  const showMenu = () => {
+    const isTemplate = props.list.isTemplate === true;
+    const templateAction = isTemplate
+      ? { text: "Remove Template", onPress: () => void props.actions.onRemoveTemplate(props.list) }
+      : { text: "Set as Template", onPress: () => void props.actions.onSetTemplate(props.list) };
+    Alert.alert(props.list.name, undefined, [
+      templateAction,
+      { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
+      { text: "Cancel", style: "cancel" as const },
+    ]);
+  };
   return (
     <View onLayout={handleLayout}>
       <Pressable
@@ -42,7 +54,7 @@ export const ListCard = (props: ListCardProps) => {
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
-          <ListDeleteButton onDelete={() => props.actions.onDelete(props.list)} />
+          <ListMenuButton onPress={showMenu} />
         </View>
       </Pressable>
     </View>
@@ -57,14 +69,23 @@ const DragHandle = () => (
 
 export const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
-    <Text style={homeStyles.listName}>{list.name}</Text>
+    <View style={homeStyles.listNameRow}>
+      <Text style={homeStyles.listName}>{list.name}</Text>
+      {list.isTemplate && <TemplateBadge />}
+    </View>
     <Text style={homeStyles.listSummary}>{summary}</Text>
   </View>
 );
 
-const ListDeleteButton = ({ onDelete }: { onDelete: () => Promise<void> }) => (
-  <Pressable style={homeStyles.listDeleteButton} onPress={() => void onDelete()} accessibilityRole="button" accessibilityLabel={HOME_COPY.deleteList}>
-    <Text style={homeStyles.listDeleteIcon}>{HOME_COPY.deleteIcon}</Text>
+const TemplateBadge = () => (
+  <View style={homeStyles.templateBadge}>
+    <Text style={homeStyles.templateBadgeText}>Template</Text>
+  </View>
+);
+
+const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
+  <Pressable style={homeStyles.listDeleteButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="List menu">
+    <Text style={homeStyles.listDeleteIcon}>{MENU_ICON}</Text>
   </Pressable>
 );
 
@@ -72,6 +93,7 @@ export const formatSummary = (list: PackingListSummary) => {
   const total = isNumber(list.itemCount) ? list.itemCount : 0;
   const packed = isNumber(list.packedCount) ? list.packedCount : 0;
   if (!total) return HOME_COPY.listNoItems;
+  if (list.isTemplate) return `${total} ${total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural}`;
   const itemsLabel = total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural;
   const packedLabel = packed === 1 ? HOME_COPY.packedSingular : HOME_COPY.packedPlural;
   return `${total} ${itemsLabel} (${packed} ${packedLabel})`;

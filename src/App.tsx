@@ -13,6 +13,7 @@ import { MainScreen } from "./components/navigation/MainScreen.tsx";
 import { ProfileScreen } from "./components/profile/ProfileScreen.tsx";
 import { usePackingLists } from "./hooks/usePackingLists.ts";
 import { NamedEntity } from "./types/NamedEntity.ts";
+import { TemplateProvider } from "./providers/TemplateProvider.tsx";
 
 type Screen = "main" | "profile";
 
@@ -68,7 +69,11 @@ function buildView(params: ViewParams) {
   if (params.screen === "profile") {
     return <ProfileScreen email={params.email} userId={params.userId} onSignOut={signOut} onBack={() => params.onNavigate("main")} />;
   }
-  return <MainScreen userId={params.userId} email={params.email} lists={params.lists} hasLists={params.hasLists} listsLoading={params.listsLoading} onProfile={() => params.onNavigate("profile")} />;
+  return (
+    <TemplateProvider lists={params.lists}>
+      <MainScreen userId={params.userId} email={params.email} lists={params.lists} hasLists={params.hasLists} listsLoading={params.listsLoading} onProfile={() => params.onNavigate("profile")} />
+    </TemplateProvider>
+  );
 }
 
 export default function App() {

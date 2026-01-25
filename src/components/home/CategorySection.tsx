@@ -27,6 +27,7 @@ type CategorySectionProps = {
   categories: NamedEntity[];
   lists: NamedEntity[];
   currentListId: string;
+  isTemplateList: boolean;
   drag: ReturnType<typeof useDragState>;
   onDrop: (
     snapshot: DragSnapshot,
@@ -61,6 +62,7 @@ type CategoryItemRowProps = {
   editing: CategoryEditing;
   hidden: boolean;
   hasOtherLists: boolean;
+  checkboxDisabled: boolean;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -131,7 +133,7 @@ const useCategoryEditing = (): CategoryEditing => {
 
 type CategoryHeaderProps = CategorySectionProps & { editing: CategoryEditing; onAdd: () => void };
 
-const CategoryHeader = ({ section, onToggleCategory, onRenameCategory, onAdd, editing }: CategoryHeaderProps) => {
+const CategoryHeader = ({ section, isTemplateList, onToggleCategory, onRenameCategory, onAdd, editing }: CategoryHeaderProps) => {
   const allChecked = section.items.every((item) => item.checked);
   const indeterminate = !allChecked && section.items.some((item) => item.checked);
   return (
@@ -142,6 +144,7 @@ const CategoryHeader = ({ section, onToggleCategory, onRenameCategory, onAdd, ed
           onValueChange={(checked) => onToggleCategory(section.items, checked)}
           style={homeStyles.checkbox}
           color={allChecked ? homeColors.primary : undefined}
+          disabled={isTemplateList}
         />
         {indeterminate && <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />}
       </View>
@@ -169,7 +172,7 @@ type CategoryItemsProps = CategorySectionProps & {
 };
 
 const CategoryItems = (props: CategoryItemsProps) => {
-  const { section, lists, currentListId, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop } = props;
+  const { section, lists, currentListId, isTemplateList, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
@@ -187,6 +190,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           editing={editing}
           hidden={drag.snapshot?.id === item.id}
           hasOtherLists={hasOtherLists}
+          checkboxDisabled={isTemplateList}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
@@ -237,13 +241,14 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
       <Pressable style={rowStyle}>
         {wrap(<DragHandle />)}
         {hasMembers ? (
-          <MultiCheckbox item={props.item} onToggle={props.onToggleAllMembers} />
+          <MultiCheckbox item={props.item} disabled={props.checkboxDisabled} onToggle={props.onToggleAllMembers} />
         ) : (
           <Checkbox
             value={props.item.checked}
             onValueChange={() => props.onToggle(props.item)}
             color={props.item.checked ? homeColors.primary : undefined}
             style={homeStyles.checkbox}
+            disabled={props.checkboxDisabled}
           />
         )}
         <View style={homeStyles.itemContent}>

@@ -6,10 +6,11 @@ import { homeColors } from "./theme.ts";
 
 type MultiCheckboxProps = {
   item: PackItem;
+  disabled?: boolean;
   onToggle: (checked: boolean) => void;
 };
 
-export const MultiCheckbox = ({ item, onToggle }: MultiCheckboxProps) => {
+export const MultiCheckbox = ({ item, disabled, onToggle }: MultiCheckboxProps) => {
   const allChecked = item.members.every((m) => m.checked);
   const allUnchecked = item.members.every((m) => !m.checked);
   const indeterminate = !allChecked && !allUnchecked;
@@ -20,6 +21,7 @@ export const MultiCheckbox = ({ item, onToggle }: MultiCheckboxProps) => {
         onValueChange={() => onToggle(!allChecked)}
         color={allChecked ? homeColors.primary : undefined}
         style={homeStyles.checkbox}
+        disabled={disabled}
       />
       {indeterminate && <View pointerEvents="none" style={homeStyles.itemCheckboxIndicator} />}
     </View>

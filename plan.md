@@ -20,9 +20,13 @@
 - item dialog should include option to move to another category (or uncategorized)
 - flash scrollbar instead of fade for scrollable content indication
 - Copy to Other List
+- Templates
 
 # todo
-- Templates
+- clicking outside a dialog, any dialog, should close it
+- creating a new list: top rank it, and open it immediately
+- Pin Lists
+- Archive Lists
 - Delete Checked Items
 - Simple Search
 - Select Mode

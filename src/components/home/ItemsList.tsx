@@ -20,6 +20,7 @@ type ItemsListProps = {
   memberImages: Image[];
   lists: NamedEntity[];
   currentListId: string;
+  isTemplateList: boolean;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -42,6 +43,7 @@ type RenderItemsProps = {
   categories: NamedEntity[];
   lists: NamedEntity[];
   currentListId: string;
+  isTemplateList: boolean;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>, sectionLayouts: Record<string, LayoutRectangle>, bodyLayouts: Record<string, LayoutRectangle>) => void;
   onToggle: (item: PackItem) => void;
@@ -72,6 +74,7 @@ export const ItemsList = (props: ItemsListProps) => {
     categories: props.categories,
     lists: props.lists,
     currentListId: props.currentListId,
+    isTemplateList: props.isTemplateList,
     drag,
     onDrop: ordering.drop,
     onToggle: props.onToggle,
@@ -88,7 +91,7 @@ export const ItemsList = (props: ItemsListProps) => {
   });
 };
 
-const renderItems = ({ sections, hasItems, colors, members, memberImages, categories, lists, currentListId, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: RenderItemsProps) => (
+const renderItems = ({ sections, hasItems, colors, members, memberImages, categories, lists, currentListId, isTemplateList, drag, onDrop, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: RenderItemsProps) => (
   <FadeScrollView style={homeStyles.scroll}>
     <View style={homeStyles.list}>
       {!hasItems && <EmptyItems />}
@@ -102,6 +105,7 @@ const renderItems = ({ sections, hasItems, colors, members, memberImages, catego
           categories={categories}
           lists={lists}
           currentListId={currentListId}
+          isTemplateList={isTemplateList}
           drag={drag}
           onDrop={onDrop}
           onToggle={onToggle}

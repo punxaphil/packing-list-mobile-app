@@ -394,6 +394,22 @@ export const writeDb = {
   addPackingListBatch(name: string, writeBatch: WriteBatch, rank: number) {
     return addBatch(PACKING_LISTS_KEY, writeBatch, { name, rank });
   },
+  async getPackItemsForList(packingListId: string): Promise<PackItem[]> {
+    const q = query(
+      collection(firestore, USERS_KEY, getUserId(), PACK_ITEMS_KEY),
+      where("packingList", "==", packingListId),
+    );
+    return fromQueryResult(await getDocs(q)) as PackItem[];
+  },
+  async copyPackItemsToList(sourceListId: string, targetListId: string): Promise<void> {
+    const items = await this.getPackItemsForList(sourceListId);
+    if (items.length === 0) return;
+    const batch = writeBatch(firestore);
+    for (const item of items) {
+      this.addPackItemBatch(batch, item.name, item.members, item.category, item.rank, targetListId, false);
+    }
+    await batch.commit();
+  },
   updateCategoryBatch<K extends DocumentData>(
     data: WithFieldValue<K>,
     batch: WriteBatch,

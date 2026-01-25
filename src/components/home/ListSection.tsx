@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Animated, LayoutRectangle, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Animated, LayoutRectangle, Pressable, StyleSheet, Text, View } from "react-native";
 import { PackingListSummary, SelectionState } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -11,6 +11,7 @@ import { DragOffset } from "./useDraggableRow.tsx";
 import { useListOrdering, computeDropIndex } from "./listOrdering.ts";
 import { useDragState, DragSnapshot } from "./useDragState.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
+import { useTemplate } from "~/providers/TemplateContext.ts";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -20,8 +21,9 @@ type ListSectionProps = {
   onListSelect: (id: string) => void;
 };
 export const ListSection = (props: ListSectionProps) => {
-  const actions = useListActions(props.lists, props.selection);
-  const creation = useCreateListDialog(actions.onAdd);
+  const { templateList } = useTemplate();
+  const actions = useListActions(props.lists, props.selection, templateList);
+  const creation = useCreateListDialog(actions.onAdd, !!templateList);
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
@@ -102,7 +104,7 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
   );
 };
 
-const useCreateListDialog = (create: (name: string) => Promise<void>) => {
+const useCreateListDialog = (create: (name: string, useTemplate: boolean) => Promise<void>, hasTemplate: boolean) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
   const open = useCallback(() => { setValue(""); setVisible(true); }, []);
@@ -110,10 +112,25 @@ const useCreateListDialog = (create: (name: string) => Promise<void>) => {
   const submit = useCallback(() => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    void create(trimmed);
     close();
-  }, [value, create, close]);
+    if (hasTemplate) {
+      askUseTemplate(trimmed, create);
+    } else {
+      void create(trimmed, false);
+    }
+  }, [value, create, close, hasTemplate]);
   return { visible, value, setValue, open, close, submit } as const;
+};
+
+const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
+  Alert.alert(
+    HOME_COPY.useTemplateTitle,
+    HOME_COPY.useTemplateMessage,
+    [
+      { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
+      { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
+    ],
+  );
 };
 
 

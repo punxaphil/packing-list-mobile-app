@@ -40,10 +40,18 @@ const useDropHandler = (lists: PackingListSummary[], setOrderedIds: OrderedIdsSt
         });
     }, [lists, setOrderedIds]);
 
-const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) =>
-    orderedIds
+const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) => {
+    const ordered = orderedIds
         .map((id) => lists.find((list) => list.id === id))
         .filter((list): list is PackingListSummary => Boolean(list));
+    return sortTemplatesFirst(ordered);
+};
+
+const sortTemplatesFirst = (lists: PackingListSummary[]) => {
+    const templates = lists.filter((list) => list.isTemplate);
+    const nonTemplates = lists.filter((list) => !list.isTemplate);
+    return [...templates, ...nonTemplates];
+};
 
 const syncOrderedIds = (current: string[], lists: PackingListSummary[]) => {
     const incoming = lists.map((list) => list.id);
