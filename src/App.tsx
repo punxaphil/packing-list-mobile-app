@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { PropsWithChildren, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -18,21 +18,13 @@ import { TemplateProvider } from "./providers/TemplateProvider.tsx";
 type Screen = "main" | "profile";
 
 const PRIMARY_COLOR = "#2563eb";
-const formatTimestamp = () => {
-  const d = new Date();
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-};
-const timestampStyles = StyleSheet.create({ footer: { alignItems: "center", paddingVertical: 4 }, text: { fontSize: 10, color: "#9ca3af" } });
-const DevTimestamp = () => __DEV__ ? <View style={timestampStyles.footer}><Text style={timestampStyles.text}>{formatTimestamp()}</Text></View> : null;
 
 const Layout = ({ children }: PropsWithChildren) => (
   <GestureHandlerRootView style={homeStyles.container}>
     <SafeAreaProvider>
-      <SafeAreaView edges={["top", "bottom"]} style={homeStyles.container}>
+      <SafeAreaView edges={["top"]} style={homeStyles.container}>
         <StatusBar style="auto" />
         <View style={homeStyles.content}>{children}</View>
-        <DevTimestamp />
       </SafeAreaView>
     </SafeAreaProvider>
   </GestureHandlerRootView>

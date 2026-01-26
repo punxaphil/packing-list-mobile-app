@@ -28,8 +28,11 @@
 - Simple Search
 
 # todo
+- clicking lists, no items flashes before loaded
+- more modern tabs, like clock for instance
 
 # Maybe later
+- dark mode
 - Delete Checked Items
 - Select Mode
 - Bulk Move Category

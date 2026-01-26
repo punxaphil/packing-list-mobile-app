@@ -8,12 +8,12 @@ const maxWidth = homeMaxWidth;
 export const HOME_COPY = homeCopy;
 
 export const homeStyles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
+  container: { flex: 1, backgroundColor: colors.surface },
+  content: { flex: 1 },
   loading: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.sm },
   loadingText: { fontSize: 16, color: colors.muted, fontWeight: "500" },
-  home: { flex: 1, alignSelf: "center", maxWidth, width: "100%", gap: spacing.lg },
-  panel: { ...homeCardStyle, flex: 1, gap: spacing.md },
+  home: { flex: 1, width: "100%", gap: spacing.sm },
+  panel: { flex: 1, paddingHorizontal: spacing.md, paddingTop: spacing.sm, gap: spacing.sm },
   panelHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm },
   panelTitle: { flex: 1, fontSize: 20, fontWeight: "700", color: colors.text },
   quickAdd: { paddingVertical: spacing.xs / 2 },

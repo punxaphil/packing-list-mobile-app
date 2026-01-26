@@ -15,9 +15,17 @@
 - No unused code. No unused variables, functions, imports, or exports.
 - Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
 - When user corrects general behavior, update these instructions accordingly.
+- Never commit build files (ios/, android/build/, node_modules/, etc.). Only commit source files.
 - After each change:
   1. compile and fix errors
   2. ask me to verify. 
-  3. If I approve, perform code review and cleanup. Actually do a proper code review, look at the code again for all changes.
+  3. If I approve, perform thorough code review. Re-read ALL changed files and check for:
+     - Unused imports
+     - Hardcoded colors/values that should use theme constants (homeColors, homeSpacing, etc.)
+     - Magic numbers or strings that should be constants
+     - Duplicate code across files
+     - Inconsistent patterns compared to rest of codebase
+     - Variables declared but never used
+     - Functions that could be simplified
   4. After that suggest commit message (conventional commits style, descriptive commit body ~5 lines)
   5. Wait for my approval before committing.
