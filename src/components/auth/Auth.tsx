@@ -5,6 +5,7 @@ import {
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function useCurrentUser() {
   const [userId, setUserId] = useState("");
@@ -43,37 +44,43 @@ export function Login() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign in to continue</Text>
-      <TextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        autoCapitalize="none"
-        secureTextEntry
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <View style={styles.button}>
-        <Button onPress={handleLogin} title="Login" />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Sign in to continue</Text>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          placeholder="Email"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          autoCapitalize="none"
+          secureTextEntry
+          placeholder="Password"
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <View style={styles.button}>
+          <Button onPress={handleLogin} title="Login" />
+        </View>
+        <View style={styles.button}>
+          <Button onPress={handleRegister} title="Register" />
+        </View>
       </View>
-      <View style={styles.button}>
-        <Button onPress={handleRegister} title="Register" />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
+    flex: 1,
     width: "100%",
     maxWidth: 400,
     alignSelf: "center",
