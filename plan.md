@@ -25,9 +25,9 @@
 - creating a new list: top rank it, and open it immediately
 - Pin Lists
 - Archive Lists
+- Simple Search
 
 # todo
-- Simple Search
 
 # Maybe later
 - Delete Checked Items
