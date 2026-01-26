@@ -22,7 +22,7 @@ type ListSectionProps = {
 };
 export const ListSection = (props: ListSectionProps) => {
   const { templateList } = useTemplate();
-  const actions = useListActions(props.lists, props.selection, templateList);
+  const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
   const creation = useCreateListDialog(actions.onAdd, !!templateList);
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();

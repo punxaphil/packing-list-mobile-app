@@ -57,7 +57,7 @@ const syncOrderedIds = (current: string[], lists: PackingListSummary[]) => {
     const incoming = lists.map((list) => list.id);
     const filtered = current.filter((id) => incoming.includes(id));
     const missing = incoming.filter((id) => !filtered.includes(id));
-    return [...filtered, ...missing];
+    return [...missing, ...filtered];
 };
 
 const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: LayoutMap) => {

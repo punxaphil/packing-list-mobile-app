@@ -22,9 +22,9 @@
 - Copy to Other List
 - Templates
 - clicking outside a dialog, any dialog, should close it
+- creating a new list: top rank it, and open it immediately
 
 # todo
-- creating a new list: top rank it, and open it immediately
 - Pin Lists
 - Archive Lists
 - Delete Checked Items

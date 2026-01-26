@@ -13,14 +13,14 @@ export type ListActions = {
   onRemoveTemplate: (list: PackingListSummary) => Promise<void>;
 };
 
-export const useListActions = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null): ListActions => ({
-  onAdd: useAddList(lists, selection, templateList),
+export const useListActions = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void): ListActions => ({
+  onAdd: useAddList(lists, selection, templateList, onListSelect),
   onDelete: useDeleteList(selection),
   onSetTemplate: useSetTemplate(templateList),
   onRemoveTemplate: useRemoveTemplate(),
 });
 
-const useAddList = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null) =>
+const useAddList = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void) =>
   useCallback(async (name: string, useTemplate: boolean) => {
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -29,8 +29,12 @@ const useAddList = (lists: PackingListSummary[], selection: SelectionState, temp
     if (useTemplate && templateList) {
       await writeDb.copyPackItemsToList(templateList.id, id);
     }
-    selection.select(id);
-  }, [lists, selection, templateList]);
+    if (onListSelect) {
+      onListSelect(id);
+    } else {
+      selection.select(id);
+    }
+  }, [lists, selection, templateList, onListSelect]);
 
 const useDeleteList = (selection: SelectionState) =>
   useCallback(async (list: PackingListSummary) => {
