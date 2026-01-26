@@ -37,16 +37,18 @@ export const ListCard = (props: ListCardProps) => {
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
+  const isArchived = props.list.archived === true;
   const showDeleteConfirm = () => setDeleteConfirmVisible(true);
-  const menuItems = buildMenuItems(props.list, props.actions, isTemplate, isPinned, showDeleteConfirm);
+  const menuItems = buildMenuItems(props.list, props.actions, isTemplate, isPinned, isArchived, showDeleteConfirm);
   const deleteConfirmItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
     { text: "Cancel", style: "cancel" as const },
   ];
+  const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
     <View onLayout={handleLayout}>
       <Pressable
-        style={[getCardStyle(props.isSelected, props.color), props.hidden ? { opacity: 0 } : null]}
+        style={[cardStyle, props.hidden ? { opacity: 0 } : null]}
         onPress={() => props.onSelect(props.list.id)}
         accessibilityRole="button"
         accessibilityLabel={props.list.name}
@@ -78,6 +80,7 @@ export const ListCardText = ({ list, summary }: ListCardTextProps) => (
       <Text style={homeStyles.listName}>{list.name}</Text>
       {list.pinned && <PinBadge />}
       {list.isTemplate && <TemplateBadge />}
+      {list.archived && <ArchivedBadge />}
     </View>
     <Text style={homeStyles.listSummary}>{summary}</Text>
   </View>
@@ -91,6 +94,12 @@ const TemplateBadge = () => (
 
 const PinBadge = () => (
   <MaterialCommunityIcons name="pin-outline" size={14} color={homeColors.muted} />
+);
+
+const ArchivedBadge = () => (
+  <View style={homeStyles.archivedBadge}>
+    <Text style={homeStyles.archivedBadgeText}>Archived</Text>
+  </View>
 );
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
@@ -110,7 +119,7 @@ export const formatSummary = (list: PackingListSummary) => {
 };
 
 export const ListCardPreview = ({ list, color }: { list: PackingListSummary; color: string }) => (
-  <View style={[getCardStyle(false, color), { flex: 1 }]}>
+  <View style={[getCardStyle(false, color, false), { flex: 1 }]}>
     <View style={homeStyles.listCardInner}>
       <View style={homeStyles.listDragHandle}>
         <Text style={homeStyles.listDragHandleIcon}>{DRAG_HANDLE_ICON}</Text>
@@ -127,20 +136,29 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
 
 const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
-const getCardStyle = (selected: boolean, color: string) =>
-  selected ? [homeStyles.listCard, homeStyles.listCardSelected, { backgroundColor: color }] : [homeStyles.listCard, { backgroundColor: color }];
+const getCardStyle = (selected: boolean, color: string, archived: boolean) => [
+  homeStyles.listCard,
+  { backgroundColor: archived ? homeColors.border : color },
+  archived && { opacity: 0.7 },
+  selected && homeStyles.listCardSelected,
+];
 
-const buildMenuItems = (list: PackingListSummary, actions: ListActions, isTemplate: boolean, isPinned: boolean, showDeleteConfirm: () => void) => {
+const buildMenuItems = (list: PackingListSummary, actions: ListActions, isTemplate: boolean, isPinned: boolean, isArchived: boolean, showDeleteConfirm: () => void) => {
   const items = [];
-  if (isPinned) {
-    items.push({ text: "Unpin", onPress: () => void actions.onUnpin(list) });
+  if (isArchived) {
+    items.push({ text: "Restore", onPress: () => void actions.onRestore(list) });
   } else {
-    items.push({ text: "Pin to Top", onPress: () => void actions.onPin(list) });
-  }
-  if (isTemplate) {
-    items.push({ text: "Remove Template", onPress: () => void actions.onRemoveTemplate(list) });
-  } else {
-    items.push({ text: "Set as Template", onPress: () => void actions.onSetTemplate(list) });
+    if (isPinned) {
+      items.push({ text: "Unpin", onPress: () => void actions.onUnpin(list) });
+    } else {
+      items.push({ text: "Pin to Top", onPress: () => void actions.onPin(list) });
+    }
+    if (isTemplate) {
+      items.push({ text: "Remove Template", onPress: () => void actions.onRemoveTemplate(list) });
+    } else {
+      items.push({ text: "Set as Template", onPress: () => void actions.onSetTemplate(list) });
+      items.push({ text: "Archive", onPress: () => void actions.onArchive(list) });
+    }
   }
   items.push({ text: "Delete", style: "destructive" as const, onPress: showDeleteConfirm });
   items.push({ text: "Cancel", style: "cancel" as const });

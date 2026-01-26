@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Animated, LayoutRectangle, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Animated, LayoutRectangle, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { PackingListSummary, SelectionState } from "./types.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { homeColors, homeSpacing } from "./theme.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
 import { ListActions, useListActions } from "./listSectionState.ts";
@@ -27,12 +28,15 @@ export const ListSection = (props: ListSectionProps) => {
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
+  const [showArchived, setShowArchived] = useState(false);
+  const hasArchived = props.lists.some((list) => list.archived);
+  const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
   return (
     <View style={homeStyles.panel}>
       <HomeHeader title={HOME_COPY.listHeader} email={props.email} onProfile={props.onProfile} />
-      <ListHeader onAdd={creation.open} />
+      <ListHeader onAdd={creation.open} showArchived={showArchived} hasArchived={hasArchived} onToggleArchived={() => setShowArchived((v) => !v)} />
       <ListScroll
-        lists={ordering.lists}
+        lists={filteredLists}
         selectedId={props.selection.selectedId}
         actions={actions}
         colors={colors}
@@ -54,11 +58,25 @@ export const ListSection = (props: ListSectionProps) => {
   );
 };
 
-const ListHeader = ({ onAdd }: { onAdd: () => void }) => (
-  <View style={homeStyles.listActions}>
-    <Pressable style={homeStyles.listActionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={HOME_COPY.createList}>
-      <Text style={homeStyles.listActionLabel}>{HOME_COPY.createList}</Text>
+type ListHeaderProps = {
+  onAdd: () => void;
+  showArchived: boolean;
+  hasArchived: boolean;
+  onToggleArchived: () => void;
+};
+
+const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: ListHeaderProps) => (
+  <View style={localStyles.headerRow}>
+    <Pressable style={localStyles.createLink} onPress={onAdd} accessibilityRole="button" accessibilityLabel={HOME_COPY.createList} hitSlop={8}>
+      <Text style={homeStyles.quickAddLabel}>Create list...</Text>
     </Pressable>
+    <View style={localStyles.spacer} />
+    {hasArchived && (
+      <View style={localStyles.archiveToggle}>
+        <Text style={localStyles.archiveToggleText}>Archived</Text>
+        <Switch value={showArchived} onValueChange={onToggleArchived} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
+      </View>
+    )}
   </View>
 );
 
@@ -197,6 +215,14 @@ const dragStyles = StyleSheet.create({
     borderRadius: 8,
   },
   debugText: { color: "#ffffff", fontSize: 12, lineHeight: 16 },
+});
+
+const localStyles = StyleSheet.create({
+  headerRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm },
+  createLink: { paddingVertical: homeSpacing.xs / 2 },
+  archiveToggle: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
+  archiveToggleText: { fontSize: 12, color: homeColors.muted },
+  spacer: { flex: 1 },
 });
 
 const DragDebugPanel = ({ snapshot, layout }: { snapshot: DragSnapshot; layout?: LayoutRectangle }) => {

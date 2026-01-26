@@ -24,9 +24,10 @@
 - clicking outside a dialog, any dialog, should close it
 - creating a new list: top rank it, and open it immediately
 - Pin Lists
+- Archive Lists
 
 # todo
-- Archive Lists
+- Delete Checked Items
 - Delete Checked Items
 - Simple Search
 - Select Mode

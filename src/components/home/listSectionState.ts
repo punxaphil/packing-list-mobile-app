@@ -11,6 +11,8 @@ export type ListActions = {
   onRemoveTemplate: (list: PackingListSummary) => Promise<void>;
   onPin: (list: PackingListSummary) => Promise<void>;
   onUnpin: (list: PackingListSummary) => Promise<void>;
+  onArchive: (list: PackingListSummary) => Promise<void>;
+  onRestore: (list: PackingListSummary) => Promise<void>;
 };
 
 export const useListActions = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void): ListActions => ({
@@ -20,6 +22,8 @@ export const useListActions = (lists: PackingListSummary[], selection: Selection
   onRemoveTemplate: useRemoveTemplate(),
   onPin: usePin(),
   onUnpin: useUnpin(),
+  onArchive: useArchive(),
+  onRestore: useRestore(),
 });
 
 const useAddList = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void) =>
@@ -64,6 +68,16 @@ const usePin = () =>
 const useUnpin = () =>
   useCallback(async (list: PackingListSummary) => {
     await writeDb.updatePackingList({ ...list, pinned: false });
+  }, []);
+
+const useArchive = () =>
+  useCallback(async (list: PackingListSummary) => {
+    await writeDb.updatePackingList({ ...list, archived: true });
+  }, []);
+
+const useRestore = () =>
+  useCallback(async (list: PackingListSummary) => {
+    await writeDb.updatePackingList({ ...list, archived: false });
   }, []);
 
 const getNextListRank = (lists: PackingListSummary[]) =>

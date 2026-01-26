@@ -44,7 +44,7 @@ const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) =>
     const ordered = orderedIds
         .map((id) => lists.find((list) => list.id === id))
         .filter((list): list is PackingListSummary => Boolean(list));
-    return sortTemplatesFirst(sortPinnedFirst(ordered));
+    return sortArchivedLast(sortTemplatesFirst(sortPinnedFirst(ordered)));
 };
 
 const sortTemplatesFirst = (lists: PackingListSummary[]) => {
@@ -57,6 +57,12 @@ const sortPinnedFirst = (lists: PackingListSummary[]) => {
     const pinned = lists.filter((list) => list.pinned);
     const unpinned = lists.filter((list) => !list.pinned);
     return [...pinned, ...unpinned];
+};
+
+const sortArchivedLast = (lists: PackingListSummary[]) => {
+    const active = lists.filter((list) => !list.archived);
+    const archived = lists.filter((list) => list.archived);
+    return [...active, ...archived];
 };
 
 const syncOrderedIds = (current: string[], lists: PackingListSummary[]) => {
