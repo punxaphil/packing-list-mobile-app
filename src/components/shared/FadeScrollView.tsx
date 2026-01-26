@@ -1,5 +1,6 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View, ViewStyle } from "react-native";
+import { TAB_BAR_HEIGHT } from "~/components/home/theme.ts";
 
 type FlashScrollViewProps = {
   children: ReactNode;
@@ -42,7 +43,7 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
       <ScrollView
         ref={scrollRef}
         style={styles.scroll}
-        contentContainerStyle={contentContainerStyle}
+        contentContainerStyle={[{ paddingBottom: TAB_BAR_HEIGHT }, contentContainerStyle]}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
         scrollEventThrottle={16}

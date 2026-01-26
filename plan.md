@@ -29,7 +29,8 @@
 - clicking lists, no items flashes before loaded
 
 # todo
-- more modern tabs, like clock for instance
+- more modern tabs, like bultin clock app for instance (but not dark mode)
+- sign in looks weird, see screenshot ![alt text](image.png)
 
 # Maybe later
 - dark mode
