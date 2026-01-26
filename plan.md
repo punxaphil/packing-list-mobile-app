@@ -23,9 +23,9 @@
 - Templates
 - clicking outside a dialog, any dialog, should close it
 - creating a new list: top rank it, and open it immediately
+- Pin Lists
 
 # todo
-- Pin Lists
 - Archive Lists
 - Delete Checked Items
 - Simple Search

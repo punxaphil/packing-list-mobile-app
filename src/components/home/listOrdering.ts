@@ -44,13 +44,19 @@ const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) =>
     const ordered = orderedIds
         .map((id) => lists.find((list) => list.id === id))
         .filter((list): list is PackingListSummary => Boolean(list));
-    return sortTemplatesFirst(ordered);
+    return sortTemplatesFirst(sortPinnedFirst(ordered));
 };
 
 const sortTemplatesFirst = (lists: PackingListSummary[]) => {
     const templates = lists.filter((list) => list.isTemplate);
     const nonTemplates = lists.filter((list) => !list.isTemplate);
     return [...templates, ...nonTemplates];
+};
+
+const sortPinnedFirst = (lists: PackingListSummary[]) => {
+    const pinned = lists.filter((list) => list.pinned);
+    const unpinned = lists.filter((list) => !list.pinned);
+    return [...pinned, ...unpinned];
 };
 
 const syncOrderedIds = (current: string[], lists: PackingListSummary[]) => {

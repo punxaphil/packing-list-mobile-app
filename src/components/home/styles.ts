@@ -42,7 +42,7 @@ export const homeStyles = StyleSheet.create({
   listSummary: { fontSize: 14, color: colors.muted },
   templateBadge: { backgroundColor: "#9333ea", paddingHorizontal: spacing.xs, paddingVertical: 2, borderRadius: spacing.xs },
   templateBadgeText: { fontSize: 10, fontWeight: "600", color: "#ffffff" },
-  listDeleteButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  listDeleteButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.md, marginVertical: -spacing.sm, marginRight: -spacing.sm },
   listDeleteIcon: { fontSize: 18 },
   listItem: { fontSize: 16, color: colors.text, paddingVertical: spacing.xs },
   activeItem: { backgroundColor: colors.primary, borderRadius: homeRadius / 2, color: "#ffffff", paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },

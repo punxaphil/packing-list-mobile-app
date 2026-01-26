@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { ListActions } from "./listSectionState.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
@@ -30,13 +32,14 @@ export type ListCardTextProps = {
 export const ListCard = (props: ListCardProps) => {
   const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
   const [menuVisible, setMenuVisible] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const summary = formatSummary(props.list);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const isTemplate = props.list.isTemplate === true;
-  const menuItems = [
-    isTemplate
-      ? { text: "Remove Template", onPress: () => void props.actions.onRemoveTemplate(props.list) }
-      : { text: "Set as Template", onPress: () => void props.actions.onSetTemplate(props.list) },
+  const isPinned = props.list.pinned === true;
+  const showDeleteConfirm = () => setDeleteConfirmVisible(true);
+  const menuItems = buildMenuItems(props.list, props.actions, isTemplate, isPinned, showDeleteConfirm);
+  const deleteConfirmItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
     { text: "Cancel", style: "cancel" as const },
   ];
@@ -58,6 +61,7 @@ export const ListCard = (props: ListCardProps) => {
         </View>
       </Pressable>
       <ActionMenu visible={menuVisible} title={props.list.name} items={menuItems} onClose={() => setMenuVisible(false)} />
+      <ActionMenu visible={deleteConfirmVisible} title={`Delete "${props.list.name}"?`} items={deleteConfirmItems} onClose={() => setDeleteConfirmVisible(false)} />
     </View>
   );
 };
@@ -72,6 +76,7 @@ export const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
     <View style={homeStyles.listNameRow}>
       <Text style={homeStyles.listName}>{list.name}</Text>
+      {list.pinned && <PinBadge />}
       {list.isTemplate && <TemplateBadge />}
     </View>
     <Text style={homeStyles.listSummary}>{summary}</Text>
@@ -82,6 +87,10 @@ const TemplateBadge = () => (
   <View style={homeStyles.templateBadge}>
     <Text style={homeStyles.templateBadgeText}>Template</Text>
   </View>
+);
+
+const PinBadge = () => (
+  <MaterialCommunityIcons name="pin-outline" size={14} color={homeColors.muted} />
 );
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
@@ -120,3 +129,20 @@ const isNumber = (value: unknown): value is number => typeof value === "number" 
 
 const getCardStyle = (selected: boolean, color: string) =>
   selected ? [homeStyles.listCard, homeStyles.listCardSelected, { backgroundColor: color }] : [homeStyles.listCard, { backgroundColor: color }];
+
+const buildMenuItems = (list: PackingListSummary, actions: ListActions, isTemplate: boolean, isPinned: boolean, showDeleteConfirm: () => void) => {
+  const items = [];
+  if (isPinned) {
+    items.push({ text: "Unpin", onPress: () => void actions.onUnpin(list) });
+  } else {
+    items.push({ text: "Pin to Top", onPress: () => void actions.onPin(list) });
+  }
+  if (isTemplate) {
+    items.push({ text: "Remove Template", onPress: () => void actions.onRemoveTemplate(list) });
+  } else {
+    items.push({ text: "Set as Template", onPress: () => void actions.onSetTemplate(list) });
+  }
+  items.push({ text: "Delete", style: "destructive" as const, onPress: showDeleteConfirm });
+  items.push({ text: "Cancel", style: "cancel" as const });
+  return items;
+};

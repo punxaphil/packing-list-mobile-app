@@ -18,6 +18,6 @@
 - After each change:
   1. compile and fix errors
   2. ask me to verify. 
-  3. If I approve, perform code review and cleanup. 
+  3. If I approve, perform code review and cleanup. Actually do a proper code review, look at the code again for all changes.
   4. After that suggest commit message (conventional commits style, descriptive commit body ~5 lines)
   5. Wait for my approval before committing.
