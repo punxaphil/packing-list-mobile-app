@@ -1,18 +1,19 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { ItemsSectionProps } from "./types.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
-import { homeColors, homeSpacing } from "./theme.ts";
+import { homeStyles } from "./styles.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import { AddItemDialog } from "./AddItemDialog.tsx";
+import { QuickAddRow } from "./QuickAddRow.tsx";
 import type { FilterDialogState } from "./useFilterDialog.ts";
+import type { SearchState } from "./useSearch.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
+import { HOME_COPY } from "./styles.ts";
 
 export type TextDialogState = {
     visible: boolean;
@@ -51,6 +52,7 @@ type ItemsPanelProps = ItemsSectionProps &
         renameDialog: TextDialogState;
         addItemDialog: AddItemDialogState;
         filterDialog: FilterDialogState;
+        search: SearchState;
     };
 
 export const ItemsPanel = (props: ItemsPanelProps) => (
@@ -62,7 +64,7 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
     <View style={homeStyles.panel}>
         <HeaderRow {...props} />
-        <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} />
+        <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
         <RenameDialog dialog={props.renameDialog} />
         <AddItemDialogView {...props} />
         <ItemsListView {...props} />
@@ -71,17 +73,6 @@ const PanelCard = (props: ItemsPanelProps) => (
 
 const HeaderRow = ({ displayName, email, renameDialog, onProfile }: ItemsPanelProps) => (
     <HomeHeader title={displayName} email={email} onPressTitle={renameDialog.open} onProfile={onProfile} />
-);
-
-const QuickAddRow = ({ addDialog, filterDialog }: { addDialog: AddItemDialogState; filterDialog: FilterDialogState }) => (
-    <View style={quickAddStyles.row}>
-        <Pressable style={homeStyles.quickAdd} onPress={addDialog.open} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItemQuick} hitSlop={8}>
-            <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
-        </Pressable>
-        <Pressable style={quickAddStyles.filterButton} onPress={filterDialog.open} hitSlop={8}>
-            <MaterialCommunityIcons name="filter-variant" size={20} color={filterDialog.hasActiveFilter ? homeColors.primary : homeColors.muted} />
-        </Pressable>
-    </View>
 );
 
 const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
@@ -97,16 +88,11 @@ const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) 
     />
 );
 
-const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, lists, selection, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: ItemsPanelProps) => {
+const ItemsListView = ({ categoriesState, itemsState, membersState, imagesState, lists, selection, search, onToggle, onRenameItem, onDeleteItem, onAddItem, onRenameCategory, onToggleCategory, onAssignMembers, onToggleMemberPacked, onToggleAllMembers, onMoveCategory, onCopyToList }: ItemsPanelProps) => {
     const memberImages = imagesState.images.filter((img) => img.type === "members");
     const { isTemplateList } = useTemplate();
     const isTemplate = isTemplateList(selection.selectedId);
     return (
-        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} lists={lists} currentListId={selection.selectedId} isTemplateList={isTemplate} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} onCopyToList={onCopyToList} />
+        <ItemsList loading={categoriesState.loading || itemsState.loading} hasItems={itemsState.hasItems} items={itemsState.items} categories={categoriesState.categories} members={membersState.members} memberImages={memberImages} lists={lists} currentListId={selection.selectedId} isTemplateList={isTemplate} search={search} onToggle={onToggle} onRenameItem={onRenameItem} onDeleteItem={onDeleteItem} onAddItem={onAddItem} onRenameCategory={onRenameCategory} onToggleCategory={onToggleCategory} onAssignMembers={onAssignMembers} onToggleMemberPacked={onToggleMemberPacked} onToggleAllMembers={onToggleAllMembers} onMoveCategory={onMoveCategory} onCopyToList={onCopyToList} />
     );
 };
-
-const quickAddStyles = StyleSheet.create({
-    row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-    filterButton: { padding: homeSpacing.xs },
-});

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, View, ViewStyle } from "react-native";
 
 type FlashScrollViewProps = {
@@ -8,13 +8,21 @@ type FlashScrollViewProps = {
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
+export type FadeScrollViewRef = {
+  scrollTo: (options: { y: number; animated?: boolean }) => void;
+};
+
 const SCROLL_THRESHOLD = 4;
 
-export const FadeScrollView = ({ children, style, contentContainerStyle, onScroll }: FlashScrollViewProps) => {
+export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps>(({ children, style, contentContainerStyle, onScroll }, ref) => {
   const scrollRef = useRef<ScrollView>(null);
   const [containerHeight, setContainerHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const isScrollable = containerHeight > 0 && contentHeight > containerHeight + SCROLL_THRESHOLD;
+
+  useImperativeHandle(ref, () => ({
+    scrollTo: (options) => scrollRef.current?.scrollTo(options),
+  }), []);
 
   useEffect(() => {
     if (isScrollable) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
@@ -43,7 +51,7 @@ export const FadeScrollView = ({ children, style, contentContainerStyle, onScrol
       </ScrollView>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: { flex: 1, position: "relative" },

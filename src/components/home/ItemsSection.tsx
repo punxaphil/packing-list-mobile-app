@@ -10,6 +10,7 @@ import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialog
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
+import { useSearch } from "./useSearch.ts";
 import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer, useMoveCategory, useCopyToList } from "./itemHandlers.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 
@@ -33,6 +34,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
+  const search = useSearch(filteredItems, categoriesInList);
   const handlers = useItemsSectionHandlers(filteredProps);
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, list?.id);
@@ -41,7 +43,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   return (
     <>
-      <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} />
+      <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} search={search} />
       <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggleCategory={filterDialog.onToggleCategory} members={filterDialog.members} selectedMembers={filterDialog.selectedMembers} onToggleMember={filterDialog.onToggleMember} statusFilter={filterDialog.statusFilter} onSetStatus={filterDialog.onSetStatus} onClear={filterDialog.onClear} onClose={filterDialog.close} />
     </>
   );

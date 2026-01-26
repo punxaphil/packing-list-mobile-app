@@ -7,7 +7,7 @@ export type SectionGroup = {
   items: PackItem[];
 };
 
-const orderItems = (items: PackItem[]) =>
+export const orderItems = (items: PackItem[]) =>
   [...items].sort((first, second) => {
     if (first.checked !== second.checked) {
       return Number(first.checked) - Number(second.checked);

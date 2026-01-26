@@ -27,9 +27,10 @@
 - Archive Lists
 
 # todo
-- Delete Checked Items
-- Delete Checked Items
 - Simple Search
+
+# Maybe later
+- Delete Checked Items
 - Select Mode
 - Bulk Move Category
 - Bulk Assign Members

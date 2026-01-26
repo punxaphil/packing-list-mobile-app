@@ -59,6 +59,7 @@ export const homeStyles = StyleSheet.create({
   addLabel: { fontSize: 18, lineHeight: 18, fontWeight: "700", color: colors.muted },
   categoryBody: { gap: spacing.xs, backgroundColor: "rgba(255,255,255,0.65)", borderRadius: homeRadius / 2, padding: spacing.xs },
   itemContainer: { flexDirection: "row", alignItems: "center", gap: spacing.sm, paddingVertical: spacing.xs },
+  itemHighlight: { backgroundColor: "rgba(59, 130, 246, 0.15)", borderRadius: homeRadius / 2, marginHorizontal: -spacing.xs, paddingHorizontal: spacing.xs },
   itemContent: { flex: 1, gap: 2 },
   detailItem: { flexDirection: "row", alignItems: "center", gap: spacing.sm, minHeight: spacing.lg, paddingVertical: spacing.xs },
   checkbox: { width: spacing.md, height: spacing.md, borderRadius: spacing.xs },

@@ -19,6 +19,7 @@ import { PackingListSummary } from "./types.ts";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { ActionMenu } from "./ActionMenu.tsx";
+import type { SearchState } from "./useSearch.ts";
 
 type CategorySectionProps = {
   section: SectionGroup;
@@ -29,6 +30,7 @@ type CategorySectionProps = {
   lists: NamedEntity[];
   currentListId: string;
   isTemplateList: boolean;
+  search: SearchState;
   drag: ReturnType<typeof useDragState>;
   onDrop: (
     snapshot: DragSnapshot,
@@ -64,6 +66,7 @@ type CategoryItemRowProps = {
   hidden: boolean;
   hasOtherLists: boolean;
   checkboxDisabled: boolean;
+  isCurrentMatch: boolean;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -173,7 +176,7 @@ type CategoryItemsProps = CategorySectionProps & {
 };
 
 const CategoryItems = (props: CategoryItemsProps) => {
-  const { section, lists, currentListId, isTemplateList, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop } = props;
+  const { section, lists, currentListId, isTemplateList, search, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
@@ -192,6 +195,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           hidden={drag.snapshot?.id === item.id}
           hasOtherLists={hasOtherLists}
           checkboxDisabled={isTemplateList}
+          isCurrentMatch={search.currentMatchId === item.id}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
@@ -226,7 +230,7 @@ const CategoryItemRow = (props: CategoryItemRowProps) => {
   const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
   const [menuVisible, setMenuVisible] = useState(false);
-  const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }];
+  const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }, props.isCurrentMatch && homeStyles.itemHighlight];
   const hasMembers = props.item.members.length > 0;
   const menuItems = [
     { text: "Edit Members", onPress: props.onOpenAssignMembers },
