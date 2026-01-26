@@ -26,9 +26,9 @@
 - Pin Lists
 - Archive Lists
 - Simple Search
+- clicking lists, no items flashes before loaded
 
 # todo
-- clicking lists, no items flashes before loaded
 - more modern tabs, like clock for instance
 
 # Maybe later

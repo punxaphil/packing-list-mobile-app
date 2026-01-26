@@ -74,7 +74,6 @@ const manageSubscription = (
   if (!userId || !packingListId) {
     return handleMissingInputs(setState);
   }
-  setState(createState(true));
   return subscribeToItems(userId, packingListId, setState) ?? NOOP_UNSUBSCRIBE;
 };
 
@@ -89,6 +88,13 @@ export function usePackingItems(
   packingListId: string | null | undefined,
 ) {
   const [state, setState] = useState<HookState>(() => createState(true));
+  const [prevListId, setPrevListId] = useState(packingListId);
+
+  if (packingListId !== prevListId) {
+    setPrevListId(packingListId);
+    if (packingListId) setState(createState(true));
+  }
+
   useEffect(
     () => manageSubscription(userId, packingListId, setState),
     [userId, packingListId],
