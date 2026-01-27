@@ -4,6 +4,8 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout, animateListEntry } from "./layoutAnimation.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export type ListActions = {
   onAdd: (name: string, useTemplate: boolean) => Promise<void>;
   onDelete: (list: PackingListSummary) => Promise<void>;
@@ -70,6 +72,8 @@ const useDeleteList = (selection: SelectionState) =>
 const useSetTemplate = (currentTemplate: NamedEntity | null) =>
   useCallback(
     async (list: PackingListSummary) => {
+      await delay(50);
+      animateLayout();
       if (currentTemplate) await writeDb.updatePackingList({ ...currentTemplate, isTemplate: false });
       await writeDb.updatePackingList({ ...list, isTemplate: true });
     },
@@ -78,16 +82,22 @@ const useSetTemplate = (currentTemplate: NamedEntity | null) =>
 
 const useRemoveTemplate = () =>
   useCallback(async (list: PackingListSummary) => {
+    await delay(50);
+    animateLayout();
     await writeDb.updatePackingList({ ...list, isTemplate: false });
   }, []);
 
 const usePin = () =>
   useCallback(async (list: PackingListSummary) => {
+    await delay(50);
+    animateLayout();
     await writeDb.updatePackingList({ ...list, pinned: true });
   }, []);
 
 const useUnpin = () =>
   useCallback(async (list: PackingListSummary) => {
+    await delay(50);
+    animateLayout();
     await writeDb.updatePackingList({ ...list, pinned: false });
   }, []);
 
