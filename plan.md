@@ -30,9 +30,9 @@
 - background for all views, should be white, just as categories/members
 - slow ticking an entire category (overlay feedback for large categories)
 - ticking category doesnt update item, if it has members
+- DnD edge cases fixed
 
-# todo 
-- filtering by cat, makes dnd behave weird
+# todo
 
 # Maybe later
 - Assign color to entities
