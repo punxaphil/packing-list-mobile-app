@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "node_modules": true,
+    "ios": true,
+    "android": true,
+    ".expo": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "ios": true,
+    "android": true,
+    ".expo": true
+  }
+}
