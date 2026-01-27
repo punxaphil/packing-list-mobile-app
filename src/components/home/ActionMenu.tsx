@@ -12,23 +12,29 @@ type ActionMenuProps = {
   title: string;
   items: ActionMenuItem[];
   onClose: () => void;
+  headerColor?: string;
 };
 
-export const ActionMenu = ({ visible, title, items, onClose }: ActionMenuProps) => (
-  <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-    <Pressable style={styles.backdrop} onPress={onClose}>
-      <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
-        <Text style={styles.title}>{title}</Text>
-        {items
-          .filter((i) => i.style !== "cancel")
-          .map((item) => (
-            <MenuItem key={item.text} item={item} onClose={onClose} />
-          ))}
-        <CancelButton onPress={onClose} />
+export const ActionMenu = ({ visible, title, items, onClose, headerColor }: ActionMenuProps) => {
+  const titleStyle = headerColor
+    ? [styles.title, { backgroundColor: headerColor, color: homeColors.text }]
+    : styles.title;
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.backdrop} onPress={onClose}>
+        <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
+          <Text style={titleStyle}>{title}</Text>
+          {items
+            .filter((i) => i.style !== "cancel")
+            .map((item) => (
+              <MenuItem key={item.text} item={item} onClose={onClose} />
+            ))}
+          <CancelButton onPress={onClose} />
+        </Pressable>
       </Pressable>
-    </Pressable>
-  </Modal>
-);
+    </Modal>
+  );
+};
 
 const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
   const handlePress = () => {

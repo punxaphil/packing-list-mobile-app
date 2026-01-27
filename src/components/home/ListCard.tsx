@@ -70,12 +70,14 @@ export const ListCard = (props: ListCardProps) => {
         title={props.list.name}
         items={menuItems}
         onClose={() => setMenuVisible(false)}
+        headerColor={props.color}
       />
       <ActionMenu
         visible={deleteConfirmVisible}
         title={`Delete "${props.list.name}"?`}
         items={deleteConfirmItems}
         onClose={() => setDeleteConfirmVisible(false)}
+        headerColor={props.color}
       />
     </View>
   );

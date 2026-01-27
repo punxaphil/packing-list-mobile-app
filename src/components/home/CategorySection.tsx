@@ -387,6 +387,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         title={props.item.name}
         items={menuItems}
         onClose={() => setMenuVisible(false)}
+        headerColor={homeColors.border}
       />
     </View>
   );

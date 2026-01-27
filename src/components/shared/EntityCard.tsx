@@ -75,12 +75,14 @@ export const EntityCard = (props: EntityCardProps) => {
         title={props.entity.name}
         items={menuItems}
         onClose={() => setMenuVisible(false)}
+        headerColor={props.color}
       />
       <ActionMenu
         visible={deleteConfirmVisible}
         title={`Delete "${props.entity.name}"?`}
         items={deleteConfirmItems}
         onClose={() => setDeleteConfirmVisible(false)}
+        headerColor={props.color}
       />
     </View>
   );
