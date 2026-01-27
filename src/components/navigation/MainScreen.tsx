@@ -10,13 +10,9 @@ import { MembersScreen } from "~/components/members/MembersScreen.tsx";
 import { homeColors } from "~/components/home/theme.ts";
 import { FooterNav, Tab } from "./FooterNav.tsx";
 
-const formatTimestamp = () => {
-  const d = new Date();
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-};
-const DevTimestamp = () => __DEV__ ? <Text style={devStyles.text}>{formatTimestamp()}</Text> : null;
-const devStyles = StyleSheet.create({ text: { fontSize: 10, color: homeColors.muted, textAlign: "center", paddingVertical: 2 } });
+const BUILD_TIME = new Date().toISOString().slice(0, 19).replace("T", " ");
+const DevTimestamp = () => __DEV__ ? <Text style={devStyles.text}>{BUILD_TIME}</Text> : null;
+const devStyles = StyleSheet.create({ text: { position: "absolute", bottom: 55, left: 0, right: 0, fontSize: 10, color: homeColors.muted, textAlign: "center" } });
 
 type MainScreenProps = {
   userId: string;

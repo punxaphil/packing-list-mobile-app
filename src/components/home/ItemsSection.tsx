@@ -52,7 +52,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
 };
 
 type ToggleItem = (item: PackItem) => Promise<void>;
-type ToggleCategory = (items: PackItem[], checked: boolean) => Promise<void>;
+type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
 const useItemsSectionHandlers = (props: ItemsSectionProps, toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
   onToggle: useCallback((item: PackItem) => { void toggleItem(item); }, [toggleItem]),

@@ -9,7 +9,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "ios:release": "./scripts/ios-release.sh"
+    "ios:release": "./scripts/ios-release.sh",
+    "ios:release:clean": "npx expo prebuild --clean && ./scripts/ios-release.sh"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

@@ -22,17 +22,23 @@ export const useOptimisticItems = (items: PackItem[]) => {
     });
   }, [items]);
 
-  const optimisticItems = items.map((item) =>
-    item.id in pendingChecked ? { ...item, checked: pendingChecked[item.id] } : item
-  );
+  const optimisticItems = items.map((item) => {
+    if (!(item.id in pendingChecked)) return item;
+    const checked = pendingChecked[item.id];
+    const members = item.members.map((m) => ({ ...m, checked }));
+    return { ...item, checked, members };
+  });
 
-  const toggleCategory = useCallback(async (categoryItems: PackItem[], checked: boolean) => {
-    animateLayout();
+  const toggleCategory = useCallback((categoryItems: PackItem[], checked: boolean) => {
     const pending: PendingChecked = {};
     for (const item of categoryItems) pending[item.id] = checked;
     setPendingChecked((prev) => ({ ...prev, ...pending }));
-    const updatedItems = categoryItems.map((item) => ({ ...item, checked }));
-    await writeDb.updatePackItemsBatched(updatedItems);
+    const updatedItems = categoryItems.map((item) => ({
+      ...item,
+      checked,
+      members: item.members.map((m) => ({ ...m, checked })),
+    }));
+    void writeDb.updatePackItemsBatched(updatedItems);
   }, []);
 
   const toggleItem = useCallback(async (item: PackItem) => {

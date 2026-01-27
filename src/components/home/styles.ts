@@ -93,4 +93,5 @@ export const homeStyles = StyleSheet.create({
   itemDragHandleIcon: { fontSize: 18, color: colors.muted },
   itemGhost: { position: "absolute", zIndex: 10, elevation: 5, opacity: 0.85, backgroundColor: colors.surface, borderRadius: homeRadius / 2, left: spacing.xs, right: spacing.xs },
   itemIndicator: { position: "absolute", left: 0, right: 0, height: 2, backgroundColor: "#000000", borderRadius: 1, zIndex: 15 },
+  categoryOverlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(255,255,255,0.5)" },
 });

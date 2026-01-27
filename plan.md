@@ -27,11 +27,13 @@
 - Archive Lists
 - Simple Search
 - clicking lists, no items flashes before loaded
+- background for all views, should be white, just as categories/members
+- slow ticking an entire category (overlay feedback for large categories)
+- ticking category doesnt update item, if it has members
 
 # todo 
-- background for all views, should be white, just as categories/members
+- selecting a list doesnt update selected tab in footer
 - filtering by cat, makes dnd behave weird
-
 
 
 # Maybe later
