@@ -100,7 +100,7 @@ const EntityImage = ({ imageUrl, onPress, copy }: EntityImageProps) => (
     {imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
     ) : (
-      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.border} />
+      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
     )}
   </Pressable>
 );

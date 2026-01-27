@@ -38,9 +38,8 @@ export const entityStyles = StyleSheet.create({
   cardName: { fontSize: 16, fontWeight: "600", color: homeColors.text },
   itemSummary: { fontSize: 14, color: homeColors.muted },
   imageContainer: { width: 32, height: 32, alignItems: "center", justifyContent: "center", borderRadius: 16 },
-  imagePlaceholder: { borderWidth: 1, borderColor: homeColors.border, borderStyle: "dashed" },
+  imagePlaceholder: { backgroundColor: "rgba(0,0,0,0.1)" },
   image: { width: 32, height: 32, borderRadius: 16 },
-  uploadIcon: { fontSize: 16, color: homeColors.muted },
   dragHandle: {
     paddingVertical: homeSpacing.xs,
     paddingHorizontal: homeSpacing.xs,
