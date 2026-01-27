@@ -1,24 +1,24 @@
-import { memo, useEffect, useState } from "react";
 import Checkbox from "expo-checkbox";
+import { memo, useEffect, useState } from "react";
 import { Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
+import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { MemberPackItem } from "~/types/MemberPackItem.ts";
+import { ActionMenu } from "./ActionMenu.tsx";
+import { AssignMembersModal } from "./AssignMembersModal.tsx";
+import { CopyToListModal } from "./CopyToListModal.tsx";
+import { EditableText } from "./EditableText.tsx";
+import { computeDropIndex } from "./itemOrdering.ts";
+import { SectionGroup } from "./itemsSectionHelpers.ts";
+import { MemberInitials } from "./MemberInitials.tsx";
+import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
+import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
-import { SectionGroup } from "./itemsSectionHelpers.ts";
-import { EditableText } from "./EditableText.tsx";
-import { useDragState, DragSnapshot } from "./useDragState.ts";
-import { computeDropIndex } from "./itemOrdering.ts";
-import { useDraggableRow, DragOffset } from "./useDraggableRow.tsx";
-import { AssignMembersModal } from "./AssignMembersModal.tsx";
-import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
-import { CopyToListModal } from "./CopyToListModal.tsx";
 import { PackingListSummary } from "./types.ts";
-import { MultiCheckbox } from "./MultiCheckbox.tsx";
-import { MemberInitials } from "./MemberInitials.tsx";
-import { ActionMenu } from "./ActionMenu.tsx";
+import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
+import { DragSnapshot, useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
 
 type CategorySectionProps = {
@@ -87,7 +87,7 @@ export const CategorySection = (props: CategorySectionProps) => {
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
   const [copyItem, setCopyItem] = useState<PackItem | null>(null);
   const [pendingToggle, setPendingToggle] = useState<boolean | null>(null);
-  
+
   const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
   const handleMoveCategory = (category: NamedEntity) => {
     if (moveItem) props.onMoveCategory(moveItem, category.id);
@@ -112,8 +112,23 @@ export const CategorySection = (props: CategorySectionProps) => {
       style={[homeStyles.category, { backgroundColor: props.color }]}
       onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
     >
-      <CategoryHeader section={props.section} isTemplateList={props.isTemplateList} onRenameCategory={props.onRenameCategory} editing={editing} onAdd={onAdd} onToggleCategory={handleCategoryToggle} pendingToggle={pendingToggle} />
-      <CategoryItems {...props} editing={editing} onOpenAssignMembers={setAssignItem} onOpenMoveCategory={setMoveItem} onOpenCopyToList={setCopyItem} checkboxDisabled={props.isTemplateList} />
+      <CategoryHeader
+        section={props.section}
+        isTemplateList={props.isTemplateList}
+        onRenameCategory={props.onRenameCategory}
+        editing={editing}
+        onAdd={onAdd}
+        onToggleCategory={handleCategoryToggle}
+        pendingToggle={pendingToggle}
+      />
+      <CategoryItems
+        {...props}
+        editing={editing}
+        onOpenAssignMembers={setAssignItem}
+        onOpenMoveCategory={setMoveItem}
+        onOpenCopyToList={setCopyItem}
+        checkboxDisabled={props.isTemplateList}
+      />
       {pendingToggle !== null && <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />}
       <AssignMembersModal
         visible={!!assignItem}
@@ -160,11 +175,19 @@ type CategoryHeaderProps = {
   pendingToggle: boolean | null;
 };
 
-const CategoryHeader = ({ section, isTemplateList, onToggleCategory, onRenameCategory, onAdd, editing, pendingToggle }: CategoryHeaderProps) => {
+const CategoryHeader = ({
+  section,
+  isTemplateList,
+  onToggleCategory,
+  onRenameCategory,
+  onAdd,
+  editing,
+  pendingToggle,
+}: CategoryHeaderProps) => {
   const allChecked = section.items.every((item) => item.checked);
   const indeterminate = !allChecked && section.items.some((item) => item.checked);
   const displayChecked = pendingToggle ?? allChecked;
-  
+
   return (
     <View style={homeStyles.categoryHeader}>
       <View style={homeStyles.categoryCheckboxWrapper}>
@@ -175,7 +198,9 @@ const CategoryHeader = ({ section, isTemplateList, onToggleCategory, onRenameCat
           color={displayChecked ? homeColors.primary : undefined}
           disabled={isTemplateList || pendingToggle !== null}
         />
-        {indeterminate && pendingToggle === null && <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />}
+        {indeterminate && pendingToggle === null && (
+          <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
+        )}
       </View>
       <EditableText
         value={section.category.name}
@@ -186,7 +211,12 @@ const CategoryHeader = ({ section, isTemplateList, onToggleCategory, onRenameCat
         onStart={() => editing.start(section.category.id)}
         onEnd={() => editing.stop(section.category.id)}
       />
-      <Pressable style={homeStyles.addButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={HOME_COPY.addItem}>
+      <Pressable
+        style={homeStyles.addButton}
+        onPress={onAdd}
+        accessibilityRole="button"
+        accessibilityLabel={HOME_COPY.addItem}
+      >
         <Text style={homeStyles.addLabel}>+</Text>
       </Pressable>
     </View>
@@ -202,7 +232,26 @@ type CategoryItemsProps = CategorySectionProps & {
 };
 
 const CategoryItems = (props: CategoryItemsProps) => {
-  const { section, lists, currentListId, search, drag, onToggle, onRenameItem, onDeleteItem, members, memberImages, onToggleMemberPacked, onToggleAllMembers, editing, onOpenAssignMembers, onOpenMoveCategory, onOpenCopyToList, onDrop, checkboxDisabled } = props;
+  const {
+    section,
+    lists,
+    currentListId,
+    search,
+    drag,
+    onToggle,
+    onRenameItem,
+    onDeleteItem,
+    members,
+    memberImages,
+    onToggleMemberPacked,
+    onToggleAllMembers,
+    editing,
+    onOpenAssignMembers,
+    onOpenMoveCategory,
+    onOpenCopyToList,
+    onDrop,
+    checkboxDisabled,
+  } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
@@ -244,7 +293,14 @@ const CategoryItems = (props: CategoryItemsProps) => {
 
 const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragState>, categoryId: string) => {
   const itemIds = items.map((i) => i.id);
-  const dropIndex = computeDropIndex(itemIds, drag.snapshot, drag.layouts, drag.sectionLayouts, drag.bodyLayouts, categoryId);
+  const dropIndex = computeDropIndex(
+    itemIds,
+    drag.snapshot,
+    drag.layouts,
+    drag.sectionLayouts,
+    drag.bodyLayouts,
+    categoryId
+  );
   if (dropIndex === null) return { indicatorTargetId: null, indicatorBelow: false };
   if (dropIndex === items.length && items.length > 0) {
     return { indicatorTargetId: items[items.length - 1].id, indicatorBelow: true };
@@ -271,7 +327,12 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
   const [menuVisible, setMenuVisible] = useState(false);
-  const rowStyle = [homeStyles.itemContainer, props.hidden && { opacity: 0 }, dragging && { opacity: 0.5 }, props.isCurrentMatch && homeStyles.itemHighlight];
+  const rowStyle = [
+    homeStyles.itemContainer,
+    props.hidden && { opacity: 0 },
+    dragging && { opacity: 0.5 },
+    props.isCurrentMatch && homeStyles.itemHighlight,
+  ];
   const hasMembers = props.item.members.length > 0;
   const menuItems = [
     { text: "Edit Members", onPress: props.onOpenAssignMembers },
@@ -312,11 +373,21 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             onToggle={props.onToggleMemberPacked}
           />
         </View>
-        <Pressable style={homeStyles.menuButton} onPress={() => setMenuVisible(true)} accessibilityRole="button" accessibilityLabel="Item menu">
+        <Pressable
+          style={homeStyles.menuButton}
+          onPress={() => setMenuVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Item menu"
+        >
           <Text style={homeStyles.menuIcon}>⋮</Text>
         </Pressable>
       </Pressable>
-      <ActionMenu visible={menuVisible} title={props.item.name} items={menuItems} onClose={() => setMenuVisible(false)} />
+      <ActionMenu
+        visible={menuVisible}
+        title={props.item.name}
+        items={menuItems}
+        onClose={() => setMenuVisible(false)}
+      />
     </View>
   );
 }, areRowPropsEqual);
@@ -348,7 +419,9 @@ const GhostRow = ({ items, drag, layouts }: GhostRowProps) => {
       <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 0, height: "100%" }}>
         <DragHandle />
         <View style={[homeStyles.checkbox, { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 }]} />
-        <Text style={[homeStyles.detailLabel, { flex: 1 }]} numberOfLines={1}>{item.name}</Text>
+        <Text style={[homeStyles.detailLabel, { flex: 1 }]} numberOfLines={1}>
+          {item.name}
+        </Text>
       </View>
     </Animated.View>
   );

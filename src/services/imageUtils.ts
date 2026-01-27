@@ -16,10 +16,10 @@ export const pickAndResizeImage = async (): Promise<string | null> => {
 };
 
 const resizeImage = async (uri: string): Promise<string> => {
-  const manipulated = await ImageManipulator.manipulateAsync(
-    uri,
-    [{ resize: { width: MAX_SIZE, height: MAX_SIZE } }],
-    { compress: JPEG_QUALITY, format: ImageManipulator.SaveFormat.JPEG, base64: true },
-  );
+  const manipulated = await ImageManipulator.manipulateAsync(uri, [{ resize: { width: MAX_SIZE, height: MAX_SIZE } }], {
+    compress: JPEG_QUALITY,
+    format: ImageManipulator.SaveFormat.JPEG,
+    base64: true,
+  });
   return `data:image/jpeg;base64,${manipulated.base64}`;
 };

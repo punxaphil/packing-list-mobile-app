@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { NamedEntity } from "~/types/NamedEntity.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
+import { NamedEntity } from "~/types/NamedEntity.ts";
 import { homeStyles } from "./styles.ts";
 
 type MoveCategoryModalProps = {

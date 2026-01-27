@@ -1,8 +1,8 @@
 import { Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import "~/services/database.ts";
 import { Login, useCurrentUser } from "~/components/auth/Auth.tsx";
 import { HOME_COPY, homeStyles } from "~/components/home/styles.ts";

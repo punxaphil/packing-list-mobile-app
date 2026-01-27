@@ -1,4 +1,4 @@
-import { Image as RNImage, Pressable, Text, View } from "react-native";
+import { Pressable, Image as RNImage, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -51,18 +51,13 @@ const MemberBadge = ({ imageUrl, initial, checked, onPress }: MemberBadgeProps) 
     );
   }
   return (
-    <Pressable
-      onPress={onPress}
-      style={[homeStyles.memberInitial, checked && homeStyles.memberInitialChecked]}
-    >
-      <Text style={[homeStyles.memberInitialText, checked && homeStyles.memberInitialTextChecked]}>
-        {initial}
-      </Text>
+    <Pressable onPress={onPress} style={[homeStyles.memberInitial, checked && homeStyles.memberInitialChecked]}>
+      <Text style={[homeStyles.memberInitialText, checked && homeStyles.memberInitialTextChecked]}>{initial}</Text>
     </Pressable>
   );
 };
 
-export const computeMinimalInitials = (names: string[]): string[] => {
+const computeMinimalInitials = (names: string[]): string[] => {
   const upper = names.map((n) => n.toUpperCase());
   return upper.map((name, i) => {
     for (let len = 1; len <= 2; len++) {

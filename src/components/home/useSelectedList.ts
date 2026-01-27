@@ -4,7 +4,7 @@ import { PackingListSummary, SelectionState } from "./types.ts";
 
 const STORAGE_KEY = "selectedListId";
 
-export function useSelectedList(lists: PackingListSummary[] | undefined, hasLists: boolean): SelectionState {
+export function useSelectedList(lists: PackingListSummary[] | undefined, _hasLists: boolean): SelectionState {
   const safeLists = lists ?? [];
   const [selectedId, setSelectedId] = useState("");
   const didInit = useRef(false);

@@ -15,14 +15,22 @@ type MoveCategoryItemsModalProps = {
   onMoved: () => void;
 };
 
-export const MoveCategoryItemsModal = ({ visible, sourceCategory, categories, onClose, onMoved }: MoveCategoryItemsModalProps) => {
+export const MoveCategoryItemsModal = ({
+  visible,
+  sourceCategory,
+  categories,
+  onClose,
+  onMoved,
+}: MoveCategoryItemsModalProps) => {
   const [items, setItems] = useState<PackItem[]>([]);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
-      writeDb.getPackItemsForAllPackingLists().then((all) => setItems(all.filter((i) => i.category === sourceCategory.id)));
+      writeDb
+        .getPackItemsForAllPackingLists()
+        .then((all) => setItems(all.filter((i) => i.category === sourceCategory.id)));
       setSelectedId(null);
     }
   }, [visible, sourceCategory.id]);
@@ -68,7 +76,9 @@ export const MoveCategoryItemsModal = ({ visible, sourceCategory, categories, on
       <Pressable style={moveStyles.overlay} onPress={onClose}>
         <Pressable style={moveStyles.modal} onPress={(e) => e.stopPropagation()}>
           <Text style={moveStyles.title}>{MOVE_COPY.title}</Text>
-          <Text style={moveStyles.subtitle}>{MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}</Text>
+          <Text style={moveStyles.subtitle}>
+            {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
+          </Text>
           <ItemsList items={items} />
           <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
           <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
@@ -82,7 +92,9 @@ export const MoveCategoryItemsModal = ({ visible, sourceCategory, categories, on
 const ItemsList = ({ items }: { items: PackItem[] }) => (
   <ScrollView style={moveStyles.itemsList}>
     {items.map((item) => (
-      <Text key={item.id} style={moveStyles.itemText}>• {item.name}</Text>
+      <Text key={item.id} style={moveStyles.itemText}>
+        • {item.name}
+      </Text>
     ))}
   </ScrollView>
 );
@@ -92,15 +104,31 @@ const SortToggle = ({ sortByAlpha, onToggle }: { sortByAlpha: boolean; onToggle:
     <Text style={moveStyles.sortLabel}>{MOVE_COPY.selectTarget}</Text>
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
-      <Switch value={sortByAlpha} onValueChange={onToggle} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
+      <Switch
+        value={sortByAlpha}
+        onValueChange={onToggle}
+        trackColor={{ true: homeColors.primary, false: homeColors.border }}
+      />
     </View>
   </View>
 );
 
-const CategoryPicker = ({ targets, selectedId, onSelect }: { targets: NamedEntity[]; selectedId: string | null; onSelect: (id: string) => void }) => (
+const CategoryPicker = ({
+  targets,
+  selectedId,
+  onSelect,
+}: {
+  targets: NamedEntity[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}) => (
   <ScrollView style={moveStyles.categoryList}>
     {targets.map((cat) => (
-      <Pressable key={cat.id} style={[moveStyles.categoryItem, selectedId === cat.id && moveStyles.categorySelected]} onPress={() => onSelect(cat.id)}>
+      <Pressable
+        key={cat.id}
+        style={[moveStyles.categoryItem, selectedId === cat.id && moveStyles.categorySelected]}
+        onPress={() => onSelect(cat.id)}
+      >
         <Text style={moveStyles.categoryName}>{cat.name}</Text>
       </Pressable>
     ))}
@@ -108,15 +136,31 @@ const CategoryPicker = ({ targets, selectedId, onSelect }: { targets: NamedEntit
   </ScrollView>
 );
 
-const ActionButtons = ({ selectedId, targets, onMove, onClose }: { selectedId: string | null; targets: NamedEntity[]; onMove: () => void; onClose: () => void }) => {
+const ActionButtons = ({
+  selectedId,
+  targets,
+  onMove,
+  onClose,
+}: {
+  selectedId: string | null;
+  targets: NamedEntity[];
+  onMove: () => void;
+  onClose: () => void;
+}) => {
   const targetName = targets.find((c) => c.id === selectedId)?.name;
   return (
     <View style={moveStyles.actions}>
       <Pressable style={moveStyles.cancelButton} onPress={onClose}>
         <Text style={moveStyles.cancelLabel}>{MOVE_COPY.cancel}</Text>
       </Pressable>
-      <Pressable style={[moveStyles.moveButton, !selectedId && moveStyles.moveButtonDisabled]} onPress={onMove} disabled={!selectedId}>
-        <Text style={moveStyles.moveLabel}>{selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory}</Text>
+      <Pressable
+        style={[moveStyles.moveButton, !selectedId && moveStyles.moveButtonDisabled]}
+        onPress={onMove}
+        disabled={!selectedId}
+      >
+        <Text style={moveStyles.moveLabel}>
+          {selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory}
+        </Text>
       </Pressable>
     </View>
   );

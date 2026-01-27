@@ -23,30 +23,3 @@ export const homeMaxWidth = 480;
 export const TAB_BAR_HEIGHT = 90;
 
 export const homeEmptyStateCopy = "No packing lists yet.";
-
-export const homeCardStyle = {
-  backgroundColor: homeColors.surface,
-  borderColor: homeColors.border,
-  borderRadius: homeRadius,
-  borderWidth: 1,
-  padding: homeSpacing.md,
-  gap: homeSpacing.sm,
-} as const;
-
-export type HomeTheme = {
-  colors: typeof homeColors;
-  spacing: typeof homeSpacing;
-  radius: number;
-  maxWidth: number;
-  emptyStateCopy: string;
-  card: typeof homeCardStyle;
-};
-
-export const homeTheme: HomeTheme = {
-  colors: homeColors,
-  spacing: homeSpacing,
-  radius: homeRadius,
-  maxWidth: homeMaxWidth,
-  emptyStateCopy: homeEmptyStateCopy,
-  card: homeCardStyle,
-};

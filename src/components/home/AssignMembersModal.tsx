@@ -1,9 +1,9 @@
+import Checkbox from "expo-checkbox";
 import { useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import Checkbox from "expo-checkbox";
+import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type AssignMembersModalProps = {
@@ -71,7 +71,12 @@ const MemberList = ({ members, selected, onToggle }: MemberListProps) => (
   <ScrollView style={styles.list}>
     {members.length === 0 && <Text style={styles.empty}>{COPY.noMembers}</Text>}
     {members.map((member) => (
-      <MemberRow key={member.id} member={member} checked={selected.has(member.id)} onToggle={() => onToggle(member.id)} />
+      <MemberRow
+        key={member.id}
+        member={member}
+        checked={selected.has(member.id)}
+        onToggle={() => onToggle(member.id)}
+      />
     ))}
   </ScrollView>
 );
@@ -99,17 +104,49 @@ const Actions = ({ onCancel, onSave }: ActionsProps) => (
 );
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", padding: homeSpacing.lg },
-  modal: { backgroundColor: homeColors.surface, borderRadius: 16, padding: homeSpacing.lg, width: "100%", maxHeight: "70%" },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: homeSpacing.lg,
+  },
+  modal: {
+    backgroundColor: homeColors.surface,
+    borderRadius: 16,
+    padding: homeSpacing.lg,
+    width: "100%",
+    maxHeight: "70%",
+  },
   title: { fontSize: 18, fontWeight: "700", color: homeColors.text, marginBottom: homeSpacing.xs },
   subtitle: { fontSize: 14, color: homeColors.muted, marginBottom: homeSpacing.md },
   list: { maxHeight: 300, marginBottom: homeSpacing.md },
-  row: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm, paddingVertical: homeSpacing.sm, borderBottomWidth: 1, borderBottomColor: homeColors.border },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.sm,
+    paddingVertical: homeSpacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: homeColors.border,
+  },
   memberName: { fontSize: 16, color: homeColors.text },
   empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
   actions: { flexDirection: "row", gap: homeSpacing.sm },
-  cancelButton: { flex: 1, padding: homeSpacing.sm, borderRadius: 8, borderWidth: 1, borderColor: homeColors.border, alignItems: "center" },
+  cancelButton: {
+    flex: 1,
+    padding: homeSpacing.sm,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: homeColors.border,
+    alignItems: "center",
+  },
   cancelLabel: { fontSize: 14, color: homeColors.text },
-  saveButton: { flex: 2, padding: homeSpacing.sm, borderRadius: 8, backgroundColor: homeColors.primary, alignItems: "center" },
+  saveButton: {
+    flex: 2,
+    padding: homeSpacing.sm,
+    borderRadius: 8,
+    backgroundColor: homeColors.primary,
+    alignItems: "center",
+  },
   saveLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
 });

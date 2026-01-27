@@ -1,12 +1,12 @@
+import { collection, getFirestore, onSnapshot, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { collection, getFirestore, onSnapshot, query, QuerySnapshot, Unsubscribe } from "firebase/firestore";
 import { Image } from "~/types/Image.ts";
 
 type HookState = { images: Image[]; loading: boolean };
 
 const USERS_COLLECTION = "users";
 const IMAGES_COLLECTION = "images";
-const NOOP_UNSUBSCRIBE: Unsubscribe = () => undefined;
+const _NOOP_UNSUBSCRIBE: Unsubscribe = () => undefined;
 
 const createInitialState = (): HookState => ({ images: [], loading: true });
 const createEmptyState = (): HookState => ({ images: [], loading: false });
@@ -14,8 +14,7 @@ const createEmptyState = (): HookState => ({ images: [], loading: false });
 const mapSnapshot = (snapshot: QuerySnapshot): Image[] =>
   snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Image[];
 
-const buildQuery = (userId: string) =>
-  query(collection(getFirestore(), USERS_COLLECTION, userId, IMAGES_COLLECTION));
+const buildQuery = (userId: string) => query(collection(getFirestore(), USERS_COLLECTION, userId, IMAGES_COLLECTION));
 
 const createSnapshotHandler = (setState: (value: HookState) => void) => (snapshot: QuerySnapshot) =>
   setState({ images: mapSnapshot(snapshot), loading: false });

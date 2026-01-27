@@ -11,12 +11,7 @@ type HeaderProps = {
 
 const BackButton = ({ onBack }: { onBack?: () => void }) =>
   onBack ? (
-    <Pressable
-      style={homeStyles.backButton}
-      onPress={onBack}
-      accessibilityRole="button"
-      hitSlop={8}
-    >
+    <Pressable style={homeStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
       <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
     </Pressable>
   ) : (
@@ -24,12 +19,7 @@ const BackButton = ({ onBack }: { onBack?: () => void }) =>
   );
 
 const AvatarButton = ({ email, onProfile }: { email: string; onProfile?: () => void }) => (
-  <Pressable
-    style={homeStyles.avatar}
-    onPress={onProfile}
-    accessibilityRole="button"
-    hitSlop={8}
-  >
+  <Pressable style={homeStyles.avatar} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
     <Text style={homeStyles.avatarLabel}>{buildInitial(email)}</Text>
   </Pressable>
 );
@@ -40,7 +30,7 @@ const buildInitial = (email: string) => {
   return trimmed[0]?.toUpperCase() ?? HOME_COPY.avatarFallback;
 };
 
-const Title = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
   onPress ? (
     <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8}>
       <Text style={homeStyles.panelTitle} numberOfLines={1}>
@@ -51,8 +41,7 @@ const Title = ({ title, onPress }: { title: string; onPress?: () => void }) => (
     <Text style={homeStyles.panelTitle} numberOfLines={1}>
       {title}
     </Text>
-  )
-);
+  );
 
 export const HomeHeader = ({ title, email, onBack, onPressTitle, onProfile }: HeaderProps) => (
   <View style={homeStyles.panelHeader}>

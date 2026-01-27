@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PackItem } from "~/types/PackItem.ts";
 import { writeDb } from "~/services/database.ts";
+import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 
 type PendingChecked = Record<string, boolean>;

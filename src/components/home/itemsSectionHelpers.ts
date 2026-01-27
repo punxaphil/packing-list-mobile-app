@@ -1,13 +1,13 @@
+import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { UNCATEGORIZED } from "~/services/utils.ts";
 
 export type SectionGroup = {
   category: NamedEntity;
   items: PackItem[];
 };
 
-export const orderItems = (items: PackItem[]) =>
+const orderItems = (items: PackItem[]) =>
   [...items].sort((first, second) => {
     if (first.checked !== second.checked) {
       return Number(first.checked) - Number(second.checked);
@@ -33,10 +33,7 @@ const createCategoryMap = (categories: NamedEntity[]) => {
   return map;
 };
 
-const getOrderedCategories = (
-  categories: NamedEntity[],
-  groups: Map<string, PackItem[]>,
-) => {
+const getOrderedCategories = (categories: NamedEntity[], groups: Map<string, PackItem[]>) => {
   const map = createCategoryMap(categories);
   for (const [id] of groups.entries()) {
     if (id && !map.has(id)) {
@@ -49,10 +46,7 @@ const getOrderedCategories = (
   return [...map.values()].sort((a, b) => b.rank - a.rank);
 };
 
-export const buildSections = (
-  items: PackItem[],
-  categories: NamedEntity[],
-): SectionGroup[] => {
+export const buildSections = (items: PackItem[], categories: NamedEntity[]): SectionGroup[] => {
   const grouped = groupItems(orderItems(items));
   return getOrderedCategories(categories, grouped).map((category) => ({
     category,

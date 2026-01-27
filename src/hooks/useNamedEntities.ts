@@ -1,5 +1,5 @@
+import { collection, getFirestore, onSnapshot, orderBy, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { collection, getFirestore, onSnapshot, orderBy, query, QuerySnapshot, Unsubscribe } from "firebase/firestore";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 type HookState = { items: NamedEntity[]; loading: boolean };
@@ -21,7 +21,7 @@ const subscribe = (userId: string, collectionName: string, setState: (value: Hoo
   onSnapshot(
     buildQuery(userId, collectionName),
     (snapshot) => setState({ items: mapSnapshot(snapshot), loading: false }),
-    () => setState(createEmptyState()),
+    () => setState(createEmptyState())
   );
 
 const manage = (userId: string | null | undefined, collectionName: string, setState: (s: HookState) => void) => {

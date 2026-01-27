@@ -1,12 +1,12 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { ActionMenu } from "./ActionMenu.tsx";
+import { ListActions } from "./listSectionState.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
-import { ListActions } from "./listSectionState.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
-import { ActionMenu } from "./ActionMenu.tsx";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
@@ -24,13 +24,16 @@ type ListCardProps = {
   onSelect: (id: string) => void;
 };
 
-export type ListCardTextProps = {
+type ListCardTextProps = {
   list: PackingListSummary;
   summary: string;
 };
 
 export const ListCard = (props: ListCardProps) => {
-  const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
+  const { wrap } = useDraggableRow(
+    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
+    { applyTranslation: false }
+  );
   const [menuVisible, setMenuVisible] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const summary = formatSummary(props.list);
@@ -62,8 +65,18 @@ export const ListCard = (props: ListCardProps) => {
           <ListMenuButton onPress={() => setMenuVisible(true)} />
         </View>
       </Pressable>
-      <ActionMenu visible={menuVisible} title={props.list.name} items={menuItems} onClose={() => setMenuVisible(false)} />
-      <ActionMenu visible={deleteConfirmVisible} title={`Delete "${props.list.name}"?`} items={deleteConfirmItems} onClose={() => setDeleteConfirmVisible(false)} />
+      <ActionMenu
+        visible={menuVisible}
+        title={props.list.name}
+        items={menuItems}
+        onClose={() => setMenuVisible(false)}
+      />
+      <ActionMenu
+        visible={deleteConfirmVisible}
+        title={`Delete "${props.list.name}"?`}
+        items={deleteConfirmItems}
+        onClose={() => setDeleteConfirmVisible(false)}
+      />
     </View>
   );
 };
@@ -74,7 +87,7 @@ const DragHandle = () => (
   </View>
 );
 
-export const ListCardText = ({ list, summary }: ListCardTextProps) => (
+const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
     <View style={homeStyles.listNameRow}>
       <Text style={homeStyles.listName}>{list.name}</Text>
@@ -92,9 +105,7 @@ const TemplateBadge = () => (
   </View>
 );
 
-const PinBadge = () => (
-  <MaterialCommunityIcons name="pin-outline" size={14} color={homeColors.muted} />
-);
+const PinBadge = () => <MaterialCommunityIcons name="pin-outline" size={14} color={homeColors.muted} />;
 
 const ArchivedBadge = () => (
   <View style={homeStyles.archivedBadge}>
@@ -103,12 +114,17 @@ const ArchivedBadge = () => (
 );
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={homeStyles.listDeleteButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="List menu">
+  <Pressable
+    style={homeStyles.listDeleteButton}
+    onPress={onPress}
+    accessibilityRole="button"
+    accessibilityLabel="List menu"
+  >
     <Text style={homeStyles.listDeleteIcon}>{MENU_ICON}</Text>
   </Pressable>
 );
 
-export const formatSummary = (list: PackingListSummary) => {
+const formatSummary = (list: PackingListSummary) => {
   const total = isNumber(list.itemCount) ? list.itemCount : 0;
   const packed = isNumber(list.packedCount) ? list.packedCount : 0;
   if (!total) return HOME_COPY.listNoItems;
@@ -143,7 +159,14 @@ const getCardStyle = (selected: boolean, color: string, archived: boolean) => [
   selected && homeStyles.listCardSelected,
 ];
 
-const buildMenuItems = (list: PackingListSummary, actions: ListActions, isTemplate: boolean, isPinned: boolean, isArchived: boolean, showDeleteConfirm: () => void) => {
+const buildMenuItems = (
+  list: PackingListSummary,
+  actions: ListActions,
+  isTemplate: boolean,
+  isPinned: boolean,
+  isArchived: boolean,
+  showDeleteConfirm: () => void
+) => {
   const items = [];
   if (isArchived) {
     items.push({ text: "Restore", onPress: () => void actions.onRestore(list) });

@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Alert, Image as RNImage, LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useState } from "react";
+import { Alert, LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { ActionMenu } from "../home/ActionMenu.tsx";
 import { EditableText } from "../home/EditableText.tsx";
 import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
-import { entityStyles, EntityCopy } from "./entityStyles.ts";
+import { EntityCopy, entityStyles } from "./entityStyles.ts";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
@@ -40,7 +40,10 @@ const formatItemCount = (count: number) => {
 };
 
 export const EntityCard = (props: EntityCardProps) => {
-  const { wrap } = useDraggableRow({ onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd }, { applyTranslation: false });
+  const { wrap } = useDraggableRow(
+    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
+    { applyTranslation: false }
+  );
   const [menuVisible, setMenuVisible] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
@@ -67,8 +70,18 @@ export const EntityCard = (props: EntityCardProps) => {
           <MenuButton onPress={() => setMenuVisible(true)} />
         </View>
       </Pressable>
-      <ActionMenu visible={menuVisible} title={props.entity.name} items={menuItems} onClose={() => setMenuVisible(false)} />
-      <ActionMenu visible={deleteConfirmVisible} title={`Delete "${props.entity.name}"?`} items={deleteConfirmItems} onClose={() => setDeleteConfirmVisible(false)} />
+      <ActionMenu
+        visible={menuVisible}
+        title={props.entity.name}
+        items={menuItems}
+        onClose={() => setMenuVisible(false)}
+      />
+      <ActionMenu
+        visible={deleteConfirmVisible}
+        title={`Delete "${props.entity.name}"?`}
+        items={deleteConfirmItems}
+        onClose={() => setDeleteConfirmVisible(false)}
+      />
     </View>
   );
 };
@@ -76,8 +89,17 @@ export const EntityCard = (props: EntityCardProps) => {
 type EntityImageProps = { imageUrl?: string; onPress: () => void; copy: EntityCopy };
 
 const EntityImage = ({ imageUrl, onPress, copy }: EntityImageProps) => (
-  <Pressable style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]} onPress={onPress} accessibilityRole="button" accessibilityLabel={copy.imageTitle}>
-    {imageUrl ? <RNImage source={{ uri: imageUrl }} style={entityStyles.image} /> : <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.border} />}
+  <Pressable
+    style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
+    onPress={onPress}
+    accessibilityRole="button"
+    accessibilityLabel={copy.imageTitle}
+  >
+    {imageUrl ? (
+      <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
+    ) : (
+      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.border} />
+    )}
   </Pressable>
 );
 

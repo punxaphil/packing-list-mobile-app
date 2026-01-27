@@ -1,18 +1,18 @@
 import { useCallback, useMemo, useState } from "react";
 import { Alert, Animated, LayoutRectangle, Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import { PackingListSummary, SelectionState } from "./types.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
-import { homeColors, homeSpacing } from "./theme.ts";
+import { useTemplate } from "~/providers/TemplateContext.ts";
+import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
-import { ListActions, useListActions } from "./listSectionState.ts";
 import { buildListColors } from "./listColors.ts";
+import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
+import { ListActions, useListActions } from "./listSectionState.ts";
+import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
+import { homeColors, homeSpacing } from "./theme.ts";
+import { PackingListSummary, SelectionState } from "./types.ts";
 import { DragOffset } from "./useDraggableRow.tsx";
-import { useListOrdering, computeDropIndex } from "./listOrdering.ts";
-import { useDragState, DragSnapshot } from "./useDragState.ts";
-import { FadeScrollView } from "../shared/FadeScrollView.tsx";
-import { useTemplate } from "~/providers/TemplateContext.ts";
+import { DragSnapshot, useDragState } from "./useDragState.ts";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -34,7 +34,12 @@ export const ListSection = (props: ListSectionProps) => {
   return (
     <View style={homeStyles.panel}>
       <HomeHeader title={HOME_COPY.listHeader} email={props.email} onProfile={props.onProfile} />
-      <ListHeader onAdd={creation.open} showArchived={showArchived} hasArchived={hasArchived} onToggleArchived={() => setShowArchived((v) => !v)} />
+      <ListHeader
+        onAdd={creation.open}
+        showArchived={showArchived}
+        hasArchived={hasArchived}
+        onToggleArchived={() => setShowArchived((v) => !v)}
+      />
       <ListScroll
         lists={filteredLists}
         selectedId={props.selection.selectedId}
@@ -67,14 +72,24 @@ type ListHeaderProps = {
 
 const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: ListHeaderProps) => (
   <View style={localStyles.headerRow}>
-    <Pressable style={localStyles.createLink} onPress={onAdd} accessibilityRole="button" accessibilityLabel={HOME_COPY.createList} hitSlop={8}>
+    <Pressable
+      style={localStyles.createLink}
+      onPress={onAdd}
+      accessibilityRole="button"
+      accessibilityLabel={HOME_COPY.createList}
+      hitSlop={8}
+    >
       <Text style={homeStyles.quickAddLabel}>Create list...</Text>
     </Pressable>
     <View style={localStyles.spacer} />
     {hasArchived && (
       <View style={localStyles.archiveToggle}>
         <Text style={localStyles.archiveToggleText}>Archived</Text>
-        <Switch value={showArchived} onValueChange={onToggleArchived} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
+        <Switch
+          value={showArchived}
+          onValueChange={onToggleArchived}
+          trackColor={{ true: homeColors.primary, false: homeColors.border }}
+        />
       </View>
     )}
   </View>
@@ -125,7 +140,10 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
 const useCreateListDialog = (create: (name: string, useTemplate: boolean) => Promise<void>, hasTemplate: boolean) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
-  const open = useCallback(() => { setValue(""); setVisible(true); }, []);
+  const open = useCallback(() => {
+    setValue("");
+    setVisible(true);
+  }, []);
   const close = useCallback(() => setVisible(false), []);
   const submit = useCallback(() => {
     const trimmed = value.trim();
@@ -141,16 +159,11 @@ const useCreateListDialog = (create: (name: string, useTemplate: boolean) => Pro
 };
 
 const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
-  Alert.alert(
-    HOME_COPY.useTemplateTitle,
-    HOME_COPY.useTemplateMessage,
-    [
-      { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
-      { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
-    ],
-  );
+  Alert.alert(HOME_COPY.useTemplateTitle, HOME_COPY.useTemplateMessage, [
+    { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
+    { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
+  ]);
 };
-
 
 type GhostProps = {
   lists: PackingListSummary[];
@@ -166,7 +179,10 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   const list = lists.find((entry) => entry.id === drag.id);
   if (!list) return null;
   return (
-    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height, width: layout.width }]}>
+    <Animated.View
+      pointerEvents="none"
+      style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height, width: layout.width }]}
+    >
       <ListCardPreview list={list} color={colors[list.id]} />
     </Animated.View>
   );
@@ -231,9 +247,9 @@ const DragDebugPanel = ({ snapshot, layout }: { snapshot: DragSnapshot; layout?:
     <View style={dragStyles.debug} pointerEvents="none">
       <Text style={dragStyles.debugText}>{`id: ${snapshot.id}`}</Text>
       <Text style={dragStyles.debugText}>{`offsetY: ${snapshot.offsetY.toFixed(1)}`}</Text>
-      <Text style={dragStyles.debugText}>{layout ? `y: ${layout.y.toFixed(1)} h: ${layout.height.toFixed(1)}` : "layout: none"}</Text>
+      <Text style={dragStyles.debugText}>
+        {layout ? `y: ${layout.y.toFixed(1)} h: ${layout.height.toFixed(1)}` : "layout: none"}
+      </Text>
     </View>
   );
 };
-
-

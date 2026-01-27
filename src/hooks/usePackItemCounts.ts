@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { collection, getFirestore, onSnapshot, QuerySnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { PackItem } from "~/types/PackItem.ts";
 
 type CountEntry = { total: number; packed: number };
@@ -10,7 +10,8 @@ const USERS_COLLECTION = "users";
 const PACK_ITEMS_COLLECTION = "packItems";
 const createInitialState = (): CountState => ({ counts: {}, loading: true });
 const createEmptyState = (): CountState => ({ counts: {}, loading: false });
-const mapSnapshot = (snapshot: QuerySnapshot) => snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as PackItem));
+const mapSnapshot = (snapshot: QuerySnapshot) =>
+  snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as PackItem);
 const sumCounts = (items: PackItem[]): PackItemCountRecord => {
   const counts: PackItemCountRecord = {};
   for (const item of items) {
@@ -24,7 +25,8 @@ const handleSnapshot = (setState: (value: CountState) => void) => (snapshot: Que
 };
 const handleError = (setState: (value: CountState) => void) => () => setState(createEmptyState());
 const buildQuery = (userId: string) => collection(getFirestore(), USERS_COLLECTION, userId, PACK_ITEMS_COLLECTION);
-const subscribeToCounts = (userId: string, setState: (value: CountState) => void) => onSnapshot(buildQuery(userId), handleSnapshot(setState), handleError(setState));
+const subscribeToCounts = (userId: string, setState: (value: CountState) => void) =>
+  onSnapshot(buildQuery(userId), handleSnapshot(setState), handleError(setState));
 const manageSubscription = (userId: string | null | undefined, setState: (value: CountState) => void) => {
   if (!userId) {
     setState(createEmptyState());

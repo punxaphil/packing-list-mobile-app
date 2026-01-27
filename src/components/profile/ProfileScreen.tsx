@@ -1,8 +1,8 @@
-import { Image as RNImage, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
+import { writeDb } from "~/services/database.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { getProfileImage } from "~/services/utils.ts";
-import { writeDb } from "~/services/database.ts";
 import { Image } from "~/types/Image.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
@@ -107,21 +107,53 @@ const { colors, spacing, radius } = { colors: homeColors, spacing: homeSpacing, 
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
   backButton: { minWidth: 60 },
   backText: { color: colors.primary, fontWeight: "600", fontSize: 16 },
   title: { fontSize: 20, fontWeight: "700", color: colors.text },
   placeholder: { minWidth: 60 },
   content: { flex: 1, alignItems: "center", paddingTop: spacing.lg * 2, gap: spacing.lg },
-  avatar: { width: 100, height: 100, borderRadius: 50, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   avatarImage: { width: 100, height: 100, borderRadius: 50 },
   avatarText: { color: "#ffffff", fontSize: 48, fontWeight: "700" },
   email: { fontSize: 18, color: colors.text, fontWeight: "500" },
   photoActions: { flexDirection: "row", gap: spacing.sm },
-  photoButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius, backgroundColor: colors.primary },
+  photoButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius,
+    backgroundColor: colors.primary,
+  },
   photoButtonText: { fontSize: 14, fontWeight: "600", color: "#ffffff" },
-  removeButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius, borderWidth: 1, borderColor: colors.border },
+  removeButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   removeButtonText: { fontSize: 14, fontWeight: "600", color: colors.muted },
-  signOutButton: { marginTop: spacing.lg, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, borderRadius: radius, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  signOutButton: {
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
   signOutText: { fontSize: 16, fontWeight: "600", color: colors.text },
 });

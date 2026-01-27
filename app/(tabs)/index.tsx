@@ -1,12 +1,12 @@
-import { ActivityIndicator, View, Text } from "react-native";
 import { router } from "expo-router";
+import { ActivityIndicator, Text, View } from "react-native";
+import { ItemsSection } from "~/components/home/ItemsSection.tsx";
+import { homeStyles } from "~/components/home/styles.ts";
+import { homeColors } from "~/components/home/theme.ts";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { usePackingItems } from "~/hooks/usePackingItems.ts";
-import { homeColors } from "~/components/home/theme.ts";
-import { homeStyles } from "~/components/home/styles.ts";
-import { ItemsSection } from "~/components/home/ItemsSection.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
 
 export default function ItemsTab() {

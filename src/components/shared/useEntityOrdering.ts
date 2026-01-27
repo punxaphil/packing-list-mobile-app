@@ -28,15 +28,18 @@ const useOrderedIds = (entities: NamedEntity[]): OrderedIdsState => {
 };
 
 const useDropHandler = (entities: NamedEntity[], setOrderedIds: OrderedIdsState[1], persist: PersistFn): DropHandler =>
-  useCallback((snapshot, layouts) => {
-    if (!snapshot) return;
-    setOrderedIds((current) => {
-      const preview = buildDropPreview(current, snapshot, layouts);
-      if (!preview.changed) return current;
-      persistRanks(preview.ids, entities, persist);
-      return preview.ids;
-    });
-  }, [entities, setOrderedIds, persist]);
+  useCallback(
+    (snapshot, layouts) => {
+      if (!snapshot) return;
+      setOrderedIds((current) => {
+        const preview = buildDropPreview(current, snapshot, layouts);
+        if (!preview.changed) return current;
+        persistRanks(preview.ids, entities, persist);
+        return preview.ids;
+      });
+    },
+    [entities, setOrderedIds, persist]
+  );
 
 const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: LayoutMap) => {
   if (!snapshot) return { ids: current, changed: false };
@@ -51,7 +54,13 @@ const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: La
   return { ids: next, changed: true };
 };
 
-const resolveTargetIndex = (ids: string[], fromIndex: number, layout: LayoutRectangle, offsetY: number, layouts: LayoutMap) => {
+const resolveTargetIndex = (
+  ids: string[],
+  fromIndex: number,
+  layout: LayoutRectangle,
+  offsetY: number,
+  layouts: LayoutMap
+) => {
   if (!offsetY) return fromIndex;
   let target = fromIndex;
   if (offsetY > 0) {

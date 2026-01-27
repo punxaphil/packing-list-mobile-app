@@ -21,7 +21,8 @@ type FilterSheetProps = {
 };
 
 export const FilterSheet = (props: FilterSheetProps) => {
-  const totalCount = props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
+  const totalCount =
+    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -59,7 +60,11 @@ type FilterContentProps = FilterSheetProps & { scrollRef: React.RefObject<Scroll
 const FilterContent = ({ scrollRef, ...props }: FilterContentProps) => (
   <ScrollView ref={scrollRef} style={styles.list}>
     <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
-    <CategorySection categories={props.categories} selectedCategories={props.selectedCategories} onToggle={props.onToggleCategory} />
+    <CategorySection
+      categories={props.categories}
+      selectedCategories={props.selectedCategories}
+      onToggle={props.onToggleCategory}
+    />
     <MemberSection members={props.members} selectedMembers={props.selectedMembers} onToggle={props.onToggleMember} />
   </ScrollView>
 );
@@ -70,7 +75,12 @@ const CategorySection = ({ categories, selectedCategories, onToggle }: CategoryS
   <>
     <Text style={styles.sectionTitle}>Categories</Text>
     {categories.map((cat) => (
-      <FilterRow key={cat.id} item={cat} selected={selectedCategories.includes(cat.id)} onToggle={() => onToggle(cat.id)} />
+      <FilterRow
+        key={cat.id}
+        item={cat}
+        selected={selectedCategories.includes(cat.id)}
+        onToggle={() => onToggle(cat.id)}
+      />
     ))}
     {categories.length === 0 && <Text style={styles.empty}>No categories in this list</Text>}
   </>

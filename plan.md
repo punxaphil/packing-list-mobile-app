@@ -34,7 +34,7 @@
 # todo 
 - selecting a list doesnt update selected tab in footer
 - filtering by cat, makes dnd behave weird
-
+- category dialog: header with name should have the category color as background (same for member dialog). If no color, use default gray bg.
 
 # Maybe later
 - Assign color to entities

@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { EntityCopy } from "./entityStyles.ts";
-import { EntityActions } from "./EntityCard.tsx";
 import { animateLayout, animateListEntry } from "../home/layoutAnimation.ts";
+import { EntityActions } from "./EntityCard.tsx";
+import { EntityCopy } from "./entityStyles.ts";
 
 type DbOperations = {
   add: (name: string, rank: number) => Promise<NamedEntity | string>;
@@ -16,7 +16,7 @@ export const useEntityActions = (
   itemCounts: Record<string, number>,
   copy: EntityCopy,
   db: DbOperations,
-  onMoveItems?: (entity: NamedEntity) => void,
+  onMoveItems?: (entity: NamedEntity) => void
 ): EntityActions => ({
   onAdd: useAddEntity(entities, db),
   onDelete: useDeleteEntity(itemCounts, copy, db, onMoveItems),
@@ -24,39 +24,48 @@ export const useEntityActions = (
 });
 
 const useRenameEntity = (db: DbOperations) =>
-  useCallback(async (entity: NamedEntity, name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed || trimmed === entity.name) return;
-    await db.update({ ...entity, name: trimmed });
-  }, [db]);
+  useCallback(
+    async (entity: NamedEntity, name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed || trimmed === entity.name) return;
+      await db.update({ ...entity, name: trimmed });
+    },
+    [db]
+  );
 
 const useAddEntity = (entities: NamedEntity[], db: DbOperations) =>
-  useCallback(async (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    animateListEntry();
-    await db.add(trimmed, getNextRank(entities));
-  }, [entities, db]);
+  useCallback(
+    async (name: string) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      animateListEntry();
+      await db.add(trimmed, getNextRank(entities));
+    },
+    [entities, db]
+  );
 
 const useDeleteEntity = (
   itemCounts: Record<string, number>,
   copy: EntityCopy,
   db: DbOperations,
-  onMoveItems?: (entity: NamedEntity) => void,
+  onMoveItems?: (entity: NamedEntity) => void
 ) =>
-  useCallback(async (entity: NamedEntity) => {
-    const count = itemCounts[entity.id] ?? 0;
-    if (count > 0 && onMoveItems) {
-      const action = await showHasItemsAlert(entity.name, count, copy);
-      if (action === "move") onMoveItems(entity);
-      return;
-    }
-    const label = entity.name?.trim() ? entity.name : copy.delete;
-    const confirmed = await confirmDelete(label, copy);
-    if (!confirmed) return;
-    animateLayout();
-    await db.delete(entity.id, [], true);
-  }, [itemCounts, copy, db, onMoveItems]);
+  useCallback(
+    async (entity: NamedEntity) => {
+      const count = itemCounts[entity.id] ?? 0;
+      if (count > 0 && onMoveItems) {
+        const action = await showHasItemsAlert(entity.name, count, copy);
+        if (action === "move") onMoveItems(entity);
+        return;
+      }
+      const label = entity.name?.trim() ? entity.name : copy.delete;
+      const confirmed = await confirmDelete(label, copy);
+      if (!confirmed) return;
+      animateLayout();
+      await db.delete(entity.id, [], true);
+    },
+    [itemCounts, copy, db, onMoveItems]
+  );
 
 const showHasItemsAlert = (name: string, count: number, copy: EntityCopy): Promise<"move" | "cancel"> =>
   new Promise((resolve) => {
@@ -67,12 +76,11 @@ const showHasItemsAlert = (name: string, count: number, copy: EntityCopy): Promi
         { text: copy.cancel, style: "cancel", onPress: () => resolve("cancel") },
         { text: copy.moveItems, onPress: () => resolve("move") },
       ],
-      { cancelable: true, onDismiss: () => resolve("cancel") },
+      { cancelable: true, onDismiss: () => resolve("cancel") }
     );
   });
 
-const getNextRank = (entities: NamedEntity[]) =>
-  Math.max(...entities.map((e) => e.rank ?? 0), 0) + 1;
+const getNextRank = (entities: NamedEntity[]) => Math.max(...entities.map((e) => e.rank ?? 0), 0) + 1;
 
 const confirmDelete = (name: string, copy: EntityCopy) =>
   new Promise<boolean>((resolve) => {
@@ -83,6 +91,6 @@ const confirmDelete = (name: string, copy: EntityCopy) =>
         { text: copy.cancel, style: "cancel", onPress: () => resolve(false) },
         { text: copy.deleteAction, style: "destructive", onPress: () => resolve(true) },
       ],
-      { cancelable: true, onDismiss: () => resolve(false) },
+      { cancelable: true, onDismiss: () => resolve(false) }
     );
   });

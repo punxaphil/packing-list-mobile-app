@@ -1,6 +1,6 @@
 import { homeEmptyStateCopy } from "./theme.ts";
 
-export type HomeCopy = {
+type HomeCopy = {
   unknownUser: string;
   signOutTitle: string;
   signOutMessage: string;
@@ -81,7 +81,7 @@ export const homeCopy: HomeCopy = {
   renameListPrompt: "Rename packing list",
   renameListConfirm: "Save",
   deleteConfirmTitle: "Delete this list?",
-  deleteConfirmMessage: "Delete \"{name}\"? This removes the list and its items.",
+  deleteConfirmMessage: 'Delete "{name}"? This removes the list and its items.',
   deleteIcon: "\u{1F5D1}",
   dragHandleLabel: "Drag handle",
   useTemplateTitle: "Use template?",

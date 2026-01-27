@@ -14,7 +14,9 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
 export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps) => {
   const [localStatus, setLocalStatus] = useState(statusFilter);
 
-  useEffect(() => { setLocalStatus(statusFilter); }, [statusFilter]);
+  useEffect(() => {
+    setLocalStatus(statusFilter);
+  }, [statusFilter]);
 
   const handlePress = (status: StatusFilter) => {
     setLocalStatus(status);
@@ -26,7 +28,11 @@ export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps)
       <Text style={styles.sectionTitle}>Status</Text>
       <View style={styles.toggleContainer}>
         {STATUS_OPTIONS.map((opt) => (
-          <Pressable key={opt.value} style={[styles.toggleOption, localStatus === opt.value && styles.toggleOptionSelected]} onPress={() => handlePress(opt.value)}>
+          <Pressable
+            key={opt.value}
+            style={[styles.toggleOption, localStatus === opt.value && styles.toggleOptionSelected]}
+            onPress={() => handlePress(opt.value)}
+          >
             <Text style={[styles.toggleText, localStatus === opt.value && styles.toggleTextSelected]}>{opt.label}</Text>
           </Pressable>
         ))}

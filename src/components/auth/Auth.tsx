@@ -1,8 +1,4 @@
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,9 +27,7 @@ export function Login() {
 
   function handleLogin() {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email.trim(), password).catch(
-      console.error,
-    );
+    signInWithEmailAndPassword(auth, email.trim(), password).catch(console.error);
   }
 
   function handleRegister() {

@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { writeDb } from "~/services/database.ts";
+import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout, animateListEntry } from "./layoutAnimation.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
-import { NamedEntity } from "~/types/NamedEntity.ts";
 
 export type ListActions = {
   onAdd: (name: string, useTemplate: boolean) => Promise<void>;
@@ -15,7 +15,12 @@ export type ListActions = {
   onRestore: (list: PackingListSummary) => Promise<void>;
 };
 
-export const useListActions = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void): ListActions => ({
+export const useListActions = (
+  lists: PackingListSummary[],
+  selection: SelectionState,
+  templateList: NamedEntity | null,
+  onListSelect?: (id: string) => void
+): ListActions => ({
   onAdd: useAddList(lists, selection, templateList, onListSelect),
   onDelete: useDeleteList(selection),
   onSetTemplate: useSetTemplate(templateList),
@@ -26,34 +31,48 @@ export const useListActions = (lists: PackingListSummary[], selection: Selection
   onRestore: useRestore(),
 });
 
-const useAddList = (lists: PackingListSummary[], selection: SelectionState, templateList: NamedEntity | null, onListSelect?: (id: string) => void) =>
-  useCallback(async (name: string, useTemplate: boolean) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    animateListEntry();
-    const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
-    if (useTemplate && templateList) {
-      await writeDb.copyPackItemsToList(templateList.id, id);
-    }
-    if (onListSelect) {
-      onListSelect(id);
-    } else {
-      selection.select(id);
-    }
-  }, [lists, selection, templateList, onListSelect]);
+const useAddList = (
+  lists: PackingListSummary[],
+  selection: SelectionState,
+  templateList: NamedEntity | null,
+  onListSelect?: (id: string) => void
+) =>
+  useCallback(
+    async (name: string, useTemplate: boolean) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      animateListEntry();
+      const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
+      if (useTemplate && templateList) {
+        await writeDb.copyPackItemsToList(templateList.id, id);
+      }
+      if (onListSelect) {
+        onListSelect(id);
+      } else {
+        selection.select(id);
+      }
+    },
+    [lists, selection, templateList, onListSelect]
+  );
 
 const useDeleteList = (selection: SelectionState) =>
-  useCallback(async (list: PackingListSummary) => {
-    animateLayout();
-    await writeDb.deletePackingList(list.id);
-    if (selection.selectedId === list.id) selection.clear();
-  }, [selection]);
+  useCallback(
+    async (list: PackingListSummary) => {
+      animateLayout();
+      await writeDb.deletePackingList(list.id);
+      if (selection.selectedId === list.id) selection.clear();
+    },
+    [selection]
+  );
 
 const useSetTemplate = (currentTemplate: NamedEntity | null) =>
-  useCallback(async (list: PackingListSummary) => {
-    if (currentTemplate) await writeDb.updatePackingList({ ...currentTemplate, isTemplate: false });
-    await writeDb.updatePackingList({ ...list, isTemplate: true });
-  }, [currentTemplate]);
+  useCallback(
+    async (list: PackingListSummary) => {
+      if (currentTemplate) await writeDb.updatePackingList({ ...currentTemplate, isTemplate: false });
+      await writeDb.updatePackingList({ ...list, isTemplate: true });
+    },
+    [currentTemplate]
+  );
 
 const useRemoveTemplate = () =>
   useCallback(async (list: PackingListSummary) => {
@@ -80,5 +99,4 @@ const useRestore = () =>
     await writeDb.updatePackingList({ ...list, archived: false });
   }, []);
 
-const getNextListRank = (lists: PackingListSummary[]) =>
-  Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;
+const getNextListRank = (lists: PackingListSummary[]) => Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;

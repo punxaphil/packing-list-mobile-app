@@ -6,7 +6,7 @@
 - If a variable adds clarity, name it descriptively and keep its scope minimal.
 - Files should never be longer than 100 lines.
 - Methods should never be longer than 10 lines.
-- Never use `eslint-disable` or `/* eslint-disable */` comments to silence linter errors; instead fix the underlying issue.
+- Never use `eslint-disable`, `biome-ignore`, or similar comments to silence linter errors; instead fix the underlying issue.
 - No README or documentation needed.
 - No jsdoc. No comments needed. Code explains itself.
 - Prefer composition to inheritance.
@@ -23,8 +23,8 @@
 - When user corrects general behavior, update these instructions accordingly.
 - Never commit build files (ios/, android/build/, node_modules/, etc.). Only commit source files.
 - After each change:
-  1. compile and fix errors
-  2. ask me to verify. 
+  1. Run `npm run prebuild` (typecheck + lint) and fix any errors
+  2. Ask me to verify the change works
   3. If I approve, perform thorough code review. Re-read ALL changed files and check for:
      - Unused imports
      - Hardcoded colors/values that should use theme constants (homeColors, homeSpacing, etc.)

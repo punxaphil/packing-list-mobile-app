@@ -7,11 +7,11 @@ import { writeDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
-import { homeColors } from "../home/theme.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
+import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
-import { entityStyles, CATEGORY_COPY } from "../shared/entityStyles.ts";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
+import { CATEGORY_COPY, entityStyles } from "../shared/entityStyles.ts";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
@@ -51,7 +51,11 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
     <View style={entityStyles.container}>
       <View style={entityStyles.panel}>
         <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
-        <CategoryHeader onAdd={creation.open} sortByAlpha={sortByAlpha} onToggleSort={() => setSortByAlpha(!sortByAlpha)} />
+        <CategoryHeader
+          onAdd={creation.open}
+          sortByAlpha={sortByAlpha}
+          onToggleSort={() => setSortByAlpha(!sortByAlpha)}
+        />
         <EntityScroll
           entities={sorted}
           actions={actions}
@@ -93,13 +97,23 @@ type CategoryHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSo
 
 const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={entityStyles.actions}>
-    <Pressable style={entityStyles.addLink} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.addButton} hitSlop={8}>
+    <Pressable
+      style={entityStyles.addLink}
+      onPress={onAdd}
+      accessibilityRole="button"
+      accessibilityLabel={CATEGORY_COPY.addButton}
+      hitSlop={8}
+    >
       <Text style={entityStyles.addLinkLabel}>Add category...</Text>
     </Pressable>
     <View style={entityStyles.spacer} />
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
-      <Switch value={sortByAlpha} onValueChange={onToggleSort} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
+      <Switch
+        value={sortByAlpha}
+        onValueChange={onToggleSort}
+        trackColor={{ true: homeColors.primary, false: homeColors.border }}
+      />
     </View>
   </View>
 );

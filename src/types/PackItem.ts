@@ -1,4 +1,4 @@
-import { MemberPackItem } from './MemberPackItem.ts';
+import { MemberPackItem } from "./MemberPackItem.ts";
 
 export interface PackItem {
   id: string;
@@ -8,10 +8,4 @@ export interface PackItem {
   category: string;
   packingList: string;
   rank: number;
-}
-
-export interface TextPackItem {
-  name: string;
-  members: string[];
-  category: string;
 }

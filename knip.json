@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": ["babel.config.js", "metro.config.js"],
+  "ignoreDependencies": [
+    "@babel/core",
+    "expo-updates",
+    "expo-system-ui",
+    "@expo/vector-icons"
+  ]
+}

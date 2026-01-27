@@ -9,7 +9,9 @@ export const useCategoryItemCounts = () => {
     writeDb.getPackItemsForAllPackingLists().then((items) => setCounts(computeCounts(items)));
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return { counts, refresh };
 };

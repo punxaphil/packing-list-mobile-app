@@ -8,7 +8,12 @@ export const MemberSection = ({ members, selectedMembers, onToggle }: MemberSect
   <>
     <Text style={styles.sectionTitle}>Members</Text>
     {members.map((member) => (
-      <FilterRow key={member.id} item={member} selected={selectedMembers.includes(member.id)} onToggle={() => onToggle(member.id)} />
+      <FilterRow
+        key={member.id}
+        item={member}
+        selected={selectedMembers.includes(member.id)}
+        onToggle={() => onToggle(member.id)}
+      />
     ))}
     {members.length === 0 && <Text style={styles.empty}>No members assigned in this list</Text>}
   </>

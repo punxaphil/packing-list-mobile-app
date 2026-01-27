@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Alert, Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { PackingListSummary } from "./types.ts";
 import { homeStyles } from "./styles.ts";
+import { PackingListSummary } from "./types.ts";
 
 type CopyToListModalProps = {
   visible: boolean;
@@ -53,7 +53,9 @@ const ListOption = ({ list, onSelect }: ListOptionProps) => {
   return (
     <Pressable style={STYLES.option} onPress={() => onSelect(list)}>
       <Text style={STYLES.optionText}>{list.name}</Text>
-      <Text style={STYLES.countText}>{count} {label}</Text>
+      <Text style={STYLES.countText}>
+        {count} {label}
+      </Text>
     </Pressable>
   );
 };
@@ -70,7 +72,15 @@ const COPY = { title: "Copy to List", cancel: "Cancel", confirmTitle: "Copied", 
 
 const STYLES = {
   list: { maxHeight: 300, marginBottom: 12 },
-  option: { flexDirection: "row" as const, justifyContent: "space-between" as const, alignItems: "center" as const, paddingVertical: 14, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: "#f3f4f6" },
+  option: {
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "center" as const,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f3f4f6",
+  },
   optionText: { fontSize: 16, color: "#111827" },
   countText: { fontSize: 14, color: "#6b7280" },
 };

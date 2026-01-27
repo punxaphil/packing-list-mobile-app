@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, useTransition } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
@@ -30,7 +30,12 @@ const getMembersInList = (members: NamedEntity[], items: PackItem[]) => {
   return members.filter((m) => memberIds.has(m.id)).sort((a, b) => b.rank - a.rank);
 };
 
-export const useFilterDialog = (categories: NamedEntity[], members: NamedEntity[], items: PackItem[], listId?: string): FilterDialogState => {
+export const useFilterDialog = (
+  categories: NamedEntity[],
+  members: NamedEntity[],
+  items: PackItem[],
+  _listId?: string
+): FilterDialogState => {
   const [visible, setVisible] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -39,9 +44,15 @@ export const useFilterDialog = (categories: NamedEntity[], members: NamedEntity[
   const membersInList = getMembersInList(members, items);
 
   useEffect(() => {
-    AsyncStorage.getItem(CATEGORY_KEY).then((saved) => { if (saved) setSelectedCategories(JSON.parse(saved)); });
-    AsyncStorage.getItem(MEMBER_KEY).then((saved) => { if (saved) setSelectedMembers(JSON.parse(saved)); });
-    AsyncStorage.getItem(STATUS_KEY).then((saved) => { if (saved) setStatusFilter(saved as StatusFilter); });
+    AsyncStorage.getItem(CATEGORY_KEY).then((saved) => {
+      if (saved) setSelectedCategories(JSON.parse(saved));
+    });
+    AsyncStorage.getItem(MEMBER_KEY).then((saved) => {
+      if (saved) setSelectedMembers(JSON.parse(saved));
+    });
+    AsyncStorage.getItem(STATUS_KEY).then((saved) => {
+      if (saved) setStatusFilter(saved as StatusFilter);
+    });
   }, []);
 
   useEffect(() => {
@@ -51,7 +62,7 @@ export const useFilterDialog = (categories: NamedEntity[], members: NamedEntity[
     AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify([]));
     AsyncStorage.setItem(MEMBER_KEY, JSON.stringify([]));
     AsyncStorage.setItem(STATUS_KEY, "all");
-  }, [listId]);
+  }, []);
 
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
@@ -59,7 +70,9 @@ export const useFilterDialog = (categories: NamedEntity[], members: NamedEntity[
   const onToggleCategory = useCallback((categoryId: string) => {
     startTransition(() => {
       setSelectedCategories((current) => {
-        const updated = current.includes(categoryId) ? current.filter((id) => id !== categoryId) : [...current, categoryId];
+        const updated = current.includes(categoryId)
+          ? current.filter((id) => id !== categoryId)
+          : [...current, categoryId];
         AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify(updated));
         return updated;
       });
@@ -95,5 +108,19 @@ export const useFilterDialog = (categories: NamedEntity[], members: NamedEntity[
   }, []);
 
   const hasActiveFilter = selectedCategories.length > 0 || selectedMembers.length > 0 || statusFilter !== "all";
-  return { visible, categories, selectedCategories, members: membersInList, selectedMembers, statusFilter, hasActiveFilter, open, close, onToggleCategory, onToggleMember, onSetStatus, onClear };
+  return {
+    visible,
+    categories,
+    selectedCategories,
+    members: membersInList,
+    selectedMembers,
+    statusFilter,
+    hasActiveFilter,
+    open,
+    close,
+    onToggleCategory,
+    onToggleMember,
+    onSetStatus,
+    onClear,
+  };
 };

@@ -1,9 +1,9 @@
-import { ActivityIndicator, View } from "react-native";
 import { router } from "expo-router";
-import { ListSection } from "~/components/home/ListSection.tsx";
+import { ActivityIndicator, View } from "react-native";
 import { EmptyList } from "~/components/home/EmptyList.tsx";
-import { homeColors } from "~/components/home/theme.ts";
+import { ListSection } from "~/components/home/ListSection.tsx";
 import { homeStyles } from "~/components/home/styles.ts";
+import { homeColors } from "~/components/home/theme.ts";
 import { useApp } from "~/providers/AppProvider.tsx";
 
 export default function ListsTab() {
@@ -28,7 +28,13 @@ export default function ListsTab() {
 
   return (
     <View style={homeStyles.home}>
-      <ListSection lists={lists} selection={selection} email={email} onProfile={() => router.push("/(tabs)/profile")} onListSelect={handleListSelect} />
+      <ListSection
+        lists={lists}
+        selection={selection}
+        email={email}
+        onProfile={() => router.push("/(tabs)/profile")}
+        onListSelect={handleListSelect}
+      />
     </View>
   );
 }

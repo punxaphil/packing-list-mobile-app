@@ -1,19 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { writeDb } from "~/services/database.ts";
+import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { ItemsSectionProps } from "./types.ts";
-import { HOME_COPY } from "./styles.ts";
-import { writeDb } from "~/services/database.ts";
-import { getNextItemRank, getNextCategoryRank } from "./itemsSectionHelpers.ts";
-import { animateLayout } from "./layoutAnimation.ts";
-import { ItemsPanel, type ListHandlers, type TextDialogState, type AddItemDialogState } from "./ItemsPanel.tsx";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
+import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
+import {
+  useAssignMembers,
+  useCategoryRename,
+  useCopyToList,
+  useItemDelete,
+  useItemRename,
+  useListRenamer,
+  useMoveCategory,
+  useToggleAllMembers,
+  useToggleMemberPacked,
+} from "./itemHandlers.ts";
+import { getNextCategoryRank, getNextItemRank } from "./itemsSectionHelpers.ts";
+import { animateLayout } from "./layoutAnimation.ts";
+import { HOME_COPY } from "./styles.ts";
+import { ItemsSectionProps } from "./types.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
-import { useSearch } from "./useSearch.ts";
-import { useItemRename, useItemDelete, useCategoryRename, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer, useMoveCategory, useCopyToList } from "./itemHandlers.ts";
 import { useOptimisticItems } from "./useOptimisticItems.ts";
-import { UNCATEGORIZED } from "~/services/utils.ts";
+import { useSearch } from "./useSearch.ts";
 
 const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   const categoryIds = new Set(items.map((i) => i.category));
@@ -22,18 +32,34 @@ const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   return result.sort((a, b) => b.rank - a.rank);
 };
 
-const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCallback(async (category: NamedEntity) => {
-  if (!packingListId) throw new Error("Missing packing list");
-  animateLayout();
-  return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
-}, [items, packingListId]);
+const useItemAdder = (items: PackItem[], packingListId?: string | null) =>
+  useCallback(
+    async (category: NamedEntity) => {
+      if (!packingListId) throw new Error("Missing packing list");
+      animateLayout();
+      return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
+    },
+    [items, packingListId]
+  );
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
   const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items);
-  const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, optimisticItems), [props.categoriesState.categories, optimisticItems]);
+  const categoriesInList = useMemo(
+    () => getCategoriesInList(props.categoriesState.categories, optimisticItems),
+    [props.categoriesState.categories, optimisticItems]
+  );
   const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, optimisticItems, list?.id);
-  const filteredItems = useMemo(() => applyFilters(optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
+  const filteredItems = useMemo(
+    () =>
+      applyFilters(
+        optimisticItems,
+        filterDialog.selectedCategories,
+        filterDialog.selectedMembers,
+        filterDialog.statusFilter
+      ),
+    [optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]
+  );
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const search = useSearch(filteredItems, categoriesInList);
@@ -45,8 +71,29 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   return (
     <>
-      <ItemsPanel {...filteredProps} {...handlers} list={list} displayName={displayName} renameDialog={renameDialog} addItemDialog={addItemDialog} filterDialog={filterDialog} search={search} />
-      <FilterSheet visible={filterDialog.visible} categories={filterDialog.categories} selectedCategories={filterDialog.selectedCategories} onToggleCategory={filterDialog.onToggleCategory} members={filterDialog.members} selectedMembers={filterDialog.selectedMembers} onToggleMember={filterDialog.onToggleMember} statusFilter={filterDialog.statusFilter} onSetStatus={filterDialog.onSetStatus} onClear={filterDialog.onClear} onClose={filterDialog.close} />
+      <ItemsPanel
+        {...filteredProps}
+        {...handlers}
+        list={list}
+        displayName={displayName}
+        renameDialog={renameDialog}
+        addItemDialog={addItemDialog}
+        filterDialog={filterDialog}
+        search={search}
+      />
+      <FilterSheet
+        visible={filterDialog.visible}
+        categories={filterDialog.categories}
+        selectedCategories={filterDialog.selectedCategories}
+        onToggleCategory={filterDialog.onToggleCategory}
+        members={filterDialog.members}
+        selectedMembers={filterDialog.selectedMembers}
+        onToggleMember={filterDialog.onToggleMember}
+        statusFilter={filterDialog.statusFilter}
+        onSetStatus={filterDialog.onSetStatus}
+        onClear={filterDialog.onClear}
+        onClose={filterDialog.close}
+      />
     </>
   );
 };
@@ -54,13 +101,27 @@ export const ItemsSection = (props: ItemsSectionProps) => {
 type ToggleItem = (item: PackItem) => Promise<void>;
 type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
-const useItemsSectionHandlers = (props: ItemsSectionProps, toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
-  onToggle: useCallback((item: PackItem) => { void toggleItem(item); }, [toggleItem]),
+const useItemsSectionHandlers = (
+  props: ItemsSectionProps,
+  toggleItem: ToggleItem,
+  toggleCategory: ToggleCategory
+): ListHandlers => ({
+  onToggle: useCallback(
+    (item: PackItem) => {
+      void toggleItem(item);
+    },
+    [toggleItem]
+  ),
   onRenameItem: useItemRename(),
   onDeleteItem: useItemDelete(),
   onAddItem: useItemAdder(props.itemsState.items, props.selection.selectedList?.id),
   onRenameCategory: useCategoryRename(),
-  onToggleCategory: useCallback((items: PackItem[], checked: boolean) => { void toggleCategory(items, checked); }, [toggleCategory]),
+  onToggleCategory: useCallback(
+    (items: PackItem[], checked: boolean) => {
+      void toggleCategory(items, checked);
+    },
+    [toggleCategory]
+  ),
   onAssignMembers: useAssignMembers(),
   onToggleMemberPacked: useToggleMemberPacked(),
   onToggleAllMembers: useToggleAllMembers(),
@@ -68,15 +129,21 @@ const useItemsSectionHandlers = (props: ItemsSectionProps, toggleItem: ToggleIte
   onCopyToList: useCopyToList(),
 });
 
-const useRenameDialog = (list: NamedEntity | null, rename: (target: NamedEntity, name: string) => void): TextDialogState => {
+const useRenameDialog = (
+  list: NamedEntity | null,
+  rename: (target: NamedEntity, name: string) => void
+): TextDialogState => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState(list?.name ?? "");
-  useEffect(() => setValue(list?.name ?? ""), [list?.id, list?.name]);
+  useEffect(() => setValue(list?.name ?? ""), [list?.name]);
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!list || !trimmed || trimmed === list.name) { close(); return; }
+    if (!list || !trimmed || trimmed === list.name) {
+      close();
+      return;
+    }
     rename(list, trimmed);
     close();
   }, [value, list, rename, close]);
@@ -87,16 +154,19 @@ const useAddItemDialog = (items: PackItem[], categories: NamedEntity[], listId?:
   const [visible, setVisible] = useState(false);
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
-  const submit = useCallback(async (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => {
-    if (!listId) return close();
-    animateLayout();
-    let categoryId = category?.id ?? UNCATEGORIZED.id;
-    if (newCategoryName) {
-      const newCategory = await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories));
-      categoryId = newCategory.id;
-    }
-    void writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
-    close();
-  }, [items, categories, listId, close]);
+  const submit = useCallback(
+    async (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => {
+      if (!listId) return close();
+      animateLayout();
+      let categoryId = category?.id ?? UNCATEGORIZED.id;
+      if (newCategoryName) {
+        const newCategory = await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories));
+        categoryId = newCategory.id;
+      }
+      void writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
+      close();
+    },
+    [items, categories, listId, close]
+  );
   return { visible, open, close, submit };
 };

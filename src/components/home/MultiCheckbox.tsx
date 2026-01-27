@@ -1,5 +1,5 @@
-import { View } from "react-native";
 import Checkbox from "expo-checkbox";
+import { View } from "react-native";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";

@@ -11,7 +11,6 @@ type ImageDbOperations = {
 };
 
 export const useEntityImageActions = (imageType: string, copy: EntityCopy, db: ImageDbOperations) => {
-
   const handleImagePress = useCallback(
     (entityId: string, image?: Image) => {
       const pick = async (existing?: Image) => {
@@ -21,10 +20,15 @@ export const useEntityImageActions = (imageType: string, copy: EntityCopy, db: I
         else await db.add(imageType, entityId, url);
       };
       const remove = async (img: Image) => db.delete(img.id);
-      if (image) showImageActionSheet(copy, () => void pick(image), () => void remove(image));
+      if (image)
+        showImageActionSheet(
+          copy,
+          () => void pick(image),
+          () => void remove(image)
+        );
       else void pick();
     },
-    [imageType, copy, db],
+    [imageType, copy, db]
   );
 
   return { handleImagePress };
