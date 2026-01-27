@@ -82,14 +82,14 @@ type MemberHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort
 
 const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
   <View style={entityStyles.actions}>
+    <Pressable style={entityStyles.addLink} onPress={onAdd} accessibilityRole="button" accessibilityLabel={MEMBER_COPY.addButton} hitSlop={8}>
+      <Text style={entityStyles.addLinkLabel}>Add member...</Text>
+    </Pressable>
+    <View style={entityStyles.spacer} />
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
       <Switch value={sortByAlpha} onValueChange={onToggleSort} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
     </View>
-    <View style={entityStyles.spacer} />
-    <Pressable style={entityStyles.actionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={MEMBER_COPY.addButton}>
-      <Text style={entityStyles.actionLabel}>{MEMBER_COPY.addButton}</Text>
-    </Pressable>
   </View>
 );
 

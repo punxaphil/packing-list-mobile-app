@@ -128,7 +128,7 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
         <ListCardText list={list} summary={formatSummary(list)} />
       </View>
       <View style={homeStyles.listDeleteButton}>
-        <Text style={homeStyles.listDeleteIcon}>{HOME_COPY.deleteIcon}</Text>
+        <Text style={homeStyles.listDeleteIcon}>{MENU_ICON}</Text>
       </View>
     </View>
   </View>

@@ -93,13 +93,13 @@ type CategoryHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSo
 
 const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={entityStyles.actions}>
+    <Pressable style={entityStyles.addLink} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.addButton} hitSlop={8}>
+      <Text style={entityStyles.addLinkLabel}>Add category...</Text>
+    </Pressable>
+    <View style={entityStyles.spacer} />
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
       <Switch value={sortByAlpha} onValueChange={onToggleSort} trackColor={{ true: homeColors.primary, false: homeColors.border }} />
     </View>
-    <View style={entityStyles.spacer} />
-    <Pressable style={entityStyles.actionButton} onPress={onAdd} accessibilityRole="button" accessibilityLabel={CATEGORY_COPY.addButton}>
-      <Text style={entityStyles.actionLabel}>{CATEGORY_COPY.addButton}</Text>
-    </Pressable>
   </View>
 );

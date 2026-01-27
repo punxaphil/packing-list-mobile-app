@@ -40,6 +40,6 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: homeColors.background },
+  container: { flex: 1, backgroundColor: homeColors.surface },
   content: { flex: 1 },
 });

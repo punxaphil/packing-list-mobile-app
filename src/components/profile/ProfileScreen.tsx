@@ -106,7 +106,7 @@ const Header = ({ onBack }: { onBack: () => void }) => (
 const { colors, spacing, radius } = { colors: homeColors, spacing: homeSpacing, radius: homeRadius };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: colors.surface },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   backButton: { minWidth: 60 },
   backText: { color: colors.primary, fontWeight: "600", fontSize: 16 },

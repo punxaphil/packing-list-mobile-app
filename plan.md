@@ -29,8 +29,13 @@
 - clicking lists, no items flashes before loaded
 
 # todo 
+- background for all views, should be white, just as categories/members
+- filtering by cat, makes dnd behave weird
+
+
 
 # Maybe later
+- Assign color to entities
 - dark mode
 - Delete Checked Items
 - Select Mode

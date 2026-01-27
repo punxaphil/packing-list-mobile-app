@@ -1,3 +1,4 @@
+# Code Style
 - Apply Clean Code™️.
 - Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
@@ -13,7 +14,12 @@
 - Use descriptive variable and function names.
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
+
+# React Native / Expo Specific
 - Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
+- Don't use colored icons, use mdi or similar icon font and style.
+
+# Workflow
 - When user corrects general behavior, update these instructions accordingly.
 - Never commit build files (ios/, android/build/, node_modules/, etc.). Only commit source files.
 - After each change:
