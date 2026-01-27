@@ -62,7 +62,7 @@ export function FloatingTabBar({ state, navigation, showItems }: FloatingTabBarP
     .onEnd((e) => { navigateToTab(findTabAtX(e.x)); setHighlightedIndex(null); })
     .onFinalize(() => setHighlightedIndex(null));
 
-  const tap = Gesture.Tap().onEnd((e) => navigateToTab(findTabAtX(e.x)));
+  const tap = Gesture.Tap().onEnd((e) => { navigateToTab(findTabAtX(e.x)); setHighlightedIndex(null); });
 
   const renderBlur = () => Platform.OS === "ios" ? (
     <>
