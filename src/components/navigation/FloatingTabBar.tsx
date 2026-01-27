@@ -16,7 +16,7 @@ const TabItem = ({ icon, label, isOn }: TabItemProps) => (
 const tabStyles = StyleSheet.create({
   tab: { alignItems: "center", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20 },
   tabActive: { backgroundColor: "rgba(255,255,255,0.85)" },
-  icon: { fontSize: 22, color: homeColors.muted },
+  icon: { fontSize: 22, color: homeColors.muted, height: 24, lineHeight: 24, textAlign: "center" },
   iconActive: { color: homeColors.primary },
   label: { fontSize: 10, fontWeight: "500", color: homeColors.muted, marginTop: 2 },
   labelActive: { fontWeight: "600", color: homeColors.primary },
