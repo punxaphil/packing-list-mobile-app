@@ -36,15 +36,29 @@ export const ListCard = (props: ListCardProps) => {
   );
   const [menuVisible, setMenuVisible] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [uncheckConfirmVisible, setUncheckConfirmVisible] = useState(false);
   const summary = formatSummary(props.list);
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
   const isArchived = props.list.archived === true;
   const showDeleteConfirm = () => setDeleteConfirmVisible(true);
-  const menuItems = buildMenuItems(props.list, props.actions, isTemplate, isPinned, isArchived, showDeleteConfirm);
+  const showUncheckConfirm = () => setUncheckConfirmVisible(true);
+  const menuItems = buildMenuItems(
+    props.list,
+    props.actions,
+    isTemplate,
+    isPinned,
+    isArchived,
+    showDeleteConfirm,
+    showUncheckConfirm
+  );
   const deleteConfirmItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
+    { text: "Cancel", style: "cancel" as const },
+  ];
+  const uncheckConfirmItems = [
+    { text: "Uncheck All", onPress: () => void props.actions.onUncheckAll(props.list) },
     { text: "Cancel", style: "cancel" as const },
   ];
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
@@ -77,6 +91,13 @@ export const ListCard = (props: ListCardProps) => {
         title={`Delete "${props.list.name}"?`}
         items={deleteConfirmItems}
         onClose={() => setDeleteConfirmVisible(false)}
+        headerColor={props.color}
+      />
+      <ActionMenu
+        visible={uncheckConfirmVisible}
+        title={`Uncheck all items in "${props.list.name}"?`}
+        items={uncheckConfirmItems}
+        onClose={() => setUncheckConfirmVisible(false)}
         headerColor={props.color}
       />
     </View>
@@ -167,7 +188,8 @@ const buildMenuItems = (
   isTemplate: boolean,
   isPinned: boolean,
   isArchived: boolean,
-  showDeleteConfirm: () => void
+  showDeleteConfirm: () => void,
+  showUncheckConfirm: () => void
 ) => {
   const items = [];
   if (isArchived) {
@@ -183,6 +205,10 @@ const buildMenuItems = (
     } else {
       items.push({ text: "Set as Template", onPress: () => void actions.onSetTemplate(list) });
       items.push({ text: "Archive", onPress: () => void actions.onArchive(list) });
+    }
+    if (!isTemplate) {
+      const hasPacked = (list.packedCount ?? 0) > 0;
+      items.push({ text: "Uncheck All", onPress: showUncheckConfirm, disabled: !hasPacked });
     }
   }
   items.push({ text: "Delete", style: "destructive" as const, onPress: showDeleteConfirm });

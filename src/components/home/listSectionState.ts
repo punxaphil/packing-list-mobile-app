@@ -13,6 +13,7 @@ export type ListActions = {
   onUnpin: (list: PackingListSummary) => Promise<void>;
   onArchive: (list: PackingListSummary) => Promise<void>;
   onRestore: (list: PackingListSummary) => Promise<void>;
+  onUncheckAll: (list: PackingListSummary) => Promise<void>;
 };
 
 export const useListActions = (
@@ -29,6 +30,7 @@ export const useListActions = (
   onUnpin: useUnpin(),
   onArchive: useArchive(),
   onRestore: useRestore(),
+  onUncheckAll: useUncheckAll(),
 });
 
 const useAddList = (
@@ -97,6 +99,11 @@ const useArchive = () =>
 const useRestore = () =>
   useCallback(async (list: PackingListSummary) => {
     await writeDb.updatePackingList({ ...list, archived: false });
+  }, []);
+
+const useUncheckAll = () =>
+  useCallback(async (list: PackingListSummary) => {
+    await writeDb.uncheckAllItems(list.id);
   }, []);
 
 const getNextListRank = (lists: PackingListSummary[]) => Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;

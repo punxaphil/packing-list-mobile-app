@@ -33,6 +33,10 @@
 - DnD edge cases fixed
 
 # todo
+- provide an option in lists item menu to uncheck all items for that list. Should include confirm dialog.
+- pin icon placement. Pin icon should be larger, as large as the menu icon, and placed just left of the menu icon. Only shows when pinned. If clicked, lists is unpinned.
+- separate pinned lists. There should be a visual separation between pinned and unpinned lists. Maybe  a bit of spacing.
+- bad contrast upload icon in cat and members page. The upload icon in the category and members page has bad contrast against the background. Maybe add a circle background like in other places? 
 
 # Maybe later
 - Assign color to entities

@@ -306,6 +306,16 @@ export const writeDb = {
     }
     await batch.commit();
   },
+  async uncheckAllItems(packingListId: string): Promise<void> {
+    const items = await this.getPackItemsForList(packingListId);
+    const checkedItems = items.filter((item) => item.checked);
+    if (checkedItems.length === 0) return;
+    const batch = writeBatch(firestore);
+    for (const item of checkedItems) {
+      batch.update(doc(firestore, USERS_KEY, getUserId(), PACK_ITEMS_KEY, item.id), { checked: false });
+    }
+    await batch.commit();
+  },
   updateCategoryBatch<K extends DocumentData>(data: WithFieldValue<K>, batch: WriteBatch) {
     batch.update(doc(firestore, USERS_KEY, getUserId(), CATEGORIES_KEY, data.id), data);
   },

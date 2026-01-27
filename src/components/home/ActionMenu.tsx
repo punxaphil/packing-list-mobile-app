@@ -5,6 +5,7 @@ type ActionMenuItem = {
   text: string;
   style?: "default" | "destructive" | "cancel";
   onPress?: () => void;
+  disabled?: boolean;
 };
 
 type ActionMenuProps = {
@@ -38,12 +39,18 @@ export const ActionMenu = ({ visible, title, items, onClose, headerColor }: Acti
 
 const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
   const handlePress = () => {
+    if (item.disabled) return;
     onClose();
     item.onPress?.();
   };
+  const textStyle = [
+    styles.itemText,
+    item.style === "destructive" && styles.destructive,
+    item.disabled && styles.disabled,
+  ];
   return (
     <Pressable style={styles.item} onPress={handlePress}>
-      <Text style={[styles.itemText, item.style === "destructive" && styles.destructive]}>{item.text}</Text>
+      <Text style={textStyle}>{item.text}</Text>
     </Pressable>
   );
 };
@@ -68,7 +75,8 @@ const styles = StyleSheet.create({
   },
   item: { padding: homeSpacing.md, borderBottomWidth: 1, borderBottomColor: homeColors.border },
   itemText: { fontSize: 16, color: homeColors.text, textAlign: "center" },
-  destructive: { color: "#dc2626" },
+  destructive: { color: homeColors.danger },
+  disabled: { color: homeColors.muted },
   cancelItem: { padding: homeSpacing.md, backgroundColor: homeColors.background },
   cancelText: { fontSize: 16, fontWeight: "600", color: homeColors.primary, textAlign: "center" },
 });
