@@ -111,23 +111,25 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
+  const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
   return (
     <FadeScrollView style={homeStyles.scroll}>
       <View style={[homeStyles.list, dragStyles.relative]}>
-        {lists.map((list) => (
-          <ListCard
-            key={list.id}
-            list={list}
-            isSelected={selectedId === list.id}
-            actions={actions}
-            color={colors[list.id]}
-            hidden={drag.snapshot?.id === list.id}
-            onLayout={(layout: LayoutRectangle) => drag.recordLayout(list.id, layout)}
-            onDragStart={() => drag.start(list.id, "")}
-            onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
-            onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
-            onSelect={onListSelect}
-          />
+        {lists.map((list, index) => (
+          <View key={list.id} style={separatorIndices.has(index) ? localStyles.sectionSeparator : null}>
+            <ListCard
+              list={list}
+              isSelected={selectedId === list.id}
+              actions={actions}
+              color={colors[list.id]}
+              hidden={drag.snapshot?.id === list.id}
+              onLayout={(layout: LayoutRectangle) => drag.recordLayout(list.id, layout)}
+              onDragStart={() => drag.start(list.id, "")}
+              onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
+              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
+              onSelect={onListSelect}
+            />
+          </View>
         ))}
         <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
@@ -135,6 +137,16 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
       </View>
     </FadeScrollView>
   );
+};
+
+const getSeparatorIndices = (lists: PackingListSummary[]): Set<number> => {
+  const indices = new Set<number>();
+  const lastTemplateIdx = lists.findLastIndex((l) => l.isTemplate && !l.archived);
+  const lastPinnedIdx = lists.findLastIndex((l) => l.pinned && !l.isTemplate && !l.archived);
+  const lastActiveIdx = lists.findLastIndex((l) => !l.archived);
+  if (lastTemplateIdx >= 0 && lastTemplateIdx < lastActiveIdx) indices.add(lastTemplateIdx);
+  if (lastPinnedIdx >= 0 && lastPinnedIdx < lastActiveIdx) indices.add(lastPinnedIdx);
+  return indices;
 };
 
 const useCreateListDialog = (create: (name: string, useTemplate: boolean) => Promise<void>, hasTemplate: boolean) => {
@@ -239,6 +251,7 @@ const localStyles = StyleSheet.create({
   archiveToggle: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
   archiveToggleText: { fontSize: 12, color: homeColors.muted },
   spacer: { flex: 1 },
+  sectionSeparator: { marginBottom: homeSpacing.sm },
 });
 
 const DragDebugPanel = ({ snapshot, layout }: { snapshot: DragSnapshot; layout?: LayoutRectangle }) => {

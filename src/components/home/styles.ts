@@ -99,13 +99,18 @@ export const homeStyles = StyleSheet.create({
     borderRadius: spacing.xs,
   },
   archivedBadgeText: { fontSize: 10, fontWeight: "600", color: "#ffffff" },
-  listDeleteButton: {
+  listMenuButton: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     marginVertical: -spacing.sm,
     marginRight: -spacing.sm,
+    marginTop: -3,
   },
-  listDeleteIcon: { fontSize: 18 },
+  listMenuIcon: { fontSize: 18 },
+  pinButton: {
+    paddingVertical: spacing.md,
+    marginVertical: -spacing.sm,
+  },
   listItem: { fontSize: 16, color: colors.text, paddingVertical: spacing.xs },
   activeItem: {
     backgroundColor: colors.primary,

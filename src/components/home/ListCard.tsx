@@ -76,6 +76,7 @@ export const ListCard = (props: ListCardProps) => {
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
+          {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
           <ListMenuButton onPress={() => setMenuVisible(true)} />
         </View>
       </Pressable>
@@ -114,7 +115,6 @@ const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
     <View style={homeStyles.listNameRow}>
       <Text style={homeStyles.listName}>{list.name}</Text>
-      {list.pinned && <PinBadge />}
       {list.isTemplate && <TemplateBadge />}
       {list.archived && <ArchivedBadge />}
     </View>
@@ -128,7 +128,11 @@ const TemplateBadge = () => (
   </View>
 );
 
-const PinBadge = () => <MaterialCommunityIcons name="pin-outline" size={14} color={homeColors.muted} />;
+const PinButton = ({ onPress }: { onPress: () => void }) => (
+  <Pressable onPress={onPress} style={homeStyles.pinButton} accessibilityRole="button" accessibilityLabel="Unpin">
+    <MaterialCommunityIcons name="pin-outline" size={18} color={homeColors.muted} />
+  </Pressable>
+);
 
 const ArchivedBadge = () => (
   <View style={homeStyles.archivedBadge}>
@@ -138,12 +142,12 @@ const ArchivedBadge = () => (
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable
-    style={homeStyles.listDeleteButton}
+    style={homeStyles.listMenuButton}
     onPress={onPress}
     accessibilityRole="button"
     accessibilityLabel="List menu"
   >
-    <Text style={homeStyles.listDeleteIcon}>{MENU_ICON}</Text>
+    <Text style={homeStyles.listMenuIcon}>{MENU_ICON}</Text>
   </Pressable>
 );
 
@@ -166,8 +170,8 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
       <View style={homeStyles.listCardBody}>
         <ListCardText list={list} summary={formatSummary(list)} />
       </View>
-      <View style={homeStyles.listDeleteButton}>
-        <Text style={homeStyles.listDeleteIcon}>{MENU_ICON}</Text>
+      <View style={homeStyles.listMenuButton}>
+        <Text style={homeStyles.listMenuIcon}>{MENU_ICON}</Text>
       </View>
     </View>
   </View>
