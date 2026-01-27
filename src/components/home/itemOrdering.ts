@@ -145,35 +145,38 @@ const buildDropPreview = (
   return { ids, changed: true, targetCategoryId };
 };
 
-// Start helper
-const getCategoryAtY = (y: number, sectionLayouts: LayoutMap, bodyLayouts: LayoutMap, sourceCategoryId: string) => {
-  // First, check if ghost is still within the SOURCE category's SECTION bounds
-  // This prevents accidental category changes when reordering within the same category
-  const sourceSection = sectionLayouts[sourceCategoryId];
-  if (sourceSection) {
-    const sourceTop = sourceSection.y;
-    const sourceBottom = sourceSection.y + sourceSection.height;
-    if (y >= sourceTop && y <= sourceBottom) {
-      return sourceCategoryId;
-    }
-  }
+// Start helper - determines which category the ghost is in based on section bounds
+// This must match the logic in computeDropIndex which uses section bounds
+const getCategoryAtY = (y: number, sectionLayouts: LayoutMap, _bodyLayouts: LayoutMap, sourceCategoryId: string) => {
+  // Find all categories whose section bounds contain the y position
+  const candidates: string[] = [];
 
-  // Ghost has left source category bounds - check other categories' BODY areas
   for (const [catId, sectionLayout] of Object.entries(sectionLayouts)) {
-    if (catId === sourceCategoryId) continue;
+    const sectionTop = sectionLayout.y;
+    const sectionBottom = sectionTop + sectionLayout.height;
 
-    const bodyLayout = bodyLayouts[catId];
-    if (!bodyLayout) continue;
-
-    const bodyTop = sectionLayout.y + bodyLayout.y;
-    const bodyBottom = bodyTop + bodyLayout.height;
-
-    if (y >= bodyTop && y <= bodyBottom) {
-      return catId;
+    if (y >= sectionTop && y <= sectionBottom) {
+      candidates.push(catId);
     }
   }
 
-  return sourceCategoryId;
+  // If no candidates, stay in source
+  if (candidates.length === 0) {
+    return sourceCategoryId;
+  }
+
+  // If only one candidate, use it
+  if (candidates.length === 1) {
+    return candidates[0];
+  }
+
+  // Multiple candidates (overlapping sections) - prefer source if it's one of them
+  if (candidates.includes(sourceCategoryId)) {
+    return sourceCategoryId;
+  }
+
+  // Otherwise pick the first non-source candidate
+  return candidates[0];
 };
 
 const _resolveTargetIndex = (
