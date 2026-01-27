@@ -1,8 +1,8 @@
-import { View, StyleSheet, Text, Platform, LayoutChangeEvent } from "react-native";
 import { BlurView } from "@react-native-community/blur";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useState } from "react";
+import { LayoutChangeEvent, Platform, StyleSheet, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { homeColors } from "~/components/home/theme.ts";
 
 type TabItemProps = { icon: string; label: string; isOn: boolean };
@@ -43,7 +43,11 @@ export function FloatingTabBar({ state, navigation, showItems }: FloatingTabBarP
 
   const handleTabLayout = (index: number, e: LayoutChangeEvent) => {
     const { x, width } = e.nativeEvent.layout;
-    setTabLayouts((prev) => { const next = [...prev]; next[index] = { x, width }; return next; });
+    setTabLayouts((prev) => {
+      const next = [...prev];
+      next[index] = { x, width };
+      return next;
+    });
   };
 
   const findTabAtX = (x: number): number | null => {
@@ -54,22 +58,32 @@ export function FloatingTabBar({ state, navigation, showItems }: FloatingTabBarP
     return null;
   };
 
-  const navigateToTab = (idx: number | null) => idx !== null && visibleTabs[idx] && navigation.navigate(visibleTabs[idx].name);
+  const navigateToTab = (idx: number | null) =>
+    idx !== null && visibleTabs[idx] && navigation.navigate(visibleTabs[idx].name);
 
   const gesture = Gesture.Pan()
     .onBegin((e) => setHighlightedIndex(findTabAtX(e.x)))
     .onUpdate((e) => setHighlightedIndex(findTabAtX(e.x)))
-    .onEnd((e) => { navigateToTab(findTabAtX(e.x)); setHighlightedIndex(null); })
+    .onEnd((e) => {
+      navigateToTab(findTabAtX(e.x));
+      setHighlightedIndex(null);
+    })
     .onFinalize(() => setHighlightedIndex(null));
 
-  const tap = Gesture.Tap().onEnd((e) => { navigateToTab(findTabAtX(e.x)); setHighlightedIndex(null); });
+  const tap = Gesture.Tap().onEnd((e) => {
+    navigateToTab(findTabAtX(e.x));
+    setHighlightedIndex(null);
+  });
 
-  const renderBlur = () => Platform.OS === "ios" ? (
-    <>
-      <BlurView style={StyleSheet.absoluteFill} blurType="ultraThinMaterial" blurAmount={20} />
-      <View style={styles.highlight} />
-    </>
-  ) : <View style={[StyleSheet.absoluteFill, styles.fallback]} />;
+  const renderBlur = () =>
+    Platform.OS === "ios" ? (
+      <>
+        <BlurView style={StyleSheet.absoluteFill} blurType="ultraThinMaterial" blurAmount={20} />
+        <View style={styles.highlight} />
+      </>
+    ) : (
+      <View style={[StyleSheet.absoluteFill, styles.fallback]} />
+    );
 
   return (
     <View style={[styles.wrapper, { paddingBottom: insets.bottom + 8 }]}>
@@ -94,7 +108,12 @@ export function FloatingTabBar({ state, navigation, showItems }: FloatingTabBarP
 
 const styles = StyleSheet.create({
   wrapper: { position: "absolute", left: 0, right: 0, bottom: 0, alignItems: "center", paddingHorizontal: 16 },
-  container: { borderRadius: 28, overflow: "hidden", borderWidth: StyleSheet.hairlineWidth, borderColor: "rgba(255,255,255,0.35)" },
+  container: {
+    borderRadius: 28,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255,255,255,0.35)",
+  },
   highlight: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(255,255,255,0.12)" },
   fallback: { backgroundColor: "#f2f2f7" },
   tabRow: { flexDirection: "row", paddingHorizontal: 8, paddingVertical: 6 },
