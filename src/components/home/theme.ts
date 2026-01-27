@@ -9,6 +9,7 @@ export const homeColors = {
   buttonText: "#ffffff",
   cardBg: "#ffffff",
   danger: "#dc2626",
+  dropIndicator: "#000000",
 } as const;
 
 export const homeSpacing = {

@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { LayoutRectangle } from "react-native";
 import { DragOffset } from "./useDraggableRow.tsx";
 
-export type DragSnapshot = { id: string; categoryId: string; offsetY: number } | null;
+export type DragSnapshot = { id: string; categoryId: string; offsetY: number; frozenY?: number } | null;
 
 export const useDragState = () => {
   const [snapshot, setSnapshotState] = useState<DragSnapshot>(null);
@@ -58,14 +58,28 @@ export const useDragState = () => {
   );
 
   const end = useCallback(
-    (onComplete?: (value: DragSnapshot) => void) => {
+    (onComplete?: (value: DragSnapshot) => void, layouts?: Record<string, LayoutRectangle>) => {
       // Read from ref to avoid dependency on 'snapshot' state which would break memoization
       const current = snapshotRef.current;
-      if (onComplete && current) onComplete(current);
 
-      // Defer clearing snapshot to allow the order update to render first, avoiding flicker
+      // Freeze the Y position FIRST, before triggering reorder, to prevent jump
+      if (current && layouts) {
+        const layout = layouts[current.id];
+        if (layout) {
+          const frozen = { ...current, frozenY: layout.y + current.offsetY };
+          snapshotRef.current = frozen;
+          setSnapshot(frozen);
+        }
+      }
+
+      // Defer the reorder to next frame so frozenY renders first
       requestAnimationFrame(() => {
-        setSnapshot(null);
+        if (onComplete && current) onComplete(current);
+
+        // Defer clearing snapshot to allow the order update to render
+        requestAnimationFrame(() => {
+          setSnapshot(null);
+        });
       });
     },
     [setSnapshot]

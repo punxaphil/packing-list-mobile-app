@@ -1,5 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
-import { Alert, Animated, LayoutRectangle, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import {
+  Alert,
+  Animated,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -111,29 +121,33 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
+  const isDropping = drag.snapshot?.frozenY !== undefined;
   const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
+  const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
     <FadeScrollView style={homeStyles.scroll}>
       <View style={[homeStyles.list, dragStyles.relative]}>
         {lists.map((list, index) => (
-          <View key={list.id} style={separatorIndices.has(index) ? localStyles.sectionSeparator : null}>
+          <View
+            key={list.id}
+            style={separatorIndices.has(index) ? localStyles.sectionSeparator : null}
+            onLayout={(e) => handleLayout(list.id, e)}
+          >
             <ListCard
               list={list}
               isSelected={selectedId === list.id}
               actions={actions}
               color={colors[list.id]}
               hidden={drag.snapshot?.id === list.id}
-              onLayout={(layout: LayoutRectangle) => drag.recordLayout(list.id, layout)}
               onDragStart={() => drag.start(list.id, "")}
               onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
-              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts))}
+              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts), drag.layouts)}
               onSelect={onListSelect}
             />
           </View>
         ))}
-        <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />
+        {!isDropping && <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />}
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
-        <DragDebugPanel snapshot={drag.snapshot} layout={drag.snapshot ? drag.layouts[drag.snapshot.id] : undefined} />
       </View>
     </FadeScrollView>
   );
@@ -190,11 +204,9 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   if (!layout) return null;
   const list = lists.find((entry) => entry.id === drag.id);
   if (!list) return null;
+  const top = drag.frozenY ?? layout.y + drag.offsetY;
   return (
-    <Animated.View
-      pointerEvents="none"
-      style={[dragStyles.ghost, { top: layout.y + drag.offsetY, height: layout.height, width: layout.width }]}
-    >
+    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top, height: layout.height, width: layout.width }]}>
       <ListCardPreview list={list} color={colors[list.id]} />
     </Animated.View>
   );
@@ -230,19 +242,10 @@ const dragStyles = StyleSheet.create({
     left: -12,
     right: -12,
     height: 2,
-    backgroundColor: "#000000",
+    backgroundColor: homeColors.dropIndicator,
     borderRadius: 1,
     zIndex: 15,
   },
-  debug: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    padding: 8,
-    borderRadius: 8,
-  },
-  debugText: { color: "#ffffff", fontSize: 12, lineHeight: 16 },
 });
 
 const localStyles = StyleSheet.create({
@@ -253,16 +256,3 @@ const localStyles = StyleSheet.create({
   spacer: { flex: 1 },
   sectionSeparator: { marginBottom: homeSpacing.sm },
 });
-
-const DragDebugPanel = ({ snapshot, layout }: { snapshot: DragSnapshot; layout?: LayoutRectangle }) => {
-  if (!snapshot) return null;
-  return (
-    <View style={dragStyles.debug} pointerEvents="none">
-      <Text style={dragStyles.debugText}>{`id: ${snapshot.id}`}</Text>
-      <Text style={dragStyles.debugText}>{`offsetY: ${snapshot.offsetY.toFixed(1)}`}</Text>
-      <Text style={dragStyles.debugText}>
-        {layout ? `y: ${layout.y.toFixed(1)} h: ${layout.height.toFixed(1)}` : "layout: none"}
-      </Text>
-    </View>
-  );
-};

@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { LayoutChangeEvent, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { ActionMenu } from "./ActionMenu.tsx";
 import { ListActions } from "./listSectionState.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -17,7 +17,6 @@ type ListCardProps = {
   actions: ListActions;
   color: string;
   hidden?: boolean;
-  onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
   onDragEnd?: () => void;
@@ -38,7 +37,6 @@ export const ListCard = (props: ListCardProps) => {
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [uncheckConfirmVisible, setUncheckConfirmVisible] = useState(false);
   const summary = formatSummary(props.list);
-  const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
   const isArchived = props.list.archived === true;
@@ -63,7 +61,7 @@ export const ListCard = (props: ListCardProps) => {
   ];
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
-    <View onLayout={handleLayout}>
+    <View>
       <Pressable
         style={[cardStyle, props.hidden ? { opacity: 0 } : null]}
         onPress={() => props.onSelect(props.list.id)}

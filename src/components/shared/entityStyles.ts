@@ -62,7 +62,7 @@ export const entityStyles = StyleSheet.create({
     left: -12,
     right: -12,
     height: 2,
-    backgroundColor: "#000000",
+    backgroundColor: homeColors.dropIndicator,
     borderRadius: 1,
     zIndex: 15,
   },

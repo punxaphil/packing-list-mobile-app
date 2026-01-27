@@ -286,7 +286,7 @@ export const homeStyles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: "#000000",
+    backgroundColor: homeColors.dropIndicator,
     borderRadius: 1,
     zIndex: 15,
   },

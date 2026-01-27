@@ -35,9 +35,9 @@
 - Pin icon placement and click to unpin
 - Visual separation between pinned and unpinned lists
 - Upload icon contrast in categories/members page
+- Tabs icons and text alignment
 
 # todo
-- tabs icons and text no valigned.
 
 # Maybe later
 - Assign color to entities
