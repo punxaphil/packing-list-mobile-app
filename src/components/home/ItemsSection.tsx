@@ -11,7 +11,8 @@ import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
 import { useSearch } from "./useSearch.ts";
-import { useItemToggle, useItemRename, useItemDelete, useCategoryRename, useCategoryToggle, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer, useMoveCategory, useCopyToList } from "./itemHandlers.ts";
+import { useItemRename, useItemDelete, useCategoryRename, useAssignMembers, useToggleMemberPacked, useToggleAllMembers, useListRenamer, useMoveCategory, useCopyToList } from "./itemHandlers.ts";
+import { useOptimisticItems } from "./useOptimisticItems.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 
 const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
@@ -29,15 +30,16 @@ const useItemAdder = (items: PackItem[], packingListId?: string | null) => useCa
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
-  const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, props.itemsState.items), [props.categoriesState.categories, props.itemsState.items]);
-  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, props.itemsState.items, list?.id);
-  const filteredItems = useMemo(() => applyFilters(props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [props.itemsState.items, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
+  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items);
+  const categoriesInList = useMemo(() => getCategoriesInList(props.categoriesState.categories, optimisticItems), [props.categoriesState.categories, optimisticItems]);
+  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, optimisticItems, list?.id);
+  const filteredItems = useMemo(() => applyFilters(optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter), [optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]);
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const search = useSearch(filteredItems, categoriesInList);
-  const handlers = useItemsSectionHandlers(filteredProps);
+  const handlers = useItemsSectionHandlers(filteredProps, toggleItem, toggleCategory);
   const renameList = useListRenamer();
-  const addItemDialog = useAddItemDialog(props.itemsState.items, props.categoriesState.categories, list?.id);
+  const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, list?.id);
   const renameDialog = useRenameDialog(list, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
@@ -49,13 +51,16 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   );
 };
 
-const useItemsSectionHandlers = (props: ItemsSectionProps): ListHandlers => ({
-  onToggle: useItemToggle(),
+type ToggleItem = (item: PackItem) => Promise<void>;
+type ToggleCategory = (items: PackItem[], checked: boolean) => Promise<void>;
+
+const useItemsSectionHandlers = (props: ItemsSectionProps, toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
+  onToggle: useCallback((item: PackItem) => { void toggleItem(item); }, [toggleItem]),
   onRenameItem: useItemRename(),
   onDeleteItem: useItemDelete(),
   onAddItem: useItemAdder(props.itemsState.items, props.selection.selectedList?.id),
   onRenameCategory: useCategoryRename(),
-  onToggleCategory: useCategoryToggle(),
+  onToggleCategory: useCallback((items: PackItem[], checked: boolean) => { void toggleCategory(items, checked); }, [toggleCategory]),
   onAssignMembers: useAssignMembers(),
   onToggleMemberPacked: useToggleMemberPacked(),
   onToggleAllMembers: useToggleAllMembers(),

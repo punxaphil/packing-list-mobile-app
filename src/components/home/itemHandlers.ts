@@ -5,15 +5,11 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { writeDb } from "~/services/database.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 
-export const useItemToggle = () => useCallback((item: PackItem) => { animateLayout(); void writeDb.updatePackItem({ ...item, checked: !item.checked }); }, []);
-
 export const useItemRename = () => useCallback((item: PackItem, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === item.name) return; void writeDb.updatePackItem({ ...item, name: trimmed }); }, []);
 
 export const useItemDelete = () => useCallback((id: string) => { animateLayout(); void writeDb.deletePackItem(id); }, []);
 
 export const useCategoryRename = () => useCallback((category: NamedEntity, name: string) => { const trimmed = name.trim(); if (!trimmed || trimmed === category.name) return; void writeDb.updateCategories({ ...category, name: trimmed }); }, []);
-
-export const useCategoryToggle = () => useCallback((items: PackItem[], checked: boolean) => { animateLayout(); const updates = items.map((item) => writeDb.updatePackItem({ ...item, checked })); void Promise.all(updates); }, []);
 
 export const useAssignMembers = () => useCallback(async (item: PackItem, members: MemberPackItem[]) => { await writeDb.updatePackItem({ ...item, members }); }, []);
 

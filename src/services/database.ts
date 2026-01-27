@@ -298,6 +298,16 @@ export const writeDb = {
       data,
     );
   },
+  async updatePackItemsBatched(items: PackItem[]) {
+    const batch = writeBatch(firestore);
+    for (const item of items) {
+      batch.update(
+        doc(firestore, USERS_KEY, getUserId(), PACK_ITEMS_KEY, item.id),
+        item as DocumentData,
+      );
+    }
+    await batch.commit();
+  },
   addPackItemBatch(
     writeBatch: WriteBatch,
     name: string,
