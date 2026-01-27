@@ -79,21 +79,23 @@ const buildDropPreview = (
   const ghostAbsCenterY = ghostAbsY + draggedLayout.height / 2;
 
   // 2. Determine target category from drop position
-  const targetCategoryId = getCategoryAtY(ghostAbsCenterY, sectionLayouts);
+  // Only change category if ghost is clearly within another category's BODY area
+  // This prevents accidental category changes when dragging near boundaries
+  const targetCategoryId = getCategoryAtY(ghostAbsCenterY, sectionLayouts, bodyLayouts, draggedItem.category);
 
   if (targetCategoryId === null) {
-    // If no category found (e.g. dropped outside bounds), cancel or keep original?
-    // Let's assume keep original if we can't find better.
     return { ids: current, changed: false };
   }
 
-  // 3. Determine target index in the global list
-  // Build a list of items sorted by their visual Y position
+  // 3. Determine target index within the target category
+  // Build a list of items in the target category sorted by their visual Y position
   const visualOrder = current
     .filter((id) => id !== snapshot.id)
     .map((id) => {
       const item = items.find((it) => it.id === id);
       if (!item) return null;
+      // Only include items from the target category
+      if (item.category !== targetCategoryId) return null;
       const absY = getAbsoluteY(id, item.category, layouts, sectionLayouts, bodyLayouts);
       if (absY === null) return null;
       const height = layouts[id]?.height ?? 0;
@@ -117,10 +119,8 @@ const buildDropPreview = (
   let targetIndex: number;
 
   if (insertAfterId === null) {
-    // Insert at beginning (before all items in visual order)
     targetIndex = visualOrder.length > 0 ? current.indexOf(visualOrder[0].id) : 0;
   } else {
-    // Insert after the found item
     targetIndex = current.indexOf(insertAfterId) + 1;
   }
   const categoryChanged = draggedItem.category !== targetCategoryId;
@@ -130,7 +130,6 @@ const buildDropPreview = (
     return { ids: current, changed: false };
   }
 
-  // Adjust target index if dragging downwards (since removal shifts subsequent items down)
   if (draggedIndex > -1 && draggedIndex < targetIndex) {
     targetIndex -= 1;
   }
@@ -143,33 +142,38 @@ const buildDropPreview = (
 
   // Move the ID in the list
   const ids = moveItem(current, draggedIndex, targetIndex);
-
   return { ids, changed: true, targetCategoryId };
 };
 
 // Start helper
-const getCategoryAtY = (y: number, sectionLayouts: LayoutMap) => {
-  let closestCategory: string | null = null;
-  let minDistance = Infinity;
-
-  for (const [catId, layout] of Object.entries(sectionLayouts)) {
-    const top = layout.y;
-    const bottom = layout.y + layout.height;
-
-    // Distance to range [top, bottom]
-    // If inside, distance is 0.
-    // If outside, distance to nearest edge.
-    const dist = y < top ? top - y : y > bottom ? y - bottom : 0;
-
-    if (dist === 0) return catId; // Strict containment optimization
-
-    if (dist < minDistance) {
-      minDistance = dist;
-      closestCategory = catId;
+const getCategoryAtY = (y: number, sectionLayouts: LayoutMap, bodyLayouts: LayoutMap, sourceCategoryId: string) => {
+  // First, check if ghost is still within the SOURCE category's SECTION bounds
+  // This prevents accidental category changes when reordering within the same category
+  const sourceSection = sectionLayouts[sourceCategoryId];
+  if (sourceSection) {
+    const sourceTop = sourceSection.y;
+    const sourceBottom = sourceSection.y + sourceSection.height;
+    if (y >= sourceTop && y <= sourceBottom) {
+      return sourceCategoryId;
     }
   }
 
-  return closestCategory;
+  // Ghost has left source category bounds - check other categories' BODY areas
+  for (const [catId, sectionLayout] of Object.entries(sectionLayouts)) {
+    if (catId === sourceCategoryId) continue;
+
+    const bodyLayout = bodyLayouts[catId];
+    if (!bodyLayout) continue;
+
+    const bodyTop = sectionLayout.y + bodyLayout.y;
+    const bodyBottom = bodyTop + bodyLayout.height;
+
+    if (y >= bodyTop && y <= bodyBottom) {
+      return catId;
+    }
+  }
+
+  return sourceCategoryId;
 };
 
 const _resolveTargetIndex = (
