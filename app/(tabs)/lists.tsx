@@ -11,7 +11,7 @@ export default function ListsTab() {
 
   const handleListSelect = (id: string) => {
     selection.select(id);
-    router.replace("/(tabs)/");
+    router.navigate("/(tabs)/");
   };
 
   if (listsLoading) {

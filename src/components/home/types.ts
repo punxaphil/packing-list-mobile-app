@@ -46,24 +46,3 @@ export type ItemsSectionProps = {
   email: string;
   onProfile: () => void;
 };
-
-export type HomeLayoutProps = {
-  email: string;
-  hasLists: boolean;
-  lists: PackingListSummary[];
-  selection: SelectionState;
-  categoriesState: CategoriesState;
-  itemsState: ItemsState;
-  membersState: MembersState;
-  imagesState: ImagesState;
-  onProfile: () => void;
-};
-
-export type HomeScreenProps = {
-  email: string;
-  userId: string;
-  hasLists: boolean;
-  loading: boolean;
-  lists: PackingListSummary[];
-  onProfile: () => void;
-};
