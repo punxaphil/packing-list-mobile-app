@@ -78,10 +78,17 @@ const buildDropPreview = (
   const ghostAbsY = startAbsY + snapshot.offsetY;
   const ghostAbsCenterY = ghostAbsY + draggedLayout.height / 2;
 
+  // Filter sectionLayouts to only include visible categories (ones that have items)
+  const visibleCategoryIds = new Set(items.map((item) => item.category));
+  const visibleSectionLayouts: LayoutMap = {};
+  for (const [catId, layout] of Object.entries(sectionLayouts)) {
+    if (visibleCategoryIds.has(catId)) {
+      visibleSectionLayouts[catId] = layout;
+    }
+  }
+
   // 2. Determine target category from drop position
-  // Only change category if ghost is clearly within another category's BODY area
-  // This prevents accidental category changes when dragging near boundaries
-  const targetCategoryId = getCategoryAtY(ghostAbsCenterY, sectionLayouts, bodyLayouts, draggedItem.category);
+  const targetCategoryId = getCategoryAtY(ghostAbsCenterY, visibleSectionLayouts, bodyLayouts, draggedItem.category);
 
   if (targetCategoryId === null) {
     return { ids: current, changed: false };
