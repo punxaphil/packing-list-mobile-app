@@ -40,9 +40,9 @@
 - Prevent duplicate item names in same category
 - Prevent duplicate category/member names when adding or renaming
 - List rename with unique name validation
+- Without members filter option
 
 # todo
-- filters: without members.
 - members under an item, those letters should be same for all items with those members. and must be unique looking at ALL available members. not just those assigned to that item.
 - filters: if show unchecked only, and 1 member filtered, items with multiple should be hidden if filtered membered has been ticked for that item
 - clicking image in category/member page to view full image in the image dialog

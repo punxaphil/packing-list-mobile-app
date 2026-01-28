@@ -9,6 +9,7 @@ import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
 import { buildCategoryColors } from "./listColors.ts";
+import { MemberInitialsMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
@@ -20,6 +21,7 @@ type ItemsListProps = {
   categories: NamedEntity[];
   members: NamedEntity[];
   memberImages: Image[];
+  memberInitials: MemberInitialsMap;
   lists: NamedEntity[];
   currentListId: string;
   isTemplateList: boolean;
@@ -66,6 +68,7 @@ export const ItemsList = (props: ItemsListProps) => {
             color={section.category.color ?? colors[section.category.id]}
             members={props.members}
             memberImages={props.memberImages}
+            initialsMap={props.memberInitials}
             categories={props.categories}
             lists={props.lists}
             currentListId={props.currentListId}

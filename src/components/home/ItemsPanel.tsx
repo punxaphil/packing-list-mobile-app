@@ -130,6 +130,7 @@ const ItemsListView = ({
       categories={categoriesState.categories}
       members={membersState.members}
       memberImages={memberImages}
+      memberInitials={membersState.memberInitials}
       lists={lists}
       currentListId={selection.selectedId}
       isTemplateList={isTemplate}

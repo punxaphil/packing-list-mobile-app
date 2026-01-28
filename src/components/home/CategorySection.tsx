@@ -16,6 +16,7 @@ import { SectionGroup } from "./itemsSectionHelpers.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
+import { MemberInitialsMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { useToast } from "./Toast.tsx";
 import { homeColors } from "./theme.ts";
@@ -29,6 +30,7 @@ type CategorySectionProps = {
   color: string;
   members: NamedEntity[];
   memberImages: Image[];
+  initialsMap: MemberInitialsMap;
   categories: NamedEntity[];
   lists: NamedEntity[];
   currentListId: string;
@@ -64,7 +66,7 @@ type CategoryEditing = {
 
 type CategoryItemRowProps = {
   item: PackItem;
-  members: NamedEntity[];
+  initialsMap: MemberInitialsMap;
   memberImages: Image[];
   editing: CategoryEditing;
   hidden: boolean;
@@ -271,8 +273,8 @@ const CategoryItems = (props: CategoryItemsProps) => {
     onToggle,
     onRenameItem,
     onDeleteItem,
-    members,
     memberImages,
+    initialsMap,
     onToggleMemberPacked,
     onToggleAllMembers,
     editing,
@@ -296,7 +298,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
         <CategoryItemRow
           key={item.id}
           item={item}
-          members={members}
+          initialsMap={initialsMap}
           memberImages={memberImages}
           editing={editing}
           hidden={drag.snapshot?.id === item.id}
@@ -353,7 +355,8 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
     prev.hasOtherLists === next.hasOtherLists &&
     prev.checkboxDisabled === next.checkboxDisabled &&
     prev.isCurrentMatch === next.isCurrentMatch &&
-    prev.editing.editingId === next.editing.editingId
+    prev.editing.editingId === next.editing.editingId &&
+    prev.initialsMap === next.initialsMap
   );
 };
 
@@ -404,7 +407,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           />
           <MemberInitials
             item={props.item}
-            members={props.members}
+            initialsMap={props.initialsMap}
             memberImages={props.memberImages}
             onToggle={props.onToggleMemberPacked}
           />
