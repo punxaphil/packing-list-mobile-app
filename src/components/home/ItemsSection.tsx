@@ -3,6 +3,7 @@ import { writeDb } from "~/services/database.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
@@ -77,7 +78,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const handlers = useItemsSectionHandlers(filteredProps, toggleItem, toggleCategory);
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, list?.id);
-  const renameDialog = useRenameDialog(list, renameList);
+  const renameDialog = useRenameDialog(list, props.lists, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   return (
@@ -143,23 +144,37 @@ const useItemsSectionHandlers = (
 
 const useRenameDialog = (
   list: NamedEntity | null,
+  lists: NamedEntity[],
   rename: (target: NamedEntity, name: string) => void
 ): TextDialogState => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState(list?.name ?? "");
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => setValue(list?.name ?? ""), [list?.name]);
-  const open = useCallback(() => setVisible(true), []);
+  const open = useCallback(() => {
+    setError(null);
+    setVisible(true);
+  }, []);
   const close = useCallback(() => setVisible(false), []);
+  const onChange = useCallback(
+    (text: string) => {
+      setValue(text);
+      const trimmed = text.trim();
+      const isDuplicate = list && trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
+      setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+    },
+    [list, lists]
+  );
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!list || !trimmed || trimmed === list.name) {
-      close();
+    if (!list || !trimmed || trimmed === list.name || error) {
+      if (!error) close();
       return;
     }
     rename(list, trimmed);
     close();
-  }, [value, list, rename, close]);
-  return { visible, value, setValue, open, close, submit };
+  }, [value, list, error, rename, close]);
+  return { visible, value, error, setValue: onChange, open, close, submit };
 };
 
 const useAddItemDialog = (items: PackItem[], categories: NamedEntity[], listId?: string | null): AddItemDialogState => {

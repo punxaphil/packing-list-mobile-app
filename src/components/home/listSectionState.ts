@@ -9,6 +9,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export type ListActions = {
   onAdd: (name: string, useTemplate: boolean) => Promise<void>;
   onDelete: (list: PackingListSummary) => Promise<void>;
+  onRename: (list: PackingListSummary, name: string) => Promise<void>;
   onSetTemplate: (list: PackingListSummary) => Promise<void>;
   onRemoveTemplate: (list: PackingListSummary) => Promise<void>;
   onPin: (list: PackingListSummary) => Promise<void>;
@@ -26,6 +27,7 @@ export const useListActions = (
 ): ListActions => ({
   onAdd: useAddList(lists, selection, templateList, onListSelect),
   onDelete: useDeleteList(selection),
+  onRename: useRenameList(),
   onSetTemplate: useSetTemplate(templateList),
   onRemoveTemplate: useRemoveTemplate(),
   onPin: usePin(),
@@ -68,6 +70,11 @@ const useDeleteList = (selection: SelectionState) =>
     },
     [selection]
   );
+
+const useRenameList = () =>
+  useCallback(async (list: PackingListSummary, name: string) => {
+    await writeDb.updatePackingList({ ...list, name });
+  }, []);
 
 const useSetTemplate = (currentTemplate: NamedEntity | null) =>
   useCallback(

@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
 import { View } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
@@ -17,7 +16,8 @@ import type { SearchState } from "./useSearch.ts";
 export type TextDialogState = {
   visible: boolean;
   value: string;
-  setValue: Dispatch<SetStateAction<string>>;
+  error?: string | null;
+  setValue: (text: string) => void;
   open: () => void;
   close: () => void;
   submit: () => void;
@@ -81,6 +81,7 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
     title={HOME_COPY.renameListPrompt}
     confirmLabel={HOME_COPY.renameListConfirm}
     value={dialog.value}
+    error={dialog.error}
     onChange={dialog.setValue}
     onCancel={dialog.close}
     onSubmit={dialog.submit}

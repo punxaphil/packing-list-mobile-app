@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
+import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
@@ -34,7 +35,7 @@ type ListSectionProps = {
 export const ListSection = (props: ListSectionProps) => {
   const { templateList } = useTemplate();
   const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
-  const creation = useCreateListDialog(actions.onAdd, !!templateList);
+  const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
@@ -52,6 +53,7 @@ export const ListSection = (props: ListSectionProps) => {
       />
       <ListScroll
         lists={filteredLists}
+        allLists={props.lists}
         selectedId={props.selection.selectedId}
         actions={actions}
         colors={colors}
@@ -65,6 +67,7 @@ export const ListSection = (props: ListSectionProps) => {
         confirmLabel={HOME_COPY.createListConfirm}
         value={creation.value}
         placeholder={HOME_COPY.createListPlaceholder}
+        error={creation.error}
         onChange={creation.setValue}
         onCancel={creation.close}
         onSubmit={creation.submit}
@@ -107,6 +110,7 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
 
 type ScrollProps = {
   lists: PackingListSummary[];
+  allLists: PackingListSummary[];
   selectedId: string;
   actions: ListActions;
   colors: Record<string, string>;
@@ -115,7 +119,7 @@ type ScrollProps = {
   onListSelect: (id: string) => void;
 };
 
-const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSelect }: ScrollProps) => {
+const ListScroll = ({ lists, allLists, selectedId, actions, colors, drag, onDrop, onListSelect }: ScrollProps) => {
   const listIds = lists.map((l) => l.id);
   const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
@@ -135,6 +139,7 @@ const ListScroll = ({ lists, selectedId, actions, colors, drag, onDrop, onListSe
           >
             <ListCard
               list={list}
+              lists={allLists}
               isSelected={selectedId === list.id}
               actions={actions}
               color={colors[list.id]}
@@ -163,25 +168,39 @@ const getSeparatorIndices = (lists: PackingListSummary[]): Set<number> => {
   return indices;
 };
 
-const useCreateListDialog = (create: (name: string, useTemplate: boolean) => Promise<void>, hasTemplate: boolean) => {
+const useCreateListDialog = (
+  create: (name: string, useTemplate: boolean) => Promise<void>,
+  lists: PackingListSummary[],
+  hasTemplate: boolean
+) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const open = useCallback(() => {
     setValue("");
+    setError(null);
     setVisible(true);
   }, []);
   const close = useCallback(() => setVisible(false), []);
+  const onChange = useCallback(
+    (text: string) => {
+      setValue(text);
+      const isDuplicate = text.trim() && hasDuplicateEntityName(text.trim(), lists);
+      setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+    },
+    [lists]
+  );
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!trimmed) return;
+    if (!trimmed || error) return;
     close();
     if (hasTemplate) {
       askUseTemplate(trimmed, create);
     } else {
       void create(trimmed, false);
     }
-  }, [value, create, close, hasTemplate]);
-  return { visible, value, setValue, open, close, submit } as const;
+  }, [value, error, create, close, hasTemplate]);
+  return { visible, value, setValue: onChange, error, open, close, submit } as const;
 };
 
 const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {

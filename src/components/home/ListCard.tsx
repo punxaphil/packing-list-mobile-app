@@ -1,9 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { ActionMenu } from "./ActionMenu.tsx";
 import { ListActions } from "./listSectionState.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
@@ -13,6 +15,7 @@ const MENU_ICON = "⋮";
 
 type ListCardProps = {
   list: PackingListSummary;
+  lists: PackingListSummary[];
   isSelected: boolean;
   actions: ListActions;
   color: string;
@@ -36,6 +39,7 @@ export const ListCard = (props: ListCardProps) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [uncheckConfirmVisible, setUncheckConfirmVisible] = useState(false);
+  const rename = useRenameDialog(props.list, props.lists, props.actions.onRename);
   const summary = formatSummary(props.list);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
@@ -49,7 +53,8 @@ export const ListCard = (props: ListCardProps) => {
     isPinned,
     isArchived,
     showDeleteConfirm,
-    showUncheckConfirm
+    showUncheckConfirm,
+    rename.open
   );
   const deleteConfirmItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
@@ -99,8 +104,50 @@ export const ListCard = (props: ListCardProps) => {
         onClose={() => setUncheckConfirmVisible(false)}
         headerColor={props.color}
       />
+      <TextPromptDialog
+        visible={rename.visible}
+        title="Rename List"
+        confirmLabel="Rename"
+        value={rename.value}
+        error={rename.error}
+        onChange={rename.setValue}
+        onCancel={rename.close}
+        onSubmit={rename.submit}
+      />
     </View>
   );
+};
+
+const useRenameDialog = (
+  list: PackingListSummary,
+  lists: PackingListSummary[],
+  onRename: (list: PackingListSummary, name: string) => Promise<void>
+) => {
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const open = () => {
+    setValue(list.name);
+    setError(null);
+    setVisible(true);
+  };
+  const close = () => setVisible(false);
+  const onChange = (text: string) => {
+    setValue(text);
+    const trimmed = text.trim();
+    const isDuplicate = trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
+    setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+  };
+  const submit = () => {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === list.name || error) {
+      if (!error) close();
+      return;
+    }
+    void onRename(list, trimmed);
+    close();
+  };
+  return { visible, value, error, setValue: onChange, open, close, submit };
 };
 
 const DragHandle = () => (
@@ -191,9 +238,11 @@ const buildMenuItems = (
   isPinned: boolean,
   isArchived: boolean,
   showDeleteConfirm: () => void,
-  showUncheckConfirm: () => void
+  showUncheckConfirm: () => void,
+  showRename: () => void
 ) => {
   const items = [];
+  items.push({ text: "Rename", onPress: showRename });
   if (isArchived) {
     items.push({ text: "Restore", onPress: () => void actions.onRestore(list) });
   } else {
