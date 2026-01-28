@@ -35,6 +35,7 @@ type ItemsListProps = {
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
+  onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
@@ -83,6 +84,7 @@ export const ItemsList = (props: ItemsListProps) => {
             onToggleAllMembers={props.onToggleAllMembers}
             onMoveCategory={props.onMoveCategory}
             onCopyToList={props.onCopyToList}
+            onSortCategoryAlpha={props.onSortCategoryAlpha}
           />
         ))}
       </View>

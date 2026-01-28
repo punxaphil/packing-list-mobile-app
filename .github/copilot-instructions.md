@@ -14,6 +14,7 @@
 - Use descriptive variable and function names.
 - Avoid side effects in functions. Write pure functions whenever possible.
 - No unused code. No unused variables, functions, imports, or exports.
+- Never implement hacky workarounds. Use built-in language/platform features.
 
 # React Native / Expo Specific
 - Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
@@ -33,5 +34,6 @@
      - Inconsistent patterns compared to rest of codebase
      - Variables declared but never used
      - Functions that could be simplified
-  4. After that suggest commit message (conventional commits style, descriptive commit body ~5 lines)
+  4. Run `npm run prebuild` to verify no errors after review
+  5. Suggest commit message (conventional commits style, descriptive commit body ~5 lines)
   5. Wait for my approval before committing.

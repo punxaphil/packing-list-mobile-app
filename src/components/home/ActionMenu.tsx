@@ -14,11 +14,12 @@ type ActionMenuProps = {
   items: ActionMenuItem[];
   onClose: () => void;
   headerColor?: string;
+  headerTextColor?: string;
 };
 
-export const ActionMenu = ({ visible, title, items, onClose, headerColor }: ActionMenuProps) => {
+export const ActionMenu = ({ visible, title, items, onClose, headerColor, headerTextColor }: ActionMenuProps) => {
   const titleStyle = headerColor
-    ? [styles.title, { backgroundColor: headerColor, color: homeColors.text }]
+    ? [styles.title, { backgroundColor: headerColor, color: headerTextColor ?? homeColors.text }]
     : styles.title;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>

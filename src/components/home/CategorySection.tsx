@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { memo, useEffect, useState } from "react";
 import { Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
@@ -49,6 +50,7 @@ type CategorySectionProps = {
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
+  onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
 
 type CategoryEditing = {
@@ -114,12 +116,14 @@ export const CategorySection = (props: CategorySectionProps) => {
     >
       <CategoryHeader
         section={props.section}
+        color={props.color}
         isTemplateList={props.isTemplateList}
         onRenameCategory={props.onRenameCategory}
         editing={editing}
         onAdd={onAdd}
         onToggleCategory={handleCategoryToggle}
         pendingToggle={pendingToggle}
+        onSortAlpha={() => props.onSortCategoryAlpha(props.section.items)}
       />
       <CategoryItems
         {...props}
@@ -167,26 +171,40 @@ const useCategoryEditing = (): CategoryEditing => {
 
 type CategoryHeaderProps = {
   section: SectionGroup;
+  color: string;
   isTemplateList: boolean;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   editing: CategoryEditing;
   onAdd: () => void;
   onToggleCategory: (checked: boolean) => void;
   pendingToggle: boolean | null;
+  onSortAlpha: () => void;
 };
+
+const UNCATEGORIZED_HEADER_COLOR = "#b1b8c5";
 
 const CategoryHeader = ({
   section,
+  color,
   isTemplateList,
   onToggleCategory,
   onRenameCategory,
   onAdd,
   editing,
   pendingToggle,
+  onSortAlpha,
 }: CategoryHeaderProps) => {
+  const [menuVisible, setMenuVisible] = useState(false);
   const allChecked = section.items.every((item) => item.checked);
   const indeterminate = !allChecked && section.items.some((item) => item.checked);
   const displayChecked = pendingToggle ?? allChecked;
+  const isUncategorized = !section.category.id;
+  const headerColor = isUncategorized ? UNCATEGORIZED_HEADER_COLOR : color;
+
+  const menuItems = [
+    { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
+    { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
+  ];
 
   return (
     <View style={homeStyles.categoryHeader}>
@@ -213,12 +231,20 @@ const CategoryHeader = ({
       />
       <Pressable
         style={homeStyles.addButton}
-        onPress={onAdd}
+        onPress={() => setMenuVisible(true)}
         accessibilityRole="button"
-        accessibilityLabel={HOME_COPY.addItem}
+        accessibilityLabel="Category menu"
       >
-        <Text style={homeStyles.addLabel}>+</Text>
+        <MaterialCommunityIcons name="dots-vertical" size={20} color={homeColors.muted} />
       </Pressable>
+      <ActionMenu
+        visible={menuVisible}
+        title={section.category.name}
+        items={menuItems}
+        onClose={() => setMenuVisible(false)}
+        headerColor={headerColor}
+        headerTextColor={isUncategorized ? homeColors.surface : undefined}
+      />
     </View>
   );
 };

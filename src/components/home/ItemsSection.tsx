@@ -14,6 +14,7 @@ import {
   useItemRename,
   useListRenamer,
   useMoveCategory,
+  useSortCategoryAlpha,
   useToggleAllMembers,
   useToggleMemberPacked,
 } from "./itemHandlers.ts";
@@ -127,6 +128,7 @@ const useItemsSectionHandlers = (
   onToggleAllMembers: useToggleAllMembers(),
   onMoveCategory: useMoveCategory(),
   onCopyToList: useCopyToList(),
+  onSortCategoryAlpha: useSortCategoryAlpha(),
 });
 
 const useRenameDialog = (

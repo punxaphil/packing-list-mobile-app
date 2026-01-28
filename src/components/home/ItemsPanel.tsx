@@ -42,6 +42,7 @@ export type ListHandlers = {
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
+  onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
 
 type ItemsPanelProps = ItemsSectionProps &
@@ -114,6 +115,7 @@ const ItemsListView = ({
   onToggleAllMembers,
   onMoveCategory,
   onCopyToList,
+  onSortCategoryAlpha,
 }: ItemsPanelProps) => {
   const memberImages = imagesState.images.filter((img) => img.type === "members");
   const { isTemplateList } = useTemplate();
@@ -141,6 +143,7 @@ const ItemsListView = ({
       onToggleAllMembers={onToggleAllMembers}
       onMoveCategory={onMoveCategory}
       onCopyToList={onCopyToList}
+      onSortCategoryAlpha={onSortCategoryAlpha}
     />
   );
 };

@@ -1,9 +1,21 @@
 import { useCallback } from "react";
+import { NativeModules, Platform } from "react-native";
 import { writeDb } from "~/services/database.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
+
+const getDeviceLocale = (): string => {
+  if (Platform.OS === "ios") {
+    const constants = NativeModules.SettingsManager?.getConstants?.();
+    const settings = constants?.settings;
+    const locale = settings?.AppleLocale || settings?.AppleLanguages?.[0] || "en";
+    return locale.replace("_", "-");
+  }
+  const i18n = NativeModules.I18nManager?.getConstants?.();
+  return i18n?.localeIdentifier?.replace("_", "-") || "en";
+};
 
 export const useItemRename = () =>
   useCallback((item: PackItem, name: string) => {
@@ -60,4 +72,12 @@ export const useMoveCategory = () =>
 export const useCopyToList = () =>
   useCallback(async (item: PackItem, listId: string) => {
     await writeDb.addPackItem(item.name, item.members, item.category, listId, item.rank);
+  }, []);
+
+export const useSortCategoryAlpha = () =>
+  useCallback(async (items: PackItem[]) => {
+    const locale = getDeviceLocale();
+    const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, locale));
+    const updates = sorted.map((item, index) => ({ ...item, rank: sorted.length - index }));
+    await writeDb.updatePackItemsBatched(updates);
   }, []);

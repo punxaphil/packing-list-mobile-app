@@ -50,9 +50,21 @@ const buildOrderedItems = (orderedIds: string[], items: PackItem[]) =>
 
 const syncOrderedIds = (current: string[], items: PackItem[]) => {
   const incoming = items.map((item) => item.id);
-  const filtered = current.filter((id) => incoming.includes(id));
-  const missing = incoming.filter((id) => !filtered.includes(id));
-  return [...filtered, ...missing];
+  const currentSet = new Set(current);
+  const incomingSet = new Set(incoming);
+  const commonIds = incoming.filter((id) => currentSet.has(id));
+  const currentCommon = current.filter((id) => incomingSet.has(id));
+  if (!arraysEqual(commonIds, currentCommon)) return incoming;
+  const missing = incoming.filter((id) => !currentSet.has(id));
+  return [...currentCommon, ...missing];
+};
+
+const arraysEqual = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 };
 
 const buildDropPreview = (

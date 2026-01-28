@@ -43,6 +43,8 @@ type HomeCopy = {
   useTemplateMessage: string;
   useTemplateYes: string;
   useTemplateNo: string;
+  categoryMenuAddItem: string;
+  categoryMenuSortAlpha: string;
 };
 
 export const homeCopy: HomeCopy = {
@@ -88,4 +90,6 @@ export const homeCopy: HomeCopy = {
   useTemplateMessage: "Create this list with items from your template?",
   useTemplateYes: "Yes, use template",
   useTemplateNo: "No, start empty",
+  categoryMenuAddItem: "Add Item",
+  categoryMenuSortAlpha: "Sort Alphabetically",
 } as const;

@@ -12,7 +12,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "find-unused": "knip",
-    "prebuild": "npm run typecheck && npm run lint",
+    "prebuild": "npm run typecheck && npm run lint && knip",
     "ios:release": "./scripts/ios-release.sh",
     "ios:release:clean": "npx expo prebuild --clean && ./scripts/ios-release.sh"
   },
