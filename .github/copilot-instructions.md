@@ -26,14 +26,15 @@
 - After each change:
   1. Run `npm run prebuild` (typecheck + lint) and fix any errors
   2. Ask me to verify the change works
-  3. If I approve, perform thorough code review. Re-read each and every changed file and check for:
+  3. If I approve, ALWAYS perform thorough code review WITHOUT being asked. Re-read each and every changed file and check for:
      - Unused imports
      - Hardcoded colors/values that should use theme constants (homeColors, homeSpacing, etc.)
      - Magic numbers or strings that should be constants
-     - Duplicate code across files
+     - Duplicate code across files (especially string literals that appear in multiple places)
      - Inconsistent patterns compared to rest of codebase
      - Variables declared but never used
      - Functions that could be simplified
+     - Constants defined in wrong location (should be in shared copy/styles files)
   4. Run `npm run prebuild` to verify no errors after review
   5. Suggest commit message (conventional commits style, descriptive commit body ~5 lines)
   5. Wait for my approval before committing.

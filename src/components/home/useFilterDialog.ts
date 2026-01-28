@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { homeCopy } from "./copy.ts";
+import { WITHOUT_MEMBERS_ID } from "./filterUtils.ts";
 
 export type StatusFilter = "all" | "packed" | "unpacked";
 
@@ -25,9 +27,12 @@ const CATEGORY_KEY = "filteredCategories";
 const MEMBER_KEY = "filteredMembers";
 const STATUS_KEY = "filteredStatus";
 
+const WITHOUT_MEMBERS: NamedEntity = { id: WITHOUT_MEMBERS_ID, name: homeCopy.withoutMembers, rank: Infinity };
+
 const getMembersInList = (members: NamedEntity[], items: PackItem[]) => {
   const memberIds = new Set(items.flatMap((i) => i.members.map((m) => m.id)));
-  return members.filter((m) => memberIds.has(m.id)).sort((a, b) => b.rank - a.rank);
+  const filtered = members.filter((m) => memberIds.has(m.id)).sort((a, b) => b.rank - a.rank);
+  return [WITHOUT_MEMBERS, ...filtered];
 };
 
 export const useFilterDialog = (

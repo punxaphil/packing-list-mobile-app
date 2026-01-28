@@ -46,6 +46,7 @@ type HomeCopy = {
   categoryMenuAddItem: string;
   categoryMenuSortAlpha: string;
   duplicateListName: string;
+  withoutMembers: string;
 };
 
 export const homeCopy: HomeCopy = {
@@ -94,4 +95,5 @@ export const homeCopy: HomeCopy = {
   categoryMenuAddItem: "Add Item",
   categoryMenuSortAlpha: "Sort Alphabetically",
   duplicateListName: "A list with this name already exists",
+  withoutMembers: "Without members",
 } as const;

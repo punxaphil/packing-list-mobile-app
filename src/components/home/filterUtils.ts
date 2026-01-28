@@ -3,6 +3,8 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import type { StatusFilter } from "./useFilterDialog.ts";
 
+export const WITHOUT_MEMBERS_ID = "__WITHOUT_MEMBERS__";
+
 const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) => {
   if (selectedCategories.length === 0) return items;
   return items.filter((item) => selectedCategories.includes(item.category));
@@ -10,7 +12,14 @@ const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) 
 
 const filterItemsByMember = (items: PackItem[], selectedMembers: string[]) => {
   if (selectedMembers.length === 0) return items;
-  return items.filter((item) => item.members.some((m) => selectedMembers.includes(m.id)));
+  const withoutMembersSelected = selectedMembers.includes(WITHOUT_MEMBERS_ID);
+  const actualMemberIds = selectedMembers.filter((id) => id !== WITHOUT_MEMBERS_ID);
+  return items.filter((item) => {
+    const hasNoMembers = item.members.length === 0;
+    if (withoutMembersSelected && hasNoMembers) return true;
+    if (actualMemberIds.length === 0) return false;
+    return item.members.some((m) => actualMemberIds.includes(m.id));
+  });
 };
 
 const filterItemsByStatus = (items: PackItem[], status: StatusFilter) => {
