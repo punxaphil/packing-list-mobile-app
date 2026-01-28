@@ -5,12 +5,15 @@ import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { ActionMenu } from "../home/ActionMenu.tsx";
 import { EditableText } from "../home/EditableText.tsx";
+import { useToast } from "../home/Toast.tsx";
 import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
+import { hasDuplicateEntityName } from "./entityValidation.ts";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
+const COPY = { duplicateName: "{type} with this name already exists" };
 
 export type EntityActions = {
   onAdd: (name: string) => Promise<void>;
@@ -20,6 +23,7 @@ export type EntityActions = {
 
 type EntityCardProps = {
   entity: NamedEntity;
+  entities: NamedEntity[];
   actions: EntityActions;
   copy: EntityCopy;
   color: string;
@@ -46,8 +50,11 @@ export const EntityCard = (props: EntityCardProps) => {
   );
   const [menuVisible, setMenuVisible] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const showToast = useToast();
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const handleRename = (name: string) => props.actions.onRename(props.entity, name);
+  const validateName = (name: string) => !hasDuplicateEntityName(name, props.entities, props.entity.id);
+  const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const menuItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => setDeleteConfirmVisible(true) },
@@ -64,7 +71,13 @@ export const EntityCard = (props: EntityCardProps) => {
           {wrap(<DragHandle disabled={!props.dragEnabled} />)}
           <EntityImage imageUrl={props.image?.url} onPress={props.onImagePress} copy={props.copy} />
           <View style={entityStyles.cardBody}>
-            <EditableText value={props.entity.name} onSubmit={handleRename} textStyle={entityStyles.cardName} />
+            <EditableText
+              value={props.entity.name}
+              onSubmit={handleRename}
+              validate={validateName}
+              onValidationFail={onDuplicateName}
+              textStyle={entityStyles.cardName}
+            />
             <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
           </View>
           <MenuButton onPress={() => setMenuVisible(true)} />

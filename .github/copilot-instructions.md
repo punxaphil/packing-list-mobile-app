@@ -26,7 +26,7 @@
 - After each change:
   1. Run `npm run prebuild` (typecheck + lint) and fix any errors
   2. Ask me to verify the change works
-  3. If I approve, perform thorough code review. Re-read ALL changed files and check for:
+  3. If I approve, perform thorough code review. Re-read each and every changed file and check for:
      - Unused imports
      - Hardcoded colors/values that should use theme constants (homeColors, homeSpacing, etc.)
      - Magic numbers or strings that should be constants

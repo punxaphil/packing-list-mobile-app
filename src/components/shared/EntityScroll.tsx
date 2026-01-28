@@ -50,6 +50,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
             <EntityCard
               key={entity.id}
               entity={entity}
+              entities={entities}
               actions={actions}
               copy={copy}
               color={colors[entity.id]}

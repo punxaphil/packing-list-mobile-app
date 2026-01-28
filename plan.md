@@ -37,11 +37,11 @@
 - Upload icon contrast in categories/members page
 - Tabs icons and text alignment
 - Category menu with sort alphabetically (locale-aware)
+- Prevent duplicate item names in same category
 
 # todo
-- don't allow duplicate item names in the same category when adding or renaming items
 - don't allow duplicate category names when adding or renaming categories
-- lists view: menu should have "rename" option
+- lists view: menu should have "rename" option. Also make sure list names are unique.
 - filters: without members
 - filters: if show unchecked only, and 1 member filtered, items with multiple should be hidden if filtered membered has been ticked for that item
 - clicking image in category/member page to view full image in the image dialog

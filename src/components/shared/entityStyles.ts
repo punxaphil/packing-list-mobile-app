@@ -69,6 +69,7 @@ export const entityStyles = StyleSheet.create({
 });
 
 export type EntityCopy = {
+  type: string;
   header: string;
   addButton: string;
   createPrompt: string;
@@ -89,6 +90,7 @@ export type EntityCopy = {
 };
 
 export const CATEGORY_COPY: EntityCopy = {
+  type: "Category",
   header: "Categories",
   addButton: "+ Add Category",
   createPrompt: "New Category",
@@ -109,6 +111,7 @@ export const CATEGORY_COPY: EntityCopy = {
 };
 
 export const MEMBER_COPY: EntityCopy = {
+  type: "Member",
   header: "Members",
   addButton: "+ Add Member",
   createPrompt: "New Member",
