@@ -6,6 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import "~/services/database.ts";
 import { Login, useCurrentUser } from "~/components/auth/Auth.tsx";
 import { HOME_COPY, homeStyles } from "~/components/home/styles.ts";
+import { ToastProvider } from "~/components/home/Toast.tsx";
 import { homeColors } from "~/components/home/theme.ts";
 import { AppProvider } from "~/providers/AppProvider.tsx";
 
@@ -24,7 +25,9 @@ function RootLayoutInner() {
 
   return (
     <AppProvider userId={userId} email={email}>
-      <Slot />
+      <ToastProvider>
+        <Slot />
+      </ToastProvider>
     </AppProvider>
   );
 }

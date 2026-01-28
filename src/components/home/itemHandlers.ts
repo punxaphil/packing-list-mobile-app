@@ -81,3 +81,10 @@ export const useSortCategoryAlpha = () =>
     const updates = sorted.map((item, index) => ({ ...item, rank: sorted.length - index }));
     await writeDb.updatePackItemsBatched(updates);
   }, []);
+
+export const hasDuplicateName = (name: string, categoryId: string, items: PackItem[], excludeId?: string) => {
+  const trimmed = name.trim().toLowerCase();
+  return items.some(
+    (item) => item.category === categoryId && item.name.toLowerCase() === trimmed && item.id !== excludeId
+  );
+};

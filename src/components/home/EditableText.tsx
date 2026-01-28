@@ -11,6 +11,8 @@ type EditableTextProps = {
   onStart?: () => void;
   onEnd?: () => void;
   containerStyle?: StyleProp<ViewStyle>;
+  validate?: (value: string) => boolean;
+  onValidationFail?: () => void;
 };
 
 type EditableState = {
@@ -61,8 +63,14 @@ const handleStart = (props: EditableTextProps, state: EditableState) => {
 
 const createFinishHandler = (props: EditableTextProps, state: EditableState) => () => {
   const trimmed = state.text.trim();
-  if (!trimmed) state.setText(props.value);
-  else if (trimmed !== props.value) props.onSubmit(trimmed);
+  if (!trimmed) {
+    state.setText(props.value);
+  } else if (props.validate && !props.validate(trimmed)) {
+    state.setText(props.value);
+    props.onValidationFail?.();
+  } else if (trimmed !== props.value) {
+    props.onSubmit(trimmed);
+  }
   state.setEditing(false);
   props.onEnd?.();
 };

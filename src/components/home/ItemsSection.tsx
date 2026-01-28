@@ -33,12 +33,22 @@ const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   return result.sort((a, b) => b.rank - a.rank);
 };
 
+const getUniqueItemName = (baseName: string, categoryId: string, items: PackItem[]) => {
+  const categoryItems = items.filter((i) => i.category === categoryId);
+  const names = new Set(categoryItems.map((i) => i.name.toLowerCase()));
+  if (!names.has(baseName.toLowerCase())) return baseName;
+  let counter = 2;
+  while (names.has(`${baseName.toLowerCase()} ${counter}`)) counter++;
+  return `${baseName} ${counter}`;
+};
+
 const useItemAdder = (items: PackItem[], packingListId?: string | null) =>
   useCallback(
     async (category: NamedEntity) => {
       if (!packingListId) throw new Error("Missing packing list");
       animateLayout();
-      return await writeDb.addPackItem(HOME_COPY.newItem, [], category.id, packingListId, getNextItemRank(items));
+      const name = getUniqueItemName(HOME_COPY.newItem, category.id, items);
+      return await writeDb.addPackItem(name, [], category.id, packingListId, getNextItemRank(items));
     },
     [items, packingListId]
   );

@@ -2,20 +2,43 @@ import { useCallback, useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { PackItem } from "~/types/PackItem.ts";
+import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type AddItemDialogProps = {
   visible: boolean;
   categories: NamedEntity[];
+  items: PackItem[];
   onCancel: () => void;
   onSubmit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
 };
 
-export const AddItemDialog = ({ visible, categories, onCancel, onSubmit }: AddItemDialogProps) => {
-  const { itemName, setItemName, selectedCategory, setSelectedCategory, newCategoryName, setNewCategoryName } =
-    useDialogState(visible, categories);
+export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit }: AddItemDialogProps) => {
+  const state = useDialogState(visible);
+  const {
+    itemName,
+    setItemName,
+    selectedCategory,
+    setSelectedCategory,
+    newCategoryName,
+    setNewCategoryName,
+    error,
+    setError,
+  } = state;
   const hasNewCategory = newCategoryName.trim().length > 0;
-  const handleSubmit = useSubmitHandler(itemName, selectedCategory, newCategoryName, hasNewCategory, onSubmit);
+  const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
+  const handleSubmit = useSubmitHandler(
+    itemName,
+    selectedCategory,
+    newCategoryName,
+    hasNewCategory,
+    items,
+    targetCategoryId,
+    setError,
+    onSubmit
+  );
+  const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
       <Pressable style={homeStyles.modalBackdrop} onPress={onCancel}>
@@ -23,22 +46,32 @@ export const AddItemDialog = ({ visible, categories, onCancel, onSubmit }: AddIt
           <Text style={homeStyles.modalTitle}>{HOME_COPY.addItemPrompt}</Text>
           <TextInput
             value={itemName}
-            onChangeText={setItemName}
+            onChangeText={(text) => {
+              setItemName(text);
+              setError(null);
+            }}
             placeholder={HOME_COPY.addItemPlaceholder}
-            style={homeStyles.modalInput}
+            style={inputStyle}
             autoFocus
           />
+          {error && <Text style={homeStyles.modalError}>{error}</Text>}
           <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
           <CategoryDropdown
             categories={categories}
             selected={selectedCategory}
-            onSelect={setSelectedCategory}
+            onSelect={(c) => {
+              setSelectedCategory(c);
+              setError(null);
+            }}
             disabled={hasNewCategory}
           />
           <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
           <TextInput
             value={newCategoryName}
-            onChangeText={setNewCategoryName}
+            onChangeText={(text) => {
+              setNewCategoryName(text);
+              setError(null);
+            }}
             placeholder={COPY.newCategoryPlaceholder}
             style={homeStyles.modalInput}
           />
@@ -49,18 +82,29 @@ export const AddItemDialog = ({ visible, categories, onCancel, onSubmit }: AddIt
   );
 };
 
-const useDialogState = (visible: boolean, _categories: NamedEntity[]) => {
+const useDialogState = (visible: boolean) => {
   const [itemName, setItemName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (visible) {
       setItemName("");
       setSelectedCategory(UNCATEGORIZED);
       setNewCategoryName("");
+      setError(null);
     }
   }, [visible]);
-  return { itemName, setItemName, selectedCategory, setSelectedCategory, newCategoryName, setNewCategoryName };
+  return {
+    itemName,
+    setItemName,
+    selectedCategory,
+    setSelectedCategory,
+    newCategoryName,
+    setNewCategoryName,
+    error,
+    setError,
+  };
 };
 
 const useSubmitHandler = (
@@ -68,13 +112,20 @@ const useSubmitHandler = (
   selectedCategory: NamedEntity,
   newCategoryName: string,
   hasNewCategory: boolean,
+  items: PackItem[],
+  targetCategoryId: string,
+  setError: (error: string | null) => void,
   onSubmit: AddItemDialogProps["onSubmit"]
 ) =>
   useCallback(() => {
     const trimmedName = itemName.trim();
     if (!trimmedName) return;
+    if (!hasNewCategory && hasDuplicateName(trimmedName, targetCategoryId, items)) {
+      setError(COPY.duplicateError);
+      return;
+    }
     onSubmit(trimmedName, hasNewCategory ? null : selectedCategory, hasNewCategory ? newCategoryName.trim() : null);
-  }, [itemName, selectedCategory, newCategoryName, hasNewCategory, onSubmit]);
+  }, [itemName, selectedCategory, newCategoryName, hasNewCategory, items, targetCategoryId, setError, onSubmit]);
 
 const UNCATEGORIZED_KEY = "__uncategorized__";
 const getCategoryKey = (c: NamedEntity) => c.id || UNCATEGORIZED_KEY;
@@ -140,6 +191,7 @@ const COPY = {
   existingCategory: "Existing category",
   newCategory: "Or create new category",
   newCategoryPlaceholder: "New category name",
+  duplicateError: "An item with this name already exists in this category",
 };
 const STYLES = {
   dropdownContainer: { marginBottom: 12, zIndex: 10 },

@@ -10,12 +10,14 @@ import { ActionMenu } from "./ActionMenu.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
 import { EditableText } from "./EditableText.tsx";
+import { hasDuplicateName } from "./itemHandlers.ts";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { SectionGroup } from "./itemsSectionHelpers.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { useToast } from "./Toast.tsx";
 import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
@@ -69,6 +71,8 @@ type CategoryItemRowProps = {
   hasOtherLists: boolean;
   checkboxDisabled: boolean;
   isCurrentMatch: boolean;
+  validateItemName: (name: string) => boolean;
+  onDuplicateName: () => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -281,6 +285,8 @@ const CategoryItems = (props: CategoryItemsProps) => {
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
+  const showToast = useToast();
+  const onDuplicateName = () => showToast(COPY.duplicateItemName);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
@@ -297,6 +303,8 @@ const CategoryItems = (props: CategoryItemsProps) => {
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
+          validateItemName={(name) => !hasDuplicateName(name, item.category, items, item.id)}
+          onDuplicateName={onDuplicateName}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
@@ -386,6 +394,8 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           <EditableText
             value={props.item.name}
             onSubmit={(name) => props.onRenameItem(props.item, name)}
+            validate={props.validateItemName}
+            onValidationFail={props.onDuplicateName}
             textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
             inputStyle={homeStyles.itemInput}
             autoFocus={props.editing.active(props.item.id)}
@@ -463,3 +473,5 @@ const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   const top = below ? layout.y + layout.height - 2 : layout.y - 2;
   return <View style={[homeStyles.itemIndicator, { top }]} />;
 };
+
+const COPY = { duplicateItemName: "Item with this name already exists in category" };

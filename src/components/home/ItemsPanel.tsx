@@ -87,10 +87,11 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
   />
 );
 
-const AddItemDialogView = ({ addItemDialog, categoriesState }: ItemsPanelProps) => (
+const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState }: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
     categories={categoriesState.categories}
+    items={itemsState.items}
     onCancel={addItemDialog.close}
     onSubmit={addItemDialog.submit}
   />

@@ -266,6 +266,8 @@ export const homeStyles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
+  modalInputError: { borderColor: colors.danger },
+  modalError: { fontSize: 12, color: colors.danger, marginTop: -spacing.xs },
   modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing.sm },
   modalAction: { fontSize: 16, fontWeight: "600", color: colors.muted },
   modalActionPrimary: { color: colors.primary },
