@@ -4,6 +4,17 @@ import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 
 type MemberSectionProps = { members: NamedEntity[]; selectedMembers: string[]; onToggle: (id: string) => void };
 
+export const sortSelectedFirst = (entities: NamedEntity[], selected: string[]) => {
+  const selectedSet = new Set(selected);
+  return [...entities].sort((a, b) => {
+    const aSelected = selectedSet.has(a.id);
+    const bSelected = selectedSet.has(b.id);
+    if (aSelected && !bSelected) return -1;
+    if (!aSelected && bSelected) return 1;
+    return 0;
+  });
+};
+
 export const MemberSection = ({ members, selectedMembers, onToggle }: MemberSectionProps) => (
   <>
     <Text style={styles.sectionTitle}>Members</Text>

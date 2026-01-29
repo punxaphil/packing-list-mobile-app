@@ -10,7 +10,7 @@ const filterItemsByCategory = (items: PackItem[], selectedCategories: string[]) 
   return items.filter((item) => selectedCategories.includes(item.category));
 };
 
-const filterItemsByMember = (items: PackItem[], selectedMembers: string[]) => {
+const filterItemsByMember = (items: PackItem[], selectedMembers: string[], status: StatusFilter) => {
   if (selectedMembers.length === 0) return items;
   const withoutMembersSelected = selectedMembers.includes(WITHOUT_MEMBERS_ID);
   const actualMemberIds = selectedMembers.filter((id) => id !== WITHOUT_MEMBERS_ID);
@@ -18,7 +18,11 @@ const filterItemsByMember = (items: PackItem[], selectedMembers: string[]) => {
     const hasNoMembers = item.members.length === 0;
     if (withoutMembersSelected && hasNoMembers) return true;
     if (actualMemberIds.length === 0) return false;
-    return item.members.some((m) => actualMemberIds.includes(m.id));
+    const matchingMembers = item.members.filter((m) => actualMemberIds.includes(m.id));
+    if (matchingMembers.length === 0) return false;
+    if (status === "unpacked") return matchingMembers.some((m) => !m.checked);
+    if (status === "packed") return matchingMembers.some((m) => m.checked);
+    return true;
   });
 };
 
@@ -34,7 +38,7 @@ export const applyFilters = (
   status: StatusFilter
 ) => {
   const byCategory = filterItemsByCategory(items, selectedCategories);
-  const byMember = filterItemsByMember(byCategory, selectedMembers);
+  const byMember = filterItemsByMember(byCategory, selectedMembers, status);
   return filterItemsByStatus(byMember, status);
 };
 

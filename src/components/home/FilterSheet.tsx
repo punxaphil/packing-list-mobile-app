@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { LayoutAnimation, Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { FilterRow, MemberSection } from "./FilterComponents.tsx";
+import { FilterRow, MemberSection, sortSelectedFirst } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import { StatusSection } from "./StatusSection.tsx";
 import type { StatusFilter } from "./useFilterDialog.ts";
@@ -20,10 +20,29 @@ type FilterSheetProps = {
   onClose: () => void;
 };
 
+const animateReorder = () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
 export const FilterSheet = (props: FilterSheetProps) => {
   const totalCount =
     props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   const scrollRef = useRef<ScrollView>(null);
+  const sortedCategories = sortSelectedFirst(props.categories, props.selectedCategories);
+  const sortedMembers = sortSelectedFirst(props.members, props.selectedMembers);
+
+  const handleToggleCategory = (id: string) => {
+    animateReorder();
+    props.onToggleCategory(id);
+  };
+
+  const handleToggleMember = (id: string) => {
+    animateReorder();
+    props.onToggleMember(id);
+  };
+
+  const handleClear = () => {
+    animateReorder();
+    props.onClear();
+  };
 
   useEffect(() => {
     if (props.visible) {
@@ -35,8 +54,15 @@ export const FilterSheet = (props: FilterSheetProps) => {
     <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
       <Pressable style={styles.backdrop} onPress={props.onClose}>
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <SheetHeader count={totalCount} onClear={props.onClear} />
-          <FilterContent {...props} scrollRef={scrollRef} />
+          <SheetHeader count={totalCount} onClear={handleClear} />
+          <FilterContent
+            {...props}
+            scrollRef={scrollRef}
+            sortedCategories={sortedCategories}
+            sortedMembers={sortedMembers}
+            onToggleCategory={handleToggleCategory}
+            onToggleMember={handleToggleMember}
+          />
           <DoneButton onPress={props.onClose} />
         </Pressable>
       </Pressable>
@@ -55,17 +81,21 @@ const SheetHeader = ({ count, onClear }: { count: number; onClear: () => void })
   </View>
 );
 
-type FilterContentProps = FilterSheetProps & { scrollRef: React.RefObject<ScrollView | null> };
+type FilterContentProps = FilterSheetProps & {
+  scrollRef: React.RefObject<ScrollView | null>;
+  sortedCategories: NamedEntity[];
+  sortedMembers: NamedEntity[];
+};
 
-const FilterContent = ({ scrollRef, ...props }: FilterContentProps) => (
+const FilterContent = ({ scrollRef, sortedCategories, sortedMembers, ...props }: FilterContentProps) => (
   <ScrollView ref={scrollRef} style={styles.list}>
     <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
     <CategorySection
-      categories={props.categories}
+      categories={sortedCategories}
       selectedCategories={props.selectedCategories}
       onToggle={props.onToggleCategory}
     />
-    <MemberSection members={props.members} selectedMembers={props.selectedMembers} onToggle={props.onToggleMember} />
+    <MemberSection members={sortedMembers} selectedMembers={props.selectedMembers} onToggle={props.onToggleMember} />
   </ScrollView>
 );
 
