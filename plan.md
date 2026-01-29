@@ -42,10 +42,11 @@
 - List rename with unique name validation
 - Without members filter option
 - Globally consistent member initials
+- Filter dialog UX: smooth animations, selected items on top
+- clicking image in category/member page to view full image in the image dialog
 
 # todo
-- filters: if show unchecked only, and 1 member filtered, items with multiple should be hidden if filtered membered has been ticked for that item
-- clicking image in category/member page to view full image in the image dialog
+- category image should show left of category name in items list
 - show user image (if exists) instead of initial letter in top right corner
 
 # Maybe later

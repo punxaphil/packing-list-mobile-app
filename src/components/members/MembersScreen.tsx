@@ -12,6 +12,7 @@ import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
 import { entityStyles, MEMBER_COPY } from "../shared/entityStyles.ts";
+import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
@@ -43,7 +44,7 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
   const colors = buildCategoryColors(members);
   const memberImages = images.filter((img) => img.type === "members");
-  const imageActions = useEntityImageActions("members", MEMBER_COPY, imageDb);
+  const imageActions = useEntityImageActions("members", imageDb);
 
   return (
     <View style={entityStyles.container}>
@@ -78,6 +79,15 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
           onCancel={creation.close}
           onSubmit={creation.submit}
         />
+        {imageActions.viewerState && (
+          <ImageViewerModal
+            visible={true}
+            imageUrl={imageActions.viewerState.image.url}
+            onClose={imageActions.closeViewer}
+            onReplace={imageActions.handleReplace}
+            onRemove={imageActions.handleRemove}
+          />
+        )}
       </View>
     </View>
   );

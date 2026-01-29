@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
+import { LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { ActionMenu } from "../home/ActionMenu.tsx";
@@ -117,14 +117,6 @@ const EntityImage = ({ imageUrl, onPress, copy }: EntityImageProps) => (
     )}
   </Pressable>
 );
-
-export const showImageActionSheet = (copy: EntityCopy, onReplace: () => void, onRemove: () => void) => {
-  Alert.alert(copy.imageTitle, undefined, [
-    { text: copy.imageReplace, onPress: onReplace },
-    { text: copy.imageRemove, onPress: onRemove, style: "destructive" },
-    { text: copy.cancel, style: "cancel" },
-  ]);
-};
 
 const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   <View style={entityStyles.dragHandle}>
