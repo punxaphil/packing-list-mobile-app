@@ -356,7 +356,8 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
     prev.checkboxDisabled === next.checkboxDisabled &&
     prev.isCurrentMatch === next.isCurrentMatch &&
     prev.editing.editingId === next.editing.editingId &&
-    prev.initialsMap === next.initialsMap
+    prev.initialsMap === next.initialsMap &&
+    prev.memberImages === next.memberImages
   );
 };
 
