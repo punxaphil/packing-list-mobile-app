@@ -1,6 +1,14 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import { LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  Pressable,
+  Image as RNImage,
+  Text,
+  View,
+} from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { ActionMenu } from "../home/ActionMenu.tsx";
@@ -31,6 +39,7 @@ type EntityCardProps = {
   dragEnabled?: boolean;
   itemCount: number;
   image?: Image;
+  imageLoading?: boolean;
   onImagePress: () => void;
   onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
@@ -69,7 +78,12 @@ export const EntityCard = (props: EntityCardProps) => {
       <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
         <View style={entityStyles.cardInner}>
           {wrap(<DragHandle disabled={!props.dragEnabled} />)}
-          <EntityImage imageUrl={props.image?.url} onPress={props.onImagePress} copy={props.copy} />
+          <EntityImage
+            imageUrl={props.image?.url}
+            loading={props.imageLoading}
+            onPress={props.onImagePress}
+            copy={props.copy}
+          />
           <View style={entityStyles.cardBody}>
             <EditableText
               value={props.entity.name}
@@ -101,16 +115,19 @@ export const EntityCard = (props: EntityCardProps) => {
   );
 };
 
-type EntityImageProps = { imageUrl?: string; onPress: () => void; copy: EntityCopy };
+type EntityImageProps = { imageUrl?: string; loading?: boolean; onPress: () => void; copy: EntityCopy };
 
-const EntityImage = ({ imageUrl, onPress, copy }: EntityImageProps) => (
+const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => (
   <Pressable
     style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
     onPress={onPress}
+    disabled={loading}
     accessibilityRole="button"
     accessibilityLabel={copy.imageTitle}
   >
-    {imageUrl ? (
+    {loading ? (
+      <ActivityIndicator size="small" color={homeColors.surface} />
+    ) : imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
     ) : (
       <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />

@@ -12,14 +12,20 @@ type ViewerState = { entityId: string; image: Image } | null;
 
 export const useEntityImageActions = (imageType: string, db: ImageDbOperations) => {
   const [viewerState, setViewerState] = useState<ViewerState>(null);
+  const [loadingEntityId, setLoadingEntityId] = useState<string | null>(null);
 
   const pickAndUpload = useCallback(
     async (entityId: string, existing?: Image) => {
-      const url = await pickAndResizeImage();
-      if (!url) return;
-      if (existing) await db.update(existing.id, url);
-      else await db.add(imageType, entityId, url);
-      setViewerState(null);
+      setLoadingEntityId(entityId);
+      try {
+        const url = await pickAndResizeImage();
+        if (!url) return;
+        if (existing) await db.update(existing.id, url);
+        else await db.add(imageType, entityId, url);
+        setViewerState(null);
+      } finally {
+        setLoadingEntityId(null);
+      }
     },
     [db, imageType]
   );
@@ -51,5 +57,6 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
     handleReplace,
     handleRemove,
     closeViewer,
+    loadingEntityId,
   };
 };

@@ -69,6 +69,7 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
           itemCounts={itemCounts}
           images={categoryImages}
           onImagePress={imageActions.handleImagePress}
+          imageLoading={imageActions.loadingEntityId}
         />
         <TextPromptDialog
           visible={creation.visible}

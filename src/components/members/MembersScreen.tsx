@@ -67,6 +67,7 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
           itemCounts={itemCounts}
           images={memberImages}
           onImagePress={imageActions.handleImagePress}
+          imageLoading={imageActions.loadingEntityId}
         />
         <TextPromptDialog
           visible={creation.visible}
