@@ -38,3 +38,8 @@
   4. Run `npm run prebuild` to verify no errors after review
   5. Suggest commit message (conventional commits style, descriptive commit body ~5 lines)
   5. Wait for my approval before committing.
+
+# Communication
+- pcr = picky code review
+- vfd = verified, picky code review
+
