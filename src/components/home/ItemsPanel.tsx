@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
+import { getProfileImage } from "~/services/utils.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -71,8 +72,14 @@ const PanelCard = (props: ItemsPanelProps) => (
   </View>
 );
 
-const HeaderRow = ({ displayName, email, renameDialog, onProfile }: ItemsPanelProps) => (
-  <HomeHeader title={displayName} email={email} onPressTitle={renameDialog.open} onProfile={onProfile} />
+const HeaderRow = ({ displayName, email, imagesState, renameDialog, onProfile }: ItemsPanelProps) => (
+  <HomeHeader
+    title={displayName}
+    email={email}
+    profileImageUrl={getProfileImage(imagesState.images)?.url}
+    onPressTitle={renameDialog.open}
+    onProfile={onProfile}
+  />
 );
 
 const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (

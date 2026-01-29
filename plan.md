@@ -46,9 +46,9 @@
 - clicking image in category/member page to view full image in the image dialog
 - category image should show left of category name in items list
 - clicking upload image, there's a delay before image picker shows. Consider showing some feedback.
+- show user image (if exists) instead of initial letter in top right corner
 
 # todo
-- show user image (if exists) instead of initial letter in top right corner
 
 # Maybe later
 - ipad layout/landscape mode

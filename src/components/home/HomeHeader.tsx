@@ -1,9 +1,10 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Image as RNImage, Text, View } from "react-native";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type HeaderProps = {
   title: string;
   email: string;
+  profileImageUrl?: string;
   onBack?: () => void;
   onPressTitle?: () => void;
   onProfile?: () => void;
@@ -18,9 +19,13 @@ const BackButton = ({ onBack }: { onBack?: () => void }) =>
     <View style={homeStyles.backPlaceholder} />
   );
 
-const AvatarButton = ({ email, onProfile }: { email: string; onProfile?: () => void }) => (
+const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
   <Pressable style={homeStyles.avatar} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
-    <Text style={homeStyles.avatarLabel}>{buildInitial(email)}</Text>
+    {imageUrl ? (
+      <RNImage source={{ uri: imageUrl }} style={homeStyles.avatarImage} />
+    ) : (
+      <Text style={homeStyles.avatarLabel}>{buildInitial(email)}</Text>
+    )}
   </Pressable>
 );
 
@@ -43,10 +48,10 @@ const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
     </Text>
   );
 
-export const HomeHeader = ({ title, email, onBack, onPressTitle, onProfile }: HeaderProps) => (
+export const HomeHeader = ({ title, email, profileImageUrl, onBack, onPressTitle, onProfile }: HeaderProps) => (
   <View style={homeStyles.panelHeader}>
     <BackButton onBack={onBack} />
     <Title title={title} onPress={onPressTitle} />
-    <AvatarButton email={email} onProfile={onProfile} />
+    <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={onProfile} />
   </View>
 );

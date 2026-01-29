@@ -4,6 +4,7 @@ import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { writeDb } from "~/services/database.ts";
+import { getProfileImage } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
@@ -49,7 +50,12 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
   return (
     <View style={entityStyles.container}>
       <View style={entityStyles.panel}>
-        <HomeHeader title={MEMBER_COPY.header} email={email} onProfile={onProfile} />
+        <HomeHeader
+          title={MEMBER_COPY.header}
+          email={email}
+          profileImageUrl={getProfileImage(images)?.url}
+          onProfile={onProfile}
+        />
         <MemberHeader
           onAdd={creation.open}
           sortByAlpha={sortByAlpha}

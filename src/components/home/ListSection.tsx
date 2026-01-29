@@ -11,6 +11,8 @@ import {
   View,
 } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
+import { getProfileImage } from "~/services/utils.ts";
+import { Image } from "~/types/Image.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -29,6 +31,7 @@ type ListSectionProps = {
   lists: PackingListSummary[];
   selection: SelectionState;
   email: string;
+  images: Image[];
   onProfile: () => void;
   onListSelect: (id: string) => void;
 };
@@ -44,7 +47,12 @@ export const ListSection = (props: ListSectionProps) => {
   const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
   return (
     <View style={homeStyles.panel}>
-      <HomeHeader title={HOME_COPY.listHeader} email={props.email} onProfile={props.onProfile} />
+      <HomeHeader
+        title={HOME_COPY.listHeader}
+        email={props.email}
+        profileImageUrl={getProfileImage(props.images)?.url}
+        onProfile={props.onProfile}
+      />
       <ListHeader
         onAdd={creation.open}
         showArchived={showArchived}

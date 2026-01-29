@@ -1,4 +1,5 @@
-import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { writeDb } from "~/services/database.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
@@ -45,11 +46,23 @@ const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => v
   </Pressable>
 );
 
-const PhotoButton = ({ label, onPress }: { label: string; onPress: () => void }) => (
-  <Pressable style={styles.photoButton} onPress={onPress}>
-    <Text style={styles.photoButtonText}>{label}</Text>
-  </Pressable>
-);
+const PhotoButton = ({ label, loading, onPress }: { label: string; loading?: boolean; onPress: () => void }) => {
+  const [width, setWidth] = useState<number | undefined>(undefined);
+  return (
+    <Pressable
+      style={[styles.photoButton, loading && width ? { width } : undefined]}
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      onPress={onPress}
+      disabled={loading}
+    >
+      {loading ? (
+        <ActivityIndicator size="small" color={homeColors.surface} />
+      ) : (
+        <Text style={styles.photoButtonText}>{label}</Text>
+      )}
+    </Pressable>
+  );
+};
 
 const RemoveButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable style={styles.removeButton} onPress={onPress}>
@@ -68,7 +81,11 @@ export const ProfileScreen = ({ email, userId, onSignOut, onBack }: ProfileScree
         <Avatar email={email} imageUrl={profileImage?.url} onPress={handlers.pick} />
         <Text style={styles.email}>{email}</Text>
         <View style={styles.photoActions}>
-          <PhotoButton label={profileImage ? COPY.changePhoto : COPY.addPhoto} onPress={handlers.pick} />
+          <PhotoButton
+            label={profileImage ? COPY.changePhoto : COPY.addPhoto}
+            loading={handlers.loading}
+            onPress={handlers.pick}
+          />
           {profileImage && <RemoveButton onPress={handlers.remove} />}
         </View>
         <SignOutButton email={email} onSignOut={onSignOut} />
@@ -78,19 +95,25 @@ export const ProfileScreen = ({ email, userId, onSignOut, onBack }: ProfileScree
 };
 
 const useImageHandlers = (profileImage: Image | undefined) => {
+  const [loading, setLoading] = useState(false);
   const pick = async () => {
-    const url = await pickAndResizeImage();
-    if (!url) return;
-    if (profileImage) {
-      await writeDb.updateImage(profileImage.id, url);
-    } else {
-      await writeDb.addImage("profile", "", url);
+    setLoading(true);
+    try {
+      const url = await pickAndResizeImage();
+      if (!url) return;
+      if (profileImage) {
+        await writeDb.updateImage(profileImage.id, url);
+      } else {
+        await writeDb.addImage("profile", "", url);
+      }
+    } finally {
+      setLoading(false);
     }
   };
   const remove = async () => {
     if (profileImage) await writeDb.deleteImage(profileImage.id);
   };
-  return { pick, remove };
+  return { pick, remove, loading };
 };
 
 const Header = ({ onBack }: { onBack: () => void }) => (
@@ -133,7 +156,9 @@ const styles = StyleSheet.create({
   photoActions: { flexDirection: "row", gap: spacing.sm },
   photoButton: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: radius,
     backgroundColor: colors.primary,
   },

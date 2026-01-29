@@ -4,6 +4,7 @@ import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { useImages } from "~/hooks/useImages.ts";
 import { writeDb } from "~/services/database.ts";
+import { getProfileImage } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
@@ -51,7 +52,12 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
   return (
     <View style={entityStyles.container}>
       <View style={entityStyles.panel}>
-        <HomeHeader title={CATEGORY_COPY.header} email={email} onProfile={onProfile} />
+        <HomeHeader
+          title={CATEGORY_COPY.header}
+          email={email}
+          profileImageUrl={getProfileImage(images)?.url}
+          onProfile={onProfile}
+        />
         <CategoryHeader
           onAdd={creation.open}
           sortByAlpha={sortByAlpha}

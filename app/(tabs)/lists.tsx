@@ -4,10 +4,12 @@ import { EmptyList } from "~/components/home/EmptyList.tsx";
 import { ListSection } from "~/components/home/ListSection.tsx";
 import { homeStyles } from "~/components/home/styles.ts";
 import { homeColors } from "~/components/home/theme.ts";
+import { useImages } from "~/hooks/useImages.ts";
 import { useApp } from "~/providers/AppProvider.tsx";
 
 export default function ListsTab() {
-  const { email, lists, hasLists, listsLoading, selection } = useApp();
+  const { userId, email, lists, hasLists, listsLoading, selection } = useApp();
+  const imagesState = useImages(userId);
 
   const handleListSelect = (id: string) => {
     selection.select(id);
@@ -32,6 +34,7 @@ export default function ListsTab() {
         lists={lists}
         selection={selection}
         email={email}
+        images={imagesState.images}
         onProfile={() => router.push("/(tabs)/profile")}
         onListSelect={handleListSelect}
       />
