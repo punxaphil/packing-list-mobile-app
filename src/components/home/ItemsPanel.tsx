@@ -120,6 +120,7 @@ const ItemsListView = ({
   onSortCategoryAlpha,
 }: ItemsPanelProps) => {
   const memberImages = imagesState.images.filter((img) => img.type === "members");
+  const categoryImages = imagesState.images.filter((img) => img.type === "categories");
   const { isTemplateList } = useTemplate();
   const isTemplate = isTemplateList(selection.selectedId);
   return (
@@ -130,6 +131,7 @@ const ItemsListView = ({
       categories={categoriesState.categories}
       members={membersState.members}
       memberImages={memberImages}
+      categoryImages={categoryImages}
       memberInitials={membersState.memberInitials}
       lists={lists}
       currentListId={selection.selectedId}

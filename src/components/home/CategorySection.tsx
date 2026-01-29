@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { memo, useEffect, useState } from "react";
-import { Animated, LayoutRectangle, Pressable, Text, View } from "react-native";
+import { Animated, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -30,6 +30,7 @@ type CategorySectionProps = {
   color: string;
   members: NamedEntity[];
   memberImages: Image[];
+  categoryImages: Image[];
   initialsMap: MemberInitialsMap;
   categories: NamedEntity[];
   lists: NamedEntity[];
@@ -115,6 +116,8 @@ export const CategorySection = (props: CategorySectionProps) => {
     }
   }, [allChecked, pendingToggle]);
 
+  const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
+
   return (
     <View
       style={[homeStyles.category, { backgroundColor: props.color }]}
@@ -123,6 +126,7 @@ export const CategorySection = (props: CategorySectionProps) => {
       <CategoryHeader
         section={props.section}
         color={props.color}
+        imageUrl={categoryImageUrl}
         isTemplateList={props.isTemplateList}
         onRenameCategory={props.onRenameCategory}
         editing={editing}
@@ -178,6 +182,7 @@ const useCategoryEditing = (): CategoryEditing => {
 type CategoryHeaderProps = {
   section: SectionGroup;
   color: string;
+  imageUrl: string | undefined;
   isTemplateList: boolean;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   editing: CategoryEditing;
@@ -192,6 +197,7 @@ const UNCATEGORIZED_HEADER_COLOR = "#b1b8c5";
 const CategoryHeader = ({
   section,
   color,
+  imageUrl,
   isTemplateList,
   onToggleCategory,
   onRenameCategory,
@@ -226,6 +232,7 @@ const CategoryHeader = ({
           <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
         )}
       </View>
+      {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
       <EditableText
         value={section.category.name}
         onSubmit={(name) => onRenameCategory(section.category, name)}

@@ -21,6 +21,7 @@ type ItemsListProps = {
   categories: NamedEntity[];
   members: NamedEntity[];
   memberImages: Image[];
+  categoryImages: Image[];
   memberInitials: MemberInitialsMap;
   lists: NamedEntity[];
   currentListId: string;
@@ -68,6 +69,7 @@ export const ItemsList = (props: ItemsListProps) => {
             color={section.category.color ?? colors[section.category.id]}
             members={props.members}
             memberImages={props.memberImages}
+            categoryImages={props.categoryImages}
             initialsMap={props.memberInitials}
             categories={props.categories}
             lists={props.lists}

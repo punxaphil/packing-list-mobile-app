@@ -143,6 +143,7 @@ export const homeStyles = StyleSheet.create({
     top: spacing.md / 2 - 1,
     left: spacing.md * 0.2,
   },
+  categoryImage: { width: 24, height: 24, borderRadius: 4 },
   itemCheckboxIndicator: {
     position: "absolute",
     width: spacing.md * 0.6,
