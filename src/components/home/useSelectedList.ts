@@ -1,20 +1,13 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { clearSelectedId, getSelectedId, setSelectedId, subscribeToSelection } from "~/navigation/selectionState";
 import { PackingListSummary, SelectionState } from "./types.ts";
-
-const STORAGE_KEY = "selectedListId";
 
 export function useSelectedList(lists: PackingListSummary[] | undefined, _hasLists: boolean): SelectionState {
   const safeLists = lists ?? [];
-  const [selectedId, setSelectedId] = useState("");
-  const didInit = useRef(false);
+  const [selectedId, setLocalSelectedId] = useState(getSelectedId);
 
   useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
-    AsyncStorage.getItem(STORAGE_KEY).then((id) => {
-      if (id) setSelectedId(id);
-    });
+    return subscribeToSelection(setLocalSelectedId);
   }, []);
 
   useEffect(() => {
@@ -26,12 +19,10 @@ export function useSelectedList(lists: PackingListSummary[] | undefined, _hasLis
 
   const select = useCallback((id: string) => {
     setSelectedId(id);
-    AsyncStorage.setItem(STORAGE_KEY, id);
   }, []);
 
   const clear = useCallback(() => {
-    setSelectedId("");
-    AsyncStorage.setItem(STORAGE_KEY, "");
+    clearSelectedId();
   }, []);
 
   const selectedList = safeLists.find((l) => l.id === selectedId) ?? null;
