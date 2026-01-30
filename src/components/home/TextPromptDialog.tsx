@@ -1,4 +1,5 @@
-import { Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Animated, Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type TextPromptDialogProps = {
@@ -25,30 +26,33 @@ export const TextPromptDialog = ({
   onSubmit,
 }: TextPromptDialogProps) => {
   const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
+  const keyboardOffset = useKeyboardOffset();
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
       <Pressable style={homeStyles.modalBackdrop} onPress={onCancel}>
-        <Pressable style={homeStyles.modalCard} onPress={(event) => event.stopPropagation()}>
-          <Text style={homeStyles.modalTitle}>{title}</Text>
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            onSubmitEditing={onSubmit}
-            placeholder={placeholder}
-            style={inputStyle}
-            autoFocus
-            accessibilityLabel={title}
-          />
-          {error && <Text style={homeStyles.modalError}>{error}</Text>}
-          <View style={homeStyles.modalActions}>
-            <Pressable onPress={onCancel} accessibilityRole="button" accessibilityLabel={HOME_COPY.cancel}>
-              <Text style={homeStyles.modalAction}>{HOME_COPY.cancel}</Text>
-            </Pressable>
-            <Pressable onPress={onSubmit} accessibilityRole="button" accessibilityLabel={confirmLabel}>
-              <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary]}>{confirmLabel}</Text>
-            </Pressable>
-          </View>
-        </Pressable>
+        <Animated.View style={[homeStyles.modalCard, { transform: [{ translateY: keyboardOffset }] }]}>
+          <Pressable style={homeStyles.modalCardContent} onPress={() => Keyboard.dismiss()}>
+            <Text style={homeStyles.modalTitle}>{title}</Text>
+            <TextInput
+              value={value}
+              onChangeText={onChange}
+              onSubmitEditing={onSubmit}
+              placeholder={placeholder}
+              style={inputStyle}
+              autoFocus
+              accessibilityLabel={title}
+            />
+            {error && <Text style={homeStyles.modalError}>{error}</Text>}
+            <View style={homeStyles.modalActions}>
+              <Pressable onPress={onCancel} accessibilityRole="button" accessibilityLabel={HOME_COPY.cancel}>
+                <Text style={homeStyles.modalAction}>{HOME_COPY.cancel}</Text>
+              </Pressable>
+              <Pressable onPress={onSubmit} accessibilityRole="button" accessibilityLabel={confirmLabel}>
+                <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary]}>{confirmLabel}</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Animated.View>
       </Pressable>
     </Modal>
   );

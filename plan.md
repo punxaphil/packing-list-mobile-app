@@ -49,6 +49,7 @@
 - show user image (if exists) instead of initial letter in top right corner
 
 # todo
+scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
 
 # Maybe later
 - ipad layout/landscape mode

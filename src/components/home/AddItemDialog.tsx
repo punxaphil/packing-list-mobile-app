@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Animated, Keyboard, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -39,44 +40,47 @@ export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit }
     onSubmit
   );
   const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
+  const keyboardOffset = useKeyboardOffset();
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
       <Pressable style={homeStyles.modalBackdrop} onPress={onCancel}>
-        <Pressable style={homeStyles.modalCard} onPress={(e) => e.stopPropagation()}>
-          <Text style={homeStyles.modalTitle}>{HOME_COPY.addItemPrompt}</Text>
-          <TextInput
-            value={itemName}
-            onChangeText={(text) => {
-              setItemName(text);
-              setError(null);
-            }}
-            placeholder={HOME_COPY.addItemPlaceholder}
-            style={inputStyle}
-            autoFocus
-          />
-          {error && <Text style={homeStyles.modalError}>{error}</Text>}
-          <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
-          <CategoryDropdown
-            categories={categories}
-            selected={selectedCategory}
-            onSelect={(c) => {
-              setSelectedCategory(c);
-              setError(null);
-            }}
-            disabled={hasNewCategory}
-          />
-          <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
-          <TextInput
-            value={newCategoryName}
-            onChangeText={(text) => {
-              setNewCategoryName(text);
-              setError(null);
-            }}
-            placeholder={COPY.newCategoryPlaceholder}
-            style={homeStyles.modalInput}
-          />
-          <DialogActions onCancel={onCancel} onSubmit={handleSubmit} />
-        </Pressable>
+        <Animated.View style={[homeStyles.modalCard, { transform: [{ translateY: keyboardOffset }] }]}>
+          <Pressable style={homeStyles.modalCardContent} onPress={() => Keyboard.dismiss()}>
+            <Text style={homeStyles.modalTitle}>{HOME_COPY.addItemPrompt}</Text>
+            <TextInput
+              value={itemName}
+              onChangeText={(text) => {
+                setItemName(text);
+                setError(null);
+              }}
+              placeholder={HOME_COPY.addItemPlaceholder}
+              style={inputStyle}
+              autoFocus
+            />
+            {error && <Text style={homeStyles.modalError}>{error}</Text>}
+            <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
+            <CategoryDropdown
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={(c) => {
+                setSelectedCategory(c);
+                setError(null);
+              }}
+              disabled={hasNewCategory}
+            />
+            <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
+            <TextInput
+              value={newCategoryName}
+              onChangeText={(text) => {
+                setNewCategoryName(text);
+                setError(null);
+              }}
+              placeholder={COPY.newCategoryPlaceholder}
+              style={homeStyles.modalInput}
+            />
+            <DialogActions onCancel={onCancel} onSubmit={handleSubmit} />
+          </Pressable>
+        </Animated.View>
       </Pressable>
     </Modal>
   );
@@ -143,7 +147,11 @@ const CategoryDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   const allCategories = [UNCATEGORIZED, ...categories.filter((c) => c.id !== UNCATEGORIZED.id)];
-  const toggle = () => !disabled && setOpen((v) => !v);
+  const toggle = () => {
+    if (disabled) return;
+    Keyboard.dismiss();
+    setOpen((v) => !v);
+  };
   const handleSelect = (cat: NamedEntity) => {
     onSelect(cat);
     setOpen(false);

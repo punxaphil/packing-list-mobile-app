@@ -256,8 +256,8 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: homeRadius,
     padding: spacing.lg,
-    gap: spacing.md,
   },
+  modalCardContent: { gap: spacing.md },
   modalTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
   modalLabel: { fontSize: 14, fontWeight: "500", color: colors.muted },
   modalInput: {
