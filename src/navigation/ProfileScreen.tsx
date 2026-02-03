@@ -5,15 +5,21 @@ import { homeStyles } from "~/components/home/styles";
 import { ProfileScreen as ProfileScreenComponent } from "~/components/profile/ProfileScreen";
 import { AppProvider } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
+import { popScreen } from "./navigation";
 
 const signOut = () => getAuth().signOut().catch(console.error);
 
-export function ProfileScreen(_: NavigationComponentProps) {
+export function ProfileScreen({ componentId }: NavigationComponentProps) {
   const { userId, email } = getAppState();
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <ProfileScreenComponent userId={userId} email={email} onSignOut={signOut} />
+        <ProfileScreenComponent
+          userId={userId}
+          email={email}
+          onSignOut={signOut}
+          onBack={() => popScreen(componentId)}
+        />
       </AppProvider>
     </SafeAreaView>
   );

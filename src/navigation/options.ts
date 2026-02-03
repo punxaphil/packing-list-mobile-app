@@ -9,27 +9,7 @@ export function setDefaultOptions() {
       style: "dark",
     },
     topBar: {
-      visible: true,
-      noBorder: true,
-      animate: true,
-      animateRightButtons: true,
-      rightButtonColor: MUTED_COLOR,
-      title: {
-        color: "#000000",
-        fontSize: 17,
-        fontWeight: "600",
-      },
-
-      background: { color: "transparent" },
-      drawBehind: true,
-      // @ts-expect-error: translucent is supported on iOS but not in type
-      translucent: true,
-      elevation: 0,
-      borderHeight: 0,
-      searchBar: {
-        backgroundColor: "#ffffffee",
-        tintColor: PRIMARY_COLOR,
-      },
+      visible: false,
     },
     bottomTabs: {
       titleDisplayMode: "alwaysShow",

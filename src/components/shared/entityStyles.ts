@@ -10,8 +10,6 @@ export const entityStyles = StyleSheet.create({
     padding: homeSpacing.md,
     gap: homeSpacing.md,
   },
-  panelScrollable: { flex: 1, backgroundColor: homeColors.surface },
-  scrollContent: { paddingHorizontal: homeSpacing.md, gap: homeSpacing.md },
   actions: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm },
   sortToggle: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
   sortLabel: { fontSize: 12, color: homeColors.muted },

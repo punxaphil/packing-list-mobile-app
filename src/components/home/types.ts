@@ -46,6 +46,5 @@ export type ItemsSectionProps = {
   imagesState: ImagesState;
   lists: NamedEntity[];
   email: string;
-  filterTrigger?: number;
-  onFilterStateChange?: (hasFilter: boolean) => void;
+  onProfile: () => void;
 };

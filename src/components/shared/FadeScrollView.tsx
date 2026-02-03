@@ -14,7 +14,6 @@ type FlashScrollViewProps = {
   children: ReactNode;
   style?: ViewStyle;
   contentContainerStyle?: ViewStyle;
-  topInset?: number;
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
@@ -25,7 +24,7 @@ export type FadeScrollViewRef = {
 const SCROLL_THRESHOLD = 4;
 
 export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps>(
-  ({ children, style, contentContainerStyle, topInset = 0, onScroll }, ref) => {
+  ({ children, style, contentContainerStyle, onScroll }, ref) => {
     const scrollRef = useRef<ScrollView>(null);
     const [containerHeight, setContainerHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
@@ -55,8 +54,6 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
           ref={scrollRef}
           style={styles.scroll}
           contentContainerStyle={[{ paddingBottom: TAB_BAR_HEIGHT }, contentContainerStyle]}
-          contentInset={{ top: topInset }}
-          contentOffset={{ x: 0, y: -topInset }}
           onScroll={handleScroll}
           onContentSizeChange={handleContentSizeChange}
           scrollEventThrottle={16}

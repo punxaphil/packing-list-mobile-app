@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { Animated, LayoutRectangle, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -21,7 +20,6 @@ type EntityScrollProps = {
   images: Image[];
   onImagePress: (entityId: string, image?: Image) => void;
   imageLoading?: string | null;
-  headerContent?: ReactNode;
 };
 
 export const EntityScroll = (props: EntityScrollProps) => {
@@ -38,7 +36,6 @@ export const EntityScroll = (props: EntityScrollProps) => {
     images,
     onImagePress,
     imageLoading,
-    headerContent,
   } = props;
   const ids = entities.map((e) => e.id);
   const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
@@ -47,8 +44,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
 
   return (
-    <FadeScrollView style={entityStyles.scroll} contentContainerStyle={entityStyles.scrollContent}>
-      {headerContent}
+    <FadeScrollView style={entityStyles.scroll}>
       <View style={[entityStyles.list, entityStyles.relative]}>
         {entities.map((entity) => {
           const image = images.find((img) => img.typeId === entity.id);

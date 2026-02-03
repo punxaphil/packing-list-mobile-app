@@ -4,7 +4,6 @@ import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
-import { FloatingAddButton } from "../shared/FloatingAddButton.tsx";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
@@ -55,7 +54,7 @@ const useItemAdder = (items: PackItem[], packingListId?: string | null) =>
     [items, packingListId]
   );
 
-export const ItemsSection = (props: ItemsSectionProps & { filterTrigger?: number }) => {
+export const ItemsSection = (props: ItemsSectionProps) => {
   const list = props.selection.selectedList;
   const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items);
   const categoriesInList = useMemo(
@@ -80,15 +79,6 @@ export const ItemsSection = (props: ItemsSectionProps & { filterTrigger?: number
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, list?.id);
   const renameDialog = useRenameDialog(list, props.lists, renameList);
-
-  useEffect(() => {
-    if (props.filterTrigger && props.filterTrigger > 0) filterDialog.open();
-  }, [props.filterTrigger, filterDialog.open]);
-
-  useEffect(() => {
-    props.onFilterStateChange?.(filterDialog.hasActiveFilter);
-  }, [filterDialog.hasActiveFilter, props.onFilterStateChange]);
-
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   return (
@@ -116,7 +106,6 @@ export const ItemsSection = (props: ItemsSectionProps & { filterTrigger?: number
         onClear={filterDialog.onClear}
         onClose={filterDialog.close}
       />
-      <FloatingAddButton onPress={addItemDialog.open} />
     </>
   );
 };

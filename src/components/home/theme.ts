@@ -22,7 +22,5 @@ export const homeSpacing = {
 export const homeRadius = 12;
 export const homeMaxWidth = 480;
 export const TAB_BAR_HEIGHT = 90;
-export const TOP_BAR_HEIGHT = 110;
-export const SEARCH_BAR_HEIGHT = 56;
 
 export const homeEmptyStateCopy = "No packing lists yet.";

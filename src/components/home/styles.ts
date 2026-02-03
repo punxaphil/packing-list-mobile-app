@@ -14,16 +14,10 @@ export const homeStyles = StyleSheet.create({
   loadingText: { fontSize: 16, color: colors.muted, fontWeight: "500" },
   home: { flex: 1, width: "100%", gap: spacing.sm },
   panel: { flex: 1, backgroundColor: colors.surface, borderRadius: 16, padding: spacing.md, gap: spacing.md },
-  panelScrollable: { flex: 1, backgroundColor: colors.surface },
   panelHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm },
   panelTitle: { flex: 1, fontSize: 20, fontWeight: "700", color: colors.text, textAlign: "center" },
-  quickAdd: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    minHeight: 32,
-  },
+  quickAdd: { paddingVertical: spacing.xs / 2 },
   quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.primary },
-  scrollContent: { paddingHorizontal: spacing.md, gap: spacing.md },
   backButton: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,

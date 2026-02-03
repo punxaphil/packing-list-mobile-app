@@ -7,11 +7,7 @@ import { homeColors, homeSpacing } from "./theme.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
 import type { SearchState } from "./useSearch.ts";
 
-type Props = {
-  addDialog: AddItemDialogState;
-  filterDialog: FilterDialogState;
-  search: SearchState;
-};
+type Props = { addDialog: AddItemDialogState; filterDialog: FilterDialogState; search: SearchState };
 
 export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -48,7 +44,6 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
     search.onClear();
     inputRef.current?.focus();
   }, [search]);
-
   const onSubmitSearch = useCallback(() => {
     search.onNext();
     inputRef.current?.focus();
@@ -58,7 +53,7 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
     if (searchOpen) inputRef.current?.focus();
   }, [searchOpen]);
 
-  if (searchOpen) {
+  if (searchOpen)
     return (
       <SearchRow
         localText={localText}
@@ -70,7 +65,6 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
         onClose={onToggleSearch}
       />
     );
-  }
   return <DefaultRow addDialog={addDialog} filterDialog={filterDialog} onSearch={onToggleSearch} />;
 };
 
@@ -145,11 +139,7 @@ const NavButtons = ({ onPrev, onNext }: { onPrev: () => void; onNext: () => void
   </>
 );
 
-type DefaultRowProps = {
-  addDialog: AddItemDialogState;
-  filterDialog: FilterDialogState;
-  onSearch: () => void;
-};
+type DefaultRowProps = { addDialog: AddItemDialogState; filterDialog: FilterDialogState; onSearch: () => void };
 
 const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
   <View style={styles.row}>
@@ -178,19 +168,9 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
 );
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  iconRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: homeSpacing.xs,
-  },
-  filterButton: {
-    padding: homeSpacing.xs,
-  },
+  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  iconRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
+  filterButton: { padding: homeSpacing.xs },
   searchContainer: {
     flex: 1,
     flexDirection: "row",
@@ -200,26 +180,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: homeSpacing.sm,
     marginRight: homeSpacing.sm,
   },
-  searchIcon: {
-    marginRight: homeSpacing.xs,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: homeColors.text,
-    paddingVertical: homeSpacing.sm,
-  },
-  matchCount: {
-    fontSize: 12,
-    color: homeColors.muted,
-    marginRight: homeSpacing.xs,
-  },
-  noMatch: {
-    fontSize: 12,
-    color: "#ef4444",
-    marginRight: homeSpacing.xs,
-  },
-  navButton: {
-    paddingHorizontal: 2,
-  },
+  searchIcon: { marginRight: homeSpacing.xs },
+  searchInput: { flex: 1, fontSize: 14, color: homeColors.text, paddingVertical: homeSpacing.sm },
+  matchCount: { fontSize: 12, color: homeColors.muted, marginRight: homeSpacing.xs },
+  noMatch: { fontSize: 12, color: "#ef4444", marginRight: homeSpacing.xs },
+  navButton: { paddingHorizontal: 2 },
 });

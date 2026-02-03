@@ -3,10 +3,8 @@ import { LayoutRectangle } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { findMatchingItemIds } from "./filterUtils.ts";
-import { SEARCH_BAR_HEIGHT, TOP_BAR_HEIGHT } from "./theme.ts";
 
 type LayoutMap = Record<string, LayoutRectangle>;
-type ScrollRef = React.RefObject<{ scrollTo: (options: { y: number; animated?: boolean }) => void } | null>;
 
 export type SearchState = {
   searchText: string;
@@ -25,23 +23,19 @@ export type SearchState = {
     sectionLayouts: LayoutMap,
     bodyLayouts: LayoutMap
   ) => void;
-  scrollRef: ScrollRef;
+  scrollRef: React.RefObject<{ scrollTo: (options: { y: number; animated?: boolean }) => void } | null>;
 };
 
-export const useSearch = (items: PackItem[], categories: NamedEntity[], externalSearchText?: string): SearchState => {
-  const [internalSearchText, setInternalSearchText] = useState("");
+export const useSearch = (items: PackItem[], categories: NamedEntity[]): SearchState => {
+  const [searchText, setSearchText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<{ scrollTo: (options: { y: number; animated?: boolean }) => void }>(null);
 
-  const searchText = externalSearchText ?? internalSearchText;
   const matchedIds = useMemo(() => findMatchingItemIds(items, searchText, categories), [items, searchText, categories]);
-  const matchCount = matchedIds.length;
 
-  useEffect(() => {
-    if (matchCount >= 0) setCurrentIndex(0);
-  }, [matchCount]);
+  useEffect(() => setCurrentIndex(0), []);
 
-  const onSearchChange = useCallback((text: string) => setInternalSearchText(text), []);
+  const onSearchChange = useCallback((text: string) => setSearchText(text), []);
 
   const onNext = useCallback(() => {
     if (matchedIds.length === 0) return;
@@ -54,7 +48,7 @@ export const useSearch = (items: PackItem[], categories: NamedEntity[], external
   }, [matchedIds.length]);
 
   const onClear = useCallback(() => {
-    setInternalSearchText("");
+    setSearchText("");
     setCurrentIndex(0);
   }, []);
 
@@ -67,8 +61,7 @@ export const useSearch = (items: PackItem[], categories: NamedEntity[], external
       const bodyLayout = bodyLayouts[categoryId];
       if (!itemLayout || !sectionLayout || !bodyLayout || !scrollRef.current) return;
       const absoluteY = sectionLayout.y + bodyLayout.y + itemLayout.y;
-      const extraOffset = 12;
-      scrollRef.current.scrollTo({ y: absoluteY - TOP_BAR_HEIGHT - SEARCH_BAR_HEIGHT - extraOffset, animated: true });
+      scrollRef.current.scrollTo({ y: Math.max(0, absoluteY - 100), animated: true });
     },
     []
   );
