@@ -17,7 +17,7 @@ export function AppRoot() {
       const hasSelection = getSelectedId() !== "";
       if (prevHasSelection.current !== hasSelection) {
         prevHasSelection.current = hasSelection;
-        showMainTabs(hasSelection);
+        showMainTabs();
       }
     }
   }, [userId, email]);

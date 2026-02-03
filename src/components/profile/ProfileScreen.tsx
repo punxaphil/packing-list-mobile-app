@@ -12,7 +12,6 @@ type ProfileScreenProps = {
   email: string;
   userId: string;
   onSignOut: () => void;
-  onBack: () => void;
 };
 
 const COPY = {
@@ -70,13 +69,12 @@ const RemoveButton = ({ onPress }: { onPress: () => void }) => (
   </Pressable>
 );
 
-export const ProfileScreen = ({ email, userId, onSignOut, onBack }: ProfileScreenProps) => {
+export const ProfileScreen = ({ email, userId, onSignOut }: ProfileScreenProps) => {
   const { images } = useImages(userId);
   const profileImage = getProfileImage(images);
   const handlers = useImageHandlers(profileImage);
   return (
     <View style={styles.container}>
-      <Header onBack={onBack} />
       <View style={styles.content}>
         <Avatar email={email} imageUrl={profileImage?.url} onPress={handlers.pick} />
         <Text style={styles.email}>{email}</Text>
@@ -116,31 +114,10 @@ const useImageHandlers = (profileImage: Image | undefined) => {
   return { pick, remove, loading };
 };
 
-const Header = ({ onBack }: { onBack: () => void }) => (
-  <View style={styles.header}>
-    <Pressable style={styles.backButton} onPress={onBack} hitSlop={8}>
-      <Text style={styles.backText}>← Back</Text>
-    </Pressable>
-    <Text style={styles.title}>{COPY.title}</Text>
-    <View style={styles.placeholder} />
-  </View>
-);
-
 const { colors, spacing, radius } = { colors: homeColors, spacing: homeSpacing, radius: homeRadius };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  backButton: { minWidth: 60 },
-  backText: { color: colors.primary, fontWeight: "600", fontSize: 16 },
-  title: { fontSize: 20, fontWeight: "700", color: colors.text },
-  placeholder: { minWidth: 60 },
   content: { flex: 1, alignItems: "center", paddingTop: spacing.lg * 2, gap: spacing.lg },
   avatar: {
     width: 100,

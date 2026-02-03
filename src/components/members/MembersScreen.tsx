@@ -1,25 +1,22 @@
-import { useState } from "react";
-import { Pressable, Switch, Text, View } from "react-native";
+import { View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { writeDb } from "~/services/database.ts";
-import { getProfileImage } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
-import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
 import { entityStyles, MEMBER_COPY } from "../shared/entityStyles.ts";
+import { FloatingAddButton } from "../shared/FloatingAddButton.tsx";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 
-type MembersScreenProps = { userId: string; email: string; onProfile: () => void };
+type MembersScreenProps = { userId: string; sortByAlpha: boolean };
 
 const memberDb = {
   add: writeDb.addMember,
@@ -33,7 +30,7 @@ const imageDb = {
   delete: writeDb.deleteImage,
 };
 
-export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) => {
+export const MembersScreen = ({ userId, sortByAlpha }: MembersScreenProps) => {
   const { members } = useMembers(userId);
   const { images } = useImages(userId);
   const { counts: itemCounts } = useMemberItemCounts();
@@ -41,7 +38,6 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
   const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
   const drag = useDragState();
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
-  const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
   const colors = buildCategoryColors(members);
   const memberImages = images.filter((img) => img.type === "members");
@@ -49,18 +45,7 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
 
   return (
     <View style={entityStyles.container}>
-      <View style={entityStyles.panel}>
-        <HomeHeader
-          title={MEMBER_COPY.header}
-          email={email}
-          profileImageUrl={getProfileImage(images)?.url}
-          onProfile={onProfile}
-        />
-        <MemberHeader
-          onAdd={creation.open}
-          sortByAlpha={sortByAlpha}
-          onToggleSort={() => setSortByAlpha(!sortByAlpha)}
-        />
+      <View style={entityStyles.panelScrollable}>
         <EntityScroll
           entities={sorted}
           actions={actions}
@@ -96,31 +81,7 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
           />
         )}
       </View>
+      <FloatingAddButton onPress={creation.open} />
     </View>
   );
 };
-
-type MemberHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort: () => void };
-
-const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
-  <View style={entityStyles.actions}>
-    <Pressable
-      style={entityStyles.addLink}
-      onPress={onAdd}
-      accessibilityRole="button"
-      accessibilityLabel={MEMBER_COPY.addButton}
-      hitSlop={8}
-    >
-      <Text style={entityStyles.addLinkLabel}>Add member...</Text>
-    </Pressable>
-    <View style={entityStyles.spacer} />
-    <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
-      <Switch
-        value={sortByAlpha}
-        onValueChange={onToggleSort}
-        trackColor={{ true: homeColors.primary, false: homeColors.border }}
-      />
-    </View>
-  </View>
-);

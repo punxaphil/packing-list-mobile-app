@@ -1,21 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  Alert,
-  Animated,
-  LayoutChangeEvent,
-  LayoutRectangle,
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from "react-native";
+import { Alert, Animated, LayoutChangeEvent, LayoutRectangle, StyleSheet, View } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
-import { getProfileImage } from "~/services/utils.ts";
-import { Image } from "~/types/Image.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
-import { HomeHeader } from "./HomeHeader.tsx";
+import { FloatingAddButton } from "../shared/FloatingAddButton.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
 import { buildListColors } from "./listColors.ts";
 import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
@@ -30,10 +18,8 @@ import { DragSnapshot, useDragState } from "./useDragState.ts";
 type ListSectionProps = {
   lists: PackingListSummary[];
   selection: SelectionState;
-  email: string;
-  images: Image[];
-  onProfile: () => void;
   onListSelect: (id: string) => void;
+  showArchived: boolean;
 };
 export const ListSection = (props: ListSectionProps) => {
   const { templateList } = useTemplate();
@@ -42,23 +28,9 @@ export const ListSection = (props: ListSectionProps) => {
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
-  const [showArchived, setShowArchived] = useState(false);
-  const hasArchived = props.lists.some((list) => list.archived);
-  const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
+  const filteredLists = props.showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
   return (
-    <View style={homeStyles.panel}>
-      <HomeHeader
-        title={HOME_COPY.listHeader}
-        email={props.email}
-        profileImageUrl={getProfileImage(props.images)?.url}
-        onProfile={props.onProfile}
-      />
-      <ListHeader
-        onAdd={creation.open}
-        showArchived={showArchived}
-        hasArchived={hasArchived}
-        onToggleArchived={() => setShowArchived((v) => !v)}
-      />
+    <View style={homeStyles.panelScrollable}>
       <ListScroll
         lists={filteredLists}
         allLists={props.lists}
@@ -80,41 +52,10 @@ export const ListSection = (props: ListSectionProps) => {
         onCancel={creation.close}
         onSubmit={creation.submit}
       />
+      <FloatingAddButton onPress={creation.open} />
     </View>
   );
 };
-
-type ListHeaderProps = {
-  onAdd: () => void;
-  showArchived: boolean;
-  hasArchived: boolean;
-  onToggleArchived: () => void;
-};
-
-const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: ListHeaderProps) => (
-  <View style={localStyles.headerRow}>
-    <Pressable
-      style={localStyles.createLink}
-      onPress={onAdd}
-      accessibilityRole="button"
-      accessibilityLabel={HOME_COPY.createList}
-      hitSlop={8}
-    >
-      <Text style={homeStyles.quickAddLabel}>Create list...</Text>
-    </Pressable>
-    <View style={localStyles.spacer} />
-    {hasArchived && (
-      <View style={localStyles.archiveToggle}>
-        <Text style={localStyles.archiveToggleText}>Archived</Text>
-        <Switch
-          value={showArchived}
-          onValueChange={onToggleArchived}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-    )}
-  </View>
-);
 
 type ScrollProps = {
   lists: PackingListSummary[];
@@ -127,7 +68,8 @@ type ScrollProps = {
   onListSelect: (id: string) => void;
 };
 
-const ListScroll = ({ lists, allLists, selectedId, actions, colors, drag, onDrop, onListSelect }: ScrollProps) => {
+const ListScroll = (props: ScrollProps) => {
+  const { lists, allLists, selectedId, actions, colors, drag, onDrop, onListSelect } = props;
   const listIds = lists.map((l) => l.id);
   const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
@@ -137,7 +79,7 @@ const ListScroll = ({ lists, allLists, selectedId, actions, colors, drag, onDrop
   const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
   const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
-    <FadeScrollView style={homeStyles.scroll}>
+    <FadeScrollView style={homeStyles.scroll} contentContainerStyle={homeStyles.scrollContent}>
       <View style={[homeStyles.list, dragStyles.relative]}>
         {lists.map((list, index) => (
           <View

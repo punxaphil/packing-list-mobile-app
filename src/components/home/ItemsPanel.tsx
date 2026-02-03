@@ -1,11 +1,9 @@
 import { View } from "react-native";
 import { useTemplate } from "~/providers/TemplateContext.ts";
-import { getProfileImage } from "~/services/utils.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { AddItemDialog } from "./AddItemDialog.tsx";
-import { HomeHeader } from "./HomeHeader.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import { QuickAddRow } from "./QuickAddRow.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -64,22 +62,13 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 
 const PanelCard = (props: ItemsPanelProps) => (
   <View style={homeStyles.panel}>
-    <HeaderRow {...props} />
-    <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
     <RenameDialog dialog={props.renameDialog} />
     <AddItemDialogView {...props} />
-    <ItemsListView {...props} />
+    <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
+    <View style={homeStyles.scroll}>
+      <ItemsListView {...props} />
+    </View>
   </View>
-);
-
-const HeaderRow = ({ displayName, email, imagesState, renameDialog, onProfile }: ItemsPanelProps) => (
-  <HomeHeader
-    title={displayName}
-    email={email}
-    profileImageUrl={getProfileImage(imagesState.images)?.url}
-    onPressTitle={renameDialog.open}
-    onProfile={onProfile}
-  />
 );
 
 const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (

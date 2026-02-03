@@ -11,6 +11,7 @@ import { buildSections } from "./itemsSectionHelpers.ts";
 import { buildCategoryColors } from "./listColors.ts";
 import { MemberInitialsMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { TOP_BAR_HEIGHT } from "./theme.ts";
 import { useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
 
@@ -59,7 +60,11 @@ export const ItemsList = (props: ItemsListProps) => {
   if (props.loading) return <ItemsLoader />;
 
   return (
-    <FadeScrollView ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>} style={homeStyles.scroll}>
+    <FadeScrollView
+      ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>}
+      contentContainerStyle={homeStyles.scrollContent}
+      topInset={TOP_BAR_HEIGHT}
+    >
       <View style={homeStyles.list}>
         {!props.hasItems && <EmptyItems />}
         {sections.map((section, i) => (
