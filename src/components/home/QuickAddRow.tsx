@@ -1,6 +1,6 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { AddItemDialogState } from "./ItemsPanel.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";

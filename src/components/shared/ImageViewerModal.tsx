@@ -1,6 +1,6 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Dimensions, Modal, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
 type ImageViewerModalProps = {

@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -9,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { ActionMenu } from "../home/ActionMenu.tsx";

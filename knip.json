@@ -3,11 +3,10 @@
   "ignore": ["babel.config.js", "metro.config.js"],
   "ignoreDependencies": [
     "@babel/core",
-    "expo-updates",
-    "expo-system-ui",
-    "@expo/vector-icons",
+    "@react-native-community/cli",
+    "@react-native-community/cli-platform-ios",
+    "@types/hoist-non-react-statics",
     "@types/lodash",
-    "@types/prop-types",
-    "@types/hoist-non-react-statics"
+    "@types/prop-types"
   ]
 }

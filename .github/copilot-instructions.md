@@ -16,7 +16,7 @@
 - No unused code. No unused variables, functions, imports, or exports.
 - Never implement hacky workarounds. Use built-in language/platform features.
 
-# React Native / Expo Specific
+# React Native Specific
 - Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
 - Don't use colored icons, use mdi or similar icon font and style.
 

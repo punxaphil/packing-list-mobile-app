@@ -1,7 +1,7 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { memo, useEffect, useState } from "react";
 import { Animated, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
