@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { writeDb } from "~/services/database.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
@@ -22,12 +22,16 @@ export const useOptimisticItems = (items: PackItem[]) => {
     });
   }, [items]);
 
-  const optimisticItems = items.map((item) => {
-    if (!(item.id in pendingChecked)) return item;
-    const checked = pendingChecked[item.id];
-    const members = item.members.map((m) => ({ ...m, checked }));
-    return { ...item, checked, members };
-  });
+  const optimisticItems = useMemo(() => {
+    const pendingKeys = Object.keys(pendingChecked);
+    if (pendingKeys.length === 0) return items;
+    return items.map((item) => {
+      if (!(item.id in pendingChecked)) return item;
+      const checked = pendingChecked[item.id];
+      const members = item.members.map((m) => ({ ...m, checked }));
+      return { ...item, checked, members };
+    });
+  }, [items, pendingChecked]);
 
   const toggleCategory = useCallback((categoryItems: PackItem[], checked: boolean) => {
     const pending: PendingChecked = {};

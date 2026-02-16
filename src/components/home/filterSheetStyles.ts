@@ -54,8 +54,10 @@ export const filterSheetStyles = StyleSheet.create({
     borderRadius: 20,
     padding: 3,
     marginBottom: homeSpacing.sm,
+    borderWidth: 2,
+    borderColor: "transparent",
   },
-  toggleContainerActive: { backgroundColor: homeColors.primary },
+  toggleContainerActive: { borderColor: homeColors.primary },
   toggleSelector: {
     position: "absolute",
     top: 3,

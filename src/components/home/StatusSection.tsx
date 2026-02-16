@@ -31,11 +31,8 @@ export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps)
   };
 
   const isActive = visualStatus !== "all";
-  const getTextStyle = (value: StatusFilter) => {
-    if (value === visualStatus) return [styles.toggleText, styles.toggleTextSelected];
-    if (isActive) return [styles.toggleText, styles.toggleTextInactive];
-    return styles.toggleText;
-  };
+  const getTextStyle = (value: StatusFilter) =>
+    value === visualStatus ? [styles.toggleText, styles.toggleTextSelected] : styles.toggleText;
 
   const optionWidth = containerWidth / STATUS_OPTIONS.length;
   const translateX = slideAnim.interpolate({ inputRange: [0, 1, 2], outputRange: [0, optionWidth, optionWidth * 2] });

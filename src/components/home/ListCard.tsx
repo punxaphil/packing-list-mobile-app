@@ -159,7 +159,9 @@ const DragHandle = () => (
 const ListCardText = ({ list, summary }: ListCardTextProps) => (
   <View style={homeStyles.listCardText}>
     <View style={homeStyles.listNameRow}>
-      <Text style={homeStyles.listName}>{list.name}</Text>
+      <Text style={homeStyles.listName} numberOfLines={1}>
+        {list.name}
+      </Text>
       {list.isTemplate && <TemplateBadge />}
       {list.archived && <ArchivedBadge />}
     </View>

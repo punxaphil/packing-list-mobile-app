@@ -37,7 +37,7 @@ const buildInitial = (email: string) => {
 
 const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
   onPress ? (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8}>
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={homeStyles.panelTitleWrapper}>
       <Text style={homeStyles.panelTitle} numberOfLines={1}>
         {title}
       </Text>

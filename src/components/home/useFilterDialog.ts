@@ -39,7 +39,7 @@ export const useFilterDialog = (
   categories: NamedEntity[],
   members: NamedEntity[],
   items: PackItem[],
-  _listId?: string
+  listId?: string
 ): FilterDialogState => {
   const [visible, setVisible] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -49,25 +49,14 @@ export const useFilterDialog = (
   const membersInList = getMembersInList(members, items);
 
   useEffect(() => {
-    AsyncStorage.getItem(CATEGORY_KEY).then((saved) => {
-      if (saved) setSelectedCategories(JSON.parse(saved));
-    });
-    AsyncStorage.getItem(MEMBER_KEY).then((saved) => {
-      if (saved) setSelectedMembers(JSON.parse(saved));
-    });
-    AsyncStorage.getItem(STATUS_KEY).then((saved) => {
-      if (saved) setStatusFilter(saved as StatusFilter);
-    });
-  }, []);
-
-  useEffect(() => {
+    if (listId === undefined) return;
     setSelectedCategories([]);
     setSelectedMembers([]);
     setStatusFilter("all");
     AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify([]));
     AsyncStorage.setItem(MEMBER_KEY, JSON.stringify([]));
     AsyncStorage.setItem(STATUS_KEY, "all");
-  }, []);
+  }, [listId]);
 
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);

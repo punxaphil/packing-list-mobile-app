@@ -90,7 +90,7 @@ type CategoryItemRowProps = {
   onToggleAllMembers: (checked: boolean) => void;
 };
 
-export const CategorySection = (props: CategorySectionProps) => {
+const CategorySectionImpl = (props: CategorySectionProps) => {
   const editing = useCategoryEditing();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
@@ -168,6 +168,30 @@ export const CategorySection = (props: CategorySectionProps) => {
     </View>
   );
 };
+
+const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionProps): boolean => {
+  if (prev.section.category.id !== next.section.category.id) return false;
+  if (prev.section.items.length !== next.section.items.length) return false;
+  for (let i = 0; i < prev.section.items.length; i++) {
+    const pItem = prev.section.items[i];
+    const nItem = next.section.items[i];
+    if (pItem.id !== nItem.id || pItem.checked !== nItem.checked || pItem.name !== nItem.name) return false;
+    if (pItem.members.length !== nItem.members.length) return false;
+    for (let j = 0; j < pItem.members.length; j++) {
+      if (pItem.members[j].checked !== nItem.members[j].checked) return false;
+    }
+  }
+  if (prev.color !== next.color) return false;
+  if (prev.isTemplateList !== next.isTemplateList) return false;
+  if (prev.search.currentMatchId !== next.search.currentMatchId) return false;
+  if (prev.drag.snapshot?.id !== next.drag.snapshot?.id) return false;
+  if (prev.initialsMap !== next.initialsMap) return false;
+  if (prev.memberImages !== next.memberImages) return false;
+  if (prev.categoryImages !== next.categoryImages) return false;
+  return true;
+};
+
+export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 
 const useCategoryEditing = (): CategoryEditing => {
   const [editingId, setEditingId] = useState<string | null>(null);

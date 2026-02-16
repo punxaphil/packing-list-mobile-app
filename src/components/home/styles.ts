@@ -15,7 +15,8 @@ export const homeStyles = StyleSheet.create({
   home: { flex: 1, width: "100%", gap: spacing.sm },
   panel: { flex: 1, backgroundColor: colors.surface, borderRadius: 16, padding: spacing.md, gap: spacing.md },
   panelHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: spacing.sm },
-  panelTitle: { flex: 1, fontSize: 20, fontWeight: "700", color: colors.text, textAlign: "center" },
+  panelTitleWrapper: { flex: 1 },
+  panelTitle: { fontSize: 20, fontWeight: "700", color: colors.text, textAlign: "center" },
   quickAdd: { paddingVertical: spacing.xs / 2 },
   quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.primary },
   backButton: {
@@ -85,7 +86,7 @@ export const homeStyles = StyleSheet.create({
   },
   listCardText: { flex: 1, gap: spacing.xs },
   listNameRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  listName: { fontSize: 18, fontWeight: "600", color: colors.text },
+  listName: { flex: 1, fontSize: 18, fontWeight: "600", color: colors.text },
   listSummary: { fontSize: 14, color: colors.muted },
   templateBadge: {
     backgroundColor: "#9333ea",
