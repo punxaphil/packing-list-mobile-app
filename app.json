@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "Packing List",
+    "name": "PackSmarter",
     "slug": "packing-list-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "scheme": "packinglist",
+    "scheme": "packsmarter",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.punxaphil.packinglist"
+      "bundleIdentifier": "se.kodsam.packsmarter"
     },
     "android": {
-      "package": "com.punxaphil.packinglist"
+      "package": "se.kodsam.packsmarter"
     },
     "web": {
       "bundler": "metro"

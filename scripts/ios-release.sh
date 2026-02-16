@@ -2,7 +2,7 @@
 set -e
 source .env
 
-TEAM_ID=$(security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject | sed -n 's/.*OU=\([^,]*\).*/\1/p')
+TEAM_ID="9B7D9DCSAW"
 
 cd ios
 xcodebuild -workspace PackingList.xcworkspace -scheme PackingList -configuration Release -sdk iphoneos -allowProvisioningUpdates -derivedDataPath build DEVELOPMENT_TEAM="$TEAM_ID" clean build 2>&1

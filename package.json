@@ -24,6 +24,7 @@
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-navigation": "^8.7.4",
+    "react-native-purchases": "^9.9.0",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-vector-icons": "^10.3.0",
     "react-native-web": "^0.21.0"
@@ -33,6 +34,7 @@
     "@biomejs/biome": "^2.3.13",
     "@react-native-community/cli": "^20.1.1",
     "@react-native-community/cli-platform-ios": "^20.1.1",
+    "@react-native/metro-config": "^0.83.1",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@types/lodash": "^4.17.23",
     "@types/prop-types": "^15.7.15",

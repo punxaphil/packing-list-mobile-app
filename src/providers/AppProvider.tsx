@@ -5,6 +5,7 @@ import { useSelectedList } from "~/components/home/useSelectedList.ts";
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { SubscriptionProvider } from "./SubscriptionProvider.tsx";
 import { TemplateProvider } from "./TemplateProvider.tsx";
 
 type AppContextValue = {
@@ -36,7 +37,9 @@ export function AppProvider({ userId, email, children }: AppProviderProps) {
 
   return (
     <AppContext.Provider value={value}>
-      <TemplateProvider lists={lists}>{children}</TemplateProvider>
+      <SubscriptionProvider userId={userId} email={email}>
+        <TemplateProvider lists={lists}>{children}</TemplateProvider>
+      </SubscriptionProvider>
     </AppContext.Provider>
   );
 }
