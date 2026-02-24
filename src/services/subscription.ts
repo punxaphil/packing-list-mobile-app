@@ -1,10 +1,13 @@
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 
-const REVENUECAT_IOS_KEY = "YOUR_REVENUECAT_IOS_API_KEY";
-const ENTITLEMENT_ID = "premium";
-const WHITELISTED_EMAILS = new Set(["johan.frick@gmail.com"]);
+const REVENUECAT_IOS_KEY = "test_gpzRzjeFyHJYvxukWbXbkxZeKVL";
+const ENTITLEMENT_ID = "entitlement-1";
+const WHITELISTED_EMAILS = new Set<string>([]);
+const MONTHLY_PACKAGE_ID = "monthly";
+const YEARLY_PACKAGE_ID = "yearly";
 
 export const isWhitelistedUser = (email: string): boolean => WHITELISTED_EMAILS.has(email);
+export const getEntitlementId = () => ENTITLEMENT_ID;
 
 const hasRevenueCatKey = () =>
   Boolean(REVENUECAT_IOS_KEY) && !REVENUECAT_IOS_KEY.includes("YOUR_REVENUECAT_IOS_API_KEY");
@@ -23,6 +26,15 @@ export const isActiveSubscription = (info: CustomerInfo): boolean =>
 export const fetchOfferings = async (): Promise<PurchasesPackage[]> => {
   const offerings = await Purchases.getOfferings();
   return offerings.current?.availablePackages ?? [];
+};
+
+export const sortPreferredPackages = (packages: PurchasesPackage[]) => {
+  const rank = (pkg: PurchasesPackage) => {
+    if (pkg.identifier === MONTHLY_PACKAGE_ID) return 0;
+    if (pkg.identifier === YEARLY_PACKAGE_ID) return 1;
+    return 2;
+  };
+  return [...packages].sort((a, b) => rank(a) - rank(b));
 };
 
 export const purchasePackage = async (pkg: PurchasesPackage): Promise<boolean> => {

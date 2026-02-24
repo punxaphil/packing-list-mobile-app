@@ -6,7 +6,7 @@ import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 type Props = PropsWithChildren<{ email: string; onSignOut: () => void }>;
 
 export function SubscriptionGate({ email, onSignOut, children }: Props) {
-  const { isSubscribed, loading, processing, offerings, error, purchase, restore } = useSubscription();
+  const { isSubscribed, loading, processing, offerings, error, purchase, restore, presentPaywall } = useSubscription();
 
   if (isSubscribed) return children;
 
@@ -30,6 +30,10 @@ export function SubscriptionGate({ email, onSignOut, children }: Props) {
           <Text style={styles.info}>No products available yet. Check RevenueCat offerings setup.</Text>
         )}
         {error && <Text style={styles.error}>{error}</Text>}
+        <Pressable style={styles.primaryButton} onPress={() => void presentPaywall()} disabled={processing}>
+          <Text style={styles.primaryTitle}>Open Paywall</Text>
+          <Text style={styles.primaryPrice}>Managed by RevenueCat UI</Text>
+        </Pressable>
         <Pressable style={styles.secondaryButton} onPress={() => void restore()} disabled={processing}>
           <Text style={styles.secondaryText}>Restore Purchases</Text>
         </Pressable>

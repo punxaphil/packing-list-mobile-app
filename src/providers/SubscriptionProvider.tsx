@@ -1,12 +1,15 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
+import RevenueCatUI from "react-native-purchases-ui";
 import {
   configureRevenueCat,
   fetchOfferings,
+  getEntitlementId,
   isActiveSubscription,
   isWhitelistedUser,
   purchasePackage,
   restorePurchases,
+  sortPreferredPackages,
 } from "~/services/subscription.ts";
 import { SubscriptionContext } from "./SubscriptionContext.ts";
 
@@ -28,7 +31,7 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
   const refresh = useCallback(async () => {
     if (whitelisted) return;
     const [customerInfo, availablePackages] = await Promise.all([Purchases.getCustomerInfo(), fetchOfferings()]);
-    setOfferings(availablePackages);
+    setOfferings(sortPreferredPackages(availablePackages));
     handleCustomerInfo(customerInfo);
   }, [handleCustomerInfo, whitelisted]);
 
@@ -79,9 +82,54 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
     }
   }, [refresh]);
 
+  const presentPaywall = useCallback(async () => {
+    setProcessing(true);
+    setError(null);
+    try {
+      await RevenueCatUI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: getEntitlementId() });
+      await refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to present paywall");
+    } finally {
+      setProcessing(false);
+    }
+  }, [refresh]);
+
+  const presentCustomerCenter = useCallback(async () => {
+    setError(null);
+    try {
+      await RevenueCatUI.presentCustomerCenter();
+      await refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to open customer center");
+    }
+  }, [refresh]);
+
   const value = useMemo(
-    () => ({ isSubscribed, loading, processing, offerings, error, purchase, restore, refresh }),
-    [isSubscribed, loading, processing, offerings, error, purchase, restore, refresh]
+    () => ({
+      isSubscribed,
+      loading,
+      processing,
+      offerings,
+      error,
+      purchase,
+      restore,
+      refresh,
+      presentPaywall,
+      presentCustomerCenter,
+    }),
+    [
+      isSubscribed,
+      loading,
+      processing,
+      offerings,
+      error,
+      purchase,
+      restore,
+      refresh,
+      presentPaywall,
+      presentCustomerCenter,
+    ]
   );
 
   return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;

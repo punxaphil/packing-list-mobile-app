@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
@@ -15,6 +16,7 @@ type ProfileScreenProps = {
 const COPY = {
   title: "Profile",
   signOut: "Sign Out",
+  manageSubscription: "Manage Subscription",
   changePhoto: "Change Photo",
   addPhoto: "Add Photo",
   removePhoto: "Remove",
@@ -69,6 +71,7 @@ const RemoveButton = ({ onPress }: { onPress: () => void }) => (
 
 export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) => {
   const { profile } = useSpace();
+  const { presentCustomerCenter } = useSubscription();
   const imageUrl = profile?.imageUrl;
   const handlers = useImageHandlers(profile?.id);
   return (
@@ -85,6 +88,9 @@ export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) 
           />
           {imageUrl && <RemoveButton onPress={handlers.remove} />}
         </View>
+        <Pressable style={styles.manageButton} onPress={() => void presentCustomerCenter()}>
+          <Text style={styles.manageButtonText}>{COPY.manageSubscription}</Text>
+        </Pressable>
         <SignOutButton email={email} onSignOut={onSignOut} />
       </View>
     </View>
@@ -166,6 +172,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   removeButtonText: { fontSize: 14, fontWeight: "600", color: colors.muted },
+  manageButton: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius,
+    backgroundColor: colors.primary,
+  },
+  manageButtonText: { fontSize: 16, fontWeight: "600", color: colors.buttonText },
   signOutButton: {
     marginTop: spacing.lg,
     paddingHorizontal: spacing.lg,
