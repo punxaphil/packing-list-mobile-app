@@ -11,7 +11,7 @@ export function useCurrentUser() {
   useEffect(() => {
     const unsubscribe = getAuth().onAuthStateChanged((user) => {
       setUserId(user?.uid ?? "");
-      setEmail(user?.email ?? "");
+      setEmail(user?.email?.toLowerCase() ?? "");
       setLoggingIn(false);
     });
 
