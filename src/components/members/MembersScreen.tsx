@@ -3,8 +3,7 @@ import { Pressable, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
-import { writeDb } from "~/services/database.ts";
-import { getProfileImage } from "~/services/utils.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
@@ -19,24 +18,26 @@ import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 
-type MembersScreenProps = { userId: string; email: string; onProfile: () => void };
+type MembersScreenProps = { email: string; onProfile: () => void; onManageSpace: () => void };
 
-const memberDb = {
-  add: writeDb.addMember,
-  update: (m: NamedEntity) => writeDb.updateMembers(m),
-  delete: writeDb.deleteMember,
-};
-
-const imageDb = {
-  add: writeDb.addImage,
-  update: writeDb.updateImage,
-  delete: writeDb.deleteImage,
-};
-
-export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) => {
-  const { members } = useMembers(userId);
-  const { images } = useImages(userId);
+export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreenProps) => {
+  const { spaceId, writeDb, profile } = useSpace();
+  const { members } = useMembers(spaceId);
+  const { images } = useImages(spaceId);
   const { counts: itemCounts } = useMemberItemCounts();
+
+  const memberDb = {
+    add: writeDb.addMember,
+    update: (m: NamedEntity) => writeDb.updateMembers(m),
+    delete: writeDb.deleteMember,
+  };
+
+  const imageDb = {
+    add: writeDb.addImage,
+    update: writeDb.updateImage,
+    delete: writeDb.deleteImage,
+  };
+
   const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb);
   const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
   const drag = useDragState();
@@ -53,8 +54,9 @@ export const MembersScreen = ({ userId, email, onProfile }: MembersScreenProps) 
         <HomeHeader
           title={MEMBER_COPY.header}
           email={email}
-          profileImageUrl={getProfileImage(images)?.url}
+          profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
+          onManageSpace={onManageSpace}
         />
         <MemberHeader
           onAdd={creation.open}

@@ -5,4 +5,5 @@ export const SCREEN_IDS = {
   CATEGORIES: "CategoriesScreen",
   MEMBERS: "MembersScreen",
   PROFILE: "ProfileScreen",
+  SPACE_MANAGEMENT: "SpaceManagementScreen",
 } as const;

@@ -1,18 +1,15 @@
 import { ActivityIndicator, View } from "react-native";
 import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { EmptyList } from "~/components/home/EmptyList";
 import { ListSection } from "~/components/home/ListSection";
 import { homeStyles } from "~/components/home/styles";
 import { homeColors } from "~/components/home/theme";
-import { useImages } from "~/hooks/useImages";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile, switchToItemsTab } from "./navigation";
+import { pushProfile, pushSpaceManagement, switchToItemsTab } from "./navigation";
 
 function ListsContent({ componentId }: { componentId: string }) {
-  const { userId, email, lists, hasLists, listsLoading, selection } = useApp();
-  const imagesState = useImages(userId);
+  const { email, lists, listsLoading, selection } = useApp();
 
   const handleListSelect = (id: string) => {
     selection.select(id);
@@ -27,15 +24,13 @@ function ListsContent({ componentId }: { componentId: string }) {
     );
   }
 
-  if (!hasLists) return <EmptyList />;
-
   return (
     <ListSection
       lists={lists}
       selection={selection}
       email={email}
-      images={imagesState.images}
       onProfile={() => pushProfile(componentId)}
+      onManageSpace={() => pushSpaceManagement(componentId)}
       onListSelect={handleListSelect}
     />
   );

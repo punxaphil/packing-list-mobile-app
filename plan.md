@@ -49,7 +49,18 @@
 - show user image (if exists) instead of initial letter in top right corner
 
 # todo
+a space should be renameable
+it should be possible to leave a space (remove myself as member)
+it should be possible to see who has access to a space
+it should be possible to remove other member from space
+when I change space my avatar image is removed, it should remain the same
+it should be possible to move a list to another space
+
 scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
+- when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
+- also, it seems I cannot leave a space?
+
+
 
 # Maybe later
 - ipad layout/landscape mode

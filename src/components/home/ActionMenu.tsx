@@ -1,11 +1,16 @@
-import { Modal, Pressable, StyleSheet, Text } from "react-native";
-import { homeColors, homeSpacing } from "./theme.ts";
+import type { ReactNode } from "react";
+import { Modal, Pressable, Text, View } from "react-native";
+import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
+import { homeColors } from "./theme.ts";
 
 type ActionMenuItem = {
   text: string;
   style?: "default" | "destructive" | "cancel";
   onPress?: () => void;
   disabled?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+  onRightPress?: () => void;
 };
 
 type ActionMenuProps = {
@@ -15,17 +20,31 @@ type ActionMenuProps = {
   onClose: () => void;
   headerColor?: string;
   headerTextColor?: string;
+  headerRight?: ReactNode;
 };
 
-export const ActionMenu = ({ visible, title, items, onClose, headerColor, headerTextColor }: ActionMenuProps) => {
-  const titleStyle = headerColor
-    ? [styles.title, { backgroundColor: headerColor, color: headerTextColor ?? homeColors.text }]
-    : styles.title;
+export const ActionMenu = ({
+  visible,
+  title,
+  items,
+  onClose,
+  headerColor,
+  headerTextColor,
+  headerRight,
+}: ActionMenuProps) => {
+  const titleTextStyle = headerColor
+    ? [styles.titleText, { color: headerTextColor ?? homeColors.text }]
+    : styles.titleText;
+  const headerBgStyle = headerColor ? { backgroundColor: headerColor } : undefined;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
-          <Text style={titleStyle}>{title}</Text>
+          <View style={[styles.titleRow, headerBgStyle]}>
+            <View style={styles.titleSpacer} />
+            <Text style={titleTextStyle}>{title}</Text>
+            <View style={styles.titleSpacer}>{headerRight}</View>
+          </View>
           {items
             .filter((i) => i.style !== "cancel")
             .map((item) => (
@@ -51,7 +70,17 @@ const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void
   ];
   return (
     <Pressable style={styles.item} onPress={handlePress}>
-      <Text style={textStyle}>{item.text}</Text>
+      <View style={styles.itemRow}>
+        <View style={styles.itemSpacer}>{item.leftIcon}</View>
+        <Text style={textStyle}>{item.text}</Text>
+        <View style={styles.itemSpacer}>
+          {item.rightIcon && (
+            <Pressable onPress={item.onRightPress} hitSlop={8}>
+              {item.rightIcon}
+            </Pressable>
+          )}
+        </View>
+      </View>
     </Pressable>
   );
 };
@@ -61,23 +90,3 @@ const CancelButton = ({ onPress }: { onPress: () => void }) => (
     <Text style={styles.cancelText}>Cancel</Text>
   </Pressable>
 );
-
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: homeSpacing.lg },
-  menu: { backgroundColor: homeColors.surface, borderRadius: 12, overflow: "hidden" },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: homeColors.muted,
-    textAlign: "center",
-    padding: homeSpacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: homeColors.border,
-  },
-  item: { padding: homeSpacing.md, borderBottomWidth: 1, borderBottomColor: homeColors.border },
-  itemText: { fontSize: 16, color: homeColors.text, textAlign: "center" },
-  destructive: { color: homeColors.danger },
-  disabled: { color: homeColors.muted },
-  cancelItem: { padding: homeSpacing.md, backgroundColor: homeColors.background },
-  cancelText: { fontSize: 16, fontWeight: "600", color: homeColors.primary, textAlign: "center" },
-});

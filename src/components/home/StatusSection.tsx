@@ -14,13 +14,9 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "packed", label: "Packed" },
 ];
 
-const getIndex = (status: StatusFilter) =>
-  STATUS_OPTIONS.findIndex((o) => o.value === status);
+const getIndex = (status: StatusFilter) => STATUS_OPTIONS.findIndex((o) => o.value === status);
 
-export const StatusSection = ({
-  statusFilter,
-  onSetStatus,
-}: StatusSectionProps) => {
+export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const optionWidth = containerWidth / STATUS_OPTIONS.length;
@@ -40,32 +36,20 @@ export const StatusSection = ({
 
   const isActive = statusFilter !== "all";
   const getTextStyle = (value: StatusFilter) =>
-    value === statusFilter
-      ? [styles.toggleText, styles.toggleTextSelected]
-      : styles.toggleText;
+    value === statusFilter ? [styles.toggleText, styles.toggleTextSelected] : styles.toggleText;
 
   return (
     <>
       <Text style={styles.sectionTitle}>Status</Text>
       <View
-        style={[
-          styles.toggleContainer,
-          isActive && styles.toggleContainerActive,
-        ]}
+        style={[styles.toggleContainer, isActive && styles.toggleContainerActive]}
         onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width - 6)}
       >
         <Animated.View
-          style={[
-            styles.toggleSelector,
-            { width: optionWidth, transform: [{ translateX: slideAnim }] },
-          ]}
+          style={[styles.toggleSelector, { width: optionWidth, transform: [{ translateX: slideAnim }] }]}
         />
         {STATUS_OPTIONS.map((opt) => (
-          <Pressable
-            key={opt.value}
-            style={styles.toggleOption}
-            onPress={() => handlePress(opt.value)}
-          >
+          <Pressable key={opt.value} style={styles.toggleOption} onPress={() => handlePress(opt.value)}>
             <Text style={getTextStyle(opt.value)}>{opt.label}</Text>
           </Pressable>
         ))}

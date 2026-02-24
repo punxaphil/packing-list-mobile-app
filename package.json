@@ -7,12 +7,19 @@
     "start": "npx react-native start",
     "android": "npx react-native run-android",
     "ios": "npx react-native run-ios",
+    "ios:simulator": "npx react-native run-ios --simulator='iPhone 17 Pro'",
+    "ios:simulator2": "npx react-native run-ios --simulator='iPhone 17'",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "find-unused": "knip",
     "prebuild": "npm run typecheck && npm run lint && knip",
-    "ios:release": "./scripts/ios-release.sh"
+    "ios:release": "./scripts/ios-release.sh",
+    "spaces:cleanup": "node scripts/cleanup-spaces.js",
+    "spaces:migrate": "node scripts/migrate-to-spaces.js",
+    "list:dev-servers": "lsof -i tcp -P -n | grep LISTEN | grep node | awk '{print $9}'",
+    "list:dev-servers-port": "lsof -ti 8081 -",
+    "list:simulators": "xcrun simctl list devices available"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -34,13 +41,13 @@
     "@biomejs/biome": "^2.3.13",
     "@react-native-community/cli": "^20.1.1",
     "@react-native-community/cli-platform-ios": "^20.1.1",
-    "@react-native/metro-config": "^0.83.1",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@types/lodash": "^4.17.23",
     "@types/prop-types": "^15.7.15",
     "@types/react": "~19.1.10",
     "@types/react-native-vector-icons": "^6.4.18",
     "babel-plugin-module-resolver": "^5.0.0",
+    "firebase-admin": "^13.6.1",
     "knip": "^5.82.1",
     "typescript": "~5.9.2"
   }

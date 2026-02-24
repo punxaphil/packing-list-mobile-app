@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 type SubscriptionContextValue = {
   isSubscribed: boolean;
@@ -9,5 +9,3 @@ export const SubscriptionContext = createContext<SubscriptionContextValue>({
   isSubscribed: false,
   loading: true,
 });
-
-export const useSubscription = () => useContext(SubscriptionContext);

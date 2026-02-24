@@ -10,9 +10,10 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
-import { getProfileImage } from "~/services/utils.ts";
-import { Image } from "~/types/Image.ts";
+import { moveListToSpace } from "~/services/spaceDatabase.ts";
+import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -31,12 +32,19 @@ type ListSectionProps = {
   lists: PackingListSummary[];
   selection: SelectionState;
   email: string;
-  images: Image[];
   onProfile: () => void;
+  onManageSpace: () => void;
   onListSelect: (id: string) => void;
 };
 export const ListSection = (props: ListSectionProps) => {
   const { templateList } = useTemplate();
+  const { profile, spaces, spaceId } = useSpace();
+  const handleMoveToSpace = useCallback(
+    async (listId: string, targetSpaceId: string) => {
+      await moveListToSpace(spaceId, targetSpaceId, listId);
+    },
+    [spaceId]
+  );
   const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
   const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
@@ -50,8 +58,10 @@ export const ListSection = (props: ListSectionProps) => {
       <HomeHeader
         title={HOME_COPY.listHeader}
         email={props.email}
-        profileImageUrl={getProfileImage(props.images)?.url}
+        profileImageUrl={profile?.imageUrl}
         onProfile={props.onProfile}
+        onManageSpace={props.onManageSpace}
+        useSpaceAsTitle
       />
       <ListHeader
         onAdd={creation.open}
@@ -65,6 +75,9 @@ export const ListSection = (props: ListSectionProps) => {
         selectedId={props.selection.selectedId}
         actions={actions}
         colors={colors}
+        spaces={spaces}
+        currentSpaceId={spaceId}
+        onMoveToSpace={handleMoveToSpace}
         drag={drag}
         onDrop={ordering.drop}
         onListSelect={props.onListSelect}
@@ -100,7 +113,7 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
       accessibilityLabel={HOME_COPY.createList}
       hitSlop={8}
     >
-      <Text style={homeStyles.quickAddLabel}>Create list...</Text>
+      <Text style={homeStyles.quickAddLabel}>Create List...</Text>
     </Pressable>
     <View style={localStyles.spacer} />
     {hasArchived && (
@@ -122,12 +135,27 @@ type ScrollProps = {
   selectedId: string;
   actions: ListActions;
   colors: Record<string, string>;
+  spaces: Space[];
+  currentSpaceId: string;
+  onMoveToSpace: (listId: string, targetSpaceId: string) => void;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   onListSelect: (id: string) => void;
 };
 
-const ListScroll = ({ lists, allLists, selectedId, actions, colors, drag, onDrop, onListSelect }: ScrollProps) => {
+const ListScroll = ({
+  lists,
+  allLists,
+  selectedId,
+  actions,
+  colors,
+  spaces,
+  currentSpaceId,
+  onMoveToSpace,
+  drag,
+  onDrop,
+  onListSelect,
+}: ScrollProps) => {
   const listIds = lists.map((l) => l.id);
   const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
@@ -151,6 +179,9 @@ const ListScroll = ({ lists, allLists, selectedId, actions, colors, drag, onDrop
               isSelected={selectedId === list.id}
               actions={actions}
               color={colors[list.id]}
+              spaces={spaces}
+              currentSpaceId={currentSpaceId}
+              onMoveToSpace={onMoveToSpace}
               hidden={drag.snapshot?.id === list.id}
               onDragStart={() => drag.start(list.id, "")}
               onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}

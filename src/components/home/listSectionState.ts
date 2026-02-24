@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
+import type { WriteDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout, animateListEntry } from "./layoutAnimation.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
@@ -24,23 +25,27 @@ export const useListActions = (
   selection: SelectionState,
   templateList: NamedEntity | null,
   onListSelect?: (id: string) => void
-): ListActions => ({
-  onAdd: useAddList(lists, selection, templateList, onListSelect),
-  onDelete: useDeleteList(selection),
-  onRename: useRenameList(),
-  onSetTemplate: useSetTemplate(templateList),
-  onRemoveTemplate: useRemoveTemplate(),
-  onPin: usePin(),
-  onUnpin: useUnpin(),
-  onArchive: useArchive(),
-  onRestore: useRestore(),
-  onUncheckAll: useUncheckAll(),
-});
+): ListActions => {
+  const { writeDb } = useSpace();
+  return {
+    onAdd: useAddList(lists, selection, templateList, writeDb, onListSelect),
+    onDelete: useDeleteList(selection, writeDb),
+    onRename: useRenameList(writeDb),
+    onSetTemplate: useSetTemplate(templateList, writeDb),
+    onRemoveTemplate: useRemoveTemplate(writeDb),
+    onPin: usePin(writeDb),
+    onUnpin: useUnpin(writeDb),
+    onArchive: useArchive(writeDb),
+    onRestore: useRestore(writeDb),
+    onUncheckAll: useUncheckAll(writeDb),
+  };
+};
 
 const useAddList = (
   lists: PackingListSummary[],
   selection: SelectionState,
   templateList: NamedEntity | null,
+  writeDb: WriteDb,
   onListSelect?: (id: string) => void
 ) =>
   useCallback(
@@ -58,25 +63,28 @@ const useAddList = (
         selection.select(id);
       }
     },
-    [lists, selection, templateList, onListSelect]
+    [lists, selection, templateList, writeDb, onListSelect]
   );
 
-const useDeleteList = (selection: SelectionState) =>
+const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
   useCallback(
     async (list: PackingListSummary) => {
       animateLayout();
       await writeDb.deletePackingList(list.id);
       if (selection.selectedId === list.id) selection.clear();
     },
-    [selection]
+    [selection, writeDb]
   );
 
-const useRenameList = () =>
-  useCallback(async (list: PackingListSummary, name: string) => {
-    await writeDb.updatePackingList({ ...list, name });
-  }, []);
+const useRenameList = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary, name: string) => {
+      await writeDb.updatePackingList({ ...list, name });
+    },
+    [writeDb]
+  );
 
-const useSetTemplate = (currentTemplate: NamedEntity | null) =>
+const useSetTemplate = (currentTemplate: NamedEntity | null, writeDb: WriteDb) =>
   useCallback(
     async (list: PackingListSummary) => {
       await delay(50);
@@ -84,43 +92,61 @@ const useSetTemplate = (currentTemplate: NamedEntity | null) =>
       if (currentTemplate) await writeDb.updatePackingList({ ...currentTemplate, isTemplate: false });
       await writeDb.updatePackingList({ ...list, isTemplate: true });
     },
-    [currentTemplate]
+    [currentTemplate, writeDb]
   );
 
-const useRemoveTemplate = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await delay(50);
-    animateLayout();
-    await writeDb.updatePackingList({ ...list, isTemplate: false });
-  }, []);
+const useRemoveTemplate = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await delay(50);
+      animateLayout();
+      await writeDb.updatePackingList({ ...list, isTemplate: false });
+    },
+    [writeDb]
+  );
 
-const usePin = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await delay(50);
-    animateLayout();
-    await writeDb.updatePackingList({ ...list, pinned: true });
-  }, []);
+const usePin = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await delay(50);
+      animateLayout();
+      await writeDb.updatePackingList({ ...list, pinned: true });
+    },
+    [writeDb]
+  );
 
-const useUnpin = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await delay(50);
-    animateLayout();
-    await writeDb.updatePackingList({ ...list, pinned: false });
-  }, []);
+const useUnpin = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await delay(50);
+      animateLayout();
+      await writeDb.updatePackingList({ ...list, pinned: false });
+    },
+    [writeDb]
+  );
 
-const useArchive = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await writeDb.updatePackingList({ ...list, archived: true });
-  }, []);
+const useArchive = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await writeDb.updatePackingList({ ...list, archived: true });
+    },
+    [writeDb]
+  );
 
-const useRestore = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await writeDb.updatePackingList({ ...list, archived: false });
-  }, []);
+const useRestore = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await writeDb.updatePackingList({ ...list, archived: false });
+    },
+    [writeDb]
+  );
 
-const useUncheckAll = () =>
-  useCallback(async (list: PackingListSummary) => {
-    await writeDb.uncheckAllItems(list.id);
-  }, []);
+const useUncheckAll = (writeDb: WriteDb) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      await writeDb.uncheckAllItems(list.id);
+    },
+    [writeDb]
+  );
 
 const getNextListRank = (lists: PackingListSummary[]) => Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;

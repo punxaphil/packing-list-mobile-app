@@ -4,14 +4,18 @@ import { homeStyles } from "~/components/home/styles";
 import { MembersScreen as MembersScreenComponent } from "~/components/members/MembersScreen";
 import { AppProvider } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile } from "./navigation";
+import { pushProfile, pushSpaceManagement } from "./navigation";
 
 export function MembersScreen({ componentId }: NavigationComponentProps) {
   const { userId, email } = getAppState();
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <MembersScreenComponent userId={userId} email={email} onProfile={() => pushProfile(componentId)} />
+        <MembersScreenComponent
+          email={email}
+          onProfile={() => pushProfile(componentId)}
+          onManageSpace={() => pushSpaceManagement(componentId)}
+        />
       </AppProvider>
     </SafeAreaView>
   );

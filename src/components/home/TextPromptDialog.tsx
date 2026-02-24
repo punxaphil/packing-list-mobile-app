@@ -1,4 +1,4 @@
-import { Animated, Keyboard, Modal, Pressable, Text, TextInput, View } from "react-native";
+import { Animated, Keyboard, KeyboardTypeOptions, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
@@ -9,6 +9,8 @@ type TextPromptDialogProps = {
   value: string;
   placeholder?: string;
   error?: string | null;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  keyboardType?: KeyboardTypeOptions;
   onChange: (text: string) => void;
   onCancel: () => void;
   onSubmit: () => void;
@@ -21,6 +23,8 @@ export const TextPromptDialog = ({
   value,
   placeholder,
   error,
+  autoCapitalize,
+  keyboardType,
   onChange,
   onCancel,
   onSubmit,
@@ -40,6 +44,8 @@ export const TextPromptDialog = ({
               placeholder={placeholder}
               style={inputStyle}
               autoFocus
+              autoCapitalize={autoCapitalize}
+              keyboardType={keyboardType}
               accessibilityLabel={title}
             />
             {error && <Text style={homeStyles.modalError}>{error}</Text>}

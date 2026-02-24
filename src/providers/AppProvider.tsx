@@ -4,13 +4,17 @@ import { PackingListSummary, SelectionState } from "~/components/home/types.ts";
 import { useSelectedList } from "~/components/home/useSelectedList.ts";
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
+import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { InviteProvider } from "./InviteProvider.tsx";
+import { SpaceProvider } from "./SpaceProvider.tsx";
 import { SubscriptionProvider } from "./SubscriptionProvider.tsx";
 import { TemplateProvider } from "./TemplateProvider.tsx";
 
 type AppContextValue = {
   userId: string;
   email: string;
+  spaceId: string;
   lists: PackingListSummary[];
   hasLists: boolean;
   listsLoading: boolean;
@@ -27,20 +31,33 @@ const signOut = () => getAuth().signOut().catch(console.error);
 
 type AppProviderProps = PropsWithChildren<{ userId: string; email: string }>;
 
-export function AppProvider({ userId, email, children }: AppProviderProps) {
-  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(userId);
-  const { counts } = usePackItemCounts(userId);
+function AppContent({ userId, email, children }: AppProviderProps) {
+  const spaceId = useActiveSpaceId();
+  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(spaceId);
+  const { counts } = usePackItemCounts(spaceId);
   const lists = mergeListCounts(packingLists, counts);
   const selection = useSelectedList(lists, hasLists);
 
-  const value: AppContextValue = { userId, email, lists, hasLists, listsLoading, selection, signOut };
+  const value: AppContextValue = { userId, email, spaceId, lists, hasLists, listsLoading, selection, signOut };
 
   return (
     <AppContext.Provider value={value}>
-      <SubscriptionProvider userId={userId} email={email}>
-        <TemplateProvider lists={lists}>{children}</TemplateProvider>
-      </SubscriptionProvider>
+      <TemplateProvider lists={lists}>{children}</TemplateProvider>
     </AppContext.Provider>
+  );
+}
+
+export function AppProvider({ userId, email, children }: AppProviderProps) {
+  return (
+    <SubscriptionProvider userId={userId} email={email}>
+      <SpaceProvider userId={userId} email={email}>
+        <InviteProvider email={email}>
+          <AppContent userId={userId} email={email}>
+            {children}
+          </AppContent>
+        </InviteProvider>
+      </SpaceProvider>
+    </SubscriptionProvider>
   );
 }
 

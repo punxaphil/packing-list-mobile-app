@@ -4,7 +4,7 @@ import { PackItem } from "~/types/PackItem.ts";
 
 type HookState = { items: PackItem[]; loading: boolean };
 
-const USERS_COLLECTION = "users";
+const SPACES_COLLECTION = "spaces";
 const PACK_ITEMS_COLLECTION = "packItems";
 const ORDER_FIELD = "rank" as const;
 const NOOP_UNSUBSCRIBE: Unsubscribe = () => undefined;
@@ -24,9 +24,9 @@ const mapSnapshot = (snapshot: QuerySnapshot): PackItem[] =>
     })) as PackItem[]
   );
 
-const buildQuery = (userId: string, packingListId: string) =>
+const buildQuery = (spaceId: string, packingListId: string) =>
   query(
-    collection(getFirestore(), USERS_COLLECTION, userId, PACK_ITEMS_COLLECTION),
+    collection(getFirestore(), SPACES_COLLECTION, spaceId, PACK_ITEMS_COLLECTION),
     where("packingList", "==", packingListId)
   );
 
@@ -39,8 +39,8 @@ const handleError = (setState: (value: HookState) => void) => (_error: unknown) 
   setState(createState(false));
 };
 
-const subscribeToItems = (userId: string, packingListId: string, setState: (value: HookState) => void) =>
-  onSnapshot(buildQuery(userId, packingListId), handleSnapshot(setState), handleError(setState));
+const subscribeToItems = (spaceId: string, packingListId: string, setState: (value: HookState) => void) =>
+  onSnapshot(buildQuery(spaceId, packingListId), handleSnapshot(setState), handleError(setState));
 
 const handleMissingInputs = (setState: (value: HookState) => void) => {
   setState(createState(false));
@@ -48,14 +48,14 @@ const handleMissingInputs = (setState: (value: HookState) => void) => {
 };
 
 const manageSubscription = (
-  userId: string | null | undefined,
+  spaceId: string | null | undefined,
   packingListId: string | null | undefined,
   setState: (value: HookState) => void
 ) => {
-  if (!userId || !packingListId) {
+  if (!spaceId || !packingListId) {
     return handleMissingInputs(setState);
   }
-  return subscribeToItems(userId, packingListId, setState) ?? NOOP_UNSUBSCRIBE;
+  return subscribeToItems(spaceId, packingListId, setState) ?? NOOP_UNSUBSCRIBE;
 };
 
 const buildResult = (state: HookState) => ({
@@ -64,7 +64,7 @@ const buildResult = (state: HookState) => ({
   hasItems: state.items.length > 0,
 });
 
-export function usePackingItems(userId: string | null | undefined, packingListId: string | null | undefined) {
+export function usePackingItems(spaceId: string | null | undefined, packingListId: string | null | undefined) {
   const [state, setState] = useState<HookState>(() => createState(true));
   const [prevListId, setPrevListId] = useState(packingListId);
 
@@ -73,6 +73,6 @@ export function usePackingItems(userId: string | null | undefined, packingListId
     if (packingListId) setState(createState(true));
   }
 
-  useEffect(() => manageSubscription(userId, packingListId, setState), [userId, packingListId]);
+  useEffect(() => manageSubscription(spaceId, packingListId, setState), [spaceId, packingListId]);
   return buildResult(state);
 }

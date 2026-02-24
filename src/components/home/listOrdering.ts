@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { LayoutRectangle } from "react-native";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
+import type { WriteDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackingListSummary } from "./types.ts";
 
@@ -14,9 +15,10 @@ type DropHandler = (snapshot: DragSnapshot, layouts: LayoutMap) => void;
 type OrderedIdsState = [string[], Dispatch<SetStateAction<string[]>>];
 
 export const useListOrdering = (lists: PackingListSummary[]) => {
+  const { writeDb } = useSpace();
   const [orderedIds, setOrderedIds] = useOrderedIds(lists);
   const orderedLists = useMemo(() => buildOrderedLists(orderedIds, lists), [orderedIds, lists]);
-  const drop = useDropHandler(lists, setOrderedIds);
+  const drop = useDropHandler(lists, setOrderedIds, writeDb);
   return { lists: orderedLists, drop } as const;
 };
 
@@ -28,7 +30,11 @@ const useOrderedIds = (lists: PackingListSummary[]): OrderedIdsState => {
   return [orderedIds, setOrderedIds];
 };
 
-const useDropHandler = (lists: PackingListSummary[], setOrderedIds: OrderedIdsState[1]): DropHandler =>
+const useDropHandler = (
+  lists: PackingListSummary[],
+  setOrderedIds: OrderedIdsState[1],
+  writeDb: WriteDb
+): DropHandler =>
   useCallback(
     (snapshot, layouts) => {
       if (!snapshot) return;
@@ -36,11 +42,11 @@ const useDropHandler = (lists: PackingListSummary[], setOrderedIds: OrderedIdsSt
         const preview = buildDropPreview(current, snapshot, layouts);
         const next = preview.changed ? preview.ids : current;
         if (next === current) return current;
-        persistRanks(next, lists);
+        persistRanks(next, lists, writeDb);
         return next;
       });
     },
-    [lists, setOrderedIds]
+    [lists, setOrderedIds, writeDb]
   );
 
 const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) => {
@@ -151,7 +157,7 @@ const moveItem = (ids: string[], fromIndex: number, toIndex: number) => {
   return next;
 };
 
-const persistRanks = (orderedIds: string[], lists: PackingListSummary[]) => {
+const persistRanks = (orderedIds: string[], lists: PackingListSummary[], writeDb: WriteDb) => {
   const updates: RankUpdate[] = [];
   orderedIds.forEach((id, index) => {
     const update = buildRankUpdate(id, index, orderedIds.length, lists);

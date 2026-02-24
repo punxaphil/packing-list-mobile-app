@@ -64,7 +64,7 @@ export const homeCopy: HomeCopy = {
   back: "< Back",
   avatarFallback: "?",
   addItem: "Add item",
-  addItemQuick: "Add item...",
+  addItemQuick: "Add Item...",
   addItemPrompt: "Add a packing item",
   addItemConfirm: "Add",
   addItemPlaceholder: "Travel adapter",

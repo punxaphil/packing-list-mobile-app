@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { LayoutAnimation, LayoutRectangle } from "react-native";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
+import type { WriteDb } from "~/services/database.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DragSnapshot } from "./useDragState.ts";
 
@@ -17,9 +18,10 @@ type DropHandler = (
 type OrderedIdsState = [string[], Dispatch<SetStateAction<string[]>>];
 
 export const useItemOrdering = (items: PackItem[]) => {
+  const { writeDb } = useSpace();
   const [orderedIds, setOrderedIds] = useOrderedIds(items);
   const orderedItems = useMemo(() => buildOrderedItems(orderedIds, items), [orderedIds, items]);
-  const drop = useDropHandler(orderedIds, items, setOrderedIds);
+  const drop = useDropHandler(orderedIds, items, setOrderedIds, writeDb);
   return { items: orderedItems, drop } as const;
 };
 
@@ -31,7 +33,12 @@ const useOrderedIds = (items: PackItem[]): OrderedIdsState => {
   return [orderedIds, setOrderedIds];
 };
 
-const useDropHandler = (orderedIds: string[], items: PackItem[], setOrderedIds: OrderedIdsState[1]): DropHandler =>
+const useDropHandler = (
+  orderedIds: string[],
+  items: PackItem[],
+  setOrderedIds: OrderedIdsState[1],
+  writeDb: WriteDb
+): DropHandler =>
   useCallback(
     (snapshot, layouts, sectionLayouts, bodyLayouts) => {
       if (!snapshot) return;
@@ -40,9 +47,9 @@ const useDropHandler = (orderedIds: string[], items: PackItem[], setOrderedIds: 
 
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setOrderedIds(preview.ids);
-      persistRanks(preview.ids, items, snapshot.id, preview.targetCategoryId);
+      persistRanks(preview.ids, items, snapshot.id, writeDb, preview.targetCategoryId);
     },
-    [orderedIds, items, setOrderedIds]
+    [orderedIds, items, setOrderedIds, writeDb]
   );
 
 const buildOrderedItems = (orderedIds: string[], items: PackItem[]) =>
@@ -262,7 +269,13 @@ const moveItem = (ids: string[], fromIndex: number, toIndex: number) => {
   return next;
 };
 
-const persistRanks = (orderedIds: string[], items: PackItem[], draggedId: string, targetCategoryId?: string | null) => {
+const persistRanks = (
+  orderedIds: string[],
+  items: PackItem[],
+  draggedId: string,
+  writeDb: WriteDb,
+  targetCategoryId?: string | null
+) => {
   const updates: RankUpdate[] = [];
   orderedIds.forEach((id, index) => {
     // If this is the dragged item, USE targetCategoryId.

@@ -14,12 +14,7 @@ export function ProfileScreen({ componentId }: NavigationComponentProps) {
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <ProfileScreenComponent
-          userId={userId}
-          email={email}
-          onSignOut={signOut}
-          onBack={() => popScreen(componentId)}
-        />
+        <ProfileScreenComponent email={email} onSignOut={signOut} onBack={() => popScreen(componentId)} />
       </AppProvider>
     </SafeAreaView>
   );

@@ -4,7 +4,7 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 
 type HookState = { lists: NamedEntity[]; loading: boolean };
 
-const USERS_COLLECTION = "users";
+const SPACES_COLLECTION = "spaces";
 const PACKING_LISTS_COLLECTION = "packingLists";
 const ORDER_FIELD = "rank";
 const NOOP_UNSUBSCRIBE: Unsubscribe = () => undefined;
@@ -33,30 +33,34 @@ function mapSnapshot(snapshot: QuerySnapshot): NamedEntity[] {
   })) as NamedEntity[];
 }
 
-function createSnapshotHandler(userId: string, setState: (value: HookState) => void) {
+function createSnapshotHandler(spaceId: string, setState: (value: HookState) => void) {
   return (snapshot: QuerySnapshot) => {
     const lists = mapSnapshot(snapshot);
-    logInfo("Loaded packing lists", { userId, count: lists.length });
+    logInfo("Loaded packing lists", { spaceId, count: lists.length });
     setState({ lists, loading: false });
   };
 }
 
-function createErrorHandler(userId: string, setState: (value: HookState) => void) {
+function createErrorHandler(spaceId: string, setState: (value: HookState) => void) {
   return (error: unknown) => {
-    logError("Failed to load packing lists", { userId, error });
+    logError("Failed to load packing lists", { spaceId, error });
     setState(createEmptyState());
   };
 }
 
-function buildQuery(userId: string) {
+function buildQuery(spaceId: string) {
   return query(
-    collection(getFirestore(), USERS_COLLECTION, userId, PACKING_LISTS_COLLECTION),
+    collection(getFirestore(), SPACES_COLLECTION, spaceId, PACKING_LISTS_COLLECTION),
     orderBy(ORDER_FIELD, "desc")
   );
 }
 
-function subscribeToLists(userId: string, setState: (value: HookState) => void) {
-  return onSnapshot(buildQuery(userId), createSnapshotHandler(userId, setState), createErrorHandler(userId, setState));
+function subscribeToLists(spaceId: string, setState: (value: HookState) => void) {
+  return onSnapshot(
+    buildQuery(spaceId),
+    createSnapshotHandler(spaceId, setState),
+    createErrorHandler(spaceId, setState)
+  );
 }
 
 function unsubscribeMissingUser(setState: (value: HookState) => void) {
@@ -65,14 +69,14 @@ function unsubscribeMissingUser(setState: (value: HookState) => void) {
   return NOOP_UNSUBSCRIBE;
 }
 
-function createSubscription(userId: string, setState: (value: HookState) => void) {
-  logInfo("Subscribing to packing lists", { userId });
+function createSubscription(spaceId: string, setState: (value: HookState) => void) {
+  logInfo("Subscribing to packing lists", { spaceId });
   setState(createInitialState());
-  return subscribeToLists(userId, setState) ?? NOOP_UNSUBSCRIBE;
+  return subscribeToLists(spaceId, setState) ?? NOOP_UNSUBSCRIBE;
 }
 
-function manageSubscription(userId: string | null | undefined, setState: (value: HookState) => void) {
-  return userId ? createSubscription(userId, setState) : unsubscribeMissingUser(setState);
+function manageSubscription(spaceId: string | null | undefined, setState: (value: HookState) => void) {
+  return spaceId ? createSubscription(spaceId, setState) : unsubscribeMissingUser(setState);
 }
 
 function buildResult(state: HookState) {
@@ -83,8 +87,8 @@ function buildResult(state: HookState) {
   };
 }
 
-export function usePackingLists(userId: string | null | undefined) {
+export function usePackingLists(spaceId: string | null | undefined) {
   const [state, setState] = useState<HookState>(() => createInitialState());
-  useEffect(() => manageSubscription(userId, setState), [userId]);
+  useEffect(() => manageSubscription(spaceId, setState), [spaceId]);
   return buildResult(state);
 }

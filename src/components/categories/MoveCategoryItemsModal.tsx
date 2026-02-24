@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, Switch, Text, View } from "react-native";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeColors } from "../home/theme.ts";
@@ -22,6 +22,7 @@ export const MoveCategoryItemsModal = ({
   onClose,
   onMoved,
 }: MoveCategoryItemsModalProps) => {
+  const { writeDb } = useSpace();
   const [items, setItems] = useState<PackItem[]>([]);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export const MoveCategoryItemsModal = ({
         .then((all) => setItems(all.filter((i) => i.category === sourceCategory.id)));
       setSelectedId(null);
     }
-  }, [visible, sourceCategory.id]);
+  }, [visible, sourceCategory.id, writeDb]);
 
   const targets = useMemo(() => {
     const filtered = categories.filter((c) => c.id !== sourceCategory.id);

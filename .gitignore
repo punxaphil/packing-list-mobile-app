@@ -86,3 +86,4 @@ Thumbs.db
 .env.*
 ios/
 android/
+scripts/serviceAccountKey.json

@@ -4,7 +4,7 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 
 type HookState = { items: NamedEntity[]; loading: boolean };
 
-const USERS_COLLECTION = "users";
+const SPACES_COLLECTION = "spaces";
 const ORDER_FIELD = "rank";
 const NOOP_UNSUBSCRIBE: Unsubscribe = () => undefined;
 
@@ -14,26 +14,26 @@ const createEmptyState = (): HookState => ({ items: [], loading: false });
 const mapSnapshot = (snapshot: QuerySnapshot): NamedEntity[] =>
   snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as NamedEntity[];
 
-const buildQuery = (userId: string, collectionName: string) =>
-  query(collection(getFirestore(), USERS_COLLECTION, userId, collectionName), orderBy(ORDER_FIELD, "desc"));
+const buildQuery = (spaceId: string, collectionName: string) =>
+  query(collection(getFirestore(), SPACES_COLLECTION, spaceId, collectionName), orderBy(ORDER_FIELD, "desc"));
 
-const subscribe = (userId: string, collectionName: string, setState: (value: HookState) => void) =>
+const subscribe = (spaceId: string, collectionName: string, setState: (value: HookState) => void) =>
   onSnapshot(
-    buildQuery(userId, collectionName),
+    buildQuery(spaceId, collectionName),
     (snapshot) => setState({ items: mapSnapshot(snapshot), loading: false }),
     () => setState(createEmptyState())
   );
 
-const manage = (userId: string | null | undefined, collectionName: string, setState: (s: HookState) => void) => {
-  if (!userId) {
+const manage = (spaceId: string | null | undefined, collectionName: string, setState: (s: HookState) => void) => {
+  if (!spaceId) {
     setState(createEmptyState());
     return NOOP_UNSUBSCRIBE;
   }
-  return subscribe(userId, collectionName, setState);
+  return subscribe(spaceId, collectionName, setState);
 };
 
-export const useNamedEntities = (userId: string | null | undefined, collectionName: string) => {
+export const useNamedEntities = (spaceId: string | null | undefined, collectionName: string) => {
   const [state, setState] = useState<HookState>(createInitialState);
-  useEffect(() => manage(userId, collectionName, setState), [userId, collectionName]);
+  useEffect(() => manage(spaceId, collectionName, setState), [spaceId, collectionName]);
   return state;
 };

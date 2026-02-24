@@ -6,7 +6,7 @@ type CountEntry = { total: number; packed: number };
 export type PackItemCountRecord = Record<string, CountEntry>;
 type CountState = { counts: PackItemCountRecord; loading: boolean };
 
-const USERS_COLLECTION = "users";
+const SPACES_COLLECTION = "spaces";
 const PACK_ITEMS_COLLECTION = "packItems";
 const createInitialState = (): CountState => ({ counts: {}, loading: true });
 const createEmptyState = (): CountState => ({ counts: {}, loading: false });
@@ -24,19 +24,19 @@ const handleSnapshot = (setState: (value: CountState) => void) => (snapshot: Que
   setState({ counts: sumCounts(mapSnapshot(snapshot)), loading: false });
 };
 const handleError = (setState: (value: CountState) => void) => () => setState(createEmptyState());
-const buildQuery = (userId: string) => collection(getFirestore(), USERS_COLLECTION, userId, PACK_ITEMS_COLLECTION);
-const subscribeToCounts = (userId: string, setState: (value: CountState) => void) =>
-  onSnapshot(buildQuery(userId), handleSnapshot(setState), handleError(setState));
-const manageSubscription = (userId: string | null | undefined, setState: (value: CountState) => void) => {
-  if (!userId) {
+const buildQuery = (spaceId: string) => collection(getFirestore(), SPACES_COLLECTION, spaceId, PACK_ITEMS_COLLECTION);
+const subscribeToCounts = (spaceId: string, setState: (value: CountState) => void) =>
+  onSnapshot(buildQuery(spaceId), handleSnapshot(setState), handleError(setState));
+const manageSubscription = (spaceId: string | null | undefined, setState: (value: CountState) => void) => {
+  if (!spaceId) {
     setState(createEmptyState());
     return undefined;
   }
   setState(createInitialState());
-  return subscribeToCounts(userId, setState);
+  return subscribeToCounts(spaceId, setState);
 };
-export const usePackItemCounts = (userId: string | null | undefined) => {
+export const usePackItemCounts = (spaceId: string | null | undefined) => {
   const [state, setState] = useState<CountState>(() => createInitialState());
-  useEffect(() => manageSubscription(userId, setState), [userId]);
+  useEffect(() => manageSubscription(spaceId, setState), [spaceId]);
   return state;
 };

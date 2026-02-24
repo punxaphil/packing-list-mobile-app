@@ -47,4 +47,5 @@ export type ItemsSectionProps = {
   lists: NamedEntity[];
   email: string;
   onProfile: () => void;
+  onManageSpace: () => void;
 };

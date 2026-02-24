@@ -1,4 +1,3 @@
-import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 export const UNCATEGORIZED: NamedEntity = {
@@ -20,8 +19,4 @@ function sortByRank(a?: NamedEntity, b?: NamedEntity) {
 
 export function sortEntities(entities: NamedEntity[]) {
   entities.sort(sortByRank);
-}
-
-export function getProfileImage(images: Image[]) {
-  return images.find((image) => image.type === "profile");
 }

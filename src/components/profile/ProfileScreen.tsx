@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
-import { useImages } from "~/hooks/useImages.ts";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
-import { getProfileImage } from "~/services/utils.ts";
-import { Image } from "~/types/Image.ts";
+import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
 type ProfileScreenProps = {
   email: string;
-  userId: string;
   onSignOut: () => void;
   onBack: () => void;
 };
@@ -70,23 +67,23 @@ const RemoveButton = ({ onPress }: { onPress: () => void }) => (
   </Pressable>
 );
 
-export const ProfileScreen = ({ email, userId, onSignOut, onBack }: ProfileScreenProps) => {
-  const { images } = useImages(userId);
-  const profileImage = getProfileImage(images);
-  const handlers = useImageHandlers(profileImage);
+export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) => {
+  const { profile } = useSpace();
+  const imageUrl = profile?.imageUrl;
+  const handlers = useImageHandlers(profile?.id);
   return (
     <View style={styles.container}>
       <Header onBack={onBack} />
       <View style={styles.content}>
-        <Avatar email={email} imageUrl={profileImage?.url} onPress={handlers.pick} />
+        <Avatar email={email} imageUrl={imageUrl} onPress={handlers.pick} />
         <Text style={styles.email}>{email}</Text>
         <View style={styles.photoActions}>
           <PhotoButton
-            label={profileImage ? COPY.changePhoto : COPY.addPhoto}
+            label={imageUrl ? COPY.changePhoto : COPY.addPhoto}
             loading={handlers.loading}
             onPress={handlers.pick}
           />
-          {profileImage && <RemoveButton onPress={handlers.remove} />}
+          {imageUrl && <RemoveButton onPress={handlers.remove} />}
         </View>
         <SignOutButton email={email} onSignOut={onSignOut} />
       </View>
@@ -94,24 +91,22 @@ export const ProfileScreen = ({ email, userId, onSignOut, onBack }: ProfileScree
   );
 };
 
-const useImageHandlers = (profileImage: Image | undefined) => {
+const useImageHandlers = (userId: string | undefined) => {
   const [loading, setLoading] = useState(false);
   const pick = async () => {
+    if (!userId) return;
     setLoading(true);
     try {
       const url = await pickAndResizeImage();
       if (!url) return;
-      if (profileImage) {
-        await writeDb.updateImage(profileImage.id, url);
-      } else {
-        await writeDb.addImage("profile", "", url);
-      }
+      await updateProfileImageUrl(userId, url);
     } finally {
       setLoading(false);
     }
   };
   const remove = async () => {
-    if (profileImage) await writeDb.deleteImage(profileImage.id);
+    if (!userId) return;
+    await updateProfileImageUrl(userId, null);
   };
   return { pick, remove, loading };
 };

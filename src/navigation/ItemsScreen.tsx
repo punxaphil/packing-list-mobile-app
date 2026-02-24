@@ -10,14 +10,14 @@ import { useMembers } from "~/hooks/useMembers";
 import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile } from "./navigation";
+import { pushProfile, pushSpaceManagement } from "./navigation";
 
 function ItemsContent({ componentId }: { componentId: string }) {
-  const { userId, email, lists, hasLists, listsLoading, selection } = useApp();
-  const categoriesState = useCategories(userId);
-  const membersState = useMembers(userId);
-  const imagesState = useImages(userId);
-  const itemsState = usePackingItems(userId, selection.selectedId);
+  const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
+  const categoriesState = useCategories(spaceId);
+  const membersState = useMembers(spaceId);
+  const imagesState = useImages(spaceId);
+  const itemsState = usePackingItems(spaceId, selection.selectedId);
 
   if (listsLoading) {
     return (
@@ -45,6 +45,7 @@ function ItemsContent({ componentId }: { componentId: string }) {
       lists={lists}
       email={email}
       onProfile={() => pushProfile(componentId)}
+      onManageSpace={() => pushSpaceManagement(componentId)}
     />
   );
 }

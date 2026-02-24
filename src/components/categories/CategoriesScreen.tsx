@@ -3,8 +3,7 @@ import { Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { useImages } from "~/hooks/useImages.ts";
-import { writeDb } from "~/services/database.ts";
-import { getProfileImage } from "~/services/utils.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildCategoryColors } from "../home/listColors.ts";
@@ -20,25 +19,27 @@ import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 
-type CategoriesScreenProps = { userId: string; email: string; onProfile: () => void };
+type CategoriesScreenProps = { email: string; onProfile: () => void; onManageSpace: () => void };
 
-const categoryDb = {
-  add: writeDb.addCategory,
-  update: (c: NamedEntity) => writeDb.updateCategories(c),
-  delete: writeDb.deleteCategory,
-};
-
-const imageDb = {
-  add: writeDb.addImage,
-  update: writeDb.updateImage,
-  delete: writeDb.deleteImage,
-};
-
-export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenProps) => {
-  const { categories } = useCategories(userId);
-  const { images } = useImages(userId);
+export const CategoriesScreen = ({ email, onProfile, onManageSpace }: CategoriesScreenProps) => {
+  const { spaceId, writeDb, profile } = useSpace();
+  const { categories } = useCategories(spaceId);
+  const { images } = useImages(spaceId);
   const { counts: itemCounts, refresh: refreshCounts } = useCategoryItemCounts();
   const [moveCategory, setMoveCategory] = useState<NamedEntity | null>(null);
+
+  const categoryDb = {
+    add: writeDb.addCategory,
+    update: (c: NamedEntity) => writeDb.updateCategories(c),
+    delete: writeDb.deleteCategory,
+  };
+
+  const imageDb = {
+    add: writeDb.addImage,
+    update: writeDb.updateImage,
+    delete: writeDb.deleteImage,
+  };
+
   const actions = useEntityActions(categories, itemCounts, CATEGORY_COPY, categoryDb, setMoveCategory);
   const creation = useCreateEntityDialog(actions.onAdd, categories, CATEGORY_COPY.type);
   const drag = useDragState();
@@ -55,8 +56,9 @@ export const CategoriesScreen = ({ userId, email, onProfile }: CategoriesScreenP
         <HomeHeader
           title={CATEGORY_COPY.header}
           email={email}
-          profileImageUrl={getProfileImage(images)?.url}
+          profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
+          onManageSpace={onManageSpace}
         />
         <CategoryHeader
           onAdd={creation.open}

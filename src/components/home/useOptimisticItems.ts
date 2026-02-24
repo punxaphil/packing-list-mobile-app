@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
 
 type PendingChecked = Record<string, boolean>;
 
 export const useOptimisticItems = (items: PackItem[]) => {
+  const { writeDb } = useSpace();
   const [pendingChecked, setPendingChecked] = useState<PendingChecked>({});
   const pendingRef = useRef(pendingChecked);
   pendingRef.current = pendingChecked;
@@ -33,24 +34,30 @@ export const useOptimisticItems = (items: PackItem[]) => {
     });
   }, [items, pendingChecked]);
 
-  const toggleCategory = useCallback((categoryItems: PackItem[], checked: boolean) => {
-    const pending: PendingChecked = {};
-    for (const item of categoryItems) pending[item.id] = checked;
-    setPendingChecked((prev) => ({ ...prev, ...pending }));
-    const updatedItems = categoryItems.map((item) => ({
-      ...item,
-      checked,
-      members: item.members.map((m) => ({ ...m, checked })),
-    }));
-    void writeDb.updatePackItemsBatched(updatedItems);
-  }, []);
+  const toggleCategory = useCallback(
+    (categoryItems: PackItem[], checked: boolean) => {
+      const pending: PendingChecked = {};
+      for (const item of categoryItems) pending[item.id] = checked;
+      setPendingChecked((prev) => ({ ...prev, ...pending }));
+      const updatedItems = categoryItems.map((item) => ({
+        ...item,
+        checked,
+        members: item.members.map((m) => ({ ...m, checked })),
+      }));
+      void writeDb.updatePackItemsBatched(updatedItems);
+    },
+    [writeDb]
+  );
 
-  const toggleItem = useCallback(async (item: PackItem) => {
-    animateLayout();
-    const newChecked = !item.checked;
-    setPendingChecked((prev) => ({ ...prev, [item.id]: newChecked }));
-    await writeDb.updatePackItem({ ...item, checked: newChecked });
-  }, []);
+  const toggleItem = useCallback(
+    async (item: PackItem) => {
+      animateLayout();
+      const newChecked = !item.checked;
+      setPendingChecked((prev) => ({ ...prev, [item.id]: newChecked }));
+      await writeDb.updatePackItem({ ...item, checked: newChecked });
+    },
+    [writeDb]
+  );
 
   return { optimisticItems, toggleCategory, toggleItem };
 };

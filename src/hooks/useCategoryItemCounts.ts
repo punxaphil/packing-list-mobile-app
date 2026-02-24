@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { writeDb } from "~/services/database.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
 export const useCategoryItemCounts = () => {
+  const { writeDb } = useSpace();
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   const refresh = useCallback(() => {
     writeDb.getPackItemsForAllPackingLists().then((items) => setCounts(computeCounts(items)));
-  }, []);
+  }, [writeDb]);
 
   useEffect(() => {
     refresh();
