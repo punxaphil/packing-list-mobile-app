@@ -2,6 +2,16 @@ import { Platform } from "react-native";
 import { Navigation } from "react-native-navigation";
 import { SCREEN_IDS } from "./screenIds";
 
+export function showLoginRoot() {
+  Navigation.setRoot({
+    root: {
+      component: {
+        name: SCREEN_IDS.LOGIN,
+      },
+    },
+  });
+}
+
 export function showMainTabs(showItems: boolean) {
   const tabs = [];
 

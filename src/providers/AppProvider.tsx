@@ -1,10 +1,13 @@
 import { getAuth } from "firebase/auth";
-import { createContext, PropsWithChildren, useContext } from "react";
+import { createContext, PropsWithChildren, useCallback, useContext } from "react";
 import { PackingListSummary, SelectionState } from "~/components/home/types.ts";
 import { useSelectedList } from "~/components/home/useSelectedList.ts";
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
+import { showLoginRoot } from "~/navigation/navigation.ts";
+import { clearSelectedId } from "~/navigation/selectionState.ts";
+import { clearSpaceState } from "~/navigation/spaceState.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { InviteProvider } from "./InviteProvider.tsx";
 import { SpaceProvider } from "./SpaceProvider.tsx";
@@ -27,8 +30,6 @@ const AppContext = createContext<AppContextValue | null>(null);
 const mergeListCounts = (lists: NamedEntity[], counts: PackItemCountRecord): PackingListSummary[] =>
   lists.map((list) => ({ ...list, itemCount: counts[list.id]?.total ?? 0, packedCount: counts[list.id]?.packed ?? 0 }));
 
-const signOut = () => getAuth().signOut().catch(console.error);
-
 type AppProviderProps = PropsWithChildren<{ userId: string; email: string }>;
 
 function AppContent({ userId, email, children }: AppProviderProps) {
@@ -37,6 +38,19 @@ function AppContent({ userId, email, children }: AppProviderProps) {
   const { counts } = usePackItemCounts(spaceId);
   const lists = mergeListCounts(packingLists, counts);
   const selection = useSelectedList(lists, hasLists);
+  const signOut = useCallback(() => {
+    const run = async () => {
+      showLoginRoot();
+      try {
+        await getAuth().signOut();
+        clearSelectedId();
+        await clearSpaceState();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    run().catch(console.error);
+  }, []);
 
   const value: AppContextValue = { userId, email, spaceId, lists, hasLists, listsLoading, selection, signOut };
 

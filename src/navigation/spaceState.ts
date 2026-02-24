@@ -29,6 +29,12 @@ export function setActiveSpaceId(id: string) {
   notifyListeners();
 }
 
+export async function clearSpaceState() {
+  currentSpaceId = "";
+  await AsyncStorage.removeItem(STORAGE_KEY);
+  notifyListeners();
+}
+
 export function addSpaceListener(listener: Listener) {
   listeners.add(listener);
   return () => listeners.delete(listener);

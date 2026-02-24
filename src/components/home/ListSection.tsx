@@ -113,7 +113,7 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
       accessibilityLabel={HOME_COPY.createList}
       hitSlop={8}
     >
-      <Text style={homeStyles.quickAddLabel}>Create List...</Text>
+      <Text style={homeStyles.quickAddLabel}>Create list...</Text>
     </Pressable>
     <View style={localStyles.spacer} />
     {hasArchived && (
@@ -239,7 +239,15 @@ const useCreateListDialog = (
       void create(trimmed, false);
     }
   }, [value, error, create, close, hasTemplate]);
-  return { visible, value, setValue: onChange, error, open, close, submit } as const;
+  return {
+    visible,
+    value,
+    setValue: onChange,
+    error,
+    open,
+    close,
+    submit,
+  } as const;
 };
 
 const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
@@ -307,9 +315,17 @@ const dragStyles = StyleSheet.create({
 });
 
 const localStyles = StyleSheet.create({
-  headerRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.sm,
+  },
   createLink: { paddingVertical: homeSpacing.xs / 2 },
-  archiveToggle: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
+  archiveToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.xs,
+  },
   archiveToggleText: { fontSize: 12, color: homeColors.muted },
   spacer: { flex: 1 },
   sectionSeparator: { marginBottom: homeSpacing.sm },

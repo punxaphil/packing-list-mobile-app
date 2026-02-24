@@ -1,3 +1,4 @@
+import { getAuth } from "firebase/auth";
 import { collection, getFirestore, onSnapshot, orderBy, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -43,6 +44,13 @@ function createSnapshotHandler(spaceId: string, setState: (value: HookState) => 
 
 function createErrorHandler(spaceId: string, setState: (value: HookState) => void) {
   return (error: unknown) => {
+    const isSignedOut = !getAuth().currentUser;
+    const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
+    const isPermissionDenied = code === "permission-denied";
+    if (isSignedOut && isPermissionDenied) {
+      setState(createEmptyState());
+      return;
+    }
     logError("Failed to load packing lists", { spaceId, error });
     setState(createEmptyState());
   };
