@@ -2,6 +2,7 @@ import { getAuth } from "firebase/auth";
 import { createContext, PropsWithChildren, useCallback, useContext } from "react";
 import { PackingListSummary, SelectionState } from "~/components/home/types.ts";
 import { useSelectedList } from "~/components/home/useSelectedList.ts";
+import { SubscriptionGate } from "~/components/subscription/SubscriptionGate.tsx";
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
@@ -32,13 +33,8 @@ const mergeListCounts = (lists: NamedEntity[], counts: PackItemCountRecord): Pac
 
 type AppProviderProps = PropsWithChildren<{ userId: string; email: string }>;
 
-function AppContent({ userId, email, children }: AppProviderProps) {
-  const spaceId = useActiveSpaceId();
-  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(spaceId);
-  const { counts } = usePackItemCounts(spaceId);
-  const lists = mergeListCounts(packingLists, counts);
-  const selection = useSelectedList(lists, hasLists);
-  const signOut = useCallback(() => {
+const useSignOutAction = () =>
+  useCallback(() => {
     const run = async () => {
       showLoginRoot();
       try {
@@ -52,6 +48,13 @@ function AppContent({ userId, email, children }: AppProviderProps) {
     run().catch(console.error);
   }, []);
 
+function AppContent({ userId, email, children, signOut }: AppProviderProps & { signOut: () => void }) {
+  const spaceId = useActiveSpaceId();
+  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(spaceId);
+  const { counts } = usePackItemCounts(spaceId);
+  const lists = mergeListCounts(packingLists, counts);
+  const selection = useSelectedList(lists, hasLists);
+
   const value: AppContextValue = { userId, email, spaceId, lists, hasLists, listsLoading, selection, signOut };
 
   return (
@@ -62,15 +65,19 @@ function AppContent({ userId, email, children }: AppProviderProps) {
 }
 
 export function AppProvider({ userId, email, children }: AppProviderProps) {
+  const signOut = useSignOutAction();
+
   return (
     <SubscriptionProvider userId={userId} email={email}>
-      <SpaceProvider userId={userId} email={email}>
-        <InviteProvider email={email}>
-          <AppContent userId={userId} email={email}>
-            {children}
-          </AppContent>
-        </InviteProvider>
-      </SpaceProvider>
+      <SubscriptionGate email={email} onSignOut={signOut}>
+        <SpaceProvider userId={userId} email={email}>
+          <InviteProvider email={email}>
+            <AppContent userId={userId} email={email} signOut={signOut}>
+              {children}
+            </AppContent>
+          </InviteProvider>
+        </SpaceProvider>
+      </SubscriptionGate>
     </SubscriptionProvider>
   );
 }
