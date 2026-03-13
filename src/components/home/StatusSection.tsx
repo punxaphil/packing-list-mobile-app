@@ -14,42 +14,71 @@ const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
   { value: "packed", label: "Packed" },
 ];
 
-const getIndex = (status: StatusFilter) => STATUS_OPTIONS.findIndex((o) => o.value === status);
+const getIndex = (status: StatusFilter) =>
+  STATUS_OPTIONS.findIndex((o) => o.value === status);
 
-export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps) => {
+export const StatusSection = ({
+  statusFilter,
+  onSetStatus,
+}: StatusSectionProps) => {
+  const [visualStatus, setVisualStatus] = useState(statusFilter);
   const [containerWidth, setContainerWidth] = useState(0);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const optionWidth = containerWidth / STATUS_OPTIONS.length;
+  const slideAnim = useRef(new Animated.Value(getIndex(statusFilter))).current;
 
   useEffect(() => {
-    if (optionWidth === 0) return;
+    setVisualStatus(statusFilter);
     Animated.spring(slideAnim, {
-      toValue: optionWidth * getIndex(statusFilter),
+      toValue: getIndex(statusFilter),
       useNativeDriver: true,
       speed: 20,
     }).start();
-  }, [statusFilter, optionWidth, slideAnim]);
+  }, [statusFilter, slideAnim]);
 
   const handlePress = (status: StatusFilter) => {
-    onSetStatus(status);
+    Animated.spring(slideAnim, {
+      toValue: getIndex(status),
+      useNativeDriver: true,
+      speed: 20,
+    }).start(() => {
+      setVisualStatus(status);
+    });
+    requestAnimationFrame(() => onSetStatus(status));
   };
 
-  const isActive = statusFilter !== "all";
+  const isActive = visualStatus !== "all";
   const getTextStyle = (value: StatusFilter) =>
-    value === statusFilter ? [styles.toggleText, styles.toggleTextSelected] : styles.toggleText;
+    value === visualStatus
+      ? [styles.toggleText, styles.toggleTextSelected]
+      : styles.toggleText;
+
+  const optionWidth = containerWidth / STATUS_OPTIONS.length;
+  const translateX = slideAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [0, optionWidth, optionWidth * 2],
+  });
 
   return (
     <>
       <Text style={styles.sectionTitle}>Status</Text>
       <View
-        style={[styles.toggleContainer, isActive && styles.toggleContainerActive]}
+        style={[
+          styles.toggleContainer,
+          isActive && styles.toggleContainerActive,
+        ]}
         onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width - 6)}
       >
         <Animated.View
-          style={[styles.toggleSelector, { width: optionWidth, transform: [{ translateX: slideAnim }] }]}
+          style={[
+            styles.toggleSelector,
+            { width: optionWidth, transform: [{ translateX }] },
+          ]}
         />
         {STATUS_OPTIONS.map((opt) => (
-          <Pressable key={opt.value} style={styles.toggleOption} onPress={() => handlePress(opt.value)}>
+          <Pressable
+            key={opt.value}
+            style={styles.toggleOption}
+            onPress={() => handlePress(opt.value)}
+          >
             <Text style={getTextStyle(opt.value)}>{opt.label}</Text>
           </Pressable>
         ))}

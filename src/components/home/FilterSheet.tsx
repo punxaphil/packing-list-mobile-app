@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { LayoutAnimation, Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { FilterRow, MemberSection, sortSelectedFirst } from "./FilterComponents.tsx";
@@ -23,49 +23,32 @@ type FilterSheetProps = {
 const animateReorder = () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
 export const FilterSheet = (props: FilterSheetProps) => {
-  const [uiSelectedCategories, setUiSelectedCategories] = useState<string[]>(props.selectedCategories);
-  const [uiSelectedMembers, setUiSelectedMembers] = useState<string[]>(props.selectedMembers);
-  const [uiStatusFilter, setUiStatusFilter] = useState<StatusFilter>(props.statusFilter);
-  const totalCount = uiSelectedCategories.length + uiSelectedMembers.length + (uiStatusFilter !== "all" ? 1 : 0);
+  const totalCount =
+    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   const scrollRef = useRef<ScrollView>(null);
-  const sortedCategories = sortSelectedFirst(props.categories, uiSelectedCategories);
-  const sortedMembers = sortSelectedFirst(props.members, uiSelectedMembers);
-
-  const defer = (fn: () => void) => setTimeout(fn, 0);
+  const sortedCategories = sortSelectedFirst(props.categories, props.selectedCategories);
+  const sortedMembers = sortSelectedFirst(props.members, props.selectedMembers);
 
   const handleToggleCategory = (id: string) => {
     animateReorder();
-    setUiSelectedCategories((current) => (current.includes(id) ? current.filter((v) => v !== id) : [...current, id]));
-    defer(() => props.onToggleCategory(id));
+    props.onToggleCategory(id);
   };
 
   const handleToggleMember = (id: string) => {
     animateReorder();
-    setUiSelectedMembers((current) => (current.includes(id) ? current.filter((v) => v !== id) : [...current, id]));
-    defer(() => props.onToggleMember(id));
-  };
-
-  const handleSetStatus = (status: StatusFilter) => {
-    setUiStatusFilter(status);
-    defer(() => props.onSetStatus(status));
+    props.onToggleMember(id);
   };
 
   const handleClear = () => {
     animateReorder();
-    setUiSelectedCategories([]);
-    setUiSelectedMembers([]);
-    setUiStatusFilter("all");
-    defer(() => props.onClear());
+    props.onClear();
   };
 
   useEffect(() => {
     if (props.visible) {
-      setUiSelectedCategories(props.selectedCategories);
-      setUiSelectedMembers(props.selectedMembers);
-      setUiStatusFilter(props.statusFilter);
       setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
     }
-  }, [props.visible, props.selectedCategories, props.selectedMembers, props.statusFilter]);
+  }, [props.visible]);
 
   return (
     <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
@@ -79,10 +62,6 @@ export const FilterSheet = (props: FilterSheetProps) => {
             sortedMembers={sortedMembers}
             onToggleCategory={handleToggleCategory}
             onToggleMember={handleToggleMember}
-            selectedCategories={uiSelectedCategories}
-            selectedMembers={uiSelectedMembers}
-            statusFilter={uiStatusFilter}
-            onSetStatus={handleSetStatus}
           />
           <DoneButton onPress={props.onClose} />
         </Pressable>
