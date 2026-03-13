@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { Alert } from "react-native";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserId } from "~/services/firebase.ts";
@@ -74,7 +75,29 @@ export function useSpaceManagement(onBack: () => void) {
     onBack();
   }, [spaceId, onBack, switchToFallbackSpace]);
 
-  return { rename, invite, removeUser, leave, getDeleteError, deleteCurrentSpace, currentEmail, isPersonalSpace };
+  const confirmDelete = useCallback(async () => {
+    const error = await getDeleteError();
+    if (error) {
+      Alert.alert(SPACE_MGMT_COPY.delete, error);
+      return;
+    }
+    Alert.alert(SPACE_MGMT_COPY.delete, SPACE_MGMT_COPY.confirmDelete, [
+      { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
+      { text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: deleteCurrentSpace },
+    ]);
+  }, [getDeleteError, deleteCurrentSpace]);
+
+  return {
+    rename,
+    invite,
+    removeUser,
+    leave,
+    getDeleteError,
+    deleteCurrentSpace,
+    confirmDelete,
+    currentEmail,
+    isPersonalSpace,
+  };
 }
 
 function findUserIdByEmail(members: string[], memberEmails: string[], email: string): string | undefined {
