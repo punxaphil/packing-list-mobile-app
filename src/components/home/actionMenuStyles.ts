@@ -2,12 +2,7 @@ import { StyleSheet } from "react-native";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 export const actionMenuStyles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: homeColors.overlayDark,
-    justifyContent: "center",
-    padding: homeSpacing.lg,
-  },
+  backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: homeSpacing.lg },
   menu: { backgroundColor: homeColors.surface, borderRadius: 12, overflow: "hidden" },
   titleRow: {
     flexDirection: "row",

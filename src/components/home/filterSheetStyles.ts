@@ -4,7 +4,7 @@ import { homeColors, homeRadius, homeSpacing } from "./theme.ts";
 export const filterSheetStyles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: homeColors.overlayMuted,
+    backgroundColor: "rgba(17,24,39,0.4)",
     justifyContent: "center",
     alignItems: "center",
     padding: homeSpacing.lg,
@@ -54,7 +54,7 @@ export const filterSheetStyles = StyleSheet.create({
     backgroundColor: homeColors.primary,
     borderColor: homeColors.primary,
   },
-  checkmark: { color: homeColors.buttonText, fontSize: 14, fontWeight: "700" },
+  checkmark: { color: "#fff", fontSize: 14, fontWeight: "700" },
   toggleContainer: {
     flexDirection: "row",
     backgroundColor: homeColors.border,
@@ -72,7 +72,7 @@ export const filterSheetStyles = StyleSheet.create({
     height: "100%",
     backgroundColor: homeColors.surface,
     borderRadius: 17,
-    shadowColor: homeColors.dropIndicator,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.15,
     shadowRadius: 2,
@@ -102,5 +102,5 @@ export const filterSheetStyles = StyleSheet.create({
     backgroundColor: homeColors.primary,
     borderRadius: homeRadius / 2,
   },
-  doneText: { color: homeColors.buttonText, fontSize: 16, fontWeight: "600" },
+  doneText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });
