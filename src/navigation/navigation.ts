@@ -12,7 +12,7 @@ export function showLoginRoot() {
   });
 }
 
-export function showMainTabs(showItems: boolean) {
+export function showMainTabs(showItems: boolean, currentTabIndex = 0) {
   const tabs = [];
 
   if (showItems) {
@@ -72,7 +72,7 @@ export function showMainTabs(showItems: boolean) {
         children: tabs,
         options: {
           bottomTabs: {
-            currentTabIndex: 0,
+            currentTabIndex,
           },
         },
       },
@@ -108,4 +108,8 @@ export function popScreen(componentId: string) {
 
 export function switchToItemsTab() {
   showMainTabs(true);
+}
+
+export function switchToMembersTab() {
+  showMainTabs(true, 3);
 }

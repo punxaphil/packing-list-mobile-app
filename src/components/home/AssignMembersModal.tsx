@@ -1,6 +1,7 @@
 import Checkbox from "expo-checkbox";
 import { useEffect, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { switchToMembersTab } from "~/navigation/navigation.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -19,6 +20,7 @@ const COPY = {
   save: "Save",
   cancel: "Cancel",
   noMembers: "No members yet",
+  manageMembers: "Manage Members",
 };
 
 export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: AssignMembersModalProps) => {
@@ -49,6 +51,11 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
     onClose();
   };
 
+  const handleManageMembers = () => {
+    onClose();
+    switchToMembersTab();
+  };
+
   if (!item) return null;
 
   return (
@@ -58,6 +65,9 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
           <Text style={styles.title}>{COPY.title}</Text>
           <Text style={styles.subtitle}>{item.name}</Text>
           <MemberList members={members} selected={selected} onToggle={toggle} />
+          <Pressable onPress={handleManageMembers}>
+            <Text style={styles.manageLink}>{COPY.manageMembers}</Text>
+          </Pressable>
           <Actions onCancel={onClose} onSave={handleSave} />
         </Pressable>
       </Pressable>
@@ -131,6 +141,7 @@ const styles = StyleSheet.create({
   },
   memberName: { fontSize: 16, color: homeColors.text },
   empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
+  manageLink: { fontSize: 14, color: homeColors.primary, textAlign: "center", marginBottom: homeSpacing.md },
   actions: { flexDirection: "row", gap: homeSpacing.sm },
   cancelButton: {
     flex: 1,
