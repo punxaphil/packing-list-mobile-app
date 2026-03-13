@@ -13,9 +13,10 @@ type AddItemDialogProps = {
   items: PackItem[];
   onCancel: () => void;
   onSubmit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
+  onBrowseKits: () => void;
 };
 
-export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit }: AddItemDialogProps) => {
+export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit, onBrowseKits }: AddItemDialogProps) => {
   const state = useDialogState(visible);
   const {
     itemName,
@@ -78,6 +79,9 @@ export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit }
               placeholder={COPY.newCategoryPlaceholder}
               style={homeStyles.modalInput}
             />
+            <Pressable onPress={onBrowseKits}>
+              <Text style={STYLES.browseKitsLink}>{COPY.browseKits}</Text>
+            </Pressable>
             <DialogActions onCancel={onCancel} onSubmit={handleSubmit} />
           </Pressable>
         </Animated.View>
@@ -200,6 +204,7 @@ const COPY = {
   newCategory: "Or create new category",
   newCategoryPlaceholder: "New category name",
   duplicateError: "An item with this name already exists in this category",
+  browseKits: "Browse Packing Kits",
 };
 const STYLES = {
   dropdownContainer: { marginBottom: 12, zIndex: 10 },
@@ -233,4 +238,5 @@ const STYLES = {
   dropdownItemText: { fontSize: 16, color: "#111827" },
   dropdownItemSelected: { fontWeight: "600" as const, color: "#2563eb" },
   pickerDisabled: { opacity: 0.5 },
+  browseKitsLink: { fontSize: 14, color: "#2563eb", textAlign: "center" as const },
 };

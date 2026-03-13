@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
@@ -21,6 +22,7 @@ import {
   useToggleMemberPacked,
 } from "./itemHandlers.ts";
 import { getNextCategoryRank, getNextItemRank } from "./itemsSectionHelpers.ts";
+import { KitPickerModal } from "./KitPickerModal.tsx";
 import { animateLayout } from "./layoutAnimation.ts";
 import { HOME_COPY } from "./styles.ts";
 import { ItemsSectionProps } from "./types.ts";
@@ -108,6 +110,11 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         onClear={filterDialog.onClear}
         onClose={filterDialog.close}
       />
+      <KitPickerModal
+        visible={addItemDialog.kitPickerVisible}
+        onClose={addItemDialog.closeKitPicker}
+        onAdd={addItemDialog.addKits}
+      />
     </>
   );
 };
@@ -189,8 +196,14 @@ const useAddItemDialog = (
   listId?: string | null
 ): AddItemDialogState => {
   const [visible, setVisible] = useState(false);
+  const [kitPickerVisible, setKitPickerVisible] = useState(false);
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
+  const onBrowseKits = useCallback(() => {
+    setVisible(false);
+    setKitPickerVisible(true);
+  }, []);
+  const closeKitPicker = useCallback(() => setKitPickerVisible(false), []);
   const submit = useCallback(
     async (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => {
       if (!listId) return close();
@@ -207,5 +220,30 @@ const useAddItemDialog = (
     },
     [items, categories, writeDb, listId, close]
   );
-  return { visible, open, close, submit };
+  const addKits = useCallback(
+    async (kits: PackingKit[]) => {
+      if (!listId) return;
+      animateLayout();
+      const categoryMap = new Map<string, string>();
+      for (const cat of categories) {
+        categoryMap.set(cat.name.toLowerCase(), cat.id);
+      }
+      let currentCategoryRank = getNextCategoryRank(categories);
+      let currentItemRank = getNextItemRank(items);
+      for (const kit of kits) {
+        for (const kitItem of kit.items) {
+          const catKey = kitItem.category.toLowerCase();
+          let categoryId = categoryMap.get(catKey);
+          if (!categoryId) {
+            const newCat = await writeDb.addCategory(kitItem.category, currentCategoryRank++);
+            categoryId = newCat.id;
+            categoryMap.set(catKey, categoryId);
+          }
+          await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank++);
+        }
+      }
+    },
+    [items, categories, writeDb, listId]
+  );
+  return { visible, open, close, submit, onBrowseKits, kitPickerVisible, closeKitPicker, addKits };
 };

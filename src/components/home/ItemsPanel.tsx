@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
@@ -29,6 +30,10 @@ export type AddItemDialogState = {
   open: () => void;
   close: () => void;
   submit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
+  onBrowseKits: () => void;
+  kitPickerVisible: boolean;
+  closeKitPicker: () => void;
+  addKits: (kits: PackingKit[]) => Promise<void>;
 };
 
 export type ListHandlers = {
@@ -106,6 +111,7 @@ const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState }: Items
     items={itemsState.items}
     onCancel={addItemDialog.close}
     onSubmit={addItemDialog.submit}
+    onBrowseKits={addItemDialog.onBrowseKits}
   />
 );
 
@@ -117,6 +123,7 @@ const ItemsListView = ({
   lists,
   selection,
   search,
+  addItemDialog,
   onToggle,
   onRenameItem,
   onDeleteItem,
@@ -160,6 +167,7 @@ const ItemsListView = ({
       onMoveCategory={onMoveCategory}
       onCopyToList={onCopyToList}
       onSortCategoryAlpha={onSortCategoryAlpha}
+      onBrowseKits={addItemDialog.onBrowseKits}
     />
   );
 };
