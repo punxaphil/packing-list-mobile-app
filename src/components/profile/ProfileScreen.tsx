@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
@@ -16,7 +15,6 @@ type ProfileScreenProps = {
 const COPY = {
   title: "Profile",
   signOut: "Sign Out",
-  manageSubscription: "Manage Subscription",
   changePhoto: "Change Photo",
   addPhoto: "Add Photo",
   removePhoto: "Remove",
@@ -71,7 +69,6 @@ const RemoveButton = ({ onPress }: { onPress: () => void }) => (
 
 export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) => {
   const { profile } = useSpace();
-  const { presentCustomerCenter } = useSubscription();
   const imageUrl = profile?.imageUrl;
   const handlers = useImageHandlers(profile?.id);
   return (
@@ -88,9 +85,6 @@ export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) 
           />
           {imageUrl && <RemoveButton onPress={handlers.remove} />}
         </View>
-        <Pressable style={styles.manageButton} onPress={() => void presentCustomerCenter()}>
-          <Text style={styles.manageButtonText}>{COPY.manageSubscription}</Text>
-        </Pressable>
         <SignOutButton email={email} onSignOut={onSignOut} />
       </View>
     </View>
@@ -127,7 +121,11 @@ const Header = ({ onBack }: { onBack: () => void }) => (
   </View>
 );
 
-const { colors, spacing, radius } = { colors: homeColors, spacing: homeSpacing, radius: homeRadius };
+const { colors, spacing, radius } = {
+  colors: homeColors,
+  spacing: homeSpacing,
+  radius: homeRadius,
+};
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
@@ -142,7 +140,12 @@ const styles = StyleSheet.create({
   backText: { color: colors.primary, fontWeight: "600", fontSize: 16 },
   title: { fontSize: 20, fontWeight: "700", color: colors.text },
   placeholder: { minWidth: 60 },
-  content: { flex: 1, alignItems: "center", paddingTop: spacing.lg * 2, gap: spacing.lg },
+  content: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: spacing.lg * 2,
+    gap: spacing.lg,
+  },
   avatar: {
     width: 100,
     height: 100,
@@ -172,22 +175,12 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   removeButtonText: { fontSize: 14, fontWeight: "600", color: colors.muted },
-  manageButton: {
-    marginTop: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: radius,
-    backgroundColor: colors.primary,
-  },
-  manageButtonText: { fontSize: 16, fontWeight: "600", color: colors.buttonText },
   signOutButton: {
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: radius,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: "#e53935",
   },
-  signOutText: { fontSize: 16, fontWeight: "600", color: colors.text },
+  signOutText: { fontSize: 14, fontWeight: "600", color: "#e53935" },
 });
