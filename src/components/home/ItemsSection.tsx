@@ -197,8 +197,10 @@ const useAddItemDialog = (
       animateLayout();
       let categoryId = category?.id ?? UNCATEGORIZED.id;
       if (newCategoryName) {
-        const newCategory = await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories));
-        categoryId = newCategory.id;
+        const existing = categories.find((c) => c.name.toLowerCase() === newCategoryName.trim().toLowerCase());
+        categoryId = existing
+          ? existing.id
+          : (await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories))).id;
       }
       void writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
       close();
