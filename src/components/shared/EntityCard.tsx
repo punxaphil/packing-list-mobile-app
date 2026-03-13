@@ -58,7 +58,6 @@ export const EntityCard = (props: EntityCardProps) => {
     { applyTranslation: false }
   );
   const [menuVisible, setMenuVisible] = useState(false);
-  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const showToast = useToast();
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const handleRename = (name: string) => props.actions.onRename(props.entity, name);
@@ -66,10 +65,6 @@ export const EntityCard = (props: EntityCardProps) => {
   const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const menuItems = [
-    { text: "Delete", style: "destructive" as const, onPress: () => setDeleteConfirmVisible(true) },
-    { text: "Cancel", style: "cancel" as const },
-  ];
-  const deleteConfirmItems = [
     { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.entity) },
     { text: "Cancel", style: "cancel" as const },
   ];
@@ -102,13 +97,6 @@ export const EntityCard = (props: EntityCardProps) => {
         title={props.entity.name}
         items={menuItems}
         onClose={() => setMenuVisible(false)}
-        headerColor={props.color}
-      />
-      <ActionMenu
-        visible={deleteConfirmVisible}
-        title={`Delete "${props.entity.name}"?`}
-        items={deleteConfirmItems}
-        onClose={() => setDeleteConfirmVisible(false)}
         headerColor={props.color}
       />
     </View>
