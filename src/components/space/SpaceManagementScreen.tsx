@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserImagesByEmail } from "~/services/spaceDatabase.ts";
-import { ActionMenu } from "../home/ActionMenu.tsx";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { SpaceMgmtDialogs } from "./SpaceMgmtDialogs.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
@@ -15,10 +14,6 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
   const { activeSpace } = useSpace();
   const mgmt = useSpaceManagement(onBack);
   const [dialogState, setDialogState] = useState<"none" | "rename" | "invite" | "inviteSent">("none");
-  const [removeEmail, setRemoveEmail] = useState<string | null>(null);
-  const [confirmLeaveVisible, setConfirmLeaveVisible] = useState(false);
-  const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>({});
 
   const memberIds = activeSpace?.members;
@@ -27,21 +22,6 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
     if (!memberIds?.length) return;
     void getUserImagesByEmail(memberIds).then(setImagesByEmail);
   }, [memberIds]);
-
-  const onDeletePress = async () => {
-    const error = await mgmt.getDeleteError();
-    if (error) {
-      setDeleteError(error);
-      return;
-    }
-    setConfirmDeleteVisible(true);
-  };
-
-  const removeUser = async () => {
-    if (!removeEmail) return;
-    await mgmt.removeUser(removeEmail);
-    setRemoveEmail(null);
-  };
 
   if (!activeSpace) return null;
 
@@ -52,14 +32,14 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
         <SpaceNameRow name={activeSpace.name} onRename={() => setDialogState("rename")} />
         <UserList
           emails={activeSpace.memberEmails}
-          onRequestRemove={setRemoveEmail}
+          onRemove={mgmt.removeUser}
           currentEmail={mgmt.currentEmail}
           imagesByEmail={imagesByEmail}
         />
         <ActionButtons
           onInvite={() => setDialogState("invite")}
-          onLeave={() => setConfirmLeaveVisible(true)}
-          onDelete={() => void onDeletePress()}
+          onLeave={mgmt.leave}
+          onDelete={mgmt.confirmDelete}
           isPersonal={mgmt.isPersonalSpace}
         />
       </View>
@@ -68,30 +48,6 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
         setDialogState={setDialogState}
         onRename={mgmt.rename}
         onInvite={mgmt.invite}
-      />
-      <ActionMenu
-        visible={confirmLeaveVisible}
-        title={SPACE_MGMT_COPY.confirmLeave}
-        onClose={() => setConfirmLeaveVisible(false)}
-        items={[{ text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: () => void mgmt.leave() }]}
-      />
-      <ActionMenu
-        visible={confirmDeleteVisible}
-        title={SPACE_MGMT_COPY.confirmDelete}
-        onClose={() => setConfirmDeleteVisible(false)}
-        items={[{ text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: () => void mgmt.deleteCurrentSpace() }]}
-      />
-      <ActionMenu
-        visible={Boolean(removeEmail)}
-        title={SPACE_MGMT_COPY.confirmRemove}
-        onClose={() => setRemoveEmail(null)}
-        items={[{ text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: () => void removeUser() }]}
-      />
-      <ActionMenu
-        visible={Boolean(deleteError)}
-        title={deleteError ?? ""}
-        onClose={() => setDeleteError(null)}
-        items={[]}
       />
     </View>
   );

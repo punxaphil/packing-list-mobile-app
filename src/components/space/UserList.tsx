@@ -1,15 +1,15 @@
-import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
 type UserListProps = {
   emails: string[];
   currentEmail: string;
-  onRequestRemove: (email: string) => void;
+  onRemove: (email: string) => void;
   imagesByEmail: Record<string, string>;
 };
 
-export const UserList = ({ emails, currentEmail, onRequestRemove, imagesByEmail }: UserListProps) => (
+export const UserList = ({ emails, currentEmail, onRemove, imagesByEmail }: UserListProps) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>{SPACE_MGMT_COPY.users}</Text>
     {emails.map((email) => (
@@ -18,7 +18,7 @@ export const UserList = ({ emails, currentEmail, onRequestRemove, imagesByEmail 
         email={email}
         isSelf={email.toLowerCase() === currentEmail.toLowerCase()}
         imageUrl={imagesByEmail[email.toLowerCase()]}
-        onRemove={() => onRequestRemove(email)}
+        onRemove={() => confirmRemove(email, onRemove)}
       />
     ))}
   </View>
@@ -46,6 +46,13 @@ const UserRow = ({ email, isSelf, imageUrl, onRemove }: UserRowProps) => (
     )}
   </View>
 );
+
+const confirmRemove = (email: string, onRemove: (email: string) => void) => {
+  Alert.alert(SPACE_MGMT_COPY.confirmRemove, email, [
+    { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
+    { text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: () => onRemove(email) },
+  ]);
+};
 
 const styles = StyleSheet.create({
   section: { gap: homeSpacing.sm },
