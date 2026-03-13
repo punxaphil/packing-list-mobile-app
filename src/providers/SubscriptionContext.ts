@@ -10,8 +10,6 @@ type SubscriptionContextValue = {
   purchase: (pkg: PurchasesPackage) => Promise<void>;
   restore: () => Promise<void>;
   refresh: () => Promise<void>;
-  presentPaywall: () => Promise<void>;
-  presentCustomerCenter: () => Promise<void>;
 };
 
 export const SubscriptionContext = createContext<SubscriptionContextValue>({
@@ -23,8 +21,6 @@ export const SubscriptionContext = createContext<SubscriptionContextValue>({
   purchase: async () => undefined,
   restore: async () => undefined,
   refresh: async () => undefined,
-  presentPaywall: async () => undefined,
-  presentCustomerCenter: async () => undefined,
 });
 
 export const useSubscription = () => useContext(SubscriptionContext);

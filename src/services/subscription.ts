@@ -1,23 +1,29 @@
-import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
+import Purchases, {
+  type CustomerInfo,
+  type PurchasesPackage,
+} from "react-native-purchases";
 
-const REVENUECAT_IOS_KEY = "test_gpzRzjeFyHJYvxukWbXbkxZeKVL";
+const REVENUECAT_IOS_KEY = "appl_MAycwXxDDcWiytfvDCHGUZVkGRR";
 const ENTITLEMENT_ID = "entitlement-1";
-const WHITELISTED_EMAILS = new Set<string>([]);
 const MONTHLY_PACKAGE_ID = "monthly";
 const YEARLY_PACKAGE_ID = "yearly";
 
-export const isWhitelistedUser = (email: string): boolean => WHITELISTED_EMAILS.has(email);
-export const getEntitlementId = () => ENTITLEMENT_ID;
-
 const hasRevenueCatKey = () =>
-  Boolean(REVENUECAT_IOS_KEY) && !REVENUECAT_IOS_KEY.includes("YOUR_REVENUECAT_IOS_API_KEY");
+  Boolean(REVENUECAT_IOS_KEY) &&
+  !REVENUECAT_IOS_KEY.includes("YOUR_REVENUECAT_IOS_API_KEY");
+
+let configuredUserId: string | null = null;
 
 export const configureRevenueCat = async (userId: string) => {
+  if (configuredUserId === userId) return;
   if (!hasRevenueCatKey()) {
-    throw new Error("RevenueCat iOS API key is missing. Set REVENUECAT_IOS_KEY in src/services/subscription.ts");
+    throw new Error(
+      "RevenueCat iOS API key is missing. Set REVENUECAT_IOS_KEY in src/services/subscription.ts",
+    );
   }
   Purchases.configure({ apiKey: REVENUECAT_IOS_KEY });
   await Purchases.logIn(userId);
+  configuredUserId = userId;
 };
 
 export const isActiveSubscription = (info: CustomerInfo): boolean =>
@@ -37,7 +43,9 @@ export const sortPreferredPackages = (packages: PurchasesPackage[]) => {
   return [...packages].sort((a, b) => rank(a) - rank(b));
 };
 
-export const purchasePackage = async (pkg: PurchasesPackage): Promise<boolean> => {
+export const purchasePackage = async (
+  pkg: PurchasesPackage,
+): Promise<boolean> => {
   const result = await Purchases.purchasePackage(pkg);
   return isActiveSubscription(result.customerInfo);
 };

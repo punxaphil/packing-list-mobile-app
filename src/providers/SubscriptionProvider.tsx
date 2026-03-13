@@ -1,24 +1,31 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
-import RevenueCatUI from "react-native-purchases-ui";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import Purchases, {
+  type CustomerInfo,
+  type PurchasesPackage,
+} from "react-native-purchases";
 import {
   configureRevenueCat,
   fetchOfferings,
-  getEntitlementId,
   isActiveSubscription,
-  isWhitelistedUser,
   purchasePackage,
   restorePurchases,
   sortPreferredPackages,
 } from "~/services/subscription.ts";
 import { SubscriptionContext } from "./SubscriptionContext.ts";
 
-type Props = { userId: string; email: string; children: ReactNode };
+type Props = { userId: string; children: ReactNode };
 
-export const SubscriptionProvider = ({ userId, email, children }: Props) => {
-  const whitelisted = isWhitelistedUser(email);
-  const [isSubscribed, setIsSubscribed] = useState(whitelisted);
-  const [loading, setLoading] = useState(!whitelisted);
+export const SubscriptionProvider = ({ userId, children }: Props) => {
+  const initialized = useRef(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesPackage[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -29,27 +36,32 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
   }, []);
 
   const refresh = useCallback(async () => {
-    if (whitelisted) return;
-    const [customerInfo, availablePackages] = await Promise.all([Purchases.getCustomerInfo(), fetchOfferings()]);
+    const [customerInfo, availablePackages] = await Promise.all([
+      Purchases.getCustomerInfo(),
+      fetchOfferings(),
+    ]);
     setOfferings(sortPreferredPackages(availablePackages));
     handleCustomerInfo(customerInfo);
-  }, [handleCustomerInfo, whitelisted]);
+  }, [handleCustomerInfo]);
 
   useEffect(() => {
-    if (whitelisted) return;
+    if (initialized.current) return;
+    initialized.current = true;
 
     configureRevenueCat(userId)
       .then(refresh)
       .catch((e) => {
         setLoading(false);
-        setError(e instanceof Error ? e.message : "Unable to initialize subscriptions");
+        setError(
+          e instanceof Error ? e.message : "Unable to initialize subscriptions",
+        );
       });
 
     Purchases.addCustomerInfoUpdateListener(handleCustomerInfo);
     return () => {
       Purchases.removeCustomerInfoUpdateListener(handleCustomerInfo);
     };
-  }, [userId, handleCustomerInfo, refresh, whitelisted]);
+  }, [userId, handleCustomerInfo, refresh]);
 
   const purchase = useCallback(
     async (pkg: PurchasesPackage) => {
@@ -65,7 +77,7 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
         setProcessing(false);
       }
     },
-    [refresh]
+    [refresh],
   );
 
   const restore = useCallback(async () => {
@@ -82,29 +94,6 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
     }
   }, [refresh]);
 
-  const presentPaywall = useCallback(async () => {
-    setProcessing(true);
-    setError(null);
-    try {
-      await RevenueCatUI.presentPaywallIfNeeded({ requiredEntitlementIdentifier: getEntitlementId() });
-      await refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unable to present paywall");
-    } finally {
-      setProcessing(false);
-    }
-  }, [refresh]);
-
-  const presentCustomerCenter = useCallback(async () => {
-    setError(null);
-    try {
-      await RevenueCatUI.presentCustomerCenter();
-      await refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unable to open customer center");
-    }
-  }, [refresh]);
-
   const value = useMemo(
     () => ({
       isSubscribed,
@@ -115,8 +104,6 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
       purchase,
       restore,
       refresh,
-      presentPaywall,
-      presentCustomerCenter,
     }),
     [
       isSubscribed,
@@ -127,10 +114,12 @@ export const SubscriptionProvider = ({ userId, email, children }: Props) => {
       purchase,
       restore,
       refresh,
-      presentPaywall,
-      presentCustomerCenter,
-    ]
+    ],
   );
 
-  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
 };
