@@ -21,6 +21,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
   const { pendingInvites, acceptInvite, sendInvite } = useInvites();
   const [subDialog, setSubDialog] = useState<SubDialog>("none");
   const [promptValue, setPromptValue] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleManageSpace = (targetSpaceId: string) => {
     switchSpace(targetSpaceId);
@@ -36,18 +37,28 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
 
   const handleCreateSubmit = async () => {
     const trimmed = promptValue.trim();
-    if (!trimmed) return;
-    const space = await createNewSpace(trimmed);
-    switchSpace(space.id);
-    resetAndClose();
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    try {
+      const space = await createNewSpace(trimmed);
+      switchSpace(space.id);
+      resetAndClose();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleInviteSubmit = async () => {
     const trimmed = promptValue.trim();
-    if (!trimmed) return;
-    await sendInvite(trimmed);
-    setPromptValue("");
-    setSubDialog("inviteSent");
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    try {
+      await sendInvite(trimmed);
+      setPromptValue("");
+      setSubDialog("inviteSent");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetAndClose = () => {
@@ -106,6 +117,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         confirmLabel={spaceCopy.createSpaceConfirm}
         value={promptValue}
         placeholder={spaceCopy.createSpacePlaceholder}
+        disabled={submitting}
         onChange={setPromptValue}
         onCancel={resetSubDialog}
         onSubmit={handleCreateSubmit}
@@ -118,6 +130,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         placeholder={spaceCopy.invitePlaceholder}
         autoCapitalize="none"
         keyboardType="email-address"
+        disabled={submitting}
         onChange={setPromptValue}
         onCancel={resetSubDialog}
         onSubmit={handleInviteSubmit}

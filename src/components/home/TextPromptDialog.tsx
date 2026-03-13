@@ -9,6 +9,7 @@ type TextPromptDialogProps = {
   value: string;
   placeholder?: string;
   error?: string | null;
+  disabled?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   keyboardType?: KeyboardTypeOptions;
   onChange: (text: string) => void;
@@ -23,6 +24,7 @@ export const TextPromptDialog = ({
   value,
   placeholder,
   error,
+  disabled,
   autoCapitalize,
   keyboardType,
   onChange,
@@ -40,21 +42,34 @@ export const TextPromptDialog = ({
             <TextInput
               value={value}
               onChangeText={onChange}
-              onSubmitEditing={onSubmit}
+              onSubmitEditing={disabled ? undefined : onSubmit}
               placeholder={placeholder}
               style={inputStyle}
               autoFocus
               autoCapitalize={autoCapitalize}
               keyboardType={keyboardType}
               accessibilityLabel={title}
+              editable={!disabled}
             />
             {error && <Text style={homeStyles.modalError}>{error}</Text>}
             <View style={homeStyles.modalActions}>
-              <Pressable onPress={onCancel} accessibilityRole="button" accessibilityLabel={HOME_COPY.cancel}>
-                <Text style={homeStyles.modalAction}>{HOME_COPY.cancel}</Text>
+              <Pressable
+                onPress={onCancel}
+                disabled={disabled}
+                accessibilityRole="button"
+                accessibilityLabel={HOME_COPY.cancel}
+              >
+                <Text style={[homeStyles.modalAction, disabled && { opacity: 0.5 }]}>{HOME_COPY.cancel}</Text>
               </Pressable>
-              <Pressable onPress={onSubmit} accessibilityRole="button" accessibilityLabel={confirmLabel}>
-                <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary]}>{confirmLabel}</Text>
+              <Pressable
+                onPress={onSubmit}
+                disabled={disabled}
+                accessibilityRole="button"
+                accessibilityLabel={confirmLabel}
+              >
+                <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary, disabled && { opacity: 0.5 }]}>
+                  {confirmLabel}
+                </Text>
               </Pressable>
             </View>
           </Pressable>
