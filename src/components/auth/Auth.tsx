@@ -1,4 +1,5 @@
 import {
+  type AuthError,
   createUserWithEmailAndPassword,
   getAuth,
   signInWithEmailAndPassword,
@@ -8,6 +9,21 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signInWithApple } from "~/services/appleAuth.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+
+const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
+  "auth/invalid-credential": "Incorrect email or password",
+  "auth/user-not-found": "No account found with this email",
+  "auth/wrong-password": "Incorrect password",
+  "auth/email-already-in-use": "An account with this email already exists",
+  "auth/weak-password": "Password must be at least 6 characters",
+  "auth/invalid-email": "Please enter a valid email address",
+  "auth/too-many-requests": "Too many attempts. Please try again later",
+  "auth/account-exists-with-different-credential":
+    "This email is already linked to Apple sign-in. Use that instead",
+};
+
+const friendlyAuthError = (e: unknown, fallback: string): string =>
+  FRIENDLY_AUTH_ERRORS[(e as AuthError)?.code] ?? fallback;
 
 export function useCurrentUser() {
   const [userId, setUserId] = useState("");
@@ -38,7 +54,7 @@ export function Login() {
     try {
       await signInWithApple();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Apple sign-in failed");
+      setError(friendlyAuthError(e, "Apple sign-in failed"));
     }
   };
 
@@ -47,7 +63,7 @@ export function Login() {
     try {
       await signInWithEmailAndPassword(getAuth(), email.trim(), password);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Login failed");
+      setError(friendlyAuthError(e, "Login failed"));
     }
   };
 
@@ -57,7 +73,7 @@ export function Login() {
       const auth = getAuth();
       await createUserWithEmailAndPassword(auth, email.trim(), password);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Registration failed");
+      setError(friendlyAuthError(e, "Registration failed"));
     }
   };
 
