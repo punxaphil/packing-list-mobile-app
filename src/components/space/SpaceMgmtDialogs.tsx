@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
@@ -8,12 +8,17 @@ type DialogState = "none" | "rename" | "invite" | "inviteSent";
 type Props = {
   dialogState: DialogState;
   setDialogState: (state: DialogState) => void;
+  currentName: string;
   onRename: (name: string) => Promise<void>;
   onInvite: (email: string) => Promise<void>;
 };
 
-export const SpaceMgmtDialogs = ({ dialogState, setDialogState, onRename, onInvite }: Props) => {
+export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onRename, onInvite }: Props) => {
   const [promptValue, setPromptValue] = useState("");
+
+  useEffect(() => {
+    if (dialogState === "rename") setPromptValue(currentName);
+  }, [dialogState, currentName]);
 
   const reset = () => {
     setPromptValue("");

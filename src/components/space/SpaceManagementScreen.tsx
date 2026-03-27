@@ -46,6 +46,7 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
       <SpaceMgmtDialogs
         dialogState={dialogState}
         setDialogState={setDialogState}
+        currentName={activeSpace.name}
         onRename={mgmt.rename}
         onInvite={mgmt.invite}
       />
