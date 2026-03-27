@@ -47,7 +47,7 @@ type CategorySectionProps = {
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
-  onAddItem: (category: NamedEntity) => Promise<PackItem>;
+  onAddItem: (category: NamedEntity) => void;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
@@ -97,7 +97,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   const [copyItem, setCopyItem] = useState<PackItem | null>(null);
   const [pendingToggle, setPendingToggle] = useState<boolean | null>(null);
 
-  const onAdd = async () => editing.start((await props.onAddItem(props.section.category)).id);
+  const onAdd = () => props.onAddItem(props.section.category);
   const handleMoveCategory = (category: NamedEntity) => {
     if (moveItem) props.onMoveCategory(moveItem, category.id);
   };

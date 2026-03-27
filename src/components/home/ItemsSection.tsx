@@ -37,26 +37,6 @@ const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   return result.sort((a, b) => b.rank - a.rank);
 };
 
-const getUniqueItemName = (baseName: string, categoryId: string, items: PackItem[]) => {
-  const categoryItems = items.filter((i) => i.category === categoryId);
-  const names = new Set(categoryItems.map((i) => i.name.toLowerCase()));
-  if (!names.has(baseName.toLowerCase())) return baseName;
-  let counter = 2;
-  while (names.has(`${baseName.toLowerCase()} ${counter}`)) counter++;
-  return `${baseName} ${counter}`;
-};
-
-const useItemAdder = (items: PackItem[], writeDb: WriteDb, packingListId?: string | null) =>
-  useCallback(
-    async (category: NamedEntity) => {
-      if (!packingListId) throw new Error("Missing packing list");
-      animateLayout();
-      const name = getUniqueItemName(HOME_COPY.newItem, category.id, items);
-      return await writeDb.addPackItem(name, [], category.id, packingListId, getNextItemRank(items));
-    },
-    [items, writeDb, packingListId]
-  );
-
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { writeDb } = useSpace();
   const list = props.selection.selectedList;
@@ -79,7 +59,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const filteredItemsState = { ...props.itemsState, items: filteredItems, hasItems: filteredItems.length > 0 };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const search = useSearch(filteredItems, categoriesInList);
-  const handlers = useItemsSectionHandlers(filteredProps, toggleItem, toggleCategory);
+  const handlers = useItemsSectionHandlers(toggleItem, toggleCategory);
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, writeDb, list?.id);
   const renameDialog = useRenameDialog(list, props.lists, renameList);
@@ -122,37 +102,29 @@ export const ItemsSection = (props: ItemsSectionProps) => {
 type ToggleItem = (item: PackItem) => Promise<void>;
 type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
-const useItemsSectionHandlers = (
-  props: ItemsSectionProps,
-  toggleItem: ToggleItem,
-  toggleCategory: ToggleCategory
-): ListHandlers => {
-  const { writeDb } = useSpace();
-  return {
-    onToggle: useCallback(
-      (item: PackItem) => {
-        void toggleItem(item);
-      },
-      [toggleItem]
-    ),
-    onRenameItem: useItemRename(),
-    onDeleteItem: useItemDelete(),
-    onAddItem: useItemAdder(props.itemsState.items, writeDb, props.selection.selectedList?.id),
-    onRenameCategory: useCategoryRename(),
-    onToggleCategory: useCallback(
-      (items: PackItem[], checked: boolean) => {
-        void toggleCategory(items, checked);
-      },
-      [toggleCategory]
-    ),
-    onAssignMembers: useAssignMembers(),
-    onToggleMemberPacked: useToggleMemberPacked(),
-    onToggleAllMembers: useToggleAllMembers(),
-    onMoveCategory: useMoveCategory(),
-    onCopyToList: useCopyToList(),
-    onSortCategoryAlpha: useSortCategoryAlpha(),
-  };
-};
+const useItemsSectionHandlers = (toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
+  onToggle: useCallback(
+    (item: PackItem) => {
+      void toggleItem(item);
+    },
+    [toggleItem]
+  ),
+  onRenameItem: useItemRename(),
+  onDeleteItem: useItemDelete(),
+  onRenameCategory: useCategoryRename(),
+  onToggleCategory: useCallback(
+    (items: PackItem[], checked: boolean) => {
+      void toggleCategory(items, checked);
+    },
+    [toggleCategory]
+  ),
+  onAssignMembers: useAssignMembers(),
+  onToggleMemberPacked: useToggleMemberPacked(),
+  onToggleAllMembers: useToggleAllMembers(),
+  onMoveCategory: useMoveCategory(),
+  onCopyToList: useCopyToList(),
+  onSortCategoryAlpha: useSortCategoryAlpha(),
+});
 
 const useRenameDialog = (
   list: NamedEntity | null,
@@ -197,7 +169,11 @@ const useAddItemDialog = (
 ): AddItemDialogState => {
   const [visible, setVisible] = useState(false);
   const [kitPickerVisible, setKitPickerVisible] = useState(false);
-  const open = useCallback(() => setVisible(true), []);
+  const [initialCategory, setInitialCategory] = useState<NamedEntity | undefined>();
+  const open = useCallback((category?: NamedEntity) => {
+    setInitialCategory(category);
+    setVisible(true);
+  }, []);
   const close = useCallback(() => setVisible(false), []);
   const onBrowseKits = useCallback(() => {
     setVisible(false);
@@ -245,5 +221,5 @@ const useAddItemDialog = (
     },
     [items, categories, writeDb, listId]
   );
-  return { visible, open, close, submit, onBrowseKits, kitPickerVisible, closeKitPicker, addKits };
+  return { visible, initialCategory, open, close, submit, onBrowseKits, kitPickerVisible, closeKitPicker, addKits };
 };

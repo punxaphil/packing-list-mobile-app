@@ -33,7 +33,7 @@ type ItemsListProps = {
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
-  onAddItem: (category: NamedEntity) => Promise<PackItem>;
+  onOpenAddDialog: (category: NamedEntity) => void;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
@@ -89,7 +89,7 @@ export const ItemsList = (props: ItemsListProps) => {
             onToggle={props.onToggle}
             onRenameItem={props.onRenameItem}
             onDeleteItem={props.onDeleteItem}
-            onAddItem={props.onAddItem}
+            onAddItem={props.onOpenAddDialog}
             onRenameCategory={props.onRenameCategory}
             onToggleCategory={props.onToggleCategory}
             onAssignMembers={props.onAssignMembers}

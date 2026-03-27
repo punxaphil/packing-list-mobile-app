@@ -145,7 +145,7 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
   <View style={styles.row}>
     <Pressable
       style={homeStyles.quickAdd}
-      onPress={addDialog.open}
+      onPress={() => addDialog.open()}
       accessibilityRole="button"
       accessibilityLabel={HOME_COPY.addItemQuick}
       hitSlop={8}

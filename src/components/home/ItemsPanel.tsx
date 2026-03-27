@@ -27,7 +27,8 @@ export type TextDialogState = {
 
 export type AddItemDialogState = {
   visible: boolean;
-  open: () => void;
+  initialCategory?: NamedEntity;
+  open: (initialCategory?: NamedEntity) => void;
   close: () => void;
   submit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
   onBrowseKits: () => void;
@@ -40,7 +41,6 @@ export type ListHandlers = {
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
-  onAddItem: (category: NamedEntity) => Promise<PackItem>;
   onRenameCategory: (category: NamedEntity, name: string) => void;
   onToggleCategory: (items: PackItem[], checked: boolean) => void;
   onAssignMembers: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
@@ -107,6 +107,7 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
 const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState }: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
+    initialCategory={addItemDialog.initialCategory}
     categories={categoriesState.categories}
     items={itemsState.items}
     onCancel={addItemDialog.close}
@@ -127,7 +128,6 @@ const ItemsListView = ({
   onToggle,
   onRenameItem,
   onDeleteItem,
-  onAddItem,
   onRenameCategory,
   onToggleCategory,
   onAssignMembers,
@@ -158,7 +158,7 @@ const ItemsListView = ({
       onToggle={onToggle}
       onRenameItem={onRenameItem}
       onDeleteItem={onDeleteItem}
-      onAddItem={onAddItem}
+      onOpenAddDialog={addItemDialog.open}
       onRenameCategory={onRenameCategory}
       onToggleCategory={onToggleCategory}
       onAssignMembers={onAssignMembers}

@@ -47,22 +47,25 @@
 - category image should show left of category name in items list
 - clicking upload image, there's a delay before image picker shows. Consider showing some feedback.
 - show user image (if exists) instead of initial letter in top right corner
+  a space should be renameable
+  it should be possible to see who has access to a space
+  it should be possible to remove other member from space
+  when I change space my avatar image is removed, it should remain the same
+  it should be possible to move a list to another space
 
 # todo
-a space should be renameable
-it should be possible to leave a space (remove myself as member)
-it should be possible to see who has access to a space
-it should be possible to remove other member from space
-when I change space my avatar image is removed, it should remain the same
-it should be possible to move a list to another space
+
+add item to category
+rename space should have current name showing
+remove space
 
 scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
+
 - when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
 - also, it seems I cannot leave a space?
 
-
-
 # Maybe later
+
 - ipad layout/landscape mode
 - Assign color to entities
 - Copy change to template

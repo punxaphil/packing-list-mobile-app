@@ -9,6 +9,7 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type AddItemDialogProps = {
   visible: boolean;
+  initialCategory?: NamedEntity;
   categories: NamedEntity[];
   items: PackItem[];
   onCancel: () => void;
@@ -16,8 +17,16 @@ type AddItemDialogProps = {
   onBrowseKits: () => void;
 };
 
-export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit, onBrowseKits }: AddItemDialogProps) => {
-  const state = useDialogState(visible);
+export const AddItemDialog = ({
+  visible,
+  initialCategory,
+  categories,
+  items,
+  onCancel,
+  onSubmit,
+  onBrowseKits,
+}: AddItemDialogProps) => {
+  const state = useDialogState(visible, initialCategory);
   const {
     itemName,
     setItemName,
@@ -90,7 +99,7 @@ export const AddItemDialog = ({ visible, categories, items, onCancel, onSubmit, 
   );
 };
 
-const useDialogState = (visible: boolean) => {
+const useDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
   const [itemName, setItemName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -98,11 +107,11 @@ const useDialogState = (visible: boolean) => {
   useEffect(() => {
     if (visible) {
       setItemName("");
-      setSelectedCategory(UNCATEGORIZED);
+      setSelectedCategory(initialCategory ?? UNCATEGORIZED);
       setNewCategoryName("");
       setError(null);
     }
-  }, [visible]);
+  }, [visible, initialCategory]);
   return {
     itemName,
     setItemName,
