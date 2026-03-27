@@ -145,6 +145,7 @@ const ItemsListView = ({
     <ItemsList
       loading={categoriesState.loading || itemsState.loading}
       hasItems={itemsState.hasItems}
+      filteredEmpty={itemsState.filteredEmpty === true}
       items={itemsState.items}
       categories={categoriesState.categories}
       members={membersState.members}

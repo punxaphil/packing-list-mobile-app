@@ -21,6 +21,7 @@ import type { SearchState } from "./useSearch.ts";
 type ItemsListProps = {
   loading: boolean;
   hasItems: boolean;
+  filteredEmpty: boolean;
   items: PackItem[];
   categories: NamedEntity[];
   members: NamedEntity[];
@@ -72,6 +73,7 @@ export const ItemsList = (props: ItemsListProps) => {
     >
       <View style={homeStyles.list}>
         {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} onAddKit={props.onAddKit} />}
+        {props.filteredEmpty && <FilteredEmpty />}
         {sections.map((section, i) => (
           <CategorySection
             key={section.category.id || `uncategorized-${i}`}
@@ -163,12 +165,20 @@ const EmptyItems = ({
     </View>
   );
 };
+const FilteredEmpty = () => (
+  <View style={homeStyles.empty}>
+    <Text style={homeStyles.emptyText}>{FILTERED_COPY.noMatch}</Text>
+  </View>
+);
+
 const ItemsLoader = () => (
   <View style={homeStyles.loading}>
     <ActivityIndicator size="small" />
     <Text style={homeStyles.loadingText}>{HOME_COPY.itemsLoading}</Text>
   </View>
 );
+
+const FILTERED_COPY = { noMatch: "No items match the current filters." };
 
 const EMPTY_COPY = {
   quickStart: "Quick start with a Packing Kit:",

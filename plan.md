@@ -57,10 +57,10 @@
 - also, it seems I cannot leave a space?
 - empty list - packing kits not clickable
 - rename space should have current name showing
+- what else can we use built in components for? to automatically get liquid glass
 
 # todo
 
-- what else can we use built in components for? to automatically get liquid glass
 - when filtering, it shows no items in list and suggest packs.
   remove space
 
@@ -68,6 +68,7 @@ scrolling down should transform the header to a floating header so that the list
 
 # Maybe later
 
+- Replace topbar with ios native to get liquid glass effect and better performance
 - ipad layout/landscape mode
 - Assign color to entities
 - Copy change to template

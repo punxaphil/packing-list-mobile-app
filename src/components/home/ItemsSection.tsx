@@ -59,7 +59,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const filteredItemsState = {
     ...props.itemsState,
     items: filteredItems,
-    hasItems: filteredItems.length > 0,
+    hasItems: optimisticItems.length > 0,
+    filteredEmpty: optimisticItems.length > 0 && filteredItems.length === 0,
   };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const search = useSearch(filteredItems, categoriesInList);

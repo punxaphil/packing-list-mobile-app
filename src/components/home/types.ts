@@ -20,6 +20,7 @@ export type ItemsState = {
   items: PackItem[];
   loading: boolean;
   hasItems: boolean;
+  filteredEmpty?: boolean;
 };
 
 export type CategoriesState = {
