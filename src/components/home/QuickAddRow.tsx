@@ -7,7 +7,11 @@ import { homeColors, homeSpacing } from "./theme.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
 import type { SearchState } from "./useSearch.ts";
 
-type Props = { addDialog: AddItemDialogState; filterDialog: FilterDialogState; search: SearchState };
+type Props = {
+  addDialog: AddItemDialogState;
+  filterDialog: FilterDialogState;
+  search: SearchState;
+};
 
 export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -19,7 +23,7 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
     () => () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     },
-    []
+    [],
   );
 
   const onToggleSearch = useCallback(() => {
@@ -36,7 +40,7 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => search.onSearchChange(text), 300);
     },
-    [search]
+    [search],
   );
 
   const onClearSearch = useCallback(() => {
@@ -65,7 +69,13 @@ export const QuickAddRow = ({ addDialog, filterDialog, search }: Props) => {
         onClose={onToggleSearch}
       />
     );
-  return <DefaultRow addDialog={addDialog} filterDialog={filterDialog} onSearch={onToggleSearch} />;
+  return (
+    <DefaultRow
+      addDialog={addDialog}
+      filterDialog={filterDialog}
+      onSearch={onToggleSearch}
+    />
+  );
 };
 
 type SearchRowProps = {
@@ -93,7 +103,12 @@ const SearchRow = ({
   return (
     <View style={styles.row}>
       <View style={styles.searchContainer}>
-        <MaterialCommunityIcons name="magnify" size={20} color={homeColors.muted} style={styles.searchIcon} />
+        <MaterialCommunityIcons
+          name="magnify"
+          size={20}
+          color={homeColors.muted}
+          style={styles.searchIcon}
+        />
         <TextInput
           ref={inputRef}
           style={styles.searchInput}
@@ -106,7 +121,9 @@ const SearchRow = ({
           blurOnSubmit={false}
           onSubmitEditing={onSubmitSearch}
         />
-        {hasText && searchSettled && !hasMatches && <Text style={styles.noMatch}>No matches</Text>}
+        {hasText && searchSettled && !hasMatches && (
+          <Text style={styles.noMatch}>No matches</Text>
+        )}
         {hasMatches && (
           <Text style={styles.matchCount}>
             {search.currentIndex + 1}/{search.totalMatches}
@@ -117,29 +134,55 @@ const SearchRow = ({
         )}
         {hasText && (
           <Pressable onPress={onClearSearch} hitSlop={8}>
-            <MaterialCommunityIcons name="close-circle" size={18} color={homeColors.muted} />
+            <MaterialCommunityIcons
+              name="close-circle"
+              size={18}
+              color={homeColors.muted}
+            />
           </Pressable>
         )}
       </View>
       <Pressable style={styles.filterButton} onPress={onClose} hitSlop={8}>
-        <MaterialCommunityIcons name="close" size={20} color={homeColors.muted} />
+        <MaterialCommunityIcons
+          name="close"
+          size={20}
+          color={homeColors.muted}
+        />
       </Pressable>
     </View>
   );
 };
 
-const NavButtons = ({ onPrev, onNext }: { onPrev: () => void; onNext: () => void }) => (
+const NavButtons = ({
+  onPrev,
+  onNext,
+}: {
+  onPrev: () => void;
+  onNext: () => void;
+}) => (
   <>
     <Pressable onPress={onPrev} hitSlop={8} style={styles.navButton}>
-      <MaterialCommunityIcons name="chevron-up" size={22} color={homeColors.text} />
+      <MaterialCommunityIcons
+        name="chevron-up"
+        size={22}
+        color={homeColors.text}
+      />
     </Pressable>
     <Pressable onPress={onNext} hitSlop={8} style={styles.navButton}>
-      <MaterialCommunityIcons name="chevron-down" size={22} color={homeColors.text} />
+      <MaterialCommunityIcons
+        name="chevron-down"
+        size={22}
+        color={homeColors.text}
+      />
     </Pressable>
   </>
 );
 
-type DefaultRowProps = { addDialog: AddItemDialogState; filterDialog: FilterDialogState; onSearch: () => void };
+type DefaultRowProps = {
+  addDialog: AddItemDialogState;
+  filterDialog: FilterDialogState;
+  onSearch: () => void;
+};
 
 const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
   <View style={styles.row}>
@@ -154,13 +197,23 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
     </Pressable>
     <View style={styles.iconRow}>
       <Pressable style={styles.filterButton} onPress={onSearch} hitSlop={8}>
-        <MaterialCommunityIcons name="magnify" size={20} color={homeColors.muted} />
+        <MaterialCommunityIcons
+          name="magnify"
+          size={20}
+          color={homeColors.muted}
+        />
       </Pressable>
-      <Pressable style={styles.filterButton} onPress={filterDialog.open} hitSlop={8}>
+      <Pressable
+        style={styles.filterButton}
+        onPress={filterDialog.open}
+        hitSlop={8}
+      >
         <MaterialCommunityIcons
           name="filter-variant"
           size={20}
-          color={filterDialog.hasActiveFilter ? homeColors.primary : homeColors.muted}
+          color={
+            filterDialog.hasActiveFilter ? homeColors.primary : homeColors.muted
+          }
         />
       </Pressable>
     </View>
@@ -168,7 +221,11 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch }: DefaultRowProps) => (
 );
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   iconRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
   filterButton: { padding: homeSpacing.xs },
   searchContainer: {
@@ -181,8 +238,17 @@ const styles = StyleSheet.create({
     marginRight: homeSpacing.sm,
   },
   searchIcon: { marginRight: homeSpacing.xs },
-  searchInput: { flex: 1, fontSize: 14, color: homeColors.text, paddingVertical: homeSpacing.sm },
-  matchCount: { fontSize: 12, color: homeColors.muted, marginRight: homeSpacing.xs },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: homeColors.text,
+    paddingVertical: homeSpacing.sm,
+  },
+  matchCount: {
+    fontSize: 12,
+    color: homeColors.muted,
+    marginRight: homeSpacing.xs,
+  },
   noMatch: { fontSize: 12, color: "#ef4444", marginRight: homeSpacing.xs },
   navButton: { paddingHorizontal: 2 },
 });

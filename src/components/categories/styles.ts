@@ -14,7 +14,11 @@ export const MOVE_COPY = {
 };
 
 export const moveStyles = StyleSheet.create({
-  subtitle: { fontSize: 14, color: homeColors.text, marginBottom: homeSpacing.sm },
+  subtitle: {
+    fontSize: 14,
+    color: homeColors.text,
+    marginBottom: homeSpacing.sm,
+  },
   itemsList: {
     maxHeight: 120,
     borderWidth: 1,
@@ -39,7 +43,16 @@ export const moveStyles = StyleSheet.create({
     borderColor: homeColors.border,
     marginBottom: homeSpacing.xs,
   },
-  categorySelected: { borderColor: homeColors.primary, borderWidth: 2, backgroundColor: homeColors.primaryLight },
+  categorySelected: {
+    borderColor: homeColors.primary,
+    borderWidth: 2,
+    backgroundColor: homeColors.primaryLight,
+  },
   categoryName: { fontSize: 14, color: homeColors.text },
-  empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
+  empty: {
+    fontSize: 14,
+    color: homeColors.muted,
+    textAlign: "center",
+    padding: homeSpacing.md,
+  },
 });

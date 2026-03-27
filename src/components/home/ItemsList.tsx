@@ -1,12 +1,22 @@
-import { useEffect } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { PACKING_KITS } from "~/data/packingKits.ts";
+import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
+import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
+import {
+  FadeScrollView,
+  FadeScrollViewRef,
+} from "../shared/FadeScrollView.tsx";
 import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
@@ -43,12 +53,15 @@ type ItemsListProps = {
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
   onBrowseKits: () => void;
+  onAddKit: (kits: PackingKit[]) => Promise<void>;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
-  const sections = buildSections(ordering.items, props.categories).filter((s) => s.items.length);
+  const sections = buildSections(ordering.items, props.categories).filter(
+    (s) => s.items.length,
+  );
   const colors = buildCategoryColors(sections.map((s) => s.category));
   const itemCategoryMap = buildItemCategoryMap(props.items);
 
@@ -57,8 +70,20 @@ export const ItemsList = (props: ItemsListProps) => {
     if (!currentMatchId) return;
     const categoryId = itemCategoryMap[currentMatchId];
     if (categoryId === undefined) return;
-    scrollToMatch(currentMatchId, categoryId, drag.layouts, drag.sectionLayouts, drag.bodyLayouts);
-  }, [props.search, itemCategoryMap, drag.layouts, drag.sectionLayouts, drag.bodyLayouts]);
+    scrollToMatch(
+      currentMatchId,
+      categoryId,
+      drag.layouts,
+      drag.sectionLayouts,
+      drag.bodyLayouts,
+    );
+  }, [
+    props.search,
+    itemCategoryMap,
+    drag.layouts,
+    drag.sectionLayouts,
+    drag.bodyLayouts,
+  ]);
 
   if (props.loading) return <ItemsLoader />;
 
@@ -69,7 +94,12 @@ export const ItemsList = (props: ItemsListProps) => {
       scrollEnabled={!drag.snapshot}
     >
       <View style={homeStyles.list}>
-        {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} />}
+        {!props.hasItems && (
+          <EmptyItems
+            onBrowseKits={props.onBrowseKits}
+            onAddKit={props.onAddKit}
+          />
+        )}
         {sections.map((section, i) => (
           <CategorySection
             key={section.category.id || `uncategorized-${i}`}
@@ -111,25 +141,70 @@ const buildItemCategoryMap = (items: PackItem[]): Record<string, string> => {
   return map;
 };
 
-const EmptyItems = ({ onBrowseKits }: { onBrowseKits: () => void }) => (
-  <View style={homeStyles.empty}>
-    <Text style={homeStyles.emptyText}>{HOME_COPY.emptyItems}</Text>
-    <View style={emptyStyles.kitsSection}>
-      <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
-      <View style={emptyStyles.kitsList}>
-        {PACKING_KITS.map((kit) => (
-          <View key={kit.id} style={emptyStyles.kitChip}>
-            <MaterialCommunityIcons name={kit.icon} size={14} color={homeColors.primary} />
-            <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
-          </View>
-        ))}
+const EmptyItems = ({
+  onBrowseKits,
+  onAddKit,
+}: {
+  onBrowseKits: () => void;
+  onAddKit: (kits: PackingKit[]) => Promise<void>;
+}) => {
+  const [pendingKit, setPendingKit] = useState<PackingKit | null>(null);
+  const handleConfirm = useCallback(async () => {
+    if (!pendingKit) return;
+    setPendingKit(null);
+    await onAddKit([pendingKit]);
+  }, [pendingKit, onAddKit]);
+  return (
+    <View style={homeStyles.empty}>
+      <Text style={homeStyles.emptyText}>{HOME_COPY.emptyItems}</Text>
+      <View style={emptyStyles.kitsSection}>
+        <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
+        <View style={emptyStyles.kitsList}>
+          {PACKING_KITS.map((kit) => (
+            <Pressable
+              key={kit.id}
+              style={emptyStyles.kitChip}
+              onPress={() => setPendingKit(kit)}
+            >
+              <MaterialCommunityIcons
+                name={kit.icon}
+                size={18}
+                color={homeColors.primary}
+              />
+              <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <Pressable onPress={onBrowseKits}>
+          <Text style={emptyStyles.browseLink}>{EMPTY_COPY.browseKits}</Text>
+        </Pressable>
       </View>
-      <Pressable onPress={onBrowseKits}>
-        <Text style={emptyStyles.browseLink}>{EMPTY_COPY.browseKits}</Text>
-      </Pressable>
+      <DialogShell
+        visible={!!pendingKit}
+        title={EMPTY_COPY.confirmTitle.replace(
+          "{name}",
+          pendingKit?.name ?? "",
+        )}
+        onClose={() => setPendingKit(null)}
+        actions={
+          <DialogActions
+            cancelLabel={EMPTY_COPY.cancel}
+            confirmLabel={EMPTY_COPY.confirmAdd}
+            onCancel={() => setPendingKit(null)}
+            onConfirm={handleConfirm}
+          />
+        }
+      >
+        <Text style={emptyStyles.confirmText}>
+          {EMPTY_COPY.confirmBody.replace(
+            "{count}",
+            String(pendingKit?.items.length ?? 0),
+          )}
+        </Text>
+      </DialogShell>
     </View>
-  </View>
-);
+  );
+};
 const ItemsLoader = () => (
   <View style={homeStyles.loading}>
     <ActivityIndicator size="small" />
@@ -140,23 +215,42 @@ const ItemsLoader = () => (
 const EMPTY_COPY = {
   quickStart: "Quick start with a Packing Kit:",
   browseKits: "Browse Packing Kits",
+  confirmTitle: "Add {name} items?",
+  confirmBody: "This will add {count} items to your list.",
+  confirmAdd: "Add",
+  cancel: "Cancel",
 };
 
 const emptyStyles = StyleSheet.create({
-  kitsSection: { marginTop: homeSpacing.md, alignItems: "center", gap: homeSpacing.sm },
+  kitsSection: {
+    marginTop: homeSpacing.md,
+    alignItems: "center",
+    gap: homeSpacing.sm,
+  },
   kitsTitle: { fontSize: 14, color: homeColors.muted },
-  kitsList: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: homeSpacing.xs },
+  kitsList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: homeSpacing.xs,
+  },
   kitChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: homeSpacing.sm,
-    paddingVertical: homeSpacing.xs,
-    borderRadius: 16,
+    gap: homeSpacing.xs,
+    paddingHorizontal: homeSpacing.md,
+    paddingVertical: homeSpacing.sm,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: homeColors.border,
     backgroundColor: homeColors.surface,
   },
-  kitChipText: { fontSize: 12, color: homeColors.text },
-  browseLink: { fontSize: 14, fontWeight: "600", color: homeColors.primary, marginTop: homeSpacing.xs },
+  kitChipText: { fontSize: 14, color: homeColors.text },
+  browseLink: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: homeColors.primary,
+    marginTop: homeSpacing.xs,
+  },
+  confirmText: { fontSize: 14, color: homeColors.muted, textAlign: "center" },
 });

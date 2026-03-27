@@ -53,19 +53,19 @@
   when I change space my avatar image is removed, it should remain the same
   it should be possible to move a list to another space
   add item to category
+- when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
+- also, it seems I cannot leave a space?
 
 # todo
 
-- what else can we use built in components for? to automatically get liquid glass
 - empty list - packing kits not clickable
+- batch remove items in list
+- what else can we use built in components for? to automatically get liquid glass
 
 rename space should have current name showing
 remove space
 
 scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
-
-- when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
-- also, it seems I cannot leave a space?
 
 # Maybe later
 

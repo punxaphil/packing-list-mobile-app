@@ -18,7 +18,8 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    if (visible) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
+    if (visible)
+      setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
   }, [visible]);
 
   const handleSelect = (category: NamedEntity) => {
@@ -34,20 +35,30 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
     >
       <ScrollView ref={scrollRef} style={STYLES.list}>
         {allCategories.map((category) => (
-          <CategoryOption key={getCategoryKey(category)} category={category} onSelect={handleSelect} />
+          <CategoryOption
+            key={getCategoryKey(category)}
+            category={category}
+            onSelect={handleSelect}
+          />
         ))}
       </ScrollView>
     </DialogShell>
   );
 };
 
-const buildCategoryList = (categories: NamedEntity[], currentCategoryId: string) => {
+const buildCategoryList = (
+  categories: NamedEntity[],
+  currentCategoryId: string,
+) => {
   const filtered = categories.filter((c) => c.id !== currentCategoryId);
   const uncategorized = currentCategoryId !== "" ? [UNCATEGORIZED] : [];
   return [...uncategorized, ...filtered].sort((a, b) => b.rank - a.rank);
 };
 
-type CategoryOptionProps = { category: NamedEntity; onSelect: (c: NamedEntity) => void };
+type CategoryOptionProps = {
+  category: NamedEntity;
+  onSelect: (c: NamedEntity) => void;
+};
 
 const CategoryOption = ({ category, onSelect }: CategoryOptionProps) => (
   <Pressable style={STYLES.option} onPress={() => onSelect(category)}>
@@ -59,6 +70,11 @@ const COPY = { title: "Change Category", cancel: "Cancel" };
 
 const STYLES = {
   list: { maxHeight: 300, marginBottom: 12 },
-  option: { paddingVertical: 14, paddingHorizontal: 4, borderBottomWidth: 1, borderBottomColor: "#f3f4f6" },
+  option: {
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f3f4f6",
+  },
   optionText: { fontSize: 16, color: "#111827" },
 };

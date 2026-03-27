@@ -24,7 +24,13 @@ const COPY = {
   manageMembers: "Manage Members",
 };
 
-export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: AssignMembersModalProps) => {
+export const AssignMembersModal = ({
+  visible,
+  item,
+  members,
+  onClose,
+  onSave,
+}: AssignMembersModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -65,7 +71,12 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
       title={COPY.title}
       onClose={onClose}
       actions={
-        <DialogActions cancelLabel={COPY.cancel} confirmLabel={COPY.save} onCancel={onClose} onConfirm={handleSave} />
+        <DialogActions
+          cancelLabel={COPY.cancel}
+          confirmLabel={COPY.save}
+          onCancel={onClose}
+          onConfirm={handleSave}
+        />
       }
     >
       <Text style={styles.subtitle}>{item.name}</Text>
@@ -77,7 +88,11 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
   );
 };
 
-type MemberListProps = { members: NamedEntity[]; selected: Set<string>; onToggle: (id: string) => void };
+type MemberListProps = {
+  members: NamedEntity[];
+  selected: Set<string>;
+  onToggle: (id: string) => void;
+};
 
 const MemberList = ({ members, selected, onToggle }: MemberListProps) => (
   <ScrollView style={styles.list}>
@@ -93,17 +108,29 @@ const MemberList = ({ members, selected, onToggle }: MemberListProps) => (
   </ScrollView>
 );
 
-type MemberRowProps = { member: NamedEntity; checked: boolean; onToggle: () => void };
+type MemberRowProps = {
+  member: NamedEntity;
+  checked: boolean;
+  onToggle: () => void;
+};
 
 const MemberRow = ({ member, checked, onToggle }: MemberRowProps) => (
   <Pressable style={styles.row} onPress={onToggle}>
-    <Checkbox value={checked} onValueChange={onToggle} color={checked ? homeColors.primary : undefined} />
+    <Checkbox
+      value={checked}
+      onValueChange={onToggle}
+      color={checked ? homeColors.primary : undefined}
+    />
     <Text style={styles.memberName}>{member.name}</Text>
   </Pressable>
 );
 
 const styles = StyleSheet.create({
-  subtitle: { fontSize: 14, color: homeColors.muted, marginBottom: homeSpacing.md },
+  subtitle: {
+    fontSize: 14,
+    color: homeColors.muted,
+    marginBottom: homeSpacing.md,
+  },
   list: { maxHeight: 300, marginBottom: homeSpacing.md },
   row: {
     flexDirection: "row",
@@ -114,6 +141,16 @@ const styles = StyleSheet.create({
     borderBottomColor: homeColors.border,
   },
   memberName: { fontSize: 16, color: homeColors.text },
-  empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
-  manageLink: { fontSize: 14, color: homeColors.primary, textAlign: "center", marginBottom: homeSpacing.md },
+  empty: {
+    fontSize: 14,
+    color: homeColors.muted,
+    textAlign: "center",
+    padding: homeSpacing.md,
+  },
+  manageLink: {
+    fontSize: 14,
+    color: homeColors.primary,
+    textAlign: "center",
+    marginBottom: homeSpacing.md,
+  },
 });

@@ -20,7 +20,11 @@ const COPY = {
   items: "items",
 };
 
-export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps) => {
+export const KitPickerModal = ({
+  visible,
+  onClose,
+  onAdd,
+}: KitPickerModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const toggle = useCallback((id: string) => {
@@ -62,7 +66,12 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
       <Text style={styles.subtitle}>{COPY.subtitle}</Text>
       <ScrollView style={styles.list}>
         {PACKING_KITS.map((kit) => (
-          <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
+          <KitRow
+            key={kit.id}
+            kit={kit}
+            checked={selected.has(kit.id)}
+            onToggle={() => toggle(kit.id)}
+          />
         ))}
       </ScrollView>
     </DialogShell>
@@ -73,8 +82,16 @@ type KitRowProps = { kit: PackingKit; checked: boolean; onToggle: () => void };
 
 const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
   <Pressable style={styles.row} onPress={onToggle}>
-    <Checkbox value={checked} onValueChange={onToggle} color={checked ? homeColors.primary : undefined} />
-    <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primary : homeColors.muted} />
+    <Checkbox
+      value={checked}
+      onValueChange={onToggle}
+      color={checked ? homeColors.primary : undefined}
+    />
+    <MaterialCommunityIcons
+      name={kit.icon}
+      size={22}
+      color={checked ? homeColors.primary : homeColors.muted}
+    />
     <View style={styles.kitInfo}>
       <Text style={styles.kitName}>{kit.name}</Text>
       <Text style={styles.kitCount}>
@@ -85,7 +102,11 @@ const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
 );
 
 const styles = StyleSheet.create({
-  subtitle: { fontSize: 14, color: homeColors.muted, marginBottom: homeSpacing.md },
+  subtitle: {
+    fontSize: 14,
+    color: homeColors.muted,
+    marginBottom: homeSpacing.md,
+  },
   list: { marginBottom: homeSpacing.md },
   row: {
     flexDirection: "row",

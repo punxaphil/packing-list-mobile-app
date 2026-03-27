@@ -17,7 +17,8 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    if (visible) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
+    if (visible)
+      setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
   }, [visible]);
 
   const handleSelect = async (list: PackingListSummary) => {
@@ -44,7 +45,10 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   );
 };
 
-type ListOptionProps = { list: PackingListSummary; onSelect: (l: PackingListSummary) => void };
+type ListOptionProps = {
+  list: PackingListSummary;
+  onSelect: (l: PackingListSummary) => void;
+};
 
 const ListOption = ({ list, onSelect }: ListOptionProps) => {
   const count = list.itemCount ?? 0;
@@ -59,7 +63,12 @@ const ListOption = ({ list, onSelect }: ListOptionProps) => {
   );
 };
 
-const COPY = { title: "Copy to List", cancel: "Cancel", confirmTitle: "Copied", confirmMessage: "Item copied to" };
+const COPY = {
+  title: "Copy to List",
+  cancel: "Cancel",
+  confirmTitle: "Copied",
+  confirmMessage: "Item copied to",
+};
 
 const STYLES = {
   list: { maxHeight: 300, marginBottom: 12 },

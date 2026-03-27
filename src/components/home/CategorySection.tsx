@@ -1,6 +1,13 @@
 import Checkbox from "expo-checkbox";
 import { memo, useEffect, useState } from "react";
-import { Animated, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
+import {
+  Animated,
+  LayoutRectangle,
+  Pressable,
+  Image as RNImage,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
@@ -42,7 +49,7 @@ type CategorySectionProps = {
     snapshot: DragSnapshot,
     layouts: Record<string, LayoutRectangle>,
     sectionLayouts: Record<string, LayoutRectangle>,
-    bodyLayouts: Record<string, LayoutRectangle>
+    bodyLayouts: Record<string, LayoutRectangle>,
   ) => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
@@ -116,12 +123,19 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     }
   }, [allChecked, pendingToggle]);
 
-  const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
+  const categoryImageUrl = props.categoryImages.find(
+    (img) => img.typeId === props.section.category.id,
+  )?.url;
 
   return (
     <View
       style={[homeStyles.category, { backgroundColor: props.color }]}
-      onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
+      onLayout={(e) =>
+        props.drag.recordSectionLayout(
+          props.section.category.id,
+          e.nativeEvent.layout,
+        )
+      }
     >
       <CategoryHeader
         section={props.section}
@@ -143,7 +157,9 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         onOpenCopyToList={setCopyItem}
         checkboxDisabled={props.isTemplateList}
       />
-      {pendingToggle !== null && <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />}
+      {pendingToggle !== null && (
+        <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />
+      )}
       <AssignMembersModal
         visible={!!assignItem}
         item={assignItem}
@@ -169,13 +185,21 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   );
 };
 
-const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionProps): boolean => {
+const areSectionPropsEqual = (
+  prev: CategorySectionProps,
+  next: CategorySectionProps,
+): boolean => {
   if (prev.section.category.id !== next.section.category.id) return false;
   if (prev.section.items.length !== next.section.items.length) return false;
   for (let i = 0; i < prev.section.items.length; i++) {
     const pItem = prev.section.items[i];
     const nItem = next.section.items[i];
-    if (pItem.id !== nItem.id || pItem.checked !== nItem.checked || pItem.name !== nItem.name) return false;
+    if (
+      pItem.id !== nItem.id ||
+      pItem.checked !== nItem.checked ||
+      pItem.name !== nItem.name
+    )
+      return false;
     if (pItem.members.length !== nItem.members.length) return false;
     for (let j = 0; j < pItem.members.length; j++) {
       if (pItem.members[j].checked !== nItem.members[j].checked) return false;
@@ -199,7 +223,8 @@ const useCategoryEditing = (): CategoryEditing => {
   return {
     editingId,
     start: setEditingId,
-    stop: (id: string) => setEditingId((current) => (current === id ? null : current)),
+    stop: (id: string) =>
+      setEditingId((current) => (current === id ? null : current)),
     active: (id: string) => editingId === id,
   };
 };
@@ -233,7 +258,8 @@ const CategoryHeader = ({
 }: CategoryHeaderProps) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const allChecked = section.items.every((item) => item.checked);
-  const indeterminate = !allChecked && section.items.some((item) => item.checked);
+  const indeterminate =
+    !allChecked && section.items.some((item) => item.checked);
   const displayChecked = pendingToggle ?? allChecked;
   const isUncategorized = !section.category.id;
   const headerColor = isUncategorized ? UNCATEGORIZED_HEADER_COLOR : color;
@@ -254,10 +280,15 @@ const CategoryHeader = ({
           disabled={isTemplateList || pendingToggle !== null}
         />
         {indeterminate && pendingToggle === null && (
-          <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
+          <View
+            pointerEvents="none"
+            style={homeStyles.categoryCheckboxIndicator}
+          />
         )}
       </View>
-      {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
+      {imageUrl && (
+        <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />
+      )}
       <EditableText
         value={section.category.name}
         onSubmit={(name) => onRenameCategory(section.category, name)}
@@ -273,7 +304,11 @@ const CategoryHeader = ({
         accessibilityRole="button"
         accessibilityLabel="Category menu"
       >
-        <MaterialCommunityIcons name="dots-vertical" size={20} color={homeColors.muted} />
+        <MaterialCommunityIcons
+          name="dots-vertical"
+          size={20}
+          color={homeColors.muted}
+        />
       </Pressable>
       <ActionMenu
         visible={menuVisible}
@@ -318,13 +353,19 @@ const CategoryItems = (props: CategoryItemsProps) => {
   } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
-  const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
+  const { indicatorTargetId, indicatorBelow } = computeIndicator(
+    items,
+    drag,
+    section.category.id,
+  );
   const showToast = useToast();
   const onDuplicateName = () => showToast(COPY.duplicateItemName);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
-      onLayout={(e) => drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)}
+      onLayout={(e) =>
+        drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)
+      }
     >
       {items.map((item) => (
         <CategoryItemRow
@@ -337,29 +378,52 @@ const CategoryItems = (props: CategoryItemsProps) => {
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
-          validateItemName={(name) => !hasDuplicateName(name, item.category, items, item.id)}
+          validateItemName={(name) =>
+            !hasDuplicateName(name, item.category, items, item.id)
+          }
           onDuplicateName={onDuplicateName}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
-          onDragEnd={() => drag.end((s) => s && onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
+          onDragEnd={() =>
+            drag.end(
+              (s) =>
+                s &&
+                onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts),
+            )
+          }
           onToggle={onToggle}
           onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
           onOpenMoveCategory={() => onOpenMoveCategory(item)}
           onOpenCopyToList={() => onOpenCopyToList(item)}
-          onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
+          onToggleMemberPacked={(memberId) =>
+            onToggleMemberPacked(item, memberId)
+          }
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
       ))}
-      <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
-      <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} animatedOffsetY={drag.animatedOffsetY} />
+      <DropIndicator
+        targetId={indicatorTargetId}
+        layouts={drag.layouts}
+        below={indicatorBelow}
+      />
+      <GhostRow
+        items={items}
+        drag={drag.snapshot}
+        layouts={drag.layouts}
+        animatedOffsetY={drag.animatedOffsetY}
+      />
     </View>
   );
 };
 
-const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragState>, categoryId: string) => {
+const computeIndicator = (
+  items: PackItem[],
+  drag: ReturnType<typeof useDragState>,
+  categoryId: string,
+) => {
   const itemIds = items.map((i) => i.id);
   const dropIndex = computeDropIndex(
     itemIds,
@@ -367,22 +431,34 @@ const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragStat
     drag.layouts,
     drag.sectionLayouts,
     drag.bodyLayouts,
-    categoryId
+    categoryId,
   );
-  if (dropIndex === null) return { indicatorTargetId: null, indicatorBelow: false };
+  if (dropIndex === null)
+    return { indicatorTargetId: null, indicatorBelow: false };
   if (dropIndex === items.length && items.length > 0) {
-    return { indicatorTargetId: items[items.length - 1].id, indicatorBelow: true };
+    return {
+      indicatorTargetId: items[items.length - 1].id,
+      indicatorBelow: true,
+    };
   }
-  return { indicatorTargetId: items[dropIndex]?.id ?? null, indicatorBelow: false };
+  return {
+    indicatorTargetId: items[dropIndex]?.id ?? null,
+    indicatorBelow: false,
+  };
 };
 
-const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps): boolean => {
+const areRowPropsEqual = (
+  prev: CategoryItemRowProps,
+  next: CategoryItemRowProps,
+): boolean => {
   return (
     prev.item.id === next.item.id &&
     prev.item.checked === next.item.checked &&
     prev.item.name === next.item.name &&
     prev.item.members.length === next.item.members.length &&
-    prev.item.members.every((m, i) => m.checked === next.item.members[i]?.checked) &&
+    prev.item.members.every(
+      (m, i) => m.checked === next.item.members[i]?.checked,
+    ) &&
     prev.hidden === next.hidden &&
     prev.hasOtherLists === next.hasOtherLists &&
     prev.checkboxDisabled === next.checkboxDisabled &&
@@ -394,8 +470,14 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
 };
 
 const CategoryItemRow = memo((props: CategoryItemRowProps) => {
-  const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
-  const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
+  const dragHandlers = {
+    onStart: props.onDragStart,
+    onMove: props.onDragMove,
+    onEnd: props.onDragEnd,
+  };
+  const { wrap, dragging } = useDraggableRow(dragHandlers, {
+    applyTranslation: false,
+  });
   const [menuVisible, setMenuVisible] = useState(false);
   const rowStyle = [
     homeStyles.itemContainer,
@@ -407,8 +489,14 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const menuItems = [
     { text: "Edit Members", onPress: props.onOpenAssignMembers },
     { text: "Change Category", onPress: props.onOpenMoveCategory },
-    ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
-    { text: "Delete", style: "destructive" as const, onPress: () => handleDelete(props) },
+    ...(props.hasOtherLists
+      ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }]
+      : []),
+    {
+      text: "Delete",
+      style: "destructive" as const,
+      onPress: () => handleDelete(props),
+    },
     { text: "Cancel", style: "cancel" as const },
   ];
   return (
@@ -416,7 +504,11 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
       <Pressable style={rowStyle}>
         {wrap(<DragHandle />)}
         {hasMembers ? (
-          <MultiCheckbox item={props.item} disabled={props.checkboxDisabled} onToggle={props.onToggleAllMembers} />
+          <MultiCheckbox
+            item={props.item}
+            disabled={props.checkboxDisabled}
+            onToggle={props.onToggleAllMembers}
+          />
         ) : (
           <Checkbox
             value={props.item.checked}
@@ -432,7 +524,10 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             onSubmit={(name) => props.onRenameItem(props.item, name)}
             validate={props.validateItemName}
             onValidationFail={props.onDuplicateName}
-            textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
+            textStyle={[
+              homeStyles.detailLabel,
+              props.item.checked && homeStyles.detailLabelChecked,
+            ]}
             inputStyle={homeStyles.itemInput}
             autoFocus={props.editing.active(props.item.id)}
             onStart={() => props.editing.start(props.item.id)}
@@ -496,12 +591,26 @@ const GhostRow = ({ items, drag, layouts, animatedOffsetY }: GhostRowProps) => {
       style={[
         homeStyles.itemGhost,
         { top, height: layout.height },
-        drag.frozenY == null && { transform: [{ translateY: animatedOffsetY }] },
+        drag.frozenY == null && {
+          transform: [{ translateY: animatedOffsetY }],
+        },
       ]}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 0, height: "100%" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 0,
+          height: "100%",
+        }}
+      >
         <DragHandle />
-        <View style={[homeStyles.checkbox, { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 }]} />
+        <View
+          style={[
+            homeStyles.checkbox,
+            { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 },
+          ]}
+        />
         <Text style={[homeStyles.detailLabel, { flex: 1 }]} numberOfLines={1}>
           {item.name}
         </Text>
@@ -510,7 +619,11 @@ const GhostRow = ({ items, drag, layouts, animatedOffsetY }: GhostRowProps) => {
   );
 };
 
-type DropIndicatorProps = { targetId: string | null; layouts: Record<string, LayoutRectangle>; below: boolean };
+type DropIndicatorProps = {
+  targetId: string | null;
+  layouts: Record<string, LayoutRectangle>;
+  below: boolean;
+};
 
 const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   if (!targetId) return null;
@@ -520,4 +633,6 @@ const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   return <View style={[homeStyles.itemIndicator, { top }]} />;
 };
 
-const COPY = { duplicateItemName: "Item with this name already exists in category" };
+const COPY = {
+  duplicateItemName: "Item with this name already exists in category",
+};
