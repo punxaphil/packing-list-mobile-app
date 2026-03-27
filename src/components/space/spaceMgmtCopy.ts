@@ -18,6 +18,5 @@ export const SPACE_MGMT_COPY = {
   confirmRemove: "Remove this user from the space?",
   confirm: "Confirm",
   cancel: "Cancel",
-  cannotDeleteHasLists: "This space still has packing lists.",
   cannotDeleteHasUsers: "Remove other users first.",
 } as const;

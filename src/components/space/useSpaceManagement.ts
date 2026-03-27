@@ -5,7 +5,6 @@ import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserId } from "~/services/firebase.ts";
 import {
   deleteSpace,
-  getSpaceListCount,
   leaveSpace,
   removeMemberFromSpace,
   removeSpaceFromProfile,
@@ -56,16 +55,12 @@ export function useSpaceManagement(onBack: () => void) {
     onBack();
   }, [spaceId, currentEmail, onBack, switchToFallbackSpace]);
 
-  const getDeleteError = useCallback(async () => {
+  const getDeleteError = useCallback(() => {
     if (!activeSpace) return;
     if (activeSpace.memberEmails.length > 1) {
       return SPACE_MGMT_COPY.cannotDeleteHasUsers;
     }
-    const listCount = await getSpaceListCount(spaceId);
-    if (listCount > 0) {
-      return SPACE_MGMT_COPY.cannotDeleteHasLists;
-    }
-  }, [activeSpace, spaceId]);
+  }, [activeSpace]);
 
   const deleteCurrentSpace = useCallback(async () => {
     const userId = getUserId();
@@ -75,8 +70,8 @@ export function useSpaceManagement(onBack: () => void) {
     onBack();
   }, [spaceId, onBack, switchToFallbackSpace]);
 
-  const confirmDelete = useCallback(async () => {
-    const error = await getDeleteError();
+  const confirmDelete = useCallback(() => {
+    const error = getDeleteError();
     if (error) {
       Alert.alert(SPACE_MGMT_COPY.delete, error);
       return;
@@ -92,8 +87,6 @@ export function useSpaceManagement(onBack: () => void) {
     invite,
     removeUser,
     leave,
-    getDeleteError,
-    deleteCurrentSpace,
     confirmDelete,
     currentEmail,
     isPersonalSpace,

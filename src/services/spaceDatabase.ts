@@ -91,11 +91,6 @@ export async function deleteSpace(spaceId: string) {
   await deleteDoc(doc(firestore, SPACES, spaceId));
 }
 
-export async function getSpaceListCount(spaceId: string): Promise<number> {
-  const snap = await getDocs(collection(firestore, SPACES, spaceId, "packingLists"));
-  return snap.size;
-}
-
 export async function moveListToSpace(sourceSpaceId: string, targetSpaceId: string, listId: string): Promise<void> {
   const userId = getUserId();
   const profile = await getUserProfile(userId);
