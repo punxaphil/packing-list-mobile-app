@@ -1,12 +1,5 @@
 import type { PropsWithChildren } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
@@ -14,15 +7,7 @@ import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 type Props = PropsWithChildren<{ email: string; onSignOut: () => void }>;
 
 export function SubscriptionGate({ email, onSignOut, children }: Props) {
-  const {
-    isSubscribed,
-    loading,
-    processing,
-    offerings,
-    error,
-    purchase,
-    restore,
-  } = useSubscription();
+  const { isSubscribed, loading, processing, offerings, error, purchase, restore } = useSubscription();
 
   if (loading) return <SubscriptionLoadingState />;
   if (isSubscribed) return children;
@@ -31,28 +16,15 @@ export function SubscriptionGate({ email, onSignOut, children }: Props) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Unlock Premium</Text>
-        <Text style={styles.subtitle}>
-          Subscribe with Apple in-app purchases to continue using PackSmarter.
-        </Text>
+        <Text style={styles.subtitle}>Subscribe with Apple in-app purchases to continue using PackSmarter.</Text>
         {offerings.map((pkg) => (
-          <PackageRow
-            key={pkg.identifier}
-            pkg={pkg}
-            onPress={() => void purchase(pkg)}
-            disabled={processing}
-          />
+          <PackageRow key={pkg.identifier} pkg={pkg} onPress={() => void purchase(pkg)} disabled={processing} />
         ))}
         {offerings.length === 0 && (
-          <Text style={styles.info}>
-            No products available yet. Check RevenueCat offerings setup.
-          </Text>
+          <Text style={styles.info}>No products available yet. Check RevenueCat offerings setup.</Text>
         )}
         {error && <Text style={styles.error}>{error}</Text>}
-        <Pressable
-          style={styles.secondaryButton}
-          onPress={() => void restore()}
-          disabled={processing}
-        >
+        <Pressable style={styles.secondaryButton} onPress={() => void restore()} disabled={processing}>
           <Text style={styles.secondaryText}>Restore Purchases</Text>
         </Pressable>
         <Pressable style={styles.ghostButton} onPress={onSignOut}>
@@ -86,11 +58,7 @@ type PackageRowProps = {
 function PackageRow({ pkg, onPress, disabled }: PackageRowProps) {
   const trial = trialLabel(pkg);
   return (
-    <Pressable
-      style={[styles.primaryButton, disabled && styles.disabled]}
-      onPress={onPress}
-      disabled={disabled}
-    >
+    <Pressable style={[styles.primaryButton, disabled && styles.disabled]} onPress={onPress} disabled={disabled}>
       <Text style={styles.primaryTitle}>{pkg.product.title}</Text>
       <Text style={styles.primaryPrice}>{pkg.product.priceString}</Text>
       {trial && <Text style={styles.trialText}>{trial}</Text>}

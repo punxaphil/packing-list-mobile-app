@@ -55,15 +55,13 @@
   add item to category
 - when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
 - also, it seems I cannot leave a space?
+- empty list - packing kits not clickable
 
 # todo
 
-- empty list - packing kits not clickable
-- batch remove items in list
+- rename space should have current name showing
 - what else can we use built in components for? to automatically get liquid glass
-
-rename space should have current name showing
-remove space
+  remove space
 
 scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
 
@@ -75,6 +73,7 @@ scrolling down should transform the header to a floating header so that the list
 - dark mode
 - Delete Checked Items
 - Select Mode
+- batch remove items in list
 - Bulk Move Category
 - Bulk Assign Members
 - Undo System

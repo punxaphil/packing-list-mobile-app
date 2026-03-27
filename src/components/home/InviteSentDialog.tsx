@@ -8,8 +8,6 @@ export const InviteSentDialog = ({ visible, onClose }: Props) => (
     visible={visible}
     title={spaceCopy.inviteSent}
     onClose={onClose}
-    actions={
-      <DialogSingleAction label={spaceCopy.inviteSentOk} onPress={onClose} />
-    }
+    actions={<DialogSingleAction label={spaceCopy.inviteSentOk} onPress={onClose} />}
   />
 );

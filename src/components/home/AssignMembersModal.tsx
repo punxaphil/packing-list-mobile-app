@@ -24,13 +24,7 @@ const COPY = {
   manageMembers: "Manage Members",
 };
 
-export const AssignMembersModal = ({
-  visible,
-  item,
-  members,
-  onClose,
-  onSave,
-}: AssignMembersModalProps) => {
+export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: AssignMembersModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -71,12 +65,7 @@ export const AssignMembersModal = ({
       title={COPY.title}
       onClose={onClose}
       actions={
-        <DialogActions
-          cancelLabel={COPY.cancel}
-          confirmLabel={COPY.save}
-          onCancel={onClose}
-          onConfirm={handleSave}
-        />
+        <DialogActions cancelLabel={COPY.cancel} confirmLabel={COPY.save} onCancel={onClose} onConfirm={handleSave} />
       }
     >
       <Text style={styles.subtitle}>{item.name}</Text>
@@ -116,11 +105,7 @@ type MemberRowProps = {
 
 const MemberRow = ({ member, checked, onToggle }: MemberRowProps) => (
   <Pressable style={styles.row} onPress={onToggle}>
-    <Checkbox
-      value={checked}
-      onValueChange={onToggle}
-      color={checked ? homeColors.primary : undefined}
-    />
+    <Checkbox value={checked} onValueChange={onToggle} color={checked ? homeColors.primary : undefined} />
     <Text style={styles.memberName}>{member.name}</Text>
   </Pressable>
 );

@@ -18,8 +18,7 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    if (visible)
-      setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
+    if (visible) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
   }, [visible]);
 
   const handleSelect = (category: NamedEntity) => {
@@ -35,21 +34,14 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
     >
       <ScrollView ref={scrollRef} style={STYLES.list}>
         {allCategories.map((category) => (
-          <CategoryOption
-            key={getCategoryKey(category)}
-            category={category}
-            onSelect={handleSelect}
-          />
+          <CategoryOption key={getCategoryKey(category)} category={category} onSelect={handleSelect} />
         ))}
       </ScrollView>
     </DialogShell>
   );
 };
 
-const buildCategoryList = (
-  categories: NamedEntity[],
-  currentCategoryId: string,
-) => {
+const buildCategoryList = (categories: NamedEntity[], currentCategoryId: string) => {
   const filtered = categories.filter((c) => c.id !== currentCategoryId);
   const uncategorized = currentCategoryId !== "" ? [UNCATEGORIZED] : [];
   return [...uncategorized, ...filtered].sort((a, b) => b.rank - a.rank);

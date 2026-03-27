@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  Keyboard,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Keyboard, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -21,11 +14,7 @@ type AddItemDialogProps = {
   categories: NamedEntity[];
   items: PackItem[];
   onCancel: () => void;
-  onSubmit: (
-    itemName: string,
-    category: NamedEntity | null,
-    newCategoryName: string | null,
-  ) => void;
+  onSubmit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
   onBrowseKits: () => void;
 };
 
@@ -59,11 +48,9 @@ export const AddItemDialog = ({
     items,
     targetCategoryId,
     setError,
-    onSubmit,
+    onSubmit
   );
-  const inputStyle = error
-    ? [homeStyles.modalInput, homeStyles.modalInputError]
-    : homeStyles.modalInput;
+  const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
   return (
     <DialogShell
       visible={visible}
@@ -118,8 +105,7 @@ export const AddItemDialog = ({
 
 const useDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
   const [itemName, setItemName] = useState("");
-  const [selectedCategory, setSelectedCategory] =
-    useState<NamedEntity>(UNCATEGORIZED);
+  const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
@@ -150,33 +136,17 @@ const useSubmitHandler = (
   items: PackItem[],
   targetCategoryId: string,
   setError: (error: string | null) => void,
-  onSubmit: AddItemDialogProps["onSubmit"],
+  onSubmit: AddItemDialogProps["onSubmit"]
 ) =>
   useCallback(() => {
     const trimmedName = itemName.trim();
     if (!trimmedName) return;
-    if (
-      !hasNewCategory &&
-      hasDuplicateName(trimmedName, targetCategoryId, items)
-    ) {
+    if (!hasNewCategory && hasDuplicateName(trimmedName, targetCategoryId, items)) {
       setError(COPY.duplicateError);
       return;
     }
-    onSubmit(
-      trimmedName,
-      hasNewCategory ? null : selectedCategory,
-      hasNewCategory ? newCategoryName.trim() : null,
-    );
-  }, [
-    itemName,
-    selectedCategory,
-    newCategoryName,
-    hasNewCategory,
-    items,
-    targetCategoryId,
-    setError,
-    onSubmit,
-  ]);
+    onSubmit(trimmedName, hasNewCategory ? null : selectedCategory, hasNewCategory ? newCategoryName.trim() : null);
+  }, [itemName, selectedCategory, newCategoryName, hasNewCategory, items, targetCategoryId, setError, onSubmit]);
 
 const CategoryDropdown = ({
   categories,
@@ -190,10 +160,7 @@ const CategoryDropdown = ({
   disabled: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const allCategories = [
-    UNCATEGORIZED,
-    ...categories.filter((c) => c.id !== UNCATEGORIZED.id),
-  ];
+  const allCategories = [UNCATEGORIZED, ...categories.filter((c) => c.id !== UNCATEGORIZED.id)];
   const toggle = () => {
     if (disabled) return;
     Keyboard.dismiss();
@@ -204,12 +171,7 @@ const CategoryDropdown = ({
     setOpen(false);
   };
   return (
-    <View
-      style={[
-        STYLES.dropdownContainer,
-        disabled ? STYLES.pickerDisabled : null,
-      ]}
-    >
+    <View style={[STYLES.dropdownContainer, disabled ? STYLES.pickerDisabled : null]}>
       <Pressable style={STYLES.dropdownButton} onPress={toggle}>
         <Text style={STYLES.dropdownText}>{selected.name}</Text>
         <Text style={STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
@@ -218,17 +180,11 @@ const CategoryDropdown = ({
         <View style={STYLES.dropdownList}>
           <ScrollView style={STYLES.dropdownScroll} nestedScrollEnabled>
             {allCategories.map((c) => (
-              <Pressable
-                key={getCategoryKey(c)}
-                style={STYLES.dropdownItem}
-                onPress={() => handleSelect(c)}
-              >
+              <Pressable key={getCategoryKey(c)} style={STYLES.dropdownItem} onPress={() => handleSelect(c)}>
                 <Text
                   style={[
                     STYLES.dropdownItemText,
-                    getCategoryKey(c) === getCategoryKey(selected)
-                      ? STYLES.dropdownItemSelected
-                      : null,
+                    getCategoryKey(c) === getCategoryKey(selected) ? STYLES.dropdownItemSelected : null,
                   ]}
                 >
                   {c.name}

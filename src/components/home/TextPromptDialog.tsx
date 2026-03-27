@@ -31,9 +31,7 @@ export const TextPromptDialog = ({
   onCancel,
   onSubmit,
 }: TextPromptDialogProps) => {
-  const inputStyle = error
-    ? [homeStyles.modalInput, homeStyles.modalInputError]
-    : homeStyles.modalInput;
+  const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
   return (
     <DialogShell
       visible={visible}

@@ -45,6 +45,7 @@ type HomeCopy = {
   useTemplateNo: string;
   categoryMenuAddItem: string;
   categoryMenuSortAlpha: string;
+  categoryMenuDeleteItems: string;
   duplicateListName: string;
   withoutMembers: string;
 };
@@ -94,6 +95,7 @@ export const homeCopy: HomeCopy = {
   useTemplateNo: "No, start empty",
   categoryMenuAddItem: "Add Item",
   categoryMenuSortAlpha: "Sort Alphabetically",
+  categoryMenuDeleteItems: "Delete All Items",
   duplicateListName: "A list with this name already exists",
   withoutMembers: "Without members",
 } as const;

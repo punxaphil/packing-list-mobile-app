@@ -17,8 +17,7 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    if (visible)
-      setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
+    if (visible) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
   }, [visible]);
 
   const handleSelect = async (list: PackingListSummary) => {

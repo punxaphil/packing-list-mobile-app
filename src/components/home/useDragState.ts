@@ -15,95 +15,60 @@ export const useDragState = () => {
   const animatedOffsetY = useRef(new Animated.Value(0)).current;
 
   // Sync ref with state synchronously
-  const setSnapshot = useCallback(
-    (value: DragSnapshot | ((prev: DragSnapshot) => DragSnapshot)) => {
-      setSnapshotState((prev) => {
-        const next = typeof value === "function" ? value(prev) : value;
-        snapshotRef.current = next;
-        return next;
-      });
-    },
-    [],
-  );
+  const setSnapshot = useCallback((value: DragSnapshot | ((prev: DragSnapshot) => DragSnapshot)) => {
+    setSnapshotState((prev) => {
+      const next = typeof value === "function" ? value(prev) : value;
+      snapshotRef.current = next;
+      return next;
+    });
+  }, []);
 
   const [layouts, setLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const [sectionLayouts, setSectionLayouts] = useState<
-    Record<string, LayoutRectangle>
-  >({});
-  const [bodyLayouts, setBodyLayouts] = useState<
-    Record<string, LayoutRectangle>
-  >({});
+  const [sectionLayouts, setSectionLayouts] = useState<Record<string, LayoutRectangle>>({});
+  const [bodyLayouts, setBodyLayouts] = useState<Record<string, LayoutRectangle>>({});
 
   const recordLayout = useCallback((id: string, layout: LayoutRectangle) => {
     setLayouts((current) => {
       const previous = current[id];
-      if (
-        previous &&
-        previous.height === layout.height &&
-        previous.y === layout.y
-      )
-        return current;
+      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
       return { ...current, [id]: layout };
     });
   }, []);
 
-  const recordSectionLayout = useCallback(
-    (id: string, layout: LayoutRectangle) => {
-      setSectionLayouts((current) => {
-        const previous = current[id];
-        if (
-          previous &&
-          previous.height === layout.height &&
-          previous.y === layout.y
-        )
-          return current;
-        return { ...current, [id]: layout };
-      });
-    },
-    [],
-  );
+  const recordSectionLayout = useCallback((id: string, layout: LayoutRectangle) => {
+    setSectionLayouts((current) => {
+      const previous = current[id];
+      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
+      return { ...current, [id]: layout };
+    });
+  }, []);
 
-  const recordBodyLayout = useCallback(
-    (id: string, layout: LayoutRectangle) => {
-      setBodyLayouts((current) => {
-        const previous = current[id];
-        if (
-          previous &&
-          previous.height === layout.height &&
-          previous.y === layout.y
-        )
-          return current;
-        return { ...current, [id]: layout };
-      });
-    },
-    [],
-  );
+  const recordBodyLayout = useCallback((id: string, layout: LayoutRectangle) => {
+    setBodyLayouts((current) => {
+      const previous = current[id];
+      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
+      return { ...current, [id]: layout };
+    });
+  }, []);
 
   const start = useCallback(
     (id: string, categoryId: string) => {
       animatedOffsetY.setValue(0);
       setSnapshot({ id, categoryId, offsetY: 0 });
     },
-    [setSnapshot, animatedOffsetY],
+    [setSnapshot, animatedOffsetY]
   );
 
   const move = useCallback(
     (id: string, offset: DragOffset) => {
       animatedOffsetY.setValue(offset.y);
-      setSnapshot((current) =>
-        current && current.id === id
-          ? { ...current, offsetY: offset.y }
-          : current,
-      );
+      setSnapshot((current) => (current && current.id === id ? { ...current, offsetY: offset.y } : current));
     },
-    [setSnapshot, animatedOffsetY],
+    [setSnapshot, animatedOffsetY]
   );
 
   const end = useCallback(
-    (
-      onComplete?: (value: DragSnapshot) => void,
-      layouts?: Record<string, LayoutRectangle>,
-    ) => {
+    (onComplete?: (value: DragSnapshot) => void, layouts?: Record<string, LayoutRectangle>) => {
       // Read from ref to avoid dependency on 'snapshot' state which would break memoization
       const current = snapshotRef.current;
 
@@ -127,7 +92,7 @@ export const useDragState = () => {
         });
       });
     },
-    [setSnapshot],
+    [setSnapshot]
   );
 
   return {
