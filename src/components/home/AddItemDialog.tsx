@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Animated, Keyboard, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
-import { UNCATEGORIZED } from "~/services/utils.ts";
+import { Keyboard, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { homeColors } from "./theme.ts";
 
 type AddItemDialogProps = {
   visible: boolean;
@@ -50,52 +51,55 @@ export const AddItemDialog = ({
     onSubmit
   );
   const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
-  const keyboardOffset = useKeyboardOffset();
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
-      <Pressable style={homeStyles.modalBackdrop} onPress={onCancel}>
-        <Animated.View style={[homeStyles.modalCard, { transform: [{ translateY: keyboardOffset }] }]}>
-          <Pressable style={homeStyles.modalCardContent} onPress={() => Keyboard.dismiss()}>
-            <Text style={homeStyles.modalTitle}>{HOME_COPY.addItemPrompt}</Text>
-            <TextInput
-              value={itemName}
-              onChangeText={(text) => {
-                setItemName(text);
-                setError(null);
-              }}
-              placeholder={HOME_COPY.addItemPlaceholder}
-              style={inputStyle}
-              autoFocus
-            />
-            {error && <Text style={homeStyles.modalError}>{error}</Text>}
-            <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
-            <CategoryDropdown
-              categories={categories}
-              selected={selectedCategory}
-              onSelect={(c) => {
-                setSelectedCategory(c);
-                setError(null);
-              }}
-              disabled={hasNewCategory}
-            />
-            <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
-            <TextInput
-              value={newCategoryName}
-              onChangeText={(text) => {
-                setNewCategoryName(text);
-                setError(null);
-              }}
-              placeholder={COPY.newCategoryPlaceholder}
-              style={homeStyles.modalInput}
-            />
-            <Pressable onPress={onBrowseKits}>
-              <Text style={STYLES.browseKitsLink}>{COPY.browseKits}</Text>
-            </Pressable>
-            <DialogActions onCancel={onCancel} onSubmit={handleSubmit} />
-          </Pressable>
-        </Animated.View>
+    <DialogShell
+      visible={visible}
+      title={HOME_COPY.addItemPrompt}
+      onClose={onCancel}
+      actions={
+        <DialogActions
+          cancelLabel={HOME_COPY.cancel}
+          confirmLabel={HOME_COPY.addItemConfirm}
+          onCancel={onCancel}
+          onConfirm={handleSubmit}
+        />
+      }
+    >
+      <TextInput
+        value={itemName}
+        onChangeText={(text) => {
+          setItemName(text);
+          setError(null);
+        }}
+        placeholder={HOME_COPY.addItemPlaceholder}
+        style={inputStyle}
+        autoFocus
+      />
+      {error && <Text style={homeStyles.modalError}>{error}</Text>}
+      <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
+      <CategoryDropdown
+        categories={categories}
+        selected={selectedCategory}
+        onSelect={(c) => {
+          setSelectedCategory(c);
+          setError(null);
+        }}
+        disabled={hasNewCategory}
+      />
+      <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
+      <TextInput
+        value={newCategoryName}
+        onChangeText={(text) => {
+          setNewCategoryName(text);
+          setError(null);
+        }}
+        placeholder={COPY.newCategoryPlaceholder}
+        style={homeStyles.modalInput}
+      />
+      <Pressable onPress={onBrowseKits}>
+        <Text style={STYLES.browseKitsLink}>{COPY.browseKits}</Text>
       </Pressable>
-    </Modal>
+    </DialogShell>
   );
 };
 
@@ -143,9 +147,6 @@ const useSubmitHandler = (
     }
     onSubmit(trimmedName, hasNewCategory ? null : selectedCategory, hasNewCategory ? newCategoryName.trim() : null);
   }, [itemName, selectedCategory, newCategoryName, hasNewCategory, items, targetCategoryId, setError, onSubmit]);
-
-const UNCATEGORIZED_KEY = "__uncategorized__";
-const getCategoryKey = (c: NamedEntity) => c.id || UNCATEGORIZED_KEY;
 
 const CategoryDropdown = ({
   categories,
@@ -197,17 +198,6 @@ const CategoryDropdown = ({
   );
 };
 
-const DialogActions = ({ onCancel, onSubmit }: { onCancel: () => void; onSubmit: () => void }) => (
-  <View style={homeStyles.modalActions}>
-    <Pressable onPress={onCancel}>
-      <Text style={homeStyles.modalAction}>{HOME_COPY.cancel}</Text>
-    </Pressable>
-    <Pressable onPress={onSubmit}>
-      <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary]}>{HOME_COPY.addItemConfirm}</Text>
-    </Pressable>
-  </View>
-);
-
 const COPY = {
   existingCategory: "Existing category",
   newCategory: "Or create new category",
@@ -222,30 +212,35 @@ const STYLES = {
     justifyContent: "space-between" as const,
     alignItems: "center" as const,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: homeColors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 14,
-    backgroundColor: "#fff",
+    backgroundColor: homeColors.surface,
   },
-  dropdownText: { fontSize: 16, color: "#111827" },
-  dropdownArrow: { fontSize: 12, color: "#6b7280" },
+  dropdownText: { fontSize: 16, color: homeColors.text },
+  dropdownArrow: { fontSize: 12, color: homeColors.muted },
   dropdownList: {
     position: "absolute" as const,
     top: 52,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
+    backgroundColor: homeColors.surface,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: homeColors.border,
     borderRadius: 8,
     maxHeight: 150,
     zIndex: 20,
   },
   dropdownScroll: { maxHeight: 150 },
-  dropdownItem: { paddingHorizontal: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#f3f4f6" },
-  dropdownItemText: { fontSize: 16, color: "#111827" },
-  dropdownItemSelected: { fontWeight: "600" as const, color: "#2563eb" },
+  dropdownItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: homeColors.border,
+  },
+  dropdownItemText: { fontSize: 16, color: homeColors.text },
+  dropdownItemSelected: { fontWeight: "600" as const, color: homeColors.primary },
   pickerDisabled: { opacity: 0.5 },
-  browseKitsLink: { fontSize: 14, color: "#2563eb", textAlign: "center" as const },
+  browseKitsLink: { fontSize: 14, color: homeColors.primary, textAlign: "center" as const },
 };

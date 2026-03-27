@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
-import { homeStyles } from "../home/styles.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
+import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
 type DialogState = "none" | "rename" | "invite" | "inviteSent";
@@ -65,18 +64,10 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, onRename, onInvi
 };
 
 const InviteSentDialog = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => (
-  <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
-    <View style={homeStyles.modalBackdrop}>
-      <View style={homeStyles.modalCard}>
-        <View style={homeStyles.modalCardContent}>
-          <Text style={homeStyles.modalTitle}>{SPACE_MGMT_COPY.inviteSent}</Text>
-          <View style={homeStyles.modalActions}>
-            <Pressable onPress={onClose} accessibilityRole="button">
-              <Text style={[homeStyles.modalAction, homeStyles.modalActionPrimary]}>{SPACE_MGMT_COPY.ok}</Text>
-            </Pressable>
-          </View>
-        </View>
-      </View>
-    </View>
-  </Modal>
+  <DialogShell
+    visible={visible}
+    title={SPACE_MGMT_COPY.inviteSent}
+    onClose={onClose}
+    actions={<DialogSingleAction label={SPACE_MGMT_COPY.ok} onPress={onClose} />}
+  />
 );

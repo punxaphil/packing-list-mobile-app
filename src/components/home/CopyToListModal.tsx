@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { Alert, Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { homeStyles } from "./styles.ts";
+import { Alert, Pressable, ScrollView, Text } from "react-native";
+import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { PackingListSummary } from "./types.ts";
 
 type CopyToListModalProps = {
@@ -29,19 +29,18 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   if (availableLists.length === 0) return null;
 
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
-      <Pressable style={homeStyles.modalBackdrop} onPress={onClose}>
-        <Pressable style={homeStyles.modalCard} onPress={(e) => e.stopPropagation()}>
-          <Text style={homeStyles.modalTitle}>{COPY.title}</Text>
-          <ScrollView ref={scrollRef} style={STYLES.list}>
-            {availableLists.map((list) => (
-              <ListOption key={list.id} list={list} onSelect={handleSelect} />
-            ))}
-          </ScrollView>
-          <CancelButton onPress={onClose} />
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <DialogShell
+      visible={visible}
+      title={COPY.title}
+      onClose={onClose}
+      actions={<DialogSingleAction label={COPY.cancel} onPress={onClose} />}
+    >
+      <ScrollView ref={scrollRef} style={STYLES.list}>
+        {availableLists.map((list) => (
+          <ListOption key={list.id} list={list} onSelect={handleSelect} />
+        ))}
+      </ScrollView>
+    </DialogShell>
   );
 };
 
@@ -59,14 +58,6 @@ const ListOption = ({ list, onSelect }: ListOptionProps) => {
     </Pressable>
   );
 };
-
-const CancelButton = ({ onPress }: { onPress: () => void }) => (
-  <View style={homeStyles.modalActions}>
-    <Pressable onPress={onPress}>
-      <Text style={homeStyles.modalAction}>{COPY.cancel}</Text>
-    </Pressable>
-  </View>
-);
 
 const COPY = { title: "Copy to List", cancel: "Cancel", confirmTitle: "Copied", confirmMessage: "Item copied to" };
 

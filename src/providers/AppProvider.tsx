@@ -1,17 +1,9 @@
 import { getAuth } from "firebase/auth";
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-} from "react";
+import { createContext, PropsWithChildren, useCallback, useContext } from "react";
 import { PackingListSummary, SelectionState } from "~/components/home/types.ts";
 import { useSelectedList } from "~/components/home/useSelectedList.ts";
 import { SubscriptionGate } from "~/components/subscription/SubscriptionGate.tsx";
-import {
-  PackItemCountRecord,
-  usePackItemCounts,
-} from "~/hooks/usePackItemCounts.ts";
+import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
 import { showLoginRoot } from "~/navigation/navigation.ts";
@@ -36,10 +28,7 @@ type AppContextValue = {
 
 const AppContext = createContext<AppContextValue | null>(null);
 
-const mergeListCounts = (
-  lists: NamedEntity[],
-  counts: PackItemCountRecord,
-): PackingListSummary[] =>
+const mergeListCounts = (lists: NamedEntity[], counts: PackItemCountRecord): PackingListSummary[] =>
   lists.map((list) => ({
     ...list,
     itemCount: counts[list.id]?.total ?? 0,
@@ -63,18 +52,9 @@ const useSignOutAction = () =>
     run().catch(console.error);
   }, []);
 
-function AppContent({
-  userId,
-  email,
-  children,
-  signOut,
-}: AppProviderProps & { signOut: () => void }) {
+function AppContent({ userId, email, children, signOut }: AppProviderProps & { signOut: () => void }) {
   const spaceId = useActiveSpaceId();
-  const {
-    packingLists,
-    hasLists,
-    loading: listsLoading,
-  } = usePackingLists(spaceId);
+  const { packingLists, hasLists, loading: listsLoading } = usePackingLists(spaceId);
   const { counts } = usePackItemCounts(spaceId);
   const lists = mergeListCounts(packingLists, counts);
   const selection = useSelectedList(lists, hasLists);

@@ -1,15 +1,5 @@
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import Purchases, {
-  type CustomerInfo,
-  type PurchasesPackage,
-} from "react-native-purchases";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 import {
   configureRevenueCat,
   fetchOfferings,
@@ -36,10 +26,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
   }, []);
 
   const refresh = useCallback(async () => {
-    const [customerInfo, availablePackages] = await Promise.all([
-      Purchases.getCustomerInfo(),
-      fetchOfferings(),
-    ]);
+    const [customerInfo, availablePackages] = await Promise.all([Purchases.getCustomerInfo(), fetchOfferings()]);
     setOfferings(sortPreferredPackages(availablePackages));
     handleCustomerInfo(customerInfo);
   }, [handleCustomerInfo]);
@@ -52,9 +39,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
       .then(refresh)
       .catch((e) => {
         setLoading(false);
-        setError(
-          e instanceof Error ? e.message : "Unable to initialize subscriptions",
-        );
+        setError(e instanceof Error ? e.message : "Unable to initialize subscriptions");
       });
 
     Purchases.addCustomerInfoUpdateListener(handleCustomerInfo);
@@ -77,7 +62,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
         setProcessing(false);
       }
     },
-    [refresh],
+    [refresh]
   );
 
   const restore = useCallback(async () => {
@@ -105,21 +90,8 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
       restore,
       refresh,
     }),
-    [
-      isSubscribed,
-      loading,
-      processing,
-      offerings,
-      error,
-      purchase,
-      restore,
-      refresh,
-    ],
+    [isSubscribed, loading, processing, offerings, error, purchase, restore, refresh]
   );
 
-  return (
-    <SubscriptionContext.Provider value={value}>
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 };

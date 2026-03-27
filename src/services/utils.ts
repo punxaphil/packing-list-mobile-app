@@ -7,6 +7,8 @@ export const UNCATEGORIZED: NamedEntity = {
   color: "gray.50",
 };
 
+export const getCategoryKey = (c: NamedEntity) => c.id || "__uncategorized__";
+
 function sortByRank(a?: NamedEntity, b?: NamedEntity) {
   if (!a && b) {
     return -1;

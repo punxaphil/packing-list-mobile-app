@@ -1,5 +1,5 @@
 import { appleAuth } from "@invertase/react-native-apple-authentication";
-import { OAuthProvider, getAuth, signInWithCredential } from "firebase/auth";
+import { getAuth, OAuthProvider, signInWithCredential } from "firebase/auth";
 
 export async function signInWithApple() {
   const appleResponse = await appleAuth.performRequest({
@@ -7,8 +7,7 @@ export async function signInWithApple() {
     requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
   });
   const { identityToken, nonce } = appleResponse;
-  if (!identityToken)
-    throw new Error("Apple sign-in failed: no identity token");
+  if (!identityToken) throw new Error("Apple sign-in failed: no identity token");
   const credential = new OAuthProvider("apple.com").credential({
     idToken: identityToken,
     rawNonce: nonce,

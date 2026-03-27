@@ -1,10 +1,9 @@
 import { StyleSheet } from "react-native";
 import { homeCopy } from "./copy.ts";
-import { homeColors, homeMaxWidth, homeRadius, homeSpacing } from "./theme.ts";
+import { homeColors, homeRadius, homeSpacing } from "./theme.ts";
 
 const colors = homeColors;
 const spacing = homeSpacing;
-const maxWidth = homeMaxWidth;
 export const HOME_COPY = homeCopy;
 
 export const homeStyles = StyleSheet.create({
@@ -244,22 +243,6 @@ export const homeStyles = StyleSheet.create({
   empty: { alignItems: "center", paddingVertical: spacing.md },
   emptyText: { fontSize: 16, color: colors.muted, fontWeight: "500", textAlign: "center" },
   swipeAction: { width: spacing.lg * 3 },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(17,24,39,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: spacing.lg,
-  },
-  modalCard: {
-    width: "100%",
-    maxWidth,
-    backgroundColor: colors.surface,
-    borderRadius: homeRadius,
-    padding: spacing.lg,
-  },
-  modalCardContent: { gap: spacing.md },
-  modalTitle: { fontSize: 18, fontWeight: "700", color: colors.text },
   modalLabel: { fontSize: 14, fontWeight: "500", color: colors.muted },
   modalInput: {
     borderWidth: 1,
@@ -272,9 +255,6 @@ export const homeStyles = StyleSheet.create({
   },
   modalInputError: { borderColor: colors.danger },
   modalError: { fontSize: 12, color: colors.danger, marginTop: -spacing.xs },
-  modalActions: { flexDirection: "row", justifyContent: "flex-end", gap: spacing.sm },
-  modalAction: { fontSize: 16, fontWeight: "600", color: colors.muted },
-  modalActionPrimary: { color: colors.primary },
   itemDragHandle: { width: spacing.lg, height: spacing.lg, alignItems: "center", justifyContent: "center" },
   itemDragHandleIcon: { fontSize: 18, color: colors.muted },
   itemGhost: {

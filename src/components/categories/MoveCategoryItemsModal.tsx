@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeColors } from "../home/theme.ts";
+import { DialogActions, DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { entityStyles } from "../shared/entityStyles.ts";
 import { MOVE_COPY, moveStyles } from "./styles.ts";
 
@@ -58,35 +59,31 @@ export const MoveCategoryItemsModal = ({
 
   if (items.length === 0 && visible) {
     return (
-      <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-        <Pressable style={moveStyles.overlay} onPress={onClose}>
-          <Pressable style={moveStyles.modal} onPress={(e) => e.stopPropagation()}>
-            <Text style={moveStyles.title}>{MOVE_COPY.title}</Text>
-            <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
-            <Pressable style={moveStyles.closeButton} onPress={onClose}>
-              <Text style={moveStyles.closeLabel}>{MOVE_COPY.close}</Text>
-            </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      <DialogShell
+        visible={visible}
+        title={MOVE_COPY.title}
+        onClose={onClose}
+        actions={<DialogSingleAction label={MOVE_COPY.close} onPress={onClose} />}
+      >
+        <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
+      </DialogShell>
     );
   }
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={moveStyles.overlay} onPress={onClose}>
-        <Pressable style={moveStyles.modal} onPress={(e) => e.stopPropagation()}>
-          <Text style={moveStyles.title}>{MOVE_COPY.title}</Text>
-          <Text style={moveStyles.subtitle}>
-            {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
-          </Text>
-          <ItemsList items={items} />
-          <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
-          <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
-          <ActionButtons selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <DialogShell
+      visible={visible}
+      title={MOVE_COPY.title}
+      onClose={onClose}
+      actions={<ActionButtons selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />}
+    >
+      <Text style={moveStyles.subtitle}>
+        {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
+      </Text>
+      <ItemsList items={items} />
+      <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
+      <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
+    </DialogShell>
   );
 };
 
@@ -149,21 +146,15 @@ const ActionButtons = ({
   onClose: () => void;
 }) => {
   const targetName = targets.find((c) => c.id === selectedId)?.name;
+  const confirmLabel = selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory;
   return (
-    <View style={moveStyles.actions}>
-      <Pressable style={moveStyles.cancelButton} onPress={onClose}>
-        <Text style={moveStyles.cancelLabel}>{MOVE_COPY.cancel}</Text>
-      </Pressable>
-      <Pressable
-        style={[moveStyles.moveButton, !selectedId && moveStyles.moveButtonDisabled]}
-        onPress={onMove}
-        disabled={!selectedId}
-      >
-        <Text style={moveStyles.moveLabel}>
-          {selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory}
-        </Text>
-      </Pressable>
-    </View>
+    <DialogActions
+      cancelLabel={MOVE_COPY.cancel}
+      confirmLabel={confirmLabel}
+      onCancel={onClose}
+      onConfirm={onMove}
+      disabled={!selectedId}
+    />
   );
 };
 

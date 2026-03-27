@@ -14,21 +14,6 @@ export const MOVE_COPY = {
 };
 
 export const moveStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: homeSpacing.lg,
-  },
-  modal: {
-    backgroundColor: homeColors.surface,
-    borderRadius: 16,
-    padding: homeSpacing.lg,
-    width: "100%",
-    maxHeight: "80%",
-  },
-  title: { fontSize: 18, fontWeight: "700", color: homeColors.text, marginBottom: homeSpacing.sm },
   subtitle: { fontSize: 14, color: homeColors.text, marginBottom: homeSpacing.sm },
   itemsList: {
     maxHeight: 120,
@@ -57,31 +42,4 @@ export const moveStyles = StyleSheet.create({
   categorySelected: { borderColor: homeColors.primary, borderWidth: 2, backgroundColor: homeColors.primaryLight },
   categoryName: { fontSize: 14, color: homeColors.text },
   empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
-  actions: { flexDirection: "row", gap: homeSpacing.sm },
-  cancelButton: {
-    flex: 1,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    alignItems: "center",
-  },
-  cancelLabel: { fontSize: 14, color: homeColors.text },
-  moveButton: {
-    flex: 2,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-  },
-  moveButtonDisabled: { backgroundColor: homeColors.muted },
-  moveLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
-  closeButton: {
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-    marginTop: homeSpacing.sm,
-  },
-  closeLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
 });

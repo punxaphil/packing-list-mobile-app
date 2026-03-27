@@ -52,10 +52,13 @@
   it should be possible to remove other member from space
   when I change space my avatar image is removed, it should remain the same
   it should be possible to move a list to another space
+  add item to category
 
 # todo
 
-add item to category
+- what else can we use built in components for? to automatically get liquid glass
+- empty list - packing kits not clickable
+
 rename space should have current name showing
 remove space
 

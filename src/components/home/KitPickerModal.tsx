@@ -1,8 +1,9 @@
 import Checkbox from "expo-checkbox";
 import { useCallback, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, PackingKit } from "~/data/packingKits.ts";
+import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type KitPickerModalProps = {
@@ -44,20 +45,27 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
   }, [onClose]);
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
-          <Text style={styles.title}>{COPY.title}</Text>
-          <Text style={styles.subtitle}>{COPY.subtitle}</Text>
-          <ScrollView style={styles.list}>
-            {PACKING_KITS.map((kit) => (
-              <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
-            ))}
-          </ScrollView>
-          <Actions onCancel={handleClose} onAdd={handleAdd} disabled={selected.size === 0} />
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <DialogShell
+      visible={visible}
+      title={COPY.title}
+      onClose={handleClose}
+      actions={
+        <DialogActions
+          cancelLabel={COPY.cancel}
+          confirmLabel={COPY.add}
+          onCancel={handleClose}
+          onConfirm={handleAdd}
+          disabled={selected.size === 0}
+        />
+      }
+    >
+      <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+      <ScrollView style={styles.list}>
+        {PACKING_KITS.map((kit) => (
+          <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
+        ))}
+      </ScrollView>
+    </DialogShell>
   );
 };
 
@@ -76,39 +84,7 @@ const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
   </Pressable>
 );
 
-type ActionsProps = { onCancel: () => void; onAdd: () => void; disabled: boolean };
-
-const Actions = ({ onCancel, onAdd, disabled }: ActionsProps) => (
-  <View style={styles.actions}>
-    <Pressable style={styles.cancelButton} onPress={onCancel}>
-      <Text style={styles.cancelLabel}>{COPY.cancel}</Text>
-    </Pressable>
-    <Pressable
-      style={[styles.addButton, disabled ? styles.addButtonDisabled : null]}
-      onPress={onAdd}
-      disabled={disabled}
-    >
-      <Text style={styles.addLabel}>{COPY.add}</Text>
-    </Pressable>
-  </View>
-);
-
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: homeSpacing.lg,
-  },
-  modal: {
-    backgroundColor: homeColors.surface,
-    borderRadius: 16,
-    padding: homeSpacing.lg,
-    width: "100%",
-    maxHeight: "70%",
-  },
-  title: { fontSize: 18, fontWeight: "700", color: homeColors.text, marginBottom: homeSpacing.xs },
   subtitle: { fontSize: 14, color: homeColors.muted, marginBottom: homeSpacing.md },
   list: { marginBottom: homeSpacing.md },
   row: {
@@ -122,23 +98,4 @@ const styles = StyleSheet.create({
   kitInfo: { flex: 1 },
   kitName: { fontSize: 16, fontWeight: "600", color: homeColors.text },
   kitCount: { fontSize: 12, color: homeColors.muted },
-  actions: { flexDirection: "row", gap: homeSpacing.sm },
-  cancelButton: {
-    flex: 1,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    alignItems: "center",
-  },
-  cancelLabel: { fontSize: 14, color: homeColors.text },
-  addButton: {
-    flex: 2,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-  },
-  addButtonDisabled: { opacity: 0.5 },
-  addLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
 });

@@ -1,10 +1,11 @@
 import Checkbox from "expo-checkbox";
 import { useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { switchToMembersTab } from "~/navigation/navigation.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type AssignMembersModalProps = {
@@ -59,19 +60,20 @@ export const AssignMembersModal = ({ visible, item, members, onClose, onSave }: 
   if (!item) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
-          <Text style={styles.title}>{COPY.title}</Text>
-          <Text style={styles.subtitle}>{item.name}</Text>
-          <MemberList members={members} selected={selected} onToggle={toggle} />
-          <Pressable onPress={handleManageMembers}>
-            <Text style={styles.manageLink}>{COPY.manageMembers}</Text>
-          </Pressable>
-          <Actions onCancel={onClose} onSave={handleSave} />
-        </Pressable>
+    <DialogShell
+      visible={visible}
+      title={COPY.title}
+      onClose={onClose}
+      actions={
+        <DialogActions cancelLabel={COPY.cancel} confirmLabel={COPY.save} onCancel={onClose} onConfirm={handleSave} />
+      }
+    >
+      <Text style={styles.subtitle}>{item.name}</Text>
+      <MemberList members={members} selected={selected} onToggle={toggle} />
+      <Pressable onPress={handleManageMembers}>
+        <Text style={styles.manageLink}>{COPY.manageMembers}</Text>
       </Pressable>
-    </Modal>
+    </DialogShell>
   );
 };
 
@@ -100,35 +102,7 @@ const MemberRow = ({ member, checked, onToggle }: MemberRowProps) => (
   </Pressable>
 );
 
-type ActionsProps = { onCancel: () => void; onSave: () => void };
-
-const Actions = ({ onCancel, onSave }: ActionsProps) => (
-  <View style={styles.actions}>
-    <Pressable style={styles.cancelButton} onPress={onCancel}>
-      <Text style={styles.cancelLabel}>{COPY.cancel}</Text>
-    </Pressable>
-    <Pressable style={styles.saveButton} onPress={onSave}>
-      <Text style={styles.saveLabel}>{COPY.save}</Text>
-    </Pressable>
-  </View>
-);
-
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: homeSpacing.lg,
-  },
-  modal: {
-    backgroundColor: homeColors.surface,
-    borderRadius: 16,
-    padding: homeSpacing.lg,
-    width: "100%",
-    maxHeight: "70%",
-  },
-  title: { fontSize: 18, fontWeight: "700", color: homeColors.text, marginBottom: homeSpacing.xs },
   subtitle: { fontSize: 14, color: homeColors.muted, marginBottom: homeSpacing.md },
   list: { maxHeight: 300, marginBottom: homeSpacing.md },
   row: {
@@ -142,22 +116,4 @@ const styles = StyleSheet.create({
   memberName: { fontSize: 16, color: homeColors.text },
   empty: { fontSize: 14, color: homeColors.muted, textAlign: "center", padding: homeSpacing.md },
   manageLink: { fontSize: 14, color: homeColors.primary, textAlign: "center", marginBottom: homeSpacing.md },
-  actions: { flexDirection: "row", gap: homeSpacing.sm },
-  cancelButton: {
-    flex: 1,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    alignItems: "center",
-  },
-  cancelLabel: { fontSize: 14, color: homeColors.text },
-  saveButton: {
-    flex: 2,
-    padding: homeSpacing.sm,
-    borderRadius: 8,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-  },
-  saveLabel: { fontSize: 14, color: homeColors.buttonText, fontWeight: "600" },
 });

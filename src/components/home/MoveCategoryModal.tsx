@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { UNCATEGORIZED } from "~/services/utils.ts";
+import { Pressable, ScrollView, Text } from "react-native";
+import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { homeStyles } from "./styles.ts";
+import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 
 type MoveCategoryModalProps = {
   visible: boolean;
@@ -26,19 +26,18 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
     onClose();
   };
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
-      <Pressable style={homeStyles.modalBackdrop} onPress={onClose}>
-        <Pressable style={homeStyles.modalCard} onPress={(e) => e.stopPropagation()}>
-          <Text style={homeStyles.modalTitle}>{COPY.title}</Text>
-          <ScrollView ref={scrollRef} style={STYLES.list}>
-            {allCategories.map((category) => (
-              <CategoryOption key={getCategoryKey(category)} category={category} onSelect={handleSelect} />
-            ))}
-          </ScrollView>
-          <CancelButton onPress={onClose} />
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <DialogShell
+      visible={visible}
+      title={COPY.title}
+      onClose={onClose}
+      actions={<DialogSingleAction label={COPY.cancel} onPress={onClose} />}
+    >
+      <ScrollView ref={scrollRef} style={STYLES.list}>
+        {allCategories.map((category) => (
+          <CategoryOption key={getCategoryKey(category)} category={category} onSelect={handleSelect} />
+        ))}
+      </ScrollView>
+    </DialogShell>
   );
 };
 
@@ -48,22 +47,12 @@ const buildCategoryList = (categories: NamedEntity[], currentCategoryId: string)
   return [...uncategorized, ...filtered].sort((a, b) => b.rank - a.rank);
 };
 
-const getCategoryKey = (c: NamedEntity) => c.id || "__uncategorized__";
-
 type CategoryOptionProps = { category: NamedEntity; onSelect: (c: NamedEntity) => void };
 
 const CategoryOption = ({ category, onSelect }: CategoryOptionProps) => (
   <Pressable style={STYLES.option} onPress={() => onSelect(category)}>
     <Text style={STYLES.optionText}>{category.name}</Text>
   </Pressable>
-);
-
-const CancelButton = ({ onPress }: { onPress: () => void }) => (
-  <View style={homeStyles.modalActions}>
-    <Pressable onPress={onPress}>
-      <Text style={homeStyles.modalAction}>{COPY.cancel}</Text>
-    </Pressable>
-  </View>
 );
 
 const COPY = { title: "Change Category", cancel: "Cancel" };
