@@ -56,11 +56,12 @@
 - when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
 - also, it seems I cannot leave a space?
 - empty list - packing kits not clickable
+- rename space should have current name showing
 
 # todo
 
-- rename space should have current name showing
 - what else can we use built in components for? to automatically get liquid glass
+- when filtering, it shows no items in list and suggest packs.
   remove space
 
 scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone

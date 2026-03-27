@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ActivityIndicator,
   LayoutChangeEvent,
@@ -11,8 +10,8 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { ActionMenu } from "../home/ActionMenu.tsx";
 import { EditableText } from "../home/EditableText.tsx";
+import { showActionSheet } from "../home/showActionSheet.ts";
 import { useToast } from "../home/Toast.tsx";
 import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
@@ -57,17 +56,16 @@ export const EntityCard = (props: EntityCardProps) => {
     { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
     { applyTranslation: false }
   );
-  const [menuVisible, setMenuVisible] = useState(false);
   const showToast = useToast();
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const handleRename = (name: string) => props.actions.onRename(props.entity, name);
   const validateName = (name: string) => !hasDuplicateEntityName(name, props.entities, props.entity.id);
   const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
-  const menuItems = [
-    { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.entity) },
-    { text: "Cancel", style: "cancel" as const },
-  ];
+  const openMenu = () =>
+    showActionSheet(props.entity.name, [
+      { text: "Delete", style: "destructive", onPress: () => void props.actions.onDelete(props.entity) },
+    ]);
   return (
     <View onLayout={handleLayout}>
       <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
@@ -89,16 +87,9 @@ export const EntityCard = (props: EntityCardProps) => {
             />
             <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
           </View>
-          <MenuButton onPress={() => setMenuVisible(true)} />
+          <MenuButton onPress={openMenu} />
         </View>
       </Pressable>
-      <ActionMenu
-        visible={menuVisible}
-        title={props.entity.name}
-        items={menuItems}
-        onClose={() => setMenuVisible(false)}
-        headerColor={props.color}
-      />
     </View>
   );
 };

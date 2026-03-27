@@ -7,7 +7,6 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { ActionMenu } from "./ActionMenu.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
 import { EditableText } from "./EditableText.tsx";
@@ -18,6 +17,7 @@ import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitialsMap } from "./memberInitialsUtils.ts";
+import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { useToast } from "./Toast.tsx";
 import { homeColors } from "./theme.ts";
@@ -127,7 +127,6 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     >
       <CategoryHeader
         section={props.section}
-        color={props.color}
         imageUrl={categoryImageUrl}
         isTemplateList={props.isTemplateList}
         onRenameCategory={props.onRenameCategory}
@@ -231,7 +230,6 @@ const useCategoryEditing = (): CategoryEditing => {
 
 type CategoryHeaderProps = {
   section: SectionGroup;
-  color: string;
   imageUrl: string | undefined;
   isTemplateList: boolean;
   onRenameCategory: (category: NamedEntity, name: string) => void;
@@ -243,11 +241,8 @@ type CategoryHeaderProps = {
   onDeleteItems: () => void;
 };
 
-const UNCATEGORIZED_HEADER_COLOR = "#b1b8c5";
-
 const CategoryHeader = ({
   section,
-  color,
   imageUrl,
   isTemplateList,
   onToggleCategory,
@@ -258,18 +253,16 @@ const CategoryHeader = ({
   onSortAlpha,
   onDeleteItems,
 }: CategoryHeaderProps) => {
-  const [menuVisible, setMenuVisible] = useState(false);
   const allChecked = section.items.every((item) => item.checked);
   const indeterminate = !allChecked && section.items.some((item) => item.checked);
   const displayChecked = pendingToggle ?? allChecked;
-  const isUncategorized = !section.category.id;
-  const headerColor = isUncategorized ? UNCATEGORIZED_HEADER_COLOR : color;
 
-  const menuItems = [
-    { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
-    { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
-    { text: HOME_COPY.categoryMenuDeleteItems, style: "destructive" as const, onPress: onDeleteItems },
-  ];
+  const openMenu = () =>
+    showActionSheet(section.category.name, [
+      { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
+      { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
+      { text: HOME_COPY.categoryMenuDeleteItems, style: "destructive", onPress: onDeleteItems },
+    ]);
 
   return (
     <View style={homeStyles.categoryHeader}>
@@ -297,20 +290,12 @@ const CategoryHeader = ({
       />
       <Pressable
         style={homeStyles.addButton}
-        onPress={() => setMenuVisible(true)}
+        onPress={openMenu}
         accessibilityRole="button"
         accessibilityLabel="Category menu"
       >
         <MaterialCommunityIcons name="dots-vertical" size={20} color={homeColors.muted} />
       </Pressable>
-      <ActionMenu
-        visible={menuVisible}
-        title={section.category.name}
-        items={menuItems}
-        onClose={() => setMenuVisible(false)}
-        headerColor={headerColor}
-        headerTextColor={isUncategorized ? homeColors.surface : undefined}
-      />
     </View>
   );
 };
@@ -436,7 +421,6 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const { wrap, dragging } = useDraggableRow(dragHandlers, {
     applyTranslation: false,
   });
-  const [menuVisible, setMenuVisible] = useState(false);
   const rowStyle = [
     homeStyles.itemContainer,
     props.hidden && { opacity: 0 },
@@ -444,17 +428,13 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
     props.isCurrentMatch && homeStyles.itemHighlight,
   ];
   const hasMembers = props.item.members.length > 0;
-  const menuItems = [
-    { text: "Edit Members", onPress: props.onOpenAssignMembers },
-    { text: "Change Category", onPress: props.onOpenMoveCategory },
-    ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
-    {
-      text: "Delete",
-      style: "destructive" as const,
-      onPress: () => handleDelete(props),
-    },
-    { text: "Cancel", style: "cancel" as const },
-  ];
+  const openMenu = () =>
+    showActionSheet(props.item.name, [
+      { text: "Edit Members", onPress: props.onOpenAssignMembers },
+      { text: "Change Category", onPress: props.onOpenMoveCategory },
+      ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
+      { text: "Delete", style: "destructive", onPress: () => handleDelete(props) },
+    ]);
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
       <Pressable style={rowStyle}>
@@ -491,20 +471,13 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         </View>
         <Pressable
           style={homeStyles.menuButton}
-          onPress={() => setMenuVisible(true)}
+          onPress={openMenu}
           accessibilityRole="button"
           accessibilityLabel="Item menu"
         >
           <Text style={homeStyles.menuIcon}>⋮</Text>
         </Pressable>
       </Pressable>
-      <ActionMenu
-        visible={menuVisible}
-        title={props.item.name}
-        items={menuItems}
-        onClose={() => setMenuVisible(false)}
-        headerColor={homeColors.border}
-      />
     </View>
   );
 }, areRowPropsEqual);

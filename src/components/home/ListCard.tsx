@@ -3,8 +3,8 @@ import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
-import { ActionMenu } from "./ActionMenu.tsx";
 import { ListActions } from "./listSectionState.ts";
+import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors } from "./theme.ts";
@@ -40,43 +40,43 @@ export const ListCard = (props: ListCardProps) => {
     { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
     { applyTranslation: false }
   );
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
-  const [uncheckConfirmVisible, setUncheckConfirmVisible] = useState(false);
-  const [movePickerVisible, setMovePickerVisible] = useState(false);
   const rename = useRenameDialog(props.list, props.lists, props.actions.onRename);
   const summary = formatSummary(props.list);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
   const isArchived = props.list.archived === true;
-  const showDeleteConfirm = () => setDeleteConfirmVisible(true);
-  const showUncheckConfirm = () => setUncheckConfirmVisible(true);
   const canMove = props.spaces.length > 1;
-  const menuItems = buildMenuItems(
-    props.list,
-    props.actions,
-    isTemplate,
-    isPinned,
-    isArchived,
-    showDeleteConfirm,
-    showUncheckConfirm,
-    rename.open,
-    canMove ? () => setMovePickerVisible(true) : undefined
-  );
-  const deleteConfirmItems = [
-    { text: "Delete", style: "destructive" as const, onPress: () => void props.actions.onDelete(props.list) },
-    { text: "Cancel", style: "cancel" as const },
-  ];
-  const uncheckConfirmItems = [
-    { text: "Uncheck All", onPress: () => void props.actions.onUncheckAll(props.list) },
-    { text: "Cancel", style: "cancel" as const },
-  ];
-  const moveItems = props.spaces
-    .filter((s) => s.id !== props.currentSpaceId)
-    .map((s) => ({
-      text: s.name,
-      onPress: () => props.onMoveToSpace(props.list.id, s.id),
-    }));
+
+  const openDeleteConfirm = () =>
+    showActionSheet(`Delete "${props.list.name}"?`, [
+      { text: "Delete", style: "destructive", onPress: () => void props.actions.onDelete(props.list) },
+    ]);
+  const openUncheckConfirm = () =>
+    showActionSheet(`Uncheck all items in "${props.list.name}"?`, [
+      { text: "Uncheck All", onPress: () => void props.actions.onUncheckAll(props.list) },
+    ]);
+  const openMovePicker = () =>
+    showActionSheet(
+      "Move to Space",
+      props.spaces
+        .filter((s) => s.id !== props.currentSpaceId)
+        .map((s) => ({ text: s.name, onPress: () => props.onMoveToSpace(props.list.id, s.id) }))
+    );
+  const openMenu = () =>
+    showActionSheet(
+      props.list.name,
+      buildMenuItems(
+        props.list,
+        props.actions,
+        isTemplate,
+        isPinned,
+        isArchived,
+        openDeleteConfirm,
+        openUncheckConfirm,
+        rename.open,
+        canMove ? openMovePicker : undefined
+      )
+    );
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
     <View>
@@ -93,36 +93,9 @@ export const ListCard = (props: ListCardProps) => {
             <ListCardText list={props.list} summary={summary} />
           </View>
           {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
-          <ListMenuButton onPress={() => setMenuVisible(true)} />
+          <ListMenuButton onPress={openMenu} />
         </View>
       </Pressable>
-      <ActionMenu
-        visible={menuVisible}
-        title={props.list.name}
-        items={menuItems}
-        onClose={() => setMenuVisible(false)}
-        headerColor={props.color}
-      />
-      <ActionMenu
-        visible={deleteConfirmVisible}
-        title={`Delete "${props.list.name}"?`}
-        items={deleteConfirmItems}
-        onClose={() => setDeleteConfirmVisible(false)}
-        headerColor={props.color}
-      />
-      <ActionMenu
-        visible={uncheckConfirmVisible}
-        title={`Uncheck all items in "${props.list.name}"?`}
-        items={uncheckConfirmItems}
-        onClose={() => setUncheckConfirmVisible(false)}
-        headerColor={props.color}
-      />
-      <ActionMenu
-        visible={movePickerVisible}
-        title="Move to Space"
-        items={moveItems}
-        onClose={() => setMovePickerVisible(false)}
-      />
       <TextPromptDialog
         visible={rename.visible}
         title="Rename List"
