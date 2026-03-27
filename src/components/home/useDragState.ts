@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { LayoutRectangle } from "react-native";
+import { Animated, LayoutRectangle } from "react-native";
 import { DragOffset } from "./useDraggableRow.tsx";
 
 export type DragSnapshot = { id: string; categoryId: string; offsetY: number; frozenY?: number } | null;
@@ -7,6 +7,7 @@ export type DragSnapshot = { id: string; categoryId: string; offsetY: number; fr
 export const useDragState = () => {
   const [snapshot, setSnapshotState] = useState<DragSnapshot>(null);
   const snapshotRef = useRef<DragSnapshot>(null);
+  const animatedOffsetY = useRef(new Animated.Value(0)).current;
 
   // Sync ref with state synchronously
   const setSnapshot = useCallback((value: DragSnapshot | ((prev: DragSnapshot) => DragSnapshot)) => {
@@ -46,15 +47,19 @@ export const useDragState = () => {
   }, []);
 
   const start = useCallback(
-    (id: string, categoryId: string) => setSnapshot({ id, categoryId, offsetY: 0 }),
-    [setSnapshot]
+    (id: string, categoryId: string) => {
+      animatedOffsetY.setValue(0);
+      setSnapshot({ id, categoryId, offsetY: 0 });
+    },
+    [setSnapshot, animatedOffsetY]
   );
 
   const move = useCallback(
     (id: string, offset: DragOffset) => {
+      animatedOffsetY.setValue(offset.y);
       setSnapshot((current) => (current && current.id === id ? { ...current, offsetY: offset.y } : current));
     },
-    [setSnapshot]
+    [setSnapshot, animatedOffsetY]
   );
 
   const end = useCallback(
@@ -87,6 +92,7 @@ export const useDragState = () => {
 
   return {
     snapshot,
+    animatedOffsetY,
     layouts,
     sectionLayouts,
     bodyLayouts,

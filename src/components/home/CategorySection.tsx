@@ -185,6 +185,7 @@ const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionP
   if (prev.isTemplateList !== next.isTemplateList) return false;
   if (prev.search.currentMatchId !== next.search.currentMatchId) return false;
   if (prev.drag.snapshot?.id !== next.drag.snapshot?.id) return false;
+  if (prev.drag.snapshot?.frozenY !== next.drag.snapshot?.frozenY) return false;
   if (prev.initialsMap !== next.initialsMap) return false;
   if (prev.memberImages !== next.memberImages) return false;
   if (prev.categoryImages !== next.categoryImages) return false;
@@ -353,7 +354,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
         />
       ))}
       <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
-      <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} />
+      <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} animatedOffsetY={drag.animatedOffsetY} />
     </View>
   );
 };
@@ -475,18 +476,28 @@ const DragHandle = () => (
   </View>
 );
 
-type GhostRowProps = { items: PackItem[]; drag: DragSnapshot; layouts: Record<string, LayoutRectangle> };
+type GhostRowProps = {
+  items: PackItem[];
+  drag: DragSnapshot;
+  layouts: Record<string, LayoutRectangle>;
+  animatedOffsetY: Animated.Value;
+};
 
-const GhostRow = ({ items, drag, layouts }: GhostRowProps) => {
+const GhostRow = ({ items, drag, layouts, animatedOffsetY }: GhostRowProps) => {
   if (!drag) return null;
   const layout = layouts[drag.id];
   if (!layout) return null;
   const item = items.find((i) => i.id === drag.id);
   if (!item) return null;
+  const top = drag.frozenY != null ? drag.frozenY : layout.y;
   return (
     <Animated.View
       pointerEvents="none"
-      style={[homeStyles.itemGhost, { top: layout.y + drag.offsetY, height: layout.height }]}
+      style={[
+        homeStyles.itemGhost,
+        { top, height: layout.height },
+        drag.frozenY == null && { transform: [{ translateY: animatedOffsetY }] },
+      ]}
     >
       <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 0, height: "100%" }}>
         <DragHandle />

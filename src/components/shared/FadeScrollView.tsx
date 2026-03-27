@@ -1,19 +1,13 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import {
-  LayoutChangeEvent,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
+import { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewStyle } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { TAB_BAR_HEIGHT } from "~/components/home/theme.ts";
 
 type FlashScrollViewProps = {
   children: ReactNode;
   style?: ViewStyle;
   contentContainerStyle?: ViewStyle;
+  scrollEnabled?: boolean;
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
@@ -24,7 +18,7 @@ export type FadeScrollViewRef = {
 const SCROLL_THRESHOLD = 4;
 
 export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps>(
-  ({ children, style, contentContainerStyle, onScroll }, ref) => {
+  ({ children, style, contentContainerStyle, scrollEnabled = true, onScroll }, ref) => {
     const scrollRef = useRef<ScrollView>(null);
     const [containerHeight, setContainerHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
@@ -57,6 +51,7 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
           onScroll={handleScroll}
           onContentSizeChange={handleContentSizeChange}
           scrollEventThrottle={16}
+          scrollEnabled={scrollEnabled}
         >
           {children}
         </ScrollView>

@@ -63,7 +63,11 @@ export const ItemsList = (props: ItemsListProps) => {
   if (props.loading) return <ItemsLoader />;
 
   return (
-    <FadeScrollView ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>} style={homeStyles.scroll}>
+    <FadeScrollView
+      ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>}
+      style={homeStyles.scroll}
+      scrollEnabled={!drag.snapshot}
+    >
       <View style={homeStyles.list}>
         {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} />}
         {sections.map((section, i) => (
