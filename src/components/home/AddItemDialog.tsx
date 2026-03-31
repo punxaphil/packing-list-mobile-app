@@ -160,7 +160,8 @@ const CategoryDropdown = ({
   disabled: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const allCategories = [UNCATEGORIZED, ...categories.filter((c) => c.id !== UNCATEGORIZED.id)];
+  const sorted = [...categories.filter((c) => c.id !== UNCATEGORIZED.id)].sort((a, b) => a.name.localeCompare(b.name));
+  const allCategories = [UNCATEGORIZED, ...sorted];
   const toggle = () => {
     if (disabled) return;
     Keyboard.dismiss();
