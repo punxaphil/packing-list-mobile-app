@@ -18,7 +18,7 @@
     "spaces:cleanup": "node scripts/cleanup-spaces.js",
     "spaces:migrate": "node scripts/migrate-to-spaces.js",
     "list:dev-servers": "lsof -i tcp -P -n | grep LISTEN | grep node | awk '{print $9}'",
-    "list:dev-servers-port": "lsof -ti 8081 -",
+    "list:dev-servers-port": "lsof -ti tcp:8081",
     "list:simulators": "xcrun simctl list devices available"
   },
   "dependencies": {
