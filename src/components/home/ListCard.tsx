@@ -37,10 +37,18 @@ type ListCardTextProps = {
 
 export const ListCard = (props: ListCardProps) => {
   const { wrap } = useDraggableRow(
-    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
-    { applyTranslation: false }
+    {
+      onStart: props.onDragStart,
+      onMove: props.onDragMove,
+      onEnd: props.onDragEnd,
+    },
+    { applyTranslation: false },
   );
-  const rename = useRenameDialog(props.list, props.lists, props.actions.onRename);
+  const rename = useRenameDialog(
+    props.list,
+    props.lists,
+    props.actions.onRename,
+  );
   const summary = formatSummary(props.list);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
@@ -49,18 +57,28 @@ export const ListCard = (props: ListCardProps) => {
 
   const openDeleteConfirm = () =>
     showActionSheet(`Delete "${props.list.name}"?`, [
-      { text: "Delete", style: "destructive", onPress: () => void props.actions.onDelete(props.list) },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => void props.actions.onDelete(props.list),
+      },
     ]);
   const openUncheckConfirm = () =>
     showActionSheet(`Uncheck all items in "${props.list.name}"?`, [
-      { text: "Uncheck All", onPress: () => void props.actions.onUncheckAll(props.list) },
+      {
+        text: "Uncheck All",
+        onPress: () => void props.actions.onUncheckAll(props.list),
+      },
     ]);
   const openMovePicker = () =>
     showActionSheet(
       "Move to Space",
       props.spaces
         .filter((s) => s.id !== props.currentSpaceId)
-        .map((s) => ({ text: s.name, onPress: () => props.onMoveToSpace(props.list.id, s.id) }))
+        .map((s) => ({
+          text: s.name,
+          onPress: () => props.onMoveToSpace(props.list.id, s.id),
+        })),
     );
   const openMenu = () =>
     showActionSheet(
@@ -74,8 +92,8 @@ export const ListCard = (props: ListCardProps) => {
         openDeleteConfirm,
         openUncheckConfirm,
         rename.open,
-        canMove ? openMovePicker : undefined
-      )
+        canMove ? openMovePicker : undefined,
+      ),
     );
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
@@ -92,7 +110,9 @@ export const ListCard = (props: ListCardProps) => {
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
-          {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
+          {isPinned && (
+            <PinButton onPress={() => void props.actions.onUnpin(props.list)} />
+          )}
           <ListMenuButton onPress={openMenu} />
         </View>
       </Pressable>
@@ -113,7 +133,7 @@ export const ListCard = (props: ListCardProps) => {
 const useRenameDialog = (
   list: PackingListSummary,
   lists: PackingListSummary[],
-  onRename: (list: PackingListSummary, name: string) => Promise<void>
+  onRename: (list: PackingListSummary, name: string) => Promise<void>,
 ) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
@@ -127,7 +147,10 @@ const useRenameDialog = (
   const onChange = (text: string) => {
     setValue(text);
     const trimmed = text.trim();
-    const isDuplicate = trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
+    const isDuplicate =
+      trimmed &&
+      trimmed !== list.name &&
+      hasDuplicateEntityName(trimmed, lists, list.id);
     setError(isDuplicate ? HOME_COPY.duplicateListName : null);
   };
   const submit = () => {
@@ -168,8 +191,17 @@ const TemplateBadge = () => (
 );
 
 const PinButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable onPress={onPress} style={homeStyles.pinButton} accessibilityRole="button" accessibilityLabel="Unpin">
-    <MaterialCommunityIcons name="pin-outline" size={18} color={homeColors.muted} />
+  <Pressable
+    onPress={onPress}
+    style={homeStyles.pinButton}
+    accessibilityRole="button"
+    accessibilityLabel="Unpin"
+  >
+    <MaterialCommunityIcons
+      name="pin-outline"
+      size={18}
+      color={homeColors.muted}
+    />
   </Pressable>
 );
 
@@ -194,13 +226,22 @@ const formatSummary = (list: PackingListSummary) => {
   const total = isNumber(list.itemCount) ? list.itemCount : 0;
   const packed = isNumber(list.packedCount) ? list.packedCount : 0;
   if (!total) return HOME_COPY.listNoItems;
-  if (list.isTemplate) return `${total} ${total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural}`;
-  const itemsLabel = total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural;
-  const packedLabel = packed === 1 ? HOME_COPY.packedSingular : HOME_COPY.packedPlural;
+  if (list.isTemplate)
+    return `${total} ${total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural}`;
+  const itemsLabel =
+    total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural;
+  const packedLabel =
+    packed === 1 ? HOME_COPY.packedSingular : HOME_COPY.packedPlural;
   return `${total} ${itemsLabel} (${packed} ${packedLabel})`;
 };
 
-export const ListCardPreview = ({ list, color }: { list: PackingListSummary; color: string }) => (
+export const ListCardPreview = ({
+  list,
+  color,
+}: {
+  list: PackingListSummary;
+  color: string;
+}) => (
   <View style={[getCardStyle(false, color, false), { flex: 1 }]}>
     <View style={homeStyles.listCardInner}>
       <View style={homeStyles.listDragHandle}>
@@ -216,7 +257,8 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
   </View>
 );
 
-const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+const isNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
 
 const getCardStyle = (selected: boolean, color: string, archived: boolean) => [
   homeStyles.listCard,
@@ -234,33 +276,56 @@ const buildMenuItems = (
   showDeleteConfirm: () => void,
   showUncheckConfirm: () => void,
   showRename: () => void,
-  showMoveToSpace?: () => void
+  showMoveToSpace?: () => void,
 ) => {
   const items = [];
   items.push({ text: "Rename", onPress: showRename });
   if (isArchived) {
-    items.push({ text: "Restore", onPress: () => void actions.onRestore(list) });
+    items.push({
+      text: "Restore",
+      onPress: () => void actions.onRestore(list),
+    });
   } else {
     if (isPinned) {
       items.push({ text: "Unpin", onPress: () => void actions.onUnpin(list) });
     } else {
-      items.push({ text: "Pin to Top", onPress: () => void actions.onPin(list) });
+      items.push({
+        text: "Pin to Top",
+        onPress: () => void actions.onPin(list),
+      });
     }
     if (isTemplate) {
-      items.push({ text: "Remove Template", onPress: () => void actions.onRemoveTemplate(list) });
+      items.push({
+        text: "Remove Template",
+        onPress: () => void actions.onRemoveTemplate(list),
+      });
     } else {
-      items.push({ text: "Set as Template", onPress: () => void actions.onSetTemplate(list) });
-      items.push({ text: "Archive", onPress: () => void actions.onArchive(list) });
+      items.push({
+        text: "Set as Template",
+        onPress: () => void actions.onSetTemplate(list),
+      });
+      items.push({
+        text: "Archive",
+        onPress: () => void actions.onArchive(list),
+      });
     }
     if (!isTemplate) {
       const hasPacked = (list.packedCount ?? 0) > 0;
-      items.push({ text: "Uncheck All", onPress: showUncheckConfirm, disabled: !hasPacked });
+      items.push({
+        text: "Uncheck All",
+        onPress: showUncheckConfirm,
+        disabled: !hasPacked,
+      });
     }
   }
   if (showMoveToSpace) {
     items.push({ text: "Move to Space", onPress: showMoveToSpace });
   }
-  items.push({ text: "Delete", style: "destructive" as const, onPress: showDeleteConfirm });
+  items.push({
+    text: "Delete",
+    style: "destructive" as const,
+    onPress: showDeleteConfirm,
+  });
   items.push({ text: "Cancel", style: "cancel" as const });
   return items;
 };

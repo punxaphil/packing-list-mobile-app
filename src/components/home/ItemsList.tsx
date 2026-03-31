@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
@@ -7,7 +13,10 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
+import {
+  FadeScrollView,
+  FadeScrollViewRef,
+} from "../shared/FadeScrollView.tsx";
 import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
@@ -51,7 +60,9 @@ type ItemsListProps = {
 export const ItemsList = (props: ItemsListProps) => {
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
-  const sections = buildSections(ordering.items, props.categories).filter((s) => s.items.length);
+  const sections = buildSections(ordering.items, props.categories).filter(
+    (s) => s.items.length,
+  );
   const colors = buildCategoryColors(sections.map((s) => s.category));
   const itemCategoryMap = buildItemCategoryMap(props.items);
 
@@ -60,8 +71,20 @@ export const ItemsList = (props: ItemsListProps) => {
     if (!currentMatchId) return;
     const categoryId = itemCategoryMap[currentMatchId];
     if (categoryId === undefined) return;
-    scrollToMatch(currentMatchId, categoryId, drag.layouts, drag.sectionLayouts, drag.bodyLayouts);
-  }, [props.search, itemCategoryMap, drag.layouts, drag.sectionLayouts, drag.bodyLayouts]);
+    scrollToMatch(
+      currentMatchId,
+      categoryId,
+      drag.layouts,
+      drag.sectionLayouts,
+      drag.bodyLayouts,
+    );
+  }, [
+    props.search,
+    itemCategoryMap,
+    drag.layouts,
+    drag.sectionLayouts,
+    drag.bodyLayouts,
+  ]);
 
   if (props.loading) return <ItemsLoader />;
 
@@ -72,7 +95,12 @@ export const ItemsList = (props: ItemsListProps) => {
       scrollEnabled={!drag.snapshot}
     >
       <View style={homeStyles.list}>
-        {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} onAddKit={props.onAddKit} />}
+        {!props.hasItems && (
+          <EmptyItems
+            onBrowseKits={props.onBrowseKits}
+            onAddKit={props.onAddKit}
+          />
+        )}
         {props.filteredEmpty && <FilteredEmpty />}
         {sections.map((section, i) => (
           <CategorySection
@@ -135,8 +163,16 @@ const EmptyItems = ({
         <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
         <View style={emptyStyles.kitsList}>
           {PACKING_KITS.map((kit) => (
-            <Pressable key={kit.id} style={emptyStyles.kitChip} onPress={() => setPendingKit(kit)}>
-              <MaterialCommunityIcons name={kit.icon} size={18} color={homeColors.primary} />
+            <Pressable
+              key={kit.id}
+              style={emptyStyles.kitChip}
+              onPress={() => setPendingKit(kit)}
+            >
+              <MaterialCommunityIcons
+                name={kit.icon}
+                size={18}
+                color={homeColors.primary}
+              />
               <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
             </Pressable>
           ))}
@@ -147,7 +183,10 @@ const EmptyItems = ({
       </View>
       <DialogShell
         visible={!!pendingKit}
-        title={EMPTY_COPY.confirmTitle.replace("{name}", pendingKit?.name ?? "")}
+        title={EMPTY_COPY.confirmTitle.replace(
+          "{name}",
+          pendingKit?.name ?? "",
+        )}
         onClose={() => setPendingKit(null)}
         actions={
           <DialogActions
@@ -159,7 +198,10 @@ const EmptyItems = ({
         }
       >
         <Text style={emptyStyles.confirmText}>
-          {EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit?.items.length ?? 0))}
+          {EMPTY_COPY.confirmBody.replace(
+            "{count}",
+            String(pendingKit?.items.length ?? 0),
+          )}
         </Text>
       </DialogShell>
     </View>

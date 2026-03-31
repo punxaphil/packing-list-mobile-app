@@ -53,22 +53,42 @@ const formatItemCount = (count: number) => {
 
 export const EntityCard = (props: EntityCardProps) => {
   const { wrap } = useDraggableRow(
-    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
-    { applyTranslation: false }
+    {
+      onStart: props.onDragStart,
+      onMove: props.onDragMove,
+      onEnd: props.onDragEnd,
+    },
+    { applyTranslation: false },
   );
   const showToast = useToast();
-  const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
-  const handleRename = (name: string) => props.actions.onRename(props.entity, name);
-  const validateName = (name: string) => !hasDuplicateEntityName(name, props.entities, props.entity.id);
-  const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
-  const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
+  const handleLayout = (event: LayoutChangeEvent) =>
+    props.onLayout?.(event.nativeEvent.layout);
+  const handleRename = (name: string) =>
+    props.actions.onRename(props.entity, name);
+  const validateName = (name: string) =>
+    !hasDuplicateEntityName(name, props.entities, props.entity.id);
+  const onDuplicateName = () =>
+    showToast(COPY.duplicateName.replace("{type}", props.copy.type));
+  const cardStyle = [
+    entityStyles.card,
+    { backgroundColor: props.color },
+    props.hidden ? { opacity: 0 } : null,
+  ];
   const openMenu = () =>
     showActionSheet(props.entity.name, [
-      { text: "Delete", style: "destructive", onPress: () => void props.actions.onDelete(props.entity) },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => void props.actions.onDelete(props.entity),
+      },
     ]);
   return (
     <View onLayout={handleLayout}>
-      <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
+      <Pressable
+        style={cardStyle}
+        accessibilityRole="button"
+        accessibilityLabel={props.entity.name}
+      >
         <View style={entityStyles.cardInner}>
           {wrap(<DragHandle disabled={!props.dragEnabled} />)}
           <EntityImage
@@ -85,7 +105,9 @@ export const EntityCard = (props: EntityCardProps) => {
               onValidationFail={onDuplicateName}
               textStyle={entityStyles.cardName}
             />
-            <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
+            <Text style={entityStyles.itemSummary}>
+              {formatItemCount(props.itemCount)}
+            </Text>
           </View>
           <MenuButton onPress={openMenu} />
         </View>
@@ -94,11 +116,24 @@ export const EntityCard = (props: EntityCardProps) => {
   );
 };
 
-type EntityImageProps = { imageUrl?: string; loading?: boolean; onPress: () => void; copy: EntityCopy };
+type EntityImageProps = {
+  imageUrl?: string;
+  loading?: boolean;
+  onPress: () => void;
+  copy: EntityCopy;
+};
 
-const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => (
+const EntityImage = ({
+  imageUrl,
+  loading,
+  onPress,
+  copy,
+}: EntityImageProps) => (
   <Pressable
-    style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
+    style={[
+      entityStyles.imageContainer,
+      !imageUrl && entityStyles.imagePlaceholder,
+    ]}
     onPress={onPress}
     disabled={loading}
     accessibilityRole="button"
@@ -109,19 +144,35 @@ const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => 
     ) : imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
     ) : (
-      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
+      <MaterialCommunityIcons
+        name="cloud-upload-outline"
+        size={20}
+        color={homeColors.surface}
+      />
     )}
   </Pressable>
 );
 
 const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   <View style={entityStyles.dragHandle}>
-    <Text style={[entityStyles.dragHandleIcon, disabled && entityStyles.dragHandleDisabled]}>{DRAG_HANDLE_ICON}</Text>
+    <Text
+      style={[
+        entityStyles.dragHandleIcon,
+        disabled && entityStyles.dragHandleDisabled,
+      ]}
+    >
+      {DRAG_HANDLE_ICON}
+    </Text>
   </View>
 );
 
 const MenuButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={entityStyles.menuButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="Menu">
+  <Pressable
+    style={entityStyles.menuButton}
+    onPress={onPress}
+    accessibilityRole="button"
+    accessibilityLabel="Menu"
+  >
     <Text style={entityStyles.menuIcon}>{MENU_ICON}</Text>
   </Pressable>
 );

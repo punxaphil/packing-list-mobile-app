@@ -22,28 +22,33 @@ export function useSpaceManagement(onBack: () => void) {
     async (name: string) => {
       await updateSpaceName(spaceId, name);
     },
-    [spaceId]
+    [spaceId],
   );
 
   const invite = useCallback(
     async (email: string) => {
       await sendInvite(email);
     },
-    [sendInvite]
+    [sendInvite],
   );
 
   const removeUser = useCallback(
     async (email: string) => {
       if (!activeSpace) return;
-      const userId = findUserIdByEmail(activeSpace.members, activeSpace.memberEmails, email);
+      const userId = findUserIdByEmail(
+        activeSpace.members,
+        activeSpace.memberEmails,
+        email,
+      );
       await removeMemberFromSpace(spaceId, userId ?? "", email);
     },
-    [activeSpace, spaceId]
+    [activeSpace, spaceId],
   );
 
   const switchToFallbackSpace = useCallback(() => {
     if (!profile) return;
-    const fallback = profile.spaceIds.find((id) => id !== spaceId) ?? profile.personalSpaceId;
+    const fallback =
+      profile.spaceIds.find((id) => id !== spaceId) ?? profile.personalSpaceId;
     switchSpace(fallback);
   }, [profile, spaceId, switchSpace]);
 
@@ -78,7 +83,11 @@ export function useSpaceManagement(onBack: () => void) {
     }
     Alert.alert(SPACE_MGMT_COPY.delete, SPACE_MGMT_COPY.confirmDelete, [
       { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
-      { text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: deleteCurrentSpace },
+      {
+        text: SPACE_MGMT_COPY.confirm,
+        style: "destructive",
+        onPress: deleteCurrentSpace,
+      },
     ]);
   }, [getDeleteError, deleteCurrentSpace]);
 
@@ -93,7 +102,11 @@ export function useSpaceManagement(onBack: () => void) {
   };
 }
 
-function findUserIdByEmail(members: string[], memberEmails: string[], email: string): string | undefined {
+function findUserIdByEmail(
+  members: string[],
+  memberEmails: string[],
+  email: string,
+): string | undefined {
   const index = memberEmails.indexOf(email);
   return index >= 0 ? members[index] : undefined;
 }

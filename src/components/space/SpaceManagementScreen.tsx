@@ -13,8 +13,12 @@ type Props = { onBack: () => void };
 export const SpaceManagementScreen = ({ onBack }: Props) => {
   const { activeSpace } = useSpace();
   const mgmt = useSpaceManagement(onBack);
-  const [dialogState, setDialogState] = useState<"none" | "rename" | "invite" | "inviteSent">("none");
-  const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>({});
+  const [dialogState, setDialogState] = useState<
+    "none" | "rename" | "invite" | "inviteSent"
+  >("none");
+  const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>(
+    {},
+  );
 
   const memberIds = activeSpace?.members;
 
@@ -29,7 +33,10 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
     <View style={styles.container}>
       <Header onBack={onBack} />
       <View style={styles.content}>
-        <SpaceNameRow name={activeSpace.name} onRename={() => setDialogState("rename")} />
+        <SpaceNameRow
+          name={activeSpace.name}
+          onRename={() => setDialogState("rename")}
+        />
         <UserList
           emails={activeSpace.memberEmails}
           onRemove={mgmt.removeUser}
@@ -64,7 +71,13 @@ const Header = ({ onBack }: { onBack: () => void }) => (
   </View>
 );
 
-const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
+const SpaceNameRow = ({
+  name,
+  onRename,
+}: {
+  name: string;
+  onRename: () => void;
+}) => (
   <View style={styles.nameRow}>
     <Text style={styles.spaceName}>{name}</Text>
     <Pressable onPress={onRename} hitSlop={8}>
@@ -80,7 +93,12 @@ type ActionButtonsProps = {
   isPersonal: boolean;
 };
 
-const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButtonsProps) => (
+const ActionButtons = ({
+  onInvite,
+  onLeave,
+  onDelete,
+  isPersonal,
+}: ActionButtonsProps) => (
   <View style={styles.actions}>
     <Pressable style={styles.primaryButton} onPress={onInvite}>
       <Text style={styles.primaryButtonText}>{SPACE_MGMT_COPY.invite}</Text>
@@ -112,7 +130,11 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: homeColors.text },
   placeholder: { minWidth: 60 },
   content: { flex: 1, paddingHorizontal: homeSpacing.lg, gap: homeSpacing.lg },
-  nameRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   spaceName: { fontSize: 22, fontWeight: "700", color: homeColors.text },
   renameLink: { fontSize: 14, fontWeight: "600", color: homeColors.primary },
   actions: { gap: homeSpacing.sm, marginTop: homeSpacing.md },
@@ -122,7 +144,11 @@ const styles = StyleSheet.create({
     backgroundColor: homeColors.primary,
     alignItems: "center",
   },
-  primaryButtonText: { fontSize: 16, fontWeight: "600", color: homeColors.buttonText },
+  primaryButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: homeColors.buttonText,
+  },
   outlineButton: {
     paddingVertical: homeSpacing.md,
     borderRadius: homeRadius,
@@ -130,7 +156,11 @@ const styles = StyleSheet.create({
     borderColor: homeColors.border,
     alignItems: "center",
   },
-  outlineButtonText: { fontSize: 16, fontWeight: "600", color: homeColors.text },
+  outlineButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: homeColors.text,
+  },
   dangerButton: {
     paddingVertical: homeSpacing.md,
     borderRadius: homeRadius,
@@ -138,5 +168,9 @@ const styles = StyleSheet.create({
     borderColor: homeColors.danger,
     alignItems: "center",
   },
-  dangerButtonText: { fontSize: 16, fontWeight: "600", color: homeColors.danger },
+  dangerButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: homeColors.danger,
+  },
 });
