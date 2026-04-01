@@ -1,5 +1,13 @@
 import { type PropsWithChildren } from "react";
-import { Animated, Keyboard, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  Keyboard,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
@@ -10,12 +18,25 @@ type DialogShellProps = PropsWithChildren<{
   actions?: React.ReactNode;
 }>;
 
-export const DialogShell = ({ visible, title, onClose, children, actions }: DialogShellProps) => {
+export const DialogShell = ({
+  visible,
+  title,
+  onClose,
+  children,
+  actions,
+}: DialogShellProps) => {
   const keyboardOffset = useKeyboardOffset();
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
+    <Modal
+      transparent
+      animationType="fade"
+      visible={visible}
+      onRequestClose={onClose}
+    >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Animated.View style={[styles.card, { transform: [{ translateY: keyboardOffset }] }]}>
+        <Animated.View
+          style={[styles.card, { transform: [{ translateY: keyboardOffset }] }]}
+        >
           <Pressable style={styles.content} onPress={() => Keyboard.dismiss()}>
             <Text style={styles.title}>{title}</Text>
             {children}
@@ -35,13 +56,37 @@ type DialogActionsProps = {
   disabled?: boolean;
 };
 
-export const DialogActions = ({ cancelLabel, confirmLabel, onCancel, onConfirm, disabled }: DialogActionsProps) => (
+export const DialogActions = ({
+  cancelLabel,
+  confirmLabel,
+  onCancel,
+  onConfirm,
+  disabled,
+}: DialogActionsProps) => (
   <View style={styles.actions}>
-    <Pressable style={styles.actionButton} onPress={onCancel} disabled={disabled}>
-      <Text style={[styles.actionLabel, disabled && styles.disabled]}>{cancelLabel}</Text>
+    <Pressable
+      style={styles.actionButton}
+      onPress={onCancel}
+      disabled={disabled}
+    >
+      <Text style={[styles.actionLabel, disabled && styles.disabled]}>
+        {cancelLabel}
+      </Text>
     </Pressable>
-    <Pressable style={styles.actionButton} onPress={onConfirm} disabled={disabled}>
-      <Text style={[styles.actionLabel, styles.actionPrimary, disabled && styles.disabled]}>{confirmLabel}</Text>
+    <Pressable
+      style={styles.actionButton}
+      onPress={onConfirm}
+      disabled={disabled}
+    >
+      <Text
+        style={[
+          styles.actionLabel,
+          styles.actionPrimary,
+          disabled && styles.disabled,
+        ]}
+      >
+        {confirmLabel}
+      </Text>
     </Pressable>
   </View>
 );
@@ -88,7 +133,7 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: homeSpacing.sm,
+    paddingVertical: homeSpacing.md,
   },
   actionLabel: { fontSize: 16, color: homeColors.primary },
   actionPrimary: { fontWeight: "600" },
