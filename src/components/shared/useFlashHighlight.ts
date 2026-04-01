@@ -27,7 +27,7 @@ export const useFlashHighlight = () => {
         }),
       ]).start(() => setHighlightId(null));
     },
-    [opacity],
+    [opacity]
   );
 
   return { highlightId, highlightOpacity: opacity, flash } as const;

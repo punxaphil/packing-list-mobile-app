@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { computeMemberInitials } from "~/components/home/memberInitialsUtils.ts";
+import { computeMemberInitials, computeMemberNames } from "~/components/home/memberInitialsUtils.ts";
 import { useNamedEntities } from "./useNamedEntities.ts";
 
 const COLLECTION = "members";
@@ -7,5 +7,6 @@ const COLLECTION = "members";
 export const useMembers = (spaceId: string | null | undefined) => {
   const { items, loading } = useNamedEntities(spaceId, COLLECTION);
   const memberInitials = useMemo(() => computeMemberInitials(items), [items]);
-  return { members: items, memberInitials, loading };
+  const memberNames = useMemo(() => computeMemberNames(items), [items]);
+  return { members: items, memberInitials, memberNames, loading };
 };

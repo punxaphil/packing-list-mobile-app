@@ -1,6 +1,7 @@
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 export type MemberInitialsMap = Map<string, string>;
+export type MemberNamesMap = Map<string, string>;
 
 export const computeMemberInitials = (members: NamedEntity[]): MemberInitialsMap => {
   const names = members.map((m) => m.name);
@@ -8,6 +9,12 @@ export const computeMemberInitials = (members: NamedEntity[]): MemberInitialsMap
   for (let i = 0; i < members.length; i++) {
     map.set(members[i].id, findUniquePrefix(names[i], i, names));
   }
+  return map;
+};
+
+export const computeMemberNames = (members: NamedEntity[]): MemberNamesMap => {
+  const map = new Map<string, string>();
+  for (const member of members) map.set(member.id, member.name);
   return map;
 };
 

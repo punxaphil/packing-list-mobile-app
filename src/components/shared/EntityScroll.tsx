@@ -18,15 +18,8 @@ type EntityScrollProps = {
   copy: EntityCopy;
   colors: Record<string, string>;
   drag: ReturnType<typeof useDragState>;
-  onDrop: (
-    snapshot: DragSnapshot,
-    layouts: Record<string, LayoutRectangle>,
-  ) => void;
-  computeDropIndex: (
-    ids: string[],
-    snapshot: DragSnapshot,
-    layouts: Record<string, LayoutRectangle>,
-  ) => number | null;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
+  computeDropIndex: (ids: string[], snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => number | null;
   dragEnabled?: boolean;
   itemCounts: Record<string, number>;
   images: Image[];
@@ -50,9 +43,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
     imageLoading,
   } = props;
   const ids = entities.map((e) => e.id);
-  const dropIndex = dragEnabled
-    ? computeDropIndex(ids, drag.snapshot, drag.layouts)
-    : null;
+  const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
   const originalIndex = drag.snapshot ? ids.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
@@ -65,10 +56,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
     const newEntity = entities.find((e) => !prevIds.current.has(e.id));
     prevIds.current = currentIds;
     if (newEntity) {
-      setTimeout(
-        () => scrollRef.current?.scrollToEnd({ animated: true }),
-        SCROLL_DELAY_MS,
-      );
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), SCROLL_DELAY_MS);
       setTimeout(() => flash(newEntity.id), HIGHLIGHT_DELAY_MS);
     }
   }, [entities, flash]);
@@ -87,52 +75,25 @@ export const EntityScroll = (props: EntityScrollProps) => {
               copy={copy}
               color={colors[entity.id]}
               hidden={drag.snapshot?.id === entity.id}
-              highlightOpacity={
-                highlightId === entity.id ? highlightOpacity : undefined
-              }
+              highlightOpacity={highlightId === entity.id ? highlightOpacity : undefined}
               dragEnabled={dragEnabled}
               itemCount={itemCounts[entity.id] ?? 0}
               image={image}
               imageLoading={imageLoading === entity.id}
               onImagePress={() => onImagePress(entity.id, image)}
-              onLayout={(layout: LayoutRectangle) =>
-                drag.recordLayout(entity.id, layout)
-              }
-              onDragStart={
-                dragEnabled ? () => drag.start(entity.id, "") : undefined
-              }
-              onDragMove={
-                dragEnabled
-                  ? (offset: DragOffset) => drag.move(entity.id, offset)
-                  : undefined
-              }
+              onLayout={(layout: LayoutRectangle) => drag.recordLayout(entity.id, layout)}
+              onDragStart={dragEnabled ? () => drag.start(entity.id, "") : undefined}
+              onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(entity.id, offset) : undefined}
               onDragEnd={
-                dragEnabled
-                  ? () =>
-                      drag.end(
-                        (snapshot) =>
-                          snapshot && onDrop(snapshot, drag.layouts),
-                      )
-                  : undefined
+                dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts)) : undefined
               }
             />
           );
         })}
         {dragEnabled && (
-          <DropIndicator
-            dropIndex={dropIndex}
-            entities={entities}
-            layouts={drag.layouts}
-            below={showBelow}
-          />
+          <DropIndicator dropIndex={dropIndex} entities={entities} layouts={drag.layouts} below={showBelow} />
         )}
-        {dragEnabled && (
-          <GhostRow
-            entities={entities}
-            drag={drag.snapshot}
-            layouts={drag.layouts}
-          />
-        )}
+        {dragEnabled && <GhostRow entities={entities} drag={drag.snapshot} layouts={drag.layouts} />}
       </View>
     </FadeScrollView>
   );
@@ -174,12 +135,7 @@ type DropIndicatorProps = {
   below: boolean;
 };
 
-const DropIndicator = ({
-  dropIndex,
-  entities,
-  layouts,
-  below,
-}: DropIndicatorProps) => {
+const DropIndicator = ({ dropIndex, entities, layouts, below }: DropIndicatorProps) => {
   if (dropIndex === null) return null;
   const targetId = entities[dropIndex]?.id;
   if (!targetId) return null;

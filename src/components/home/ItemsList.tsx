@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
@@ -13,16 +7,13 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import {
-  FadeScrollView,
-  FadeScrollViewRef,
-} from "../shared/FadeScrollView.tsx";
+import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
 import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
 import { buildCategoryColors } from "./listColors.ts";
-import { MemberInitialsMap } from "./memberInitialsUtils.ts";
+import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import { useDragState } from "./useDragState.ts";
@@ -41,6 +32,7 @@ type ItemsListProps = {
   memberImages: Image[];
   categoryImages: Image[];
   memberInitials: MemberInitialsMap;
+  memberNames: MemberNamesMap;
   lists: NamedEntity[];
   currentListId: string;
   isTemplateList: boolean;
@@ -64,9 +56,7 @@ type ItemsListProps = {
 export const ItemsList = (props: ItemsListProps) => {
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
-  const sections = buildSections(ordering.items, props.categories).filter(
-    (s) => s.items.length,
-  );
+  const sections = buildSections(ordering.items, props.categories).filter((s) => s.items.length);
   const colors = buildCategoryColors(sections.map((s) => s.category));
   const itemCategoryMap = buildItemCategoryMap(props.items);
   const prevItemIds = useRef(new Set(props.items.map((i) => i.id)));
@@ -96,34 +86,15 @@ export const ItemsList = (props: ItemsListProps) => {
       animated: true,
     });
     setTimeout(() => flash(id), HIGHLIGHT_DELAY_MS);
-  }, [
-    drag.layouts,
-    drag.sectionLayouts,
-    drag.bodyLayouts,
-    itemCategoryMap,
-    props.search.scrollRef,
-    flash,
-  ]);
+  }, [drag.layouts, drag.sectionLayouts, drag.bodyLayouts, itemCategoryMap, props.search.scrollRef, flash]);
 
   useEffect(() => {
     const { currentMatchId, scrollToMatch } = props.search;
     if (!currentMatchId) return;
     const categoryId = itemCategoryMap[currentMatchId];
     if (categoryId === undefined) return;
-    scrollToMatch(
-      currentMatchId,
-      categoryId,
-      drag.layouts,
-      drag.sectionLayouts,
-      drag.bodyLayouts,
-    );
-  }, [
-    props.search,
-    itemCategoryMap,
-    drag.layouts,
-    drag.sectionLayouts,
-    drag.bodyLayouts,
-  ]);
+    scrollToMatch(currentMatchId, categoryId, drag.layouts, drag.sectionLayouts, drag.bodyLayouts);
+  }, [props.search, itemCategoryMap, drag.layouts, drag.sectionLayouts, drag.bodyLayouts]);
 
   if (props.loading) return <ItemsLoader />;
 
@@ -134,12 +105,7 @@ export const ItemsList = (props: ItemsListProps) => {
       scrollEnabled={!drag.snapshot}
     >
       <View style={homeStyles.list}>
-        {!props.hasItems && (
-          <EmptyItems
-            onBrowseKits={props.onBrowseKits}
-            onAddKit={props.onAddKit}
-          />
-        )}
+        {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} onAddKit={props.onAddKit} />}
         {props.filteredEmpty && <FilteredEmpty />}
         {sections.map((section, i) => (
           <CategorySection
@@ -150,6 +116,7 @@ export const ItemsList = (props: ItemsListProps) => {
             memberImages={props.memberImages}
             categoryImages={props.categoryImages}
             initialsMap={props.memberInitials}
+            memberNames={props.memberNames}
             categories={props.categories}
             lists={props.lists}
             currentListId={props.currentListId}
@@ -204,16 +171,8 @@ const EmptyItems = ({
         <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
         <View style={emptyStyles.kitsList}>
           {PACKING_KITS.map((kit) => (
-            <Pressable
-              key={kit.id}
-              style={emptyStyles.kitChip}
-              onPress={() => setPendingKit(kit)}
-            >
-              <MaterialCommunityIcons
-                name={kit.icon}
-                size={18}
-                color={homeColors.primary}
-              />
+            <Pressable key={kit.id} style={emptyStyles.kitChip} onPress={() => setPendingKit(kit)}>
+              <MaterialCommunityIcons name={kit.icon} size={18} color={homeColors.primary} />
               <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
             </Pressable>
           ))}
@@ -224,10 +183,7 @@ const EmptyItems = ({
       </View>
       <DialogShell
         visible={!!pendingKit}
-        title={EMPTY_COPY.confirmTitle.replace(
-          "{name}",
-          pendingKit?.name ?? "",
-        )}
+        title={EMPTY_COPY.confirmTitle.replace("{name}", pendingKit?.name ?? "")}
         onClose={() => setPendingKit(null)}
         actions={
           <DialogActions
@@ -239,10 +195,7 @@ const EmptyItems = ({
         }
       >
         <Text style={emptyStyles.confirmText}>
-          {EMPTY_COPY.confirmBody.replace(
-            "{count}",
-            String(pendingKit?.items.length ?? 0),
-          )}
+          {EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit?.items.length ?? 0))}
         </Text>
       </DialogShell>
     </View>

@@ -65,10 +65,10 @@
 - a-z sorted categories when adding item
 - Dnd black bar doesn’t move
 - Lägg till nederst. För allt, items, categories etc. Scroll to added item
+- More spacing dialog buttons
 
 # todo
 
-- More spacing dialog buttons
 - better display members
 
 # Maybe later

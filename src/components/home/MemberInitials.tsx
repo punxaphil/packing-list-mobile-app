@@ -1,56 +1,77 @@
-import { Pressable, Image as RNImage, Text, View } from "react-native";
+import { useState } from "react";
+import { LayoutChangeEvent, Pressable, Image as RNImage, Text, View } from "react-native";
 import { Image } from "~/types/Image.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { MemberInitialsMap } from "./memberInitialsUtils.ts";
+import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { homeStyles } from "./styles.ts";
+
+const BADGE_GAP = 4;
+const BADGE_H_PADDING = 8;
+const IMAGE_WIDTH = 16;
+const IMAGE_GAP = 4;
+const CHAR_WIDTH = 6;
 
 type MemberInitialsProps = {
   item: PackItem;
   initialsMap: MemberInitialsMap;
+  memberNames: MemberNamesMap;
   memberImages: Image[];
   onToggle: (memberId: string) => void;
 };
 
-export const MemberInitials = ({ item, initialsMap, memberImages, onToggle }: MemberInitialsProps) => {
+export const MemberInitials = ({ item, initialsMap, memberNames, memberImages, onToggle }: MemberInitialsProps) => {
+  const [containerWidth, setContainerWidth] = useState(0);
   if (item.members.length === 0) return null;
-  const getImageUrl = (memberId: string) => memberImages.find((img) => img.typeId === memberId)?.url;
+
+  const getImageUrl = (id: string) => memberImages.find((img) => img.typeId === id)?.url;
+  const handleLayout = (e: LayoutChangeEvent) => setContainerWidth(e.nativeEvent.layout.width);
+  const maxChars = computeMaxChars(containerWidth, item.members, memberImages);
+
   return (
-    <View style={homeStyles.memberRow}>
-      {item.members.map((mp) => (
-        <MemberBadge
-          key={mp.id}
-          imageUrl={getImageUrl(mp.id)}
-          initial={initialsMap.get(mp.id) ?? "?"}
-          checked={mp.checked}
-          onPress={() => onToggle(mp.id)}
-        />
-      ))}
+    <View style={homeStyles.memberRow} onLayout={handleLayout}>
+      {item.members.map((mp) => {
+        const fullName = memberNames.get(mp.id) ?? initialsMap.get(mp.id) ?? "?";
+        const label = truncateName(fullName, maxChars);
+        return (
+          <MemberBadge
+            key={mp.id}
+            imageUrl={getImageUrl(mp.id)}
+            label={label}
+            checked={mp.checked}
+            onPress={() => onToggle(mp.id)}
+          />
+        );
+      })}
     </View>
   );
 };
 
+const computeMaxChars = (width: number, members: PackItem["members"], images: Image[]) => {
+  if (width === 0) return 2;
+  const count = members.length;
+  const totalGaps = (count - 1) * BADGE_GAP;
+  const imageIds = new Set(images.map((img) => img.typeId));
+  const imageCount = members.filter((m) => imageIds.has(m.id)).length;
+  const totalImageSpace = imageCount * (IMAGE_WIDTH + IMAGE_GAP);
+  const available = width - totalGaps - count * BADGE_H_PADDING - totalImageSpace;
+  const charsPerBadge = Math.floor(available / (count * CHAR_WIDTH));
+  return Math.max(2, charsPerBadge);
+};
+
+const truncateName = (name: string, maxChars: number) => (name.length <= maxChars ? name : name.slice(0, maxChars));
+
 type MemberBadgeProps = {
   imageUrl: string | undefined;
-  initial: string;
+  label: string;
   checked: boolean;
   onPress: () => void;
 };
 
-const MemberBadge = ({ imageUrl, initial, checked, onPress }: MemberBadgeProps) => {
-  if (imageUrl) {
-    return (
-      <Pressable
-        onPress={onPress}
-        style={[homeStyles.memberImageWrapper, checked && homeStyles.memberImageWrapperChecked]}
-      >
-        <RNImage source={{ uri: imageUrl }} style={homeStyles.memberImage} />
-        {!checked && <View style={homeStyles.memberImageOverlay} />}
-      </Pressable>
-    );
-  }
-  return (
-    <Pressable onPress={onPress} style={[homeStyles.memberInitial, checked && homeStyles.memberInitialChecked]}>
-      <Text style={[homeStyles.memberInitialText, checked && homeStyles.memberInitialTextChecked]}>{initial}</Text>
-    </Pressable>
-  );
-};
+const MemberBadge = ({ imageUrl, label, checked, onPress }: MemberBadgeProps) => (
+  <Pressable onPress={onPress} style={[homeStyles.memberBadge, checked && homeStyles.memberBadgeChecked]}>
+    {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.memberBadgeImage} />}
+    <Text style={[homeStyles.memberBadgeText, checked && homeStyles.memberBadgeTextChecked]} numberOfLines={1}>
+      {label}
+    </Text>
+  </Pressable>
+);

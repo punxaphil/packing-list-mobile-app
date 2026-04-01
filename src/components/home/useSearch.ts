@@ -23,27 +23,21 @@ export type SearchState = {
     categoryId: string,
     layouts: LayoutMap,
     sectionLayouts: LayoutMap,
-    bodyLayouts: LayoutMap,
+    bodyLayouts: LayoutMap
   ) => void;
   scrollRef: React.RefObject<{
     scrollTo: (options: { y: number; animated?: boolean }) => void;
   } | null>;
 };
 
-export const useSearch = (
-  items: PackItem[],
-  categories: NamedEntity[],
-): SearchState => {
+export const useSearch = (items: PackItem[], categories: NamedEntity[]): SearchState => {
   const [searchText, setSearchText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<{
     scrollTo: (options: { y: number; animated?: boolean }) => void;
   }>(null);
 
-  const matchedIds = useMemo(
-    () => findMatchingItemIds(items, searchText, categories),
-    [items, searchText, categories],
-  );
+  const matchedIds = useMemo(() => findMatchingItemIds(items, searchText, categories), [items, searchText, categories]);
 
   useEffect(() => setCurrentIndex(0), []);
 
@@ -67,25 +61,18 @@ export const useSearch = (
   const currentMatchId = matchedIds[currentIndex] ?? null;
 
   const scrollToMatch = useCallback(
-    (
-      id: string,
-      categoryId: string,
-      layouts: LayoutMap,
-      sectionLayouts: LayoutMap,
-      bodyLayouts: LayoutMap,
-    ) => {
+    (id: string, categoryId: string, layouts: LayoutMap, sectionLayouts: LayoutMap, bodyLayouts: LayoutMap) => {
       const itemLayout = layouts[id];
       const sectionLayout = sectionLayouts[categoryId];
       const bodyLayout = bodyLayouts[categoryId];
-      if (!itemLayout || !sectionLayout || !bodyLayout || !scrollRef.current)
-        return;
+      if (!itemLayout || !sectionLayout || !bodyLayout || !scrollRef.current) return;
       const absoluteY = sectionLayout.y + bodyLayout.y + itemLayout.y;
       scrollRef.current.scrollTo({
         y: Math.max(0, absoluteY - SCROLL_PADDING),
         animated: true,
       });
     },
-    [],
+    []
   );
 
   return {

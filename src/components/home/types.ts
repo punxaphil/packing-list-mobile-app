@@ -1,7 +1,7 @@
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { MemberInitialsMap } from "./memberInitialsUtils.ts";
+import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 
 export type PackingListSummary = NamedEntity & {
   itemCount?: number;
@@ -31,6 +31,7 @@ export type CategoriesState = {
 export type MembersState = {
   members: NamedEntity[];
   memberInitials: MemberInitialsMap;
+  memberNames: MemberNamesMap;
   loading: boolean;
 };
 
