@@ -235,6 +235,7 @@ const areSectionPropsEqual = (
   if (prev.isTemplateList !== next.isTemplateList) return false;
   if (prev.search.currentMatchId !== next.search.currentMatchId) return false;
   if (prev.drag.snapshot?.id !== next.drag.snapshot?.id) return false;
+  if (prev.drag.snapshot?.offsetY !== next.drag.snapshot?.offsetY) return false;
   if (prev.drag.snapshot?.frozenY !== next.drag.snapshot?.frozenY) return false;
   if (prev.initialsMap !== next.initialsMap) return false;
   if (prev.memberImages !== next.memberImages) return false;
