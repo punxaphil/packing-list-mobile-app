@@ -1,6 +1,7 @@
 import { homeEmptyStateCopy } from "./theme.ts";
 
 type HomeCopy = {
+  rename: string;
   unknownUser: string;
   signOutTitle: string;
   signOutMessage: string;
@@ -35,6 +36,8 @@ type HomeCopy = {
   createListPlaceholder: string;
   renameListPrompt: string;
   renameListConfirm: string;
+  renameItemPrompt: string;
+  renameCategoryPrompt: string;
   deleteConfirmTitle: string;
   deleteConfirmMessage: string;
   deleteIcon: string;
@@ -46,11 +49,14 @@ type HomeCopy = {
   categoryMenuAddItem: string;
   categoryMenuSortAlpha: string;
   categoryMenuDeleteItems: string;
+  duplicateItemName: string;
+  duplicateCategoryName: string;
   duplicateListName: string;
   withoutMembers: string;
 };
 
 export const homeCopy: HomeCopy = {
+  rename: "Rename",
   unknownUser: "Unknown user",
   signOutTitle: "Sign out?",
   signOutMessage: "Sign out as",
@@ -85,6 +91,8 @@ export const homeCopy: HomeCopy = {
   createListPlaceholder: "Summer getaway",
   renameListPrompt: "Rename packing list",
   renameListConfirm: "Save",
+  renameItemPrompt: "Rename item",
+  renameCategoryPrompt: "Rename category",
   deleteConfirmTitle: "Delete this list?",
   deleteConfirmMessage: 'Delete "{name}"? This removes the list and its items.',
   deleteIcon: "\u{1F5D1}",
@@ -96,6 +104,8 @@ export const homeCopy: HomeCopy = {
   categoryMenuAddItem: "Add Item",
   categoryMenuSortAlpha: "Sort Alphabetically",
   categoryMenuDeleteItems: "Delete All Items",
+  duplicateItemName: "Item with this name already exists in category",
+  duplicateCategoryName: "A category with this name already exists",
   duplicateListName: "A list with this name already exists",
   withoutMembers: "Without members",
 } as const;

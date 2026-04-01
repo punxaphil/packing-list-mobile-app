@@ -8,9 +8,8 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
+import { CategoryRenameDialogs, getRenameCategoryError, getRenameItemError } from "./CategoryRenameDialogs.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
-import { EditableText } from "./EditableText.tsx";
-import { hasDuplicateName } from "./itemHandlers.ts";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { SectionGroup } from "./itemsSectionHelpers.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
@@ -19,7 +18,6 @@ import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
-import { useToast } from "./Toast.tsx";
 import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
@@ -62,28 +60,17 @@ type CategorySectionProps = {
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
 
-type CategoryEditing = {
-  editingId: string | null;
-  start: (id: string) => void;
-  stop: (id: string) => void;
-  active: (id: string) => boolean;
-};
-
 type CategoryItemRowProps = {
   item: PackItem;
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
   memberImages: Image[];
-  editing: CategoryEditing;
   hidden: boolean;
   highlightOpacity: Animated.Value | undefined;
   hasOtherLists: boolean;
   checkboxDisabled: boolean;
   isCurrentMatch: boolean;
-  validateItemName: (name: string) => boolean;
-  onDuplicateName: () => void;
   onToggle: (item: PackItem) => void;
-  onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
   onLayout: (layout: LayoutRectangle) => void;
   onDragStart: () => void;
@@ -92,19 +79,41 @@ type CategoryItemRowProps = {
   onOpenAssignMembers: () => void;
   onOpenMoveCategory: () => void;
   onOpenCopyToList: () => void;
+  onOpenRename: () => void;
   onToggleMemberPacked: (memberId: string) => void;
   onToggleAllMembers: (checked: boolean) => void;
 };
 
 const CategorySectionImpl = (props: CategorySectionProps) => {
-  const editing = useCategoryEditing();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
   const [copyItem, setCopyItem] = useState<PackItem | null>(null);
   const [pendingToggle, setPendingToggle] = useState<boolean | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [renameItem, setRenameItem] = useState<PackItem | null>(null);
+  const [renameItemText, setRenameItemText] = useState("");
+  const [renameCategoryVisible, setRenameCategoryVisible] = useState(false);
+  const [renameCategoryText, setRenameCategoryText] = useState("");
+  const renameItemErrorText = getRenameItemError(renameItem, renameItemText, props.section.items);
+  const renameCategoryErrorText = getRenameCategoryError(props.section.category, renameCategoryText, props.categories);
 
   const onAdd = () => props.onAddItem(props.section.category);
+  const openRenameItem = (item: PackItem) => {
+    setRenameItem(item);
+    setRenameItemText(item.name);
+  };
+  const submitRenameItem = () => {
+    if (renameItem && !renameItemErrorText) props.onRenameItem(renameItem, renameItemText.trim());
+    setRenameItem(null);
+  };
+  const openRenameCategory = () => {
+    setRenameCategoryVisible(true);
+    setRenameCategoryText(props.section.category.name);
+  };
+  const submitRenameCategory = () => {
+    if (!renameCategoryErrorText) props.onRenameCategory(props.section.category, renameCategoryText.trim());
+    setRenameCategoryVisible(false);
+  };
   const handleMoveCategory = (category: NamedEntity) => {
     if (moveItem) props.onMoveCategory(moveItem, category.id);
   };
@@ -134,20 +143,19 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         section={props.section}
         imageUrl={categoryImageUrl}
         isTemplateList={props.isTemplateList}
-        onRenameCategory={props.onRenameCategory}
-        editing={editing}
         onAdd={onAdd}
         onToggleCategory={handleCategoryToggle}
         pendingToggle={pendingToggle}
         onSortAlpha={() => props.onSortCategoryAlpha(props.section.items)}
         onDeleteItems={() => setConfirmDelete(true)}
+        onRename={openRenameCategory}
       />
       <CategoryItems
         {...props}
-        editing={editing}
         onOpenAssignMembers={setAssignItem}
         onOpenMoveCategory={setMoveItem}
         onOpenCopyToList={setCopyItem}
+        onOpenRenameItem={openRenameItem}
         checkboxDisabled={props.isTemplateList}
       />
       {pendingToggle !== null && <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />}
@@ -194,6 +202,21 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
             .replace("{name}", props.section.category.name)}
         </Text>
       </DialogShell>
+      <CategoryRenameDialogs
+        renameItem={renameItem}
+        renameItemText={renameItemText}
+        sectionItems={props.section.items}
+        renameCategoryVisible={renameCategoryVisible}
+        renameCategoryText={renameCategoryText}
+        category={props.section.category}
+        categories={props.categories}
+        onChangeItemText={setRenameItemText}
+        onCancelItem={() => setRenameItem(null)}
+        onSubmitItem={submitRenameItem}
+        onChangeCategoryText={setRenameCategoryText}
+        onCancelCategory={() => setRenameCategoryVisible(false)}
+        onSubmitCategory={submitRenameCategory}
+      />
     </View>
   );
 };
@@ -226,27 +249,16 @@ const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionP
 
 export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 
-const useCategoryEditing = (): CategoryEditing => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  return {
-    editingId,
-    start: setEditingId,
-    stop: (id: string) => setEditingId((current) => (current === id ? null : current)),
-    active: (id: string) => editingId === id,
-  };
-};
-
 type CategoryHeaderProps = {
   section: SectionGroup;
   imageUrl: string | undefined;
   isTemplateList: boolean;
-  onRenameCategory: (category: NamedEntity, name: string) => void;
-  editing: CategoryEditing;
   onAdd: () => void;
   onToggleCategory: (checked: boolean) => void;
   pendingToggle: boolean | null;
   onSortAlpha: () => void;
   onDeleteItems: () => void;
+  onRename: () => void;
 };
 
 const CategoryHeader = ({
@@ -254,19 +266,21 @@ const CategoryHeader = ({
   imageUrl,
   isTemplateList,
   onToggleCategory,
-  onRenameCategory,
   onAdd,
-  editing,
   pendingToggle,
   onSortAlpha,
   onDeleteItems,
+  onRename,
 }: CategoryHeaderProps) => {
   const allChecked = section.items.every((item) => item.checked);
   const indeterminate = !allChecked && section.items.some((item) => item.checked);
   const displayChecked = pendingToggle ?? allChecked;
 
+  const isUncategorized = section.category.id === "";
+
   const openMenu = () =>
     showActionSheet(section.category.name, [
+      ...(isUncategorized ? [] : [{ text: HOME_COPY.rename, onPress: onRename }]),
       { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
       { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
       {
@@ -291,15 +305,9 @@ const CategoryHeader = ({
         )}
       </View>
       {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
-      <EditableText
-        value={section.category.name}
-        onSubmit={(name) => onRenameCategory(section.category, name)}
-        textStyle={homeStyles.categoryTitle}
-        inputStyle={homeStyles.categoryInput}
-        containerStyle={homeStyles.editable}
-        onStart={() => editing.start(section.category.id)}
-        onEnd={() => editing.stop(section.category.id)}
-      />
+      <Text style={homeStyles.categoryTitle} numberOfLines={1}>
+        {section.category.name}
+      </Text>
       <Pressable
         style={homeStyles.addButton}
         onPress={openMenu}
@@ -313,10 +321,10 @@ const CategoryHeader = ({
 };
 
 type CategoryItemsProps = CategorySectionProps & {
-  editing: CategoryEditing;
   onOpenAssignMembers: (item: PackItem) => void;
   onOpenMoveCategory: (item: PackItem) => void;
   onOpenCopyToList: (item: PackItem) => void;
+  onOpenRenameItem: (item: PackItem) => void;
   checkboxDisabled: boolean;
 };
 
@@ -328,24 +336,21 @@ const CategoryItems = (props: CategoryItemsProps) => {
     search,
     drag,
     onToggle,
-    onRenameItem,
     onDeleteItem,
     memberImages,
     initialsMap,
     onToggleMemberPacked,
     onToggleAllMembers,
-    editing,
     onOpenAssignMembers,
     onOpenMoveCategory,
     onOpenCopyToList,
+    onOpenRenameItem,
     onDrop,
     checkboxDisabled,
   } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
-  const showToast = useToast();
-  const onDuplicateName = () => showToast(COPY.duplicateItemName);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
@@ -358,24 +363,21 @@ const CategoryItems = (props: CategoryItemsProps) => {
           initialsMap={initialsMap}
           memberNames={props.memberNames}
           memberImages={memberImages}
-          editing={editing}
           hidden={drag.snapshot?.id === item.id}
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
           highlightOpacity={props.highlightId === item.id ? props.highlightOpacity : undefined}
-          validateItemName={(name) => !hasDuplicateName(name, item.category, items, item.id)}
-          onDuplicateName={onDuplicateName}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
           onDragEnd={() => drag.end((s) => s && onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
           onToggle={onToggle}
-          onRenameItem={onRenameItem}
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
           onOpenMoveCategory={() => onOpenMoveCategory(item)}
           onOpenCopyToList={() => onOpenCopyToList(item)}
+          onOpenRename={() => onOpenRenameItem(item)}
           onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
@@ -421,7 +423,6 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
     prev.hasOtherLists === next.hasOtherLists &&
     prev.checkboxDisabled === next.checkboxDisabled &&
     prev.isCurrentMatch === next.isCurrentMatch &&
-    prev.editing.editingId === next.editing.editingId &&
     prev.initialsMap === next.initialsMap &&
     prev.memberNames === next.memberNames &&
     prev.memberImages === next.memberImages
@@ -447,13 +448,14 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const hasMembers = props.item.members.length > 0;
   const openMenu = () =>
     showActionSheet(props.item.name, [
+      { text: HOME_COPY.rename, onPress: props.onOpenRename },
       { text: "Edit Members", onPress: props.onOpenAssignMembers },
       { text: "Change Category", onPress: props.onOpenMoveCategory },
       ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => handleDelete(props),
+        onPress: () => props.onDeleteItem(props.item.id),
       },
     ]);
   return (
@@ -478,17 +480,14 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           />
         )}
         <View style={homeStyles.itemContent}>
-          <EditableText
-            value={props.item.name}
-            onSubmit={(name) => props.onRenameItem(props.item, name)}
-            validate={props.validateItemName}
-            onValidationFail={props.onDuplicateName}
-            textStyle={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
-            inputStyle={homeStyles.itemInput}
-            autoFocus={props.editing.active(props.item.id)}
-            onStart={() => props.editing.start(props.item.id)}
-            onEnd={() => props.editing.stop(props.item.id)}
-          />
+          <View style={homeStyles.editable}>
+            <Text
+              style={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
+              numberOfLines={1}
+            >
+              {props.item.name}
+            </Text>
+          </View>
           <MemberInitials
             item={props.item}
             initialsMap={props.initialsMap}
@@ -509,11 +508,6 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
     </View>
   );
 }, areRowPropsEqual);
-
-const handleDelete = (props: CategoryItemRowProps) => {
-  props.onDeleteItem(props.item.id);
-  props.editing.stop(props.item.id);
-};
 
 const DragHandle = () => (
   <View style={homeStyles.itemDragHandle}>
@@ -576,10 +570,6 @@ const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   if (!layout) return null;
   const top = below ? layout.y + layout.height - 2 : layout.y - 2;
   return <View style={[homeStyles.itemIndicator, { top }]} />;
-};
-
-const COPY = {
-  duplicateItemName: "Item with this name already exists in category",
 };
 
 const DELETE_COPY = {
