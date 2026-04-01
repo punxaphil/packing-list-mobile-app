@@ -288,7 +288,7 @@ export const homeStyles = StyleSheet.create({
     overflow: "hidden",
   },
   memberInitialChecked: { backgroundColor: colors.primary },
-  memberInitialText: { fontSize: 10, fontWeight: "600", color: colors.muted },
+  memberInitialText: { fontSize: 10, fontWeight: "600", color: colors.text },
   memberInitialTextChecked: { color: "#ffffff" },
   memberImageWrapper: {
     width: 24,
@@ -297,12 +297,13 @@ export const homeStyles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
+    borderColor: colors.border,
   },
   memberImageWrapperChecked: { borderWidth: 2, borderColor: colors.primary },
   memberImage: { width: 20, height: 20, borderRadius: 10 },
   memberImageOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.6)",
     borderRadius: 10,
   },
   menuButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
