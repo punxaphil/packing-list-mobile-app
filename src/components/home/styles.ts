@@ -161,8 +161,10 @@ export const homeStyles = StyleSheet.create({
   categoryHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: spacing.md,
     minHeight: spacing.lg,
+    marginLeft: spacing.xs,
+    marginTop: spacing.xs,
   },
   categoryCheckboxWrapper: {
     position: "relative",
@@ -276,7 +278,11 @@ export const homeStyles = StyleSheet.create({
     textAlignVertical: "center",
   },
   editable: { flex: 1, justifyContent: "center" },
-  memberRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs, flexWrap: "wrap" },
+  memberRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
   memberBadge: {
     flexDirection: "row",
     alignItems: "center",

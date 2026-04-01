@@ -5,11 +5,11 @@ import { PackItem } from "~/types/PackItem.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { homeStyles } from "./styles.ts";
 
-const BADGE_GAP = 4;
+const BADGE_GAP = 8;
 const BADGE_H_PADDING = 8;
+const BADGE_INNER_GAP = 4;
 const IMAGE_WIDTH = 16;
-const IMAGE_GAP = 4;
-const CHAR_WIDTH = 6;
+const CHAR_WIDTH = 5;
 
 type MemberInitialsProps = {
   item: PackItem;
@@ -52,7 +52,7 @@ const computeMaxChars = (width: number, members: PackItem["members"], images: Im
   const totalGaps = (count - 1) * BADGE_GAP;
   const imageIds = new Set(images.map((img) => img.typeId));
   const imageCount = members.filter((m) => imageIds.has(m.id)).length;
-  const totalImageSpace = imageCount * (IMAGE_WIDTH + IMAGE_GAP);
+  const totalImageSpace = imageCount * (IMAGE_WIDTH + BADGE_INNER_GAP);
   const available = width - totalGaps - count * BADGE_H_PADDING - totalImageSpace;
   const charsPerBadge = Math.floor(available / (count * CHAR_WIDTH));
   return Math.max(2, charsPerBadge);
