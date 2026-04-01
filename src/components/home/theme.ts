@@ -12,6 +12,8 @@ export const homeColors = {
   dropIndicator: "#000000",
   overlayMuted: "rgba(17,24,39,0.4)",
   overlayDark: "rgba(0,0,0,0.5)",
+  highlight: "rgba(59, 130, 246, 0.15)",
+  highlightSubtle: "rgba(59, 130, 246, 0.08)",
 } as const;
 
 export const homeSpacing = {

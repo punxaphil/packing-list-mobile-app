@@ -13,6 +13,7 @@ type FlashScrollViewProps = {
 
 export type FadeScrollViewRef = {
   scrollTo: (options: { y: number; animated?: boolean }) => void;
+  scrollToEnd: (options?: { animated?: boolean }) => void;
 };
 
 const SCROLL_THRESHOLD = 4;
@@ -28,6 +29,7 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
       ref,
       () => ({
         scrollTo: (options) => scrollRef.current?.scrollTo(options),
+        scrollToEnd: (options) => scrollRef.current?.scrollToEnd(options),
       }),
       []
     );

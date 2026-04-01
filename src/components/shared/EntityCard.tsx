@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Animated,
   LayoutChangeEvent,
   LayoutRectangle,
   Pressable,
@@ -35,6 +36,7 @@ type EntityCardProps = {
   copy: EntityCopy;
   color: string;
   hidden?: boolean;
+  highlightOpacity?: Animated.Value;
   dragEnabled?: boolean;
   itemCount: number;
   image?: Image;
@@ -74,6 +76,7 @@ export const EntityCard = (props: EntityCardProps) => {
     { backgroundColor: props.color },
     props.hidden ? { opacity: 0 } : null,
   ];
+  const showHighlight = !!props.highlightOpacity;
   const openMenu = () =>
     showActionSheet(props.entity.name, [
       {
@@ -89,6 +92,15 @@ export const EntityCard = (props: EntityCardProps) => {
         accessibilityRole="button"
         accessibilityLabel={props.entity.name}
       >
+        {showHighlight && (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              entityStyles.cardHighlight,
+              { opacity: props.highlightOpacity },
+            ]}
+          />
+        )}
         <View style={entityStyles.cardInner}>
           {wrap(<DragHandle disabled={!props.dragEnabled} />)}
           <EntityImage

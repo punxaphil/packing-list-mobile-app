@@ -11,18 +11,13 @@ type StatusSectionProps = {
 const STATUS_OPTIONS: StatusFilter[] = ["all", "unpacked", "packed"];
 const STATUS_LABELS = ["All", "Unpacked", "Packed"];
 
-export const StatusSection = ({
-  statusFilter,
-  onSetStatus,
-}: StatusSectionProps) => (
+export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps) => (
   <>
     <Text style={styles.sectionTitle}>Status</Text>
     <SegmentedControl
       values={STATUS_LABELS}
       selectedIndex={STATUS_OPTIONS.indexOf(statusFilter)}
-      onChange={(e) =>
-        onSetStatus(STATUS_OPTIONS[e.nativeEvent.selectedSegmentIndex])
-      }
+      onChange={(e) => onSetStatus(STATUS_OPTIONS[e.nativeEvent.selectedSegmentIndex])}
     />
   </>
 );

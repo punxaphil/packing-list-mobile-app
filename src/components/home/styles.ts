@@ -233,10 +233,19 @@ export const homeStyles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   itemHighlight: {
-    backgroundColor: "rgba(59, 130, 246, 0.15)",
+    backgroundColor: homeColors.highlight,
     borderRadius: homeRadius / 2,
     marginHorizontal: -spacing.xs,
     paddingHorizontal: spacing.xs,
+  },
+  itemHighlightOverlay: {
+    position: "absolute" as const,
+    top: 0,
+    left: -spacing.xs,
+    right: -spacing.xs,
+    bottom: 0,
+    marginHorizontal: 0,
+    paddingHorizontal: 0,
   },
   itemContent: { flex: 1, gap: 2 },
   detailItem: {

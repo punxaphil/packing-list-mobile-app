@@ -47,27 +47,33 @@
 - category image should show left of category name in items list
 - clicking upload image, there's a delay before image picker shows. Consider showing some feedback.
 - show user image (if exists) instead of initial letter in top right corner
-  a space should be renameable
-  it should be possible to see who has access to a space
-  it should be possible to remove other member from space
-  when I change space my avatar image is removed, it should remain the same
-  it should be possible to move a list to another space
-  add item to category
+- a space should be renameable
+- it should be possible to see who has access to a space
+- it should be possible to remove other member from space
+- when I change space my avatar image is removed, it should remain the same
+- it should be possible to move a list to another space
+- add item to category
 - when a list is moved to another space, it must have the same exact content in it after move (eg items inside it, same checks, same categories, same members assigned to each item etc etc).
 - also, it seems I cannot leave a space?
 - empty list - packing kits not clickable
 - rename space should have current name showing
 - what else can we use built in components for? to automatically get liquid glass
+- when filtering, it shows no items in list and suggest packs.
+- remove space
+- use native checkboxes (see files app) # not possible it seems
+- bigger buttons when searching (up/down etc)
+- a-z sorted categories when adding item
+- Dnd black bar doesn’t move
+- Lägg till nederst. För allt, items, categories etc. Scroll to added item
 
 # todo
 
-- when filtering, it shows no items in list and suggest packs.
-  remove space
-
-scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
+- More spacing dialog buttons
+- better display members
 
 # Maybe later
 
+- scrolling down should transform the header to a floating header so that the list is visible (maybe blurred) behind header and the notification area/notch on the iphone
 - Replace topbar with ios native to get liquid glass effect and better performance
 - ipad layout/landscape mode
 - Assign color to entities

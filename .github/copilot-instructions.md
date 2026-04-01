@@ -1,4 +1,5 @@
 # Code Style
+
 - Apply Clean Code™️.
 - Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
@@ -17,12 +18,16 @@
 - Never implement hacky workarounds. Use built-in language/platform features.
 
 # React Native Specific
+
 - Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
 - Don't use colored icons, use mdi or similar icon font and style.
 
 # Workflow
+
 - When user corrects general behavior, update these instructions accordingly.
 - Never commit build files (ios/, android/build/, node_modules/, etc.). Only commit source files.
+- Do NOT run `npx react-native run-ios`. A dev server is always running; changes are picked up automatically.
+- Boy scout rule: fix pre-existing issues (formatting, lint, etc.) when touching nearby code.
 - After each change:
   1. Run `npm run prebuild` (typecheck + lint) and fix any errors
   2. Ask me to verify the change works
@@ -37,9 +42,9 @@
      - Constants defined in wrong location (should be in shared copy/styles files)
   4. Run `npm run prebuild` to verify no errors after review
   5. Suggest commit message (conventional commits style, descriptive commit body ~5 lines)
-  5. Wait for my approval before committing.
+  6. Wait for my approval before committing.
 
 # Communication
+
 - pcr = picky code review
 - vfd = verified, picky code review
-

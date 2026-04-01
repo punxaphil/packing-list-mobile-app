@@ -13,12 +13,8 @@ type Props = { onBack: () => void };
 export const SpaceManagementScreen = ({ onBack }: Props) => {
   const { activeSpace } = useSpace();
   const mgmt = useSpaceManagement(onBack);
-  const [dialogState, setDialogState] = useState<
-    "none" | "rename" | "invite" | "inviteSent"
-  >("none");
-  const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>(
-    {},
-  );
+  const [dialogState, setDialogState] = useState<"none" | "rename" | "invite" | "inviteSent">("none");
+  const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>({});
 
   const memberIds = activeSpace?.members;
 
@@ -33,10 +29,7 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
     <View style={styles.container}>
       <Header onBack={onBack} />
       <View style={styles.content}>
-        <SpaceNameRow
-          name={activeSpace.name}
-          onRename={() => setDialogState("rename")}
-        />
+        <SpaceNameRow name={activeSpace.name} onRename={() => setDialogState("rename")} />
         <UserList
           emails={activeSpace.memberEmails}
           onRemove={mgmt.removeUser}
@@ -71,13 +64,7 @@ const Header = ({ onBack }: { onBack: () => void }) => (
   </View>
 );
 
-const SpaceNameRow = ({
-  name,
-  onRename,
-}: {
-  name: string;
-  onRename: () => void;
-}) => (
+const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
   <View style={styles.nameRow}>
     <Text style={styles.spaceName}>{name}</Text>
     <Pressable onPress={onRename} hitSlop={8}>
@@ -93,12 +80,7 @@ type ActionButtonsProps = {
   isPersonal: boolean;
 };
 
-const ActionButtons = ({
-  onInvite,
-  onLeave,
-  onDelete,
-  isPersonal,
-}: ActionButtonsProps) => (
+const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButtonsProps) => (
   <View style={styles.actions}>
     <Pressable style={styles.primaryButton} onPress={onInvite}>
       <Text style={styles.primaryButtonText}>{SPACE_MGMT_COPY.invite}</Text>

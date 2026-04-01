@@ -47,6 +47,8 @@ type CategorySectionProps = {
   isTemplateList: boolean;
   search: SearchState;
   drag: ReturnType<typeof useDragState>;
+  highlightId: string | null;
+  highlightOpacity: Animated.Value;
   onDrop: (
     snapshot: DragSnapshot,
     layouts: Record<string, LayoutRectangle>,
@@ -80,6 +82,7 @@ type CategoryItemRowProps = {
   memberImages: Image[];
   editing: CategoryEditing;
   hidden: boolean;
+  highlightOpacity: Animated.Value | undefined;
   hasOtherLists: boolean;
   checkboxDisabled: boolean;
   isCurrentMatch: boolean;
@@ -237,6 +240,7 @@ const areSectionPropsEqual = (
   if (prev.drag.snapshot?.id !== next.drag.snapshot?.id) return false;
   if (prev.drag.snapshot?.offsetY !== next.drag.snapshot?.offsetY) return false;
   if (prev.drag.snapshot?.frozenY !== next.drag.snapshot?.frozenY) return false;
+  if (prev.highlightId !== next.highlightId) return false;
   if (prev.initialsMap !== next.initialsMap) return false;
   if (prev.memberImages !== next.memberImages) return false;
   if (prev.categoryImages !== next.categoryImages) return false;
@@ -398,6 +402,9 @@ const CategoryItems = (props: CategoryItemsProps) => {
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
+          highlightOpacity={
+            props.highlightId === item.id ? props.highlightOpacity : undefined
+          }
           validateItemName={(name) =>
             !hasDuplicateName(name, item.category, items, item.id)
           }
@@ -480,6 +487,7 @@ const areRowPropsEqual = (
       (m, i) => m.checked === next.item.members[i]?.checked,
     ) &&
     prev.hidden === next.hidden &&
+    !!prev.highlightOpacity === !!next.highlightOpacity &&
     prev.hasOtherLists === next.hasOtherLists &&
     prev.checkboxDisabled === next.checkboxDisabled &&
     prev.isCurrentMatch === next.isCurrentMatch &&
@@ -504,6 +512,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
     dragging && { opacity: 0.5 },
     props.isCurrentMatch && homeStyles.itemHighlight,
   ];
+  const showHighlight = !!props.highlightOpacity;
   const hasMembers = props.item.members.length > 0;
   const openMenu = () =>
     showActionSheet(props.item.name, [
@@ -521,6 +530,16 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
       <Pressable style={rowStyle}>
+        {showHighlight && (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              homeStyles.itemHighlight,
+              homeStyles.itemHighlightOverlay,
+              { opacity: props.highlightOpacity },
+            ]}
+          />
+        )}
         {wrap(<DragHandle />)}
         {hasMembers ? (
           <MultiCheckbox

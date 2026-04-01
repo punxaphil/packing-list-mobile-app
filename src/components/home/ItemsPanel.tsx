@@ -30,11 +30,7 @@ export type AddItemDialogState = {
   initialCategory?: NamedEntity;
   open: (initialCategory?: NamedEntity) => void;
   close: () => void;
-  submit: (
-    itemName: string,
-    category: NamedEntity | null,
-    newCategoryName: string | null,
-  ) => void;
+  submit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
   onBrowseKits: () => void;
   kitPickerVisible: boolean;
   closeKitPicker: () => void;
@@ -74,24 +70,14 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
-    <QuickAddRow
-      addDialog={props.addItemDialog}
-      filterDialog={props.filterDialog}
-      search={props.search}
-    />
+    <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
     <RenameDialog dialog={props.renameDialog} />
     <AddItemDialogView {...props} />
     <ItemsListView {...props} />
   </View>
 );
 
-const HeaderRow = ({
-  displayName,
-  email,
-  renameDialog,
-  onProfile,
-  onManageSpace,
-}: ItemsPanelProps) => {
+const HeaderRow = ({ displayName, email, renameDialog, onProfile, onManageSpace }: ItemsPanelProps) => {
   const { profile } = useSpace();
   return (
     <HomeHeader
@@ -118,11 +104,7 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
   />
 );
 
-const AddItemDialogView = ({
-  addItemDialog,
-  categoriesState,
-  itemsState,
-}: ItemsPanelProps) => (
+const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState }: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
     initialCategory={addItemDialog.initialCategory}
@@ -155,12 +137,8 @@ const ItemsListView = ({
   onCopyToList,
   onSortCategoryAlpha,
 }: ItemsPanelProps) => {
-  const memberImages = imagesState.images.filter(
-    (img) => img.type === "members",
-  );
-  const categoryImages = imagesState.images.filter(
-    (img) => img.type === "categories",
-  );
+  const memberImages = imagesState.images.filter((img) => img.type === "members");
+  const categoryImages = imagesState.images.filter((img) => img.type === "categories");
   const { isTemplateList } = useTemplate();
   const isTemplate = isTemplateList(selection.selectedId);
   return (

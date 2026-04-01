@@ -13,13 +13,7 @@ type Props = {
   onInvite: (email: string) => Promise<void>;
 };
 
-export const SpaceMgmtDialogs = ({
-  dialogState,
-  setDialogState,
-  currentName,
-  onRename,
-  onInvite,
-}: Props) => {
+export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onRename, onInvite }: Props) => {
   const [promptValue, setPromptValue] = useState("");
 
   useEffect(() => {
@@ -69,27 +63,16 @@ export const SpaceMgmtDialogs = ({
         onCancel={reset}
         onSubmit={handleInvite}
       />
-      <InviteSentDialog
-        visible={dialogState === "inviteSent"}
-        onClose={reset}
-      />
+      <InviteSentDialog visible={dialogState === "inviteSent"} onClose={reset} />
     </>
   );
 };
 
-const InviteSentDialog = ({
-  visible,
-  onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) => (
+const InviteSentDialog = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => (
   <DialogShell
     visible={visible}
     title={SPACE_MGMT_COPY.inviteSent}
     onClose={onClose}
-    actions={
-      <DialogSingleAction label={SPACE_MGMT_COPY.ok} onPress={onClose} />
-    }
+    actions={<DialogSingleAction label={SPACE_MGMT_COPY.ok} onPress={onClose} />}
   />
 );

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -17,6 +17,7 @@ import {
   FadeScrollView,
   FadeScrollViewRef,
 } from "../shared/FadeScrollView.tsx";
+import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
@@ -26,6 +27,9 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import { useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
+
+const SCROLL_PADDING = 100;
+const HIGHLIGHT_DELAY_MS = 300;
 
 type ItemsListProps = {
   loading: boolean;
@@ -65,6 +69,41 @@ export const ItemsList = (props: ItemsListProps) => {
   );
   const colors = buildCategoryColors(sections.map((s) => s.category));
   const itemCategoryMap = buildItemCategoryMap(props.items);
+  const prevItemIds = useRef(new Set(props.items.map((i) => i.id)));
+  const pendingScrollId = useRef<string | null>(null);
+  const { highlightId, highlightOpacity, flash } = useFlashHighlight();
+
+  useEffect(() => {
+    const currentIds = new Set(props.items.map((i) => i.id));
+    const newItem = props.items.find((i) => !prevItemIds.current.has(i.id));
+    prevItemIds.current = currentIds;
+    if (newItem) pendingScrollId.current = newItem.id;
+  }, [props.items]);
+
+  useEffect(() => {
+    const id = pendingScrollId.current;
+    if (!id) return;
+    const categoryId = itemCategoryMap[id];
+    if (categoryId === undefined) return;
+    const itemLayout = drag.layouts[id];
+    const sectionLayout = drag.sectionLayouts[categoryId];
+    const bodyLayout = drag.bodyLayouts[categoryId];
+    if (!itemLayout || !sectionLayout || !bodyLayout) return;
+    pendingScrollId.current = null;
+    const absoluteY = sectionLayout.y + bodyLayout.y + itemLayout.y;
+    props.search.scrollRef.current?.scrollTo({
+      y: Math.max(0, absoluteY - SCROLL_PADDING),
+      animated: true,
+    });
+    setTimeout(() => flash(id), HIGHLIGHT_DELAY_MS);
+  }, [
+    drag.layouts,
+    drag.sectionLayouts,
+    drag.bodyLayouts,
+    itemCategoryMap,
+    props.search.scrollRef,
+    flash,
+  ]);
 
   useEffect(() => {
     const { currentMatchId, scrollToMatch } = props.search;
@@ -117,6 +156,8 @@ export const ItemsList = (props: ItemsListProps) => {
             isTemplateList={props.isTemplateList}
             search={props.search}
             drag={drag}
+            highlightId={highlightId}
+            highlightOpacity={highlightOpacity}
             onDrop={ordering.drop}
             onToggle={props.onToggle}
             onRenameItem={props.onRenameItem}

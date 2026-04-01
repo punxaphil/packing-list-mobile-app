@@ -54,8 +54,12 @@ export const buildSections = (items: PackItem[], categories: NamedEntity[]): Sec
   }));
 };
 
-export const getNextItemRank = (items: Pick<PackItem, "rank">[]) =>
-  Math.max(...items.map((item) => item.rank).filter((rank) => Number.isFinite(rank)), 0) + 1;
+export const getNextItemRank = (items: Pick<PackItem, "rank">[]) => {
+  const ranks = items.map((item) => item.rank).filter((rank) => Number.isFinite(rank));
+  return ranks.length ? Math.min(...ranks) - 1 : 0;
+};
 
-export const getNextCategoryRank = (categories: Pick<NamedEntity, "rank">[]) =>
-  Math.max(...categories.map((c) => c.rank ?? 0).filter((rank) => Number.isFinite(rank)), 0) + 1;
+export const getNextCategoryRank = (categories: Pick<NamedEntity, "rank">[]) => {
+  const ranks = categories.map((c) => c.rank ?? 0).filter((rank) => Number.isFinite(rank));
+  return ranks.length ? Math.min(...ranks) - 1 : 0;
+};

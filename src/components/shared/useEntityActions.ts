@@ -80,7 +80,10 @@ const showHasItemsAlert = (name: string, count: number, copy: EntityCopy): Promi
     );
   });
 
-const getNextRank = (entities: NamedEntity[]) => Math.max(...entities.map((e) => e.rank ?? 0), 0) + 1;
+const getNextRank = (entities: NamedEntity[]) => {
+  const ranks = entities.map((e) => e.rank ?? 0);
+  return ranks.length ? Math.min(...ranks) - 1 : 0;
+};
 
 const confirmDelete = (name: string, copy: EntityCopy) =>
   new Promise<boolean>((resolve) => {
