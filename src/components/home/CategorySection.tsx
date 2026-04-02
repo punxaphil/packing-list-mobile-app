@@ -18,6 +18,7 @@ import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { showActionSheet } from "./showActionSheet.ts";
+import { showNativeRenameItemPrompt } from "./showNativeRenameItemPrompt.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
@@ -100,6 +101,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
 
   const onAdd = () => props.onAddItem(props.section.category);
   const openRenameItem = (item: PackItem) => {
+    if (showNativeRenameItemPrompt(item, props.section.items, (name) => props.onRenameItem(item, name))) return;
     setRenameItem(item);
     setRenameItemText(item.name);
   };
