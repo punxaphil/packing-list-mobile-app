@@ -1,5 +1,6 @@
 import Checkbox from "expo-checkbox";
 import { View } from "react-native";
+import { areAllMembersChecked } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
@@ -11,7 +12,7 @@ type MultiCheckboxProps = {
 };
 
 export const MultiCheckbox = ({ item, disabled, onToggle }: MultiCheckboxProps) => {
-  const allChecked = item.members.every((m) => m.checked);
+  const allChecked = areAllMembersChecked(item.members);
   const allUnchecked = item.members.every((m) => !m.checked);
   const indeterminate = !allChecked && !allUnchecked;
   return (

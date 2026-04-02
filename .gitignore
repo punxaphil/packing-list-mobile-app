@@ -84,6 +84,7 @@ Thumbs.db
 .idea/
 .env
 .env.*
+/plan.md
 ios/
 android/
 scripts/serviceAccountKey.json

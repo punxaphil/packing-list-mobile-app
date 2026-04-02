@@ -9,11 +9,12 @@
     "ios": "npx react-native run-ios",
     "ios:simulator": "npx react-native run-ios --simulator='iPhone 17 Pro'",
     "ios:simulator2": "npx react-native run-ios --simulator='iPhone 17'",
+    "test:unit": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "find-unused": "knip",
-    "prebuild": "npm run typecheck && npm run lint && knip",
+    "prebuild": "npm run typecheck && npm run lint && knip && npm run test:unit",
     "ios:release": "./scripts/ios-release.sh",
     "spaces:cleanup": "node scripts/cleanup-spaces.js",
     "spaces:migrate": "node scripts/migrate-to-spaces.js",
@@ -51,6 +52,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "firebase-admin": "^13.6.1",
     "knip": "^5.82.1",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.1.2"
   }
 }

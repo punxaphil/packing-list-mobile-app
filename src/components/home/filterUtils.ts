@@ -1,3 +1,4 @@
+import { getPackItemChecked } from "~/services/packItemState.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -28,7 +29,7 @@ const filterItemsByMember = (items: PackItem[], selectedMembers: string[], statu
 
 const filterItemsByStatus = (items: PackItem[], status: StatusFilter) => {
   if (status === "all") return items;
-  return items.filter((item) => (status === "packed" ? item.checked : !item.checked));
+  return items.filter((item) => (status === "packed" ? getPackItemChecked(item) : !getPackItemChecked(item)));
 };
 
 export const applyFilters = (
@@ -52,7 +53,9 @@ export const findMatchingItemIds = (items: PackItem[], searchText: string, categ
   const sorted = [...matches].sort((a, b) => {
     const catRankDiff = getCategoryRank(b) - getCategoryRank(a);
     if (catRankDiff !== 0) return catRankDiff;
-    if (a.checked !== b.checked) return Number(a.checked) - Number(b.checked);
+    const aChecked = getPackItemChecked(a);
+    const bChecked = getPackItemChecked(b);
+    if (aChecked !== bChecked) return Number(aChecked) - Number(bChecked);
     return b.rank - a.rank;
   });
   return sorted.map((item) => item.id);

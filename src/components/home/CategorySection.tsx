@@ -2,6 +2,7 @@ import Checkbox from "expo-checkbox";
 import { memo, useEffect, useState } from "react";
 import { Animated, LayoutRectangle, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getPackItemChecked } from "~/services/packItemState.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -125,7 +126,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     setTimeout(() => props.onToggleCategory(props.section.items, checked), 0);
   };
 
-  const allChecked = props.section.items.every((item) => item.checked);
+  const allChecked = props.section.items.every(getPackItemChecked);
   useEffect(() => {
     if (pendingToggle !== null && pendingToggle === allChecked) {
       setPendingToggle(null);
@@ -272,8 +273,8 @@ const CategoryHeader = ({
   onDeleteItems,
   onRename,
 }: CategoryHeaderProps) => {
-  const allChecked = section.items.every((item) => item.checked);
-  const indeterminate = !allChecked && section.items.some((item) => item.checked);
+  const allChecked = section.items.every(getPackItemChecked);
+  const indeterminate = !allChecked && section.items.some(getPackItemChecked);
   const displayChecked = pendingToggle ?? allChecked;
 
   const isUncategorized = section.category.id === "";
@@ -444,6 +445,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
     dragging && { opacity: 0.5 },
     props.isCurrentMatch && homeStyles.itemHighlight,
   ];
+  const checked = getPackItemChecked(props.item);
   const showHighlight = !!props.highlightOpacity;
   const hasMembers = props.item.members.length > 0;
   const openMenu = () =>
@@ -472,19 +474,16 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           <MultiCheckbox item={props.item} disabled={props.checkboxDisabled} onToggle={props.onToggleAllMembers} />
         ) : (
           <Checkbox
-            value={props.item.checked}
+            value={checked}
             onValueChange={() => props.onToggle(props.item)}
-            color={props.item.checked ? homeColors.primary : undefined}
+            color={checked ? homeColors.primary : undefined}
             style={homeStyles.checkbox}
             disabled={props.checkboxDisabled}
           />
         )}
         <View style={homeStyles.itemContent}>
           <View>
-            <Text
-              style={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
-              numberOfLines={1}
-            >
+            <Text style={[homeStyles.detailLabel, checked && homeStyles.detailLabelChecked]} numberOfLines={1}>
               {props.item.name}
             </Text>
           </View>

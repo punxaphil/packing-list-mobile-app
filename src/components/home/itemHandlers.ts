@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { NativeModules, Platform } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { getPackItemChecked, withPackItemMembers } from "~/services/packItemState.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -56,7 +57,7 @@ export const useAssignMembers = () => {
   const { writeDb } = useSpace();
   return useCallback(
     async (item: PackItem, members: MemberPackItem[]) => {
-      await writeDb.updatePackItem({ ...item, members });
+      await writeDb.updatePackItem(withPackItemMembers(item, members));
     },
     [writeDb]
   );
@@ -67,9 +68,10 @@ export const useToggleMemberPacked = () => {
   return useCallback(
     (item: PackItem, memberId: string) => {
       const members = item.members.map((m) => (m.id === memberId ? { ...m, checked: !m.checked } : m));
-      const checked = members.every((m) => m.checked);
-      if (checked !== item.checked) animateLayout();
-      void writeDb.updatePackItem({ ...item, members, checked });
+      const nextItem = withPackItemMembers(item, members);
+      const checked = nextItem.checked;
+      if (checked !== getPackItemChecked(item)) animateLayout();
+      void writeDb.updatePackItem(nextItem);
     },
     [writeDb]
   );
@@ -79,9 +81,13 @@ export const useToggleAllMembers = () => {
   const { writeDb } = useSpace();
   return useCallback(
     (item: PackItem, checked: boolean) => {
-      if (checked !== item.checked) animateLayout();
-      const members = item.members.map((m) => ({ ...m, checked }));
-      void writeDb.updatePackItem({ ...item, members, checked });
+      if (checked !== getPackItemChecked(item)) animateLayout();
+      void writeDb.updatePackItem(
+        withPackItemMembers(
+          item,
+          item.members.map((m) => ({ ...m, checked }))
+        )
+      );
     },
     [writeDb]
   );

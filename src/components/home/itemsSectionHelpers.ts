@@ -1,3 +1,4 @@
+import { getPackItemChecked } from "~/services/packItemState.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -9,8 +10,10 @@ export type SectionGroup = {
 
 const orderItems = (items: PackItem[]) =>
   [...items].sort((first, second) => {
-    if (first.checked !== second.checked) {
-      return Number(first.checked) - Number(second.checked);
+    const firstChecked = getPackItemChecked(first);
+    const secondChecked = getPackItemChecked(second);
+    if (firstChecked !== secondChecked) {
+      return Number(firstChecked) - Number(secondChecked);
     }
     return second.rank - first.rank;
   });

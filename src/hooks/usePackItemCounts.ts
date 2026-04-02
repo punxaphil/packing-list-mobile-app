@@ -1,5 +1,6 @@
 import { collection, getFirestore, onSnapshot, QuerySnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { getPackItemChecked } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
 type CountEntry = { total: number; packed: number };
@@ -16,7 +17,10 @@ const sumCounts = (items: PackItem[]): PackItemCountRecord => {
   const counts: PackItemCountRecord = {};
   for (const item of items) {
     const current = counts[item.packingList] ?? { total: 0, packed: 0 };
-    counts[item.packingList] = { total: current.total + 1, packed: current.packed + (item.checked ? 1 : 0) };
+    counts[item.packingList] = {
+      total: current.total + 1,
+      packed: current.packed + (getPackItemChecked(item) ? 1 : 0),
+    };
   }
   return counts;
 };

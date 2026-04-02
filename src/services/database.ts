@@ -20,6 +20,7 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { firestore } from "./firebase.ts";
+import { getPackItemChecked, withPackItemMembers } from "./packItemState.ts";
 import { sortEntities } from "./utils.ts";
 
 const SPACES_KEY = "spaces";
@@ -217,8 +218,13 @@ export function createWriteDb(spaceId: string) {
         if (!deleteEvenIfUsed) throwNamedEntityArrayError("Member", packItems, packingLists);
         const batch = writeBatch(firestore);
         for (const packItem of packItems) {
-          packItem.members = packItem.members.filter((m) => m.id !== id);
-          db.updatePackItemBatch(packItem, batch);
+          db.updatePackItemBatch(
+            withPackItemMembers(
+              packItem,
+              packItem.members.filter((m) => m.id !== id)
+            ),
+            batch
+          );
         }
         await batch.commit();
       }
@@ -260,11 +266,14 @@ export function createWriteDb(spaceId: string) {
     },
     async uncheckAllItems(packingListId: string): Promise<void> {
       const items = await db.getPackItemsForList(packingListId);
-      const checkedItems = items.filter((item) => item.checked);
+      const checkedItems = items.filter(getPackItemChecked);
       if (checkedItems.length === 0) return;
       const batch = writeBatch(firestore);
       for (const item of checkedItems) {
-        batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id), { checked: false });
+        batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id), {
+          checked: false,
+          members: item.members.map((member) => ({ ...member, checked: false })),
+        });
       }
       await batch.commit();
     },
