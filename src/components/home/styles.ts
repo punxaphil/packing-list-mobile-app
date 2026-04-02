@@ -163,6 +163,8 @@ export const homeStyles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.md,
     minHeight: spacing.lg,
+    marginLeft: spacing.xs,
+    marginBlock: spacing.xs,
   },
   categoryCheckboxWrapper: {
     position: "relative",
@@ -247,7 +249,7 @@ export const homeStyles = StyleSheet.create({
     marginHorizontal: 0,
     paddingHorizontal: 0,
   },
-  itemContent: { flex: 1, gap: 2 },
+  itemContent: { flex: 1, gap: 2, marginLeft: spacing.xs },
   detailItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -255,7 +257,11 @@ export const homeStyles = StyleSheet.create({
     minHeight: spacing.lg,
     paddingVertical: spacing.xs,
   },
-  checkbox: { width: spacing.md, height: spacing.md, borderRadius: spacing.xs },
+  checkbox: {
+    width: spacing.md,
+    height: spacing.md,
+    borderRadius: spacing.xs,
+  },
   detailLabel: {
     flex: 1,
     fontSize: 16,
