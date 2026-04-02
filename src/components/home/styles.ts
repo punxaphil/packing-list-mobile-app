@@ -163,8 +163,6 @@ export const homeStyles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.md,
     minHeight: spacing.lg,
-    marginLeft: spacing.xs,
-    marginTop: spacing.xs,
   },
   categoryCheckboxWrapper: {
     position: "relative",

@@ -480,7 +480,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           />
         )}
         <View style={homeStyles.itemContent}>
-          <View style={homeStyles.editable}>
+          <View>
             <Text
               style={[homeStyles.detailLabel, props.item.checked && homeStyles.detailLabelChecked]}
               numberOfLines={1}
