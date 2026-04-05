@@ -118,7 +118,15 @@ export function createWriteDb(spaceId: string) {
         packingList,
         rank,
       });
-      return { id: ref.id, checked: false, members, name, category, packingList, rank };
+      return {
+        id: ref.id,
+        checked: false,
+        members,
+        name,
+        category,
+        packingList,
+        rank,
+      };
     },
     updatePackItem: async (packItem: PackItem) => {
       await update(spaceId, PACK_ITEMS_KEY, packItem.id, packItem);
@@ -272,7 +280,10 @@ export function createWriteDb(spaceId: string) {
       for (const item of checkedItems) {
         batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id), {
           checked: false,
-          members: item.members.map((member) => ({ ...member, checked: false })),
+          members: item.members.map((member) => ({
+            ...member,
+            checked: false,
+          })),
         });
       }
       await batch.commit();

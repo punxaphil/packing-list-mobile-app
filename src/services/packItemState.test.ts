@@ -3,7 +3,10 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { getPackItemChecked, withPackItemMembers } from "./packItemState.ts";
 
-const createMember = (id: string, checked: boolean): MemberPackItem => ({ id, checked });
+const createMember = (id: string, checked: boolean): MemberPackItem => ({
+  id,
+  checked,
+});
 
 const createItem = (checked: boolean, members: MemberPackItem[] = []): PackItem => ({
   id: "item-1",

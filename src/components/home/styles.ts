@@ -21,7 +21,9 @@ export const homeStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: 16,
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+    paddingTop: 0,
     gap: spacing.md,
   },
   panelHeader: {
@@ -30,6 +32,7 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "space-between",
     gap: spacing.sm,
   },
+  panelBody: { flex: 1, minHeight: 0, gap: spacing.md },
   panelTitleWrapper: { flex: 1 },
   panelTitle: {
     fontSize: 20,
@@ -287,6 +290,10 @@ export const homeStyles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
   },
+  memberRowWrap: {
+    flexWrap: "wrap",
+    rowGap: spacing.xs,
+  },
   memberBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -329,7 +336,13 @@ export const homeStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  itemDragHandleIcon: { fontSize: 18, color: colors.muted },
+  itemDragHandleIcon: {
+    fontSize: 18,
+    lineHeight: 18,
+    color: colors.muted,
+    marginTop: -1,
+    textAlignVertical: "center",
+  },
   itemGhost: {
     position: "absolute",
     zIndex: 10,

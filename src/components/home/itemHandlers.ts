@@ -131,7 +131,10 @@ export const useSortCategoryAlpha = () => {
     async (items: PackItem[]) => {
       const locale = getDeviceLocale();
       const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, locale));
-      const updates = sorted.map((item, index) => ({ ...item, rank: sorted.length - index }));
+      const updates = sorted.map((item, index) => ({
+        ...item,
+        rank: sorted.length - index,
+      }));
       await writeDb.updatePackItemsBatched(updates);
     },
     [writeDb]
