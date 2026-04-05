@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Alert, Platform } from "react-native";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
@@ -31,10 +32,23 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
     await onRename(trimmed);
     reset();
   };
+  const handleRenameText = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return reset();
+    await onRename(trimmed);
+    reset();
+  };
 
   const handleInvite = async () => {
     const trimmed = promptValue.trim();
     if (!trimmed) return;
+    await onInvite(trimmed);
+    setPromptValue("");
+    setDialogState("inviteSent");
+  };
+  const handleInviteText = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return reset();
     await onInvite(trimmed);
     setPromptValue("");
     setDialogState("inviteSent");
@@ -49,6 +63,7 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
         value={promptValue}
         onChange={setPromptValue}
         onCancel={reset}
+        onSubmitText={handleRenameText}
         onSubmit={handleRename}
       />
       <TextPromptDialog
@@ -61,6 +76,7 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
         keyboardType="email-address"
         onChange={setPromptValue}
         onCancel={reset}
+        onSubmitText={handleInviteText}
         onSubmit={handleInvite}
       />
       <InviteSentDialog visible={dialogState === "inviteSent"} onClose={reset} />
@@ -69,10 +85,30 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
 };
 
 const InviteSentDialog = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => (
-  <DialogShell
-    visible={visible}
-    title={SPACE_MGMT_COPY.inviteSent}
-    onClose={onClose}
-    actions={<DialogSingleAction label={SPACE_MGMT_COPY.ok} onPress={onClose} />}
-  />
+  <SpaceInviteSentAlert visible={visible} onClose={onClose} />
 );
+
+const SpaceInviteSentAlert = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      setShown(false);
+      return;
+    }
+    if (Platform.OS !== "ios" || shown) return;
+    setShown(true);
+    Alert.alert(SPACE_MGMT_COPY.inviteSent, undefined, [{ text: SPACE_MGMT_COPY.ok, onPress: onClose }]);
+  }, [visible, shown, onClose]);
+
+  if (Platform.OS === "ios") return null;
+
+  return (
+    <DialogShell
+      visible={visible}
+      title={SPACE_MGMT_COPY.inviteSent}
+      onClose={onClose}
+      actions={<DialogSingleAction label={SPACE_MGMT_COPY.ok} onPress={onClose} />}
+    />
+  );
+};

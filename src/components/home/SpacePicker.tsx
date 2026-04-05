@@ -1,16 +1,21 @@
 import { useState } from "react";
-import { Pressable } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
+import { PageSheet } from "../shared/PageSheet.tsx";
 import { ActionMenu } from "./ActionMenu.tsx";
 import { InviteSentDialog } from "./InviteSentDialog.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
-import { homeColors } from "./theme.ts";
+import { homeColors, homeSpacing } from "./theme.ts";
 
-type SpacePickerProps = { visible: boolean; onClose: () => void; onManageSpace?: () => void };
+type SpacePickerProps = {
+  visible: boolean;
+  onClose: () => void;
+  onManageSpace?: () => void;
+};
 type SubDialog = "none" | "create" | "invite" | "inviteSent";
 
 const EDIT_ICON = <MaterialCommunityIcons name="pencil-outline" size={18} color={homeColors.muted} />;
@@ -22,6 +27,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
   const [subDialog, setSubDialog] = useState<SubDialog>("none");
   const [promptValue, setPromptValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const isIosSheet = Platform.OS === "ios";
 
   const handleManageSpace = (targetSpaceId: string) => {
     switchSpace(targetSpaceId);
@@ -47,9 +53,33 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
       setSubmitting(false);
     }
   };
+  const handleCreateText = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    try {
+      const space = await createNewSpace(trimmed);
+      switchSpace(space.id);
+      resetAndClose();
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleInviteSubmit = async () => {
     const trimmed = promptValue.trim();
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    try {
+      await sendInvite(trimmed);
+      setPromptValue("");
+      setSubDialog("inviteSent");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  const handleInviteText = async (text: string) => {
+    const trimmed = text.trim();
     if (!trimmed || submitting) return;
     setSubmitting(true);
     try {
@@ -102,15 +132,53 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
 
   return (
     <>
-      <ActionMenu
-        visible={visible && subDialog === "none"}
-        title={spaceCopy.switchSpace}
-        items={[...spaceItems, ...inviteItems]}
-        onClose={onClose}
-        headerColor={homeColors.primary}
-        headerTextColor={homeColors.buttonText}
-        headerRight={headerRight}
-      />
+      {isIosSheet ? (
+        <PageSheet
+          visible={visible && subDialog === "none"}
+          title={spaceCopy.switchSpace}
+          onClose={onClose}
+          scrollable={false}
+        >
+          <Pressable style={styles.createButton} onPress={() => setSubDialog("create")}>
+            <MaterialCommunityIcons name="plus" size={20} color={homeColors.primary} />
+            <Text style={styles.createButtonText}>Create Space</Text>
+          </Pressable>
+          <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>
+            {spaces.map((space) => (
+              <SpaceRow
+                key={space.id}
+                label={
+                  space.id === profile?.personalSpaceId ? `${space.name} (${spaceCopy.personalSpace})` : space.name
+                }
+                active={space.id === spaceId}
+                onPress={() => {
+                  switchSpace(space.id);
+                  onClose();
+                }}
+                onEdit={() => handleManageSpace(space.id)}
+              />
+            ))}
+            {pendingInvites.length > 0 && <Text style={styles.sectionTitle}>{spaceCopy.pendingInvites}</Text>}
+            {pendingInvites.map((invite) => (
+              <SpaceRow
+                key={`${invite.spaceId}-${invite.fromEmail}`}
+                label={`${invite.spaceName} - ${spaceCopy.inviteFrom} ${invite.fromEmail}`}
+                onPress={() => void handleAccept(invite)}
+              />
+            ))}
+          </ScrollView>
+        </PageSheet>
+      ) : (
+        <ActionMenu
+          visible={visible && subDialog === "none"}
+          title={spaceCopy.switchSpace}
+          items={[...spaceItems, ...inviteItems]}
+          onClose={onClose}
+          headerColor={homeColors.primary}
+          headerTextColor={homeColors.buttonText}
+          headerRight={headerRight}
+        />
+      )}
       <TextPromptDialog
         visible={subDialog === "create"}
         title={spaceCopy.createSpacePrompt}
@@ -120,6 +188,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         disabled={submitting}
         onChange={setPromptValue}
         onCancel={resetSubDialog}
+        onSubmitText={handleCreateText}
         onSubmit={handleCreateSubmit}
       />
       <TextPromptDialog
@@ -133,9 +202,87 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         disabled={submitting}
         onChange={setPromptValue}
         onCancel={resetSubDialog}
+        onSubmitText={handleInviteText}
         onSubmit={handleInviteSubmit}
       />
       <InviteSentDialog visible={subDialog === "inviteSent"} onClose={resetAndClose} />
     </>
   );
 };
+
+type SpaceRowProps = {
+  label: string;
+  active?: boolean;
+  onPress: () => void;
+  onEdit?: () => void;
+};
+
+const SpaceRow = ({ label, active = false, onPress, onEdit }: SpaceRowProps) => (
+  <View style={styles.row}>
+    <Pressable style={({ pressed }) => [styles.rowMain, pressed ? styles.rowPressed : null]} onPress={onPress}>
+      <View style={styles.rowIcon}>{active ? CHECK_ICON : null}</View>
+      <Text style={styles.rowLabel}>{label}</Text>
+    </Pressable>
+    {onEdit ? (
+      <Pressable
+        style={({ pressed }) => [styles.editButton, pressed ? styles.editButtonPressed : null]}
+        onPress={onEdit}
+      >
+        {EDIT_ICON}
+      </Pressable>
+    ) : null}
+  </View>
+);
+
+const styles = StyleSheet.create({
+  createButton: {
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.sm,
+    backgroundColor: "rgba(255,255,255,0.82)",
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+  },
+  createButtonText: { fontSize: 15, fontWeight: "600", color: homeColors.primary },
+  sheetList: { flex: 1, minHeight: 0 },
+  sheetListContent: { paddingBottom: homeSpacing.sm, gap: homeSpacing.xs },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: homeColors.muted,
+    marginTop: homeSpacing.sm,
+    marginBottom: homeSpacing.xs,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.xs,
+  },
+  rowMain: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: homeSpacing.sm,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+  rowPressed: {
+    backgroundColor: "rgba(219,234,254,0.95)",
+    transform: [{ scale: 0.985 }],
+  },
+  rowIcon: { width: 22, alignItems: "center", justifyContent: "center" },
+  rowLabel: { flex: 1, fontSize: 16, color: homeColors.text },
+  editButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.82)",
+  },
+  editButtonPressed: { opacity: 0.7, transform: [{ scale: 0.96 }] },
+});

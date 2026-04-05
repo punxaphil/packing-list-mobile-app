@@ -19,7 +19,6 @@
 
 # React Native Specific
 
-- Don't use Alert.alert for dialogs/menus. Use Modal-based components (like ActionMenu) that close on tap outside.
 - Don't use colored icons, use mdi or similar icon font and style.
 
 # Workflow

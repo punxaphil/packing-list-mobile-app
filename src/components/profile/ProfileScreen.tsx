@@ -1,31 +1,37 @@
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
-import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { homeColors, homeSpacing } from "../home/theme.ts";
+import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
 
 type ProfileScreenProps = {
   email: string;
   onSignOut: () => void;
-  onBack: () => void;
+  onBack?: () => void;
+  embeddedInSheet?: boolean;
 };
 
 const COPY = {
   title: "Profile",
+  imageTitle: "Profile image",
   signOut: "Sign Out",
   changePhoto: "Change Photo",
   addPhoto: "Add Photo",
   removePhoto: "Remove",
 };
 
+const PICKER_OPEN_DELAY_MS = 250;
+
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
-const Avatar = ({ email, imageUrl, onPress }: AvatarProps) => {
+const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: boolean }) => {
   const initial = email.trim()[0]?.toUpperCase() ?? "?";
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} disabled={loading} style={styles.avatarButton}>
       {imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
       ) : (
@@ -33,60 +39,77 @@ const Avatar = ({ email, imageUrl, onPress }: AvatarProps) => {
           <Text style={styles.avatarText}>{initial}</Text>
         </View>
       )}
-    </Pressable>
-  );
-};
-
-const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
-  <Pressable style={styles.signOutButton} onPress={() => confirmSignOut(email, onSignOut)}>
-    <Text style={styles.signOutText}>{COPY.signOut}</Text>
-  </Pressable>
-);
-
-const PhotoButton = ({ label, loading, onPress }: { label: string; loading?: boolean; onPress: () => void }) => {
-  const [width, setWidth] = useState<number | undefined>(undefined);
-  return (
-    <Pressable
-      style={[styles.photoButton, loading && width ? { width } : undefined]}
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      onPress={onPress}
-      disabled={loading}
-    >
-      {loading ? (
-        <ActivityIndicator size="small" color={homeColors.surface} />
-      ) : (
-        <Text style={styles.photoButtonText}>{label}</Text>
+      {loading && (
+        <View style={styles.avatarLoading}>
+          <ActivityIndicator size="small" color={homeColors.surface} />
+        </View>
       )}
     </Pressable>
   );
 };
 
-const RemoveButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={styles.removeButton} onPress={onPress}>
-    <Text style={styles.removeButtonText}>{COPY.removePhoto}</Text>
+const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
+  <Pressable
+    style={[
+      sheetButtonStyles.button,
+      sheetButtonStyles.centered,
+      sheetButtonStyles.outlineDanger,
+      styles.signOutButton,
+    ]}
+    onPress={() => confirmSignOut(email, onSignOut)}
+  >
+    <Text style={sheetButtonStyles.textDanger}>{COPY.signOut}</Text>
   </Pressable>
 );
 
-export const ProfileScreen = ({ email, onSignOut, onBack }: ProfileScreenProps) => {
+export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
   const { profile } = useSpace();
+  const [viewerVisible, setViewerVisible] = useState(false);
   const imageUrl = profile?.imageUrl;
   const handlers = useImageHandlers(profile?.id);
+
+  const handleAvatarPress = () => {
+    if (imageUrl) {
+      setViewerVisible(true);
+      return;
+    }
+    void handlers.pick();
+  };
+
+  const closeViewer = () => setViewerVisible(false);
+
+  const replaceImage = async () => {
+    closeViewer();
+    await new Promise((resolve) => setTimeout(resolve, PICKER_OPEN_DELAY_MS));
+    await handlers.pick();
+  };
+
+  const removeImage = async () => {
+    closeViewer();
+    await handlers.remove();
+  };
+
   return (
-    <View style={styles.container}>
-      <Header onBack={onBack} />
-      <View style={styles.content}>
-        <Avatar email={email} imageUrl={imageUrl} onPress={handlers.pick} />
+    <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
+      {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
+      <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
+        <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
         <Text style={styles.email}>{email}</Text>
-        <View style={styles.photoActions}>
-          <PhotoButton
-            label={imageUrl ? COPY.changePhoto : COPY.addPhoto}
-            loading={handlers.loading}
-            onPress={handlers.pick}
-          />
-          {imageUrl && <RemoveButton onPress={handlers.remove} />}
-        </View>
         <SignOutButton email={email} onSignOut={onSignOut} />
       </View>
+      <ImageViewerModal
+        visible={viewerVisible}
+        imageUrl={imageUrl}
+        placeholderLabel={email.trim()[0]?.toUpperCase() ?? "?"}
+        title={COPY.imageTitle}
+        connectedLabel={email}
+        replaceLabel={imageUrl ? COPY.changePhoto : COPY.addPhoto}
+        removeLabel={COPY.removePhoto}
+        showRemove={Boolean(imageUrl)}
+        onClose={closeViewer}
+        onReplace={replaceImage}
+        onRemove={removeImage}
+      />
     </View>
   );
 };
@@ -121,14 +144,14 @@ const Header = ({ onBack }: { onBack: () => void }) => (
   </View>
 );
 
-const { colors, spacing, radius } = {
+const { colors, spacing } = {
   colors: homeColors,
   spacing: homeSpacing,
-  radius: homeRadius,
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
+  sheetContainer: { backgroundColor: "transparent" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -146,6 +169,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg * 2,
     gap: spacing.lg,
   },
+  sheetContent: { paddingTop: spacing.md, paddingBottom: spacing.md },
+  avatarButton: { borderRadius: 50 },
   avatar: {
     width: 100,
     height: 100,
@@ -155,32 +180,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarImage: { width: 100, height: 100, borderRadius: 50 },
-  avatarText: { color: "#ffffff", fontSize: 48, fontWeight: "700" },
-  email: { fontSize: 18, color: colors.text, fontWeight: "500" },
-  photoActions: { flexDirection: "row", gap: spacing.sm },
-  photoButton: {
-    paddingHorizontal: spacing.md,
-    height: 36,
+  avatarLoading: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 50,
+    backgroundColor: "rgba(0,0,0,0.35)",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: radius,
-    backgroundColor: colors.primary,
   },
-  photoButtonText: { fontSize: 14, fontWeight: "600", color: "#ffffff" },
-  removeButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  removeButtonText: { fontSize: 14, fontWeight: "600", color: colors.muted },
-  signOutButton: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius,
-    borderWidth: 1,
-    borderColor: "#e53935",
-  },
-  signOutText: { fontSize: 14, fontWeight: "600", color: "#e53935" },
+  avatarText: { color: "#ffffff", fontSize: 48, fontWeight: "700" },
+  email: { fontSize: 18, color: colors.text, fontWeight: "500" },
+  signOutButton: { minWidth: 164 },
 });

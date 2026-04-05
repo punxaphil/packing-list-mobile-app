@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserImagesByEmail } from "~/services/spaceDatabase.ts";
-import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { homeColors, homeSpacing } from "../home/theme.ts";
+import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
 import { SpaceMgmtDialogs } from "./SpaceMgmtDialogs.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 import { UserList } from "./UserList.tsx";
 import { useSpaceManagement } from "./useSpaceManagement.ts";
 
-type Props = { onBack: () => void };
+type SpaceManagementScreenProps = { onBack?: () => void; embeddedInSheet?: boolean };
 
-export const SpaceManagementScreen = ({ onBack }: Props) => {
+export const SpaceManagementScreen = ({ onBack, embeddedInSheet = false }: SpaceManagementScreenProps) => {
   const { activeSpace } = useSpace();
-  const mgmt = useSpaceManagement(onBack);
+  const mgmt = useSpaceManagement(onBack ?? (() => undefined));
   const [dialogState, setDialogState] = useState<"none" | "rename" | "invite" | "inviteSent">("none");
   const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>({});
 
@@ -26,9 +27,9 @@ export const SpaceManagementScreen = ({ onBack }: Props) => {
   if (!activeSpace) return null;
 
   return (
-    <View style={styles.container}>
-      <Header onBack={onBack} />
-      <View style={styles.content}>
+    <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
+      {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
+      <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
         <SpaceNameRow name={activeSpace.name} onRename={() => setDialogState("rename")} />
         <UserList
           emails={activeSpace.memberEmails}
@@ -82,16 +83,16 @@ type ActionButtonsProps = {
 
 const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButtonsProps) => (
   <View style={styles.actions}>
-    <Pressable style={styles.primaryButton} onPress={onInvite}>
-      <Text style={styles.primaryButtonText}>{SPACE_MGMT_COPY.invite}</Text>
+    <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.filledPrimary]} onPress={onInvite}>
+      <Text style={sheetButtonStyles.textPrimary}>{SPACE_MGMT_COPY.invite}</Text>
     </Pressable>
     {!isPersonal && (
       <>
-        <Pressable style={styles.outlineButton} onPress={onLeave}>
-          <Text style={styles.outlineButtonText}>{SPACE_MGMT_COPY.leave}</Text>
+        <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
+          <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.leave}</Text>
         </Pressable>
-        <Pressable style={styles.dangerButton} onPress={onDelete}>
-          <Text style={styles.dangerButtonText}>{SPACE_MGMT_COPY.delete}</Text>
+        <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
+          <Text style={sheetButtonStyles.textDanger}>{SPACE_MGMT_COPY.delete}</Text>
         </Pressable>
       </>
     )}
@@ -100,6 +101,7 @@ const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButton
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: homeColors.surface },
+  sheetContainer: { backgroundColor: "transparent" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -112,6 +114,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: homeColors.text },
   placeholder: { minWidth: 60 },
   content: { flex: 1, paddingHorizontal: homeSpacing.lg, gap: homeSpacing.lg },
+  sheetContent: { paddingTop: homeSpacing.sm, paddingBottom: homeSpacing.md },
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -120,39 +123,4 @@ const styles = StyleSheet.create({
   spaceName: { fontSize: 22, fontWeight: "700", color: homeColors.text },
   renameLink: { fontSize: 14, fontWeight: "600", color: homeColors.primary },
   actions: { gap: homeSpacing.sm, marginTop: homeSpacing.md },
-  primaryButton: {
-    paddingVertical: homeSpacing.md,
-    borderRadius: homeRadius,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: homeColors.buttonText,
-  },
-  outlineButton: {
-    paddingVertical: homeSpacing.md,
-    borderRadius: homeRadius,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    alignItems: "center",
-  },
-  outlineButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: homeColors.text,
-  },
-  dangerButton: {
-    paddingVertical: homeSpacing.md,
-    borderRadius: homeRadius,
-    borderWidth: 1,
-    borderColor: homeColors.danger,
-    alignItems: "center",
-  },
-  dangerButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: homeColors.danger,
-  },
 });
