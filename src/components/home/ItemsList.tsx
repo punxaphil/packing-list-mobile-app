@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
@@ -164,6 +164,23 @@ const EmptyItems = ({
     setPendingKit(null);
     await onAddKit([pendingKit]);
   }, [pendingKit, onAddKit]);
+
+  useEffect(() => {
+    if (!pendingKit || Platform.OS !== "ios") return;
+    Alert.alert(
+      EMPTY_COPY.confirmTitle.replace("{name}", pendingKit.name),
+      EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit.items.length)),
+      [
+        {
+          text: EMPTY_COPY.cancel,
+          style: "cancel",
+          onPress: () => setPendingKit(null),
+        },
+        { text: EMPTY_COPY.confirmAdd, onPress: () => void handleConfirm() },
+      ]
+    );
+  }, [pendingKit, handleConfirm]);
+
   return (
     <View style={homeStyles.empty}>
       <Text style={homeStyles.emptyText}>{HOME_COPY.emptyItems}</Text>
@@ -181,23 +198,25 @@ const EmptyItems = ({
           <Text style={emptyStyles.browseLink}>{EMPTY_COPY.browseKits}</Text>
         </Pressable>
       </View>
-      <DialogShell
-        visible={!!pendingKit}
-        title={EMPTY_COPY.confirmTitle.replace("{name}", pendingKit?.name ?? "")}
-        onClose={() => setPendingKit(null)}
-        actions={
-          <DialogActions
-            cancelLabel={EMPTY_COPY.cancel}
-            confirmLabel={EMPTY_COPY.confirmAdd}
-            onCancel={() => setPendingKit(null)}
-            onConfirm={handleConfirm}
-          />
-        }
-      >
-        <Text style={emptyStyles.confirmText}>
-          {EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit?.items.length ?? 0))}
-        </Text>
-      </DialogShell>
+      {Platform.OS !== "ios" && (
+        <DialogShell
+          visible={!!pendingKit}
+          title={EMPTY_COPY.confirmTitle.replace("{name}", pendingKit?.name ?? "")}
+          onClose={() => setPendingKit(null)}
+          actions={
+            <DialogActions
+              cancelLabel={EMPTY_COPY.cancel}
+              confirmLabel={EMPTY_COPY.confirmAdd}
+              onCancel={() => setPendingKit(null)}
+              onConfirm={handleConfirm}
+            />
+          }
+        >
+          <Text style={emptyStyles.confirmText}>
+            {EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit?.items.length ?? 0))}
+          </Text>
+        </DialogShell>
+      )}
     </View>
   );
 };

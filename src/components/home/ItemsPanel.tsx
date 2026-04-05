@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -19,9 +19,11 @@ export type TextDialogState = {
   visible: boolean;
   value: string;
   error?: string | null;
+  getError?: (text: string) => string | null;
   setValue: (text: string) => void;
   open: () => void;
   close: () => void;
+  submitText: (text: string) => void;
   submit: () => void;
 };
 
@@ -70,10 +72,12 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
-    <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
+    <KeyboardAvoidingView style={homeStyles.panelBody} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
+      <ItemsListView {...props} />
+    </KeyboardAvoidingView>
     <RenameDialog dialog={props.renameDialog} />
     <AddItemDialogView {...props} />
-    <ItemsListView {...props} />
   </View>
 );
 
@@ -98,17 +102,20 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
     confirmLabel={HOME_COPY.renameListConfirm}
     value={dialog.value}
     error={dialog.error}
+    getError={dialog.getError}
     onChange={dialog.setValue}
     onCancel={dialog.close}
+    onSubmitText={dialog.submitText}
     onSubmit={dialog.submit}
   />
 );
 
-const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState }: ItemsPanelProps) => (
+const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState, imagesState }: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
     initialCategory={addItemDialog.initialCategory}
     categories={categoriesState.categories}
+    categoryImages={imagesState.images.filter((img) => img.type === "categories")}
     items={itemsState.items}
     onCancel={addItemDialog.close}
     onSubmit={addItemDialog.submit}

@@ -43,6 +43,10 @@ export const moveStyles = StyleSheet.create({
     borderColor: homeColors.border,
     marginBottom: homeSpacing.xs,
   },
+  sheetCategoryItem: {
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.9)",
+  },
   categorySelected: {
     borderColor: homeColors.primary,
     borderWidth: 2,

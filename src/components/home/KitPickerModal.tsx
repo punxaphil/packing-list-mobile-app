@@ -1,9 +1,10 @@
 import Checkbox from "expo-checkbox";
 import { useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
+import { PageSheet } from "../shared/PageSheet.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type KitPickerModalProps = {
@@ -44,6 +45,26 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
     onClose();
   }, [onClose]);
 
+  if (Platform.OS === "ios") {
+    return (
+      <PageSheet
+        visible={visible}
+        title={COPY.title}
+        onClose={handleClose}
+        confirmLabel={COPY.add}
+        onConfirm={handleAdd}
+        confirmDisabled={selected.size === 0}
+      >
+        <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+        <ScrollView style={styles.list}>
+          {PACKING_KITS.map((kit) => (
+            <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} iosSheet />
+          ))}
+        </ScrollView>
+      </PageSheet>
+    );
+  }
+
   return (
     <DialogShell
       visible={visible}
@@ -69,10 +90,15 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
   );
 };
 
-type KitRowProps = { kit: PackingKit; checked: boolean; onToggle: () => void };
+type KitRowProps = {
+  kit: PackingKit;
+  checked: boolean;
+  onToggle: () => void;
+  iosSheet?: boolean;
+};
 
-const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
-  <Pressable style={styles.row} onPress={onToggle}>
+const KitRow = ({ kit, checked, onToggle, iosSheet = false }: KitRowProps) => (
+  <Pressable style={[styles.row, iosSheet ? styles.sheetRow : null]} onPress={onToggle}>
     <Checkbox value={checked} onValueChange={onToggle} color={checked ? homeColors.primary : undefined} />
     <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primary : homeColors.muted} />
     <View style={styles.kitInfo}>
@@ -98,6 +124,13 @@ const styles = StyleSheet.create({
     paddingVertical: homeSpacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: homeColors.border,
+  },
+  sheetRow: {
+    paddingHorizontal: homeSpacing.sm,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    marginBottom: homeSpacing.xs,
+    borderBottomWidth: 0,
   },
   kitInfo: { flex: 1 },
   kitName: { fontSize: 16, fontWeight: "600", color: homeColors.text },
