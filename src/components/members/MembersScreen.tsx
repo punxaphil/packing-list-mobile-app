@@ -18,7 +18,11 @@ import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 
-type MembersScreenProps = { email: string; onProfile: () => void; onManageSpace: () => void };
+type MembersScreenProps = {
+  email: string;
+  onProfile: () => void;
+  onManageSpace: () => void;
+};
 
 export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
@@ -84,14 +88,20 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
           value={creation.value}
           placeholder={MEMBER_COPY.createPlaceholder}
           error={creation.error}
+          getError={creation.getError}
           onChange={creation.setValue}
           onCancel={creation.close}
+          onSubmitText={creation.submitText}
           onSubmit={creation.submit}
         />
         {imageActions.viewerState && (
           <ImageViewerModal
             visible={true}
             imageUrl={imageActions.viewerState.image.url}
+            title={MEMBER_COPY.imageTitle}
+            connectedLabel={members.find((member) => member.id === imageActions.viewerState?.entityId)?.name}
+            replaceLabel={MEMBER_COPY.imageReplace}
+            removeLabel={MEMBER_COPY.imageRemove}
             onClose={imageActions.closeViewer}
             onReplace={imageActions.handleReplace}
             onRemove={imageActions.handleRemove}
@@ -102,7 +112,11 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
   );
 };
 
-type MemberHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort: () => void };
+type MemberHeaderProps = {
+  onAdd: () => void;
+  sortByAlpha: boolean;
+  onToggleSort: () => void;
+};
 
 const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
   <View style={entityStyles.actions}>

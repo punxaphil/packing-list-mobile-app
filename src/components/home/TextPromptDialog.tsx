@@ -1,5 +1,7 @@
-import { KeyboardTypeOptions, Text, TextInput } from "react-native";
+import { useEffect, useRef } from "react";
+import { KeyboardTypeOptions, Platform, Text, TextInput } from "react-native";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
+import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type TextPromptDialogProps = {
@@ -12,7 +14,9 @@ type TextPromptDialogProps = {
   disabled?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   keyboardType?: KeyboardTypeOptions;
+  getError?: (text: string) => string | null;
   onChange: (text: string) => void;
+  onSubmitText?: (text: string) => void | Promise<void>;
   onCancel: () => void;
   onSubmit: () => void;
 };
@@ -27,11 +31,64 @@ export const TextPromptDialog = ({
   disabled,
   autoCapitalize,
   keyboardType,
+  getError,
   onChange,
+  onSubmitText,
   onCancel,
   onSubmit,
 }: TextPromptDialogProps) => {
+  const promptVisible = useRef(false);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+    if (!visible) {
+      promptVisible.current = false;
+      return;
+    }
+    if (disabled) return;
+    if (promptVisible.current) return;
+    promptVisible.current = true;
+
+    showNativeTextPrompt({
+      title,
+      confirmLabel,
+      cancelLabel: HOME_COPY.cancel,
+      value,
+      keyboardType,
+      getError,
+      onCancel,
+      onSubmit: (text) => {
+        if (disabled) return;
+        onChange(text);
+        if (onSubmitText) {
+          void onSubmitText(text);
+          return;
+        }
+        onSubmit();
+      },
+    });
+
+    return () => {
+      promptVisible.current = false;
+    };
+  }, [
+    visible,
+    title,
+    confirmLabel,
+    value,
+    keyboardType,
+    getError,
+    onChange,
+    onSubmitText,
+    onCancel,
+    onSubmit,
+    disabled,
+  ]);
+
+  if (Platform.OS === "ios") return null;
+
   const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
+
   return (
     <DialogShell
       visible={visible}

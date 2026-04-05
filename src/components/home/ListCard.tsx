@@ -116,8 +116,10 @@ export const ListCard = (props: ListCardProps) => {
         confirmLabel="Rename"
         value={rename.value}
         error={rename.error}
+        getError={rename.getError}
         onChange={rename.setValue}
         onCancel={rename.close}
+        onSubmitText={rename.submitText}
         onSubmit={rename.submit}
       />
     </View>
@@ -138,22 +140,40 @@ const useRenameDialog = (
     setVisible(true);
   };
   const close = () => setVisible(false);
-  const onChange = (text: string) => {
-    setValue(text);
+  const getError = (text: string) => {
     const trimmed = text.trim();
     const isDuplicate = trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
-    setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+    return isDuplicate ? HOME_COPY.duplicateListName : null;
   };
-  const submit = () => {
-    const trimmed = value.trim();
-    if (!trimmed || trimmed === list.name || error) {
-      if (!error) close();
+  const onChange = (text: string) => {
+    setValue(text);
+    setError(getError(text));
+  };
+  const submitText = (text: string) => {
+    const trimmed = text.trim();
+    const nextError = getError(text);
+    if (!trimmed || trimmed === list.name || nextError) {
+      setError(nextError);
+      if (!nextError) close();
       return;
     }
     void onRename(list, trimmed);
     close();
   };
-  return { visible, value, error, setValue: onChange, open, close, submit };
+  const submit = () => {
+    submitText(value);
+  };
+  return {
+    visible,
+    value,
+    error,
+    getError,
+    setValue: onChange,
+    open,
+    close,
+    submitText,
+    submit,
+  };
 };
 
 const DragHandle = () => (

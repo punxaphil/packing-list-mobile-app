@@ -19,7 +19,11 @@ import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 
-type CategoriesScreenProps = { email: string; onProfile: () => void; onManageSpace: () => void };
+type CategoriesScreenProps = {
+  email: string;
+  onProfile: () => void;
+  onManageSpace: () => void;
+};
 
 export const CategoriesScreen = ({ email, onProfile, onManageSpace }: CategoriesScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
@@ -86,8 +90,10 @@ export const CategoriesScreen = ({ email, onProfile, onManageSpace }: Categories
           value={creation.value}
           placeholder={CATEGORY_COPY.createPlaceholder}
           error={creation.error}
+          getError={creation.getError}
           onChange={creation.setValue}
           onCancel={creation.close}
+          onSubmitText={creation.submitText}
           onSubmit={creation.submit}
         />
         {moveCategory && (
@@ -103,6 +109,10 @@ export const CategoriesScreen = ({ email, onProfile, onManageSpace }: Categories
           <ImageViewerModal
             visible={true}
             imageUrl={imageActions.viewerState.image.url}
+            title={CATEGORY_COPY.imageTitle}
+            connectedLabel={categories.find((category) => category.id === imageActions.viewerState?.entityId)?.name}
+            replaceLabel={CATEGORY_COPY.imageReplace}
+            removeLabel={CATEGORY_COPY.imageRemove}
             onClose={imageActions.closeViewer}
             onReplace={imageActions.handleReplace}
             onRemove={imageActions.handleRemove}
@@ -113,7 +123,11 @@ export const CategoriesScreen = ({ email, onProfile, onManageSpace }: Categories
   );
 };
 
-type CategoryHeaderProps = { onAdd: () => void; sortByAlpha: boolean; onToggleSort: () => void };
+type CategoryHeaderProps = {
+  onAdd: () => void;
+  sortByAlpha: boolean;
+  onToggleSort: () => void;
+};
 
 const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={entityStyles.actions}>

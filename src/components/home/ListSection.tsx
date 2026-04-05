@@ -89,8 +89,10 @@ export const ListSection = (props: ListSectionProps) => {
         value={creation.value}
         placeholder={HOME_COPY.createListPlaceholder}
         error={creation.error}
+        getError={creation.getError}
         onChange={creation.setValue}
         onCancel={creation.close}
+        onSubmitText={creation.submitText}
         onSubmit={creation.submit}
       />
     </View>
@@ -221,32 +223,50 @@ const useCreateListDialog = (
     setVisible(true);
   }, []);
   const close = useCallback(() => setVisible(false), []);
-  const onChange = useCallback(
+  const getError = useCallback(
     (text: string) => {
-      setValue(text);
-      const isDuplicate = text.trim() && hasDuplicateEntityName(text.trim(), lists);
-      setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+      const trimmed = text.trim();
+      return trimmed && hasDuplicateEntityName(trimmed, lists) ? HOME_COPY.duplicateListName : null;
     },
     [lists]
   );
+  const onChange = useCallback(
+    (text: string) => {
+      setValue(text);
+      setError(getError(text));
+    },
+    [getError]
+  );
+  const submitText = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      const nextError = getError(text);
+      if (!trimmed || nextError) {
+        setError(nextError);
+        return;
+      }
+      close();
+      if (hasTemplate) {
+        askUseTemplate(trimmed, create);
+      } else {
+        void create(trimmed, false);
+      }
+    },
+    [close, create, getError, hasTemplate]
+  );
   const submit = useCallback(() => {
-    const trimmed = value.trim();
-    if (!trimmed || error) return;
-    close();
-    if (hasTemplate) {
-      askUseTemplate(trimmed, create);
-    } else {
-      void create(trimmed, false);
-    }
-  }, [value, error, create, close, hasTemplate]);
+    submitText(value);
+  }, [submitText, value]);
   return {
     visible,
     value,
     setValue: onChange,
     error,
+    getError,
     open,
     close,
     submit,
+    submitText,
   } as const;
 };
 

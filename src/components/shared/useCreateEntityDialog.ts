@@ -16,19 +16,42 @@ export const useCreateEntityDialog = (
     setVisible(true);
   }, []);
   const close = useCallback(() => setVisible(false), []);
+  const getError = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      return trimmed && hasDuplicateEntityName(trimmed, entities) ? `${typeName} with this name already exists` : null;
+    },
+    [entities, typeName]
+  );
+  const submitText = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      const nextError = getError(text);
+      if (!trimmed || nextError) {
+        setError(nextError);
+        return;
+      }
+      void create(trimmed);
+      close();
+    },
+    [create, close, getError]
+  );
   const submit = useCallback(() => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    if (hasDuplicateEntityName(trimmed, entities)) {
-      setError(`${typeName} with this name already exists`);
-      return;
-    }
-    void create(trimmed);
-    close();
-  }, [value, entities, typeName, create, close]);
+    submitText(value);
+  }, [submitText, value]);
   const onChange = useCallback((text: string) => {
     setValue(text);
     setError(null);
   }, []);
-  return { visible, value, setValue: onChange, error, open, close, submit } as const;
+  return {
+    visible,
+    value,
+    setValue: onChange,
+    error,
+    getError,
+    open,
+    close,
+    submit,
+    submitText,
+  } as const;
 };
