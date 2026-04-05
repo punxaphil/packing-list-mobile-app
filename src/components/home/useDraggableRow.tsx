@@ -22,7 +22,10 @@ type DragOptions = {
   applyTranslation?: boolean;
 };
 
-export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOptions = {}) => {
+export const useDraggableRow = (
+  callbacks: DragCallbacks = {},
+  options: DragOptions = {},
+) => {
   const position = useRef(new Animated.ValueXY()).current;
   const [active, setActive] = useState(false);
   const dragStarted = useRef(false);
@@ -34,7 +37,10 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
     dragStarted.current = false;
     setActive(false);
     callbacks.onEnd?.();
-    Animated.spring(position, { toValue: { x: 0, y: 0 }, useNativeDriver: true }).start();
+    Animated.spring(position, {
+      toValue: { x: 0, y: 0 },
+      useNativeDriver: true,
+    }).start();
   }, [position, callbacks]);
 
   const handleLongPressChange = useCallback(
@@ -43,19 +49,31 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
         dragStarted.current = true;
         setActive(true);
         callbacks.onStart?.();
+        return;
+      }
+      if (
+        nativeEvent.state === State.END ||
+        nativeEvent.state === State.CANCELLED ||
+        nativeEvent.state === State.FAILED
+      ) {
+        reset();
       }
     },
-    [callbacks]
+    [callbacks, reset],
   );
 
   const handlePanChange = useCallback(
     ({ nativeEvent }: PanGestureHandlerStateChangeEvent) => {
       const { state } = nativeEvent;
-      if (state === State.END || state === State.CANCELLED || state === State.FAILED) {
+      if (
+        state === State.END ||
+        state === State.CANCELLED ||
+        state === State.FAILED
+      ) {
         reset();
       }
     },
-    [reset]
+    [reset],
   );
 
   const handlePanMove = useCallback(
@@ -65,13 +83,16 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
       position.setValue({ x: translationX, y: translationY });
       callbacks.onMove?.({ x: translationX, y: translationY });
     },
-    [position, callbacks]
+    [position, callbacks],
   );
 
   const applyTranslation = options.applyTranslation ?? true;
   const style = useMemo(
-    () => (applyTranslation ? [{ transform: position.getTranslateTransform() }] : undefined),
-    [applyTranslation, position]
+    () =>
+      applyTranslation
+        ? [{ transform: position.getTranslateTransform() }]
+        : undefined,
+    [applyTranslation, position],
   );
 
   const wrap = useCallback(
@@ -98,7 +119,7 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
         </Animated.View>
       </LongPressGestureHandler>
     ),
-    [handleLongPressChange, handlePanChange, handlePanMove, style]
+    [handleLongPressChange, handlePanChange, handlePanMove, style],
   );
 
   return { wrap, dragging: active } as const;
