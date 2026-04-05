@@ -3,6 +3,7 @@ import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
+import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
@@ -33,19 +34,35 @@ import { useSearch } from "./useSearch.ts";
 const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
   const categoryIds = new Set(items.map((i) => i.category));
   const result = categories.filter((c) => categoryIds.has(c.id));
-  if (categoryIds.has("")) result.push(UNCATEGORIZED);
+  if (categoryIds.has("") && result.length > 0) result.push(UNCATEGORIZED);
   return result.sort((a, b) => b.rank - a.rank);
 };
+
+const buildImageMap = (images: Image[], type: string) =>
+  new Map(images.filter((image) => image.type === type).map((image) => [image.typeId, image.url]));
+
+const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, string>) =>
+  entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { writeDb } = useSpace();
   const list = props.selection.selectedList;
   const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items);
-  const categoriesInList = useMemo(
-    () => getCategoriesInList(props.categoriesState.categories, optimisticItems),
-    [props.categoriesState.categories, optimisticItems]
+  const categoryImageMap = useMemo(
+    () => buildImageMap(props.imagesState.images, "categories"),
+    [props.imagesState.images]
   );
-  const filterDialog = useFilterDialog(categoriesInList, props.membersState.members, optimisticItems, list?.id);
+  const memberImageMap = useMemo(() => buildImageMap(props.imagesState.images, "members"), [props.imagesState.images]);
+  const categoriesInList = useMemo(
+    () =>
+      attachImagesToEntities(getCategoriesInList(props.categoriesState.categories, optimisticItems), categoryImageMap),
+    [props.categoriesState.categories, optimisticItems, categoryImageMap]
+  );
+  const membersWithImages = useMemo(
+    () => attachImagesToEntities(props.membersState.members, memberImageMap),
+    [props.membersState.members, memberImageMap]
+  );
+  const filterDialog = useFilterDialog(categoriesInList, membersWithImages, optimisticItems, list?.id);
   const filteredItems = useMemo(
     () =>
       applyFilters(
@@ -145,25 +162,49 @@ const useRenameDialog = (
     setVisible(true);
   }, []);
   const close = useCallback(() => setVisible(false), []);
-  const onChange = useCallback(
+  const getError = useCallback(
     (text: string) => {
-      setValue(text);
       const trimmed = text.trim();
       const isDuplicate = list && trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
-      setError(isDuplicate ? HOME_COPY.duplicateListName : null);
+      return isDuplicate ? HOME_COPY.duplicateListName : null;
     },
     [list, lists]
   );
+  const onChange = useCallback(
+    (text: string) => {
+      setValue(text);
+      setError(getError(text));
+    },
+    [getError]
+  );
+  const submitText = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      const nextError = getError(text);
+      if (!list || !trimmed || trimmed === list.name || nextError) {
+        setError(nextError);
+        if (!nextError) close();
+        return;
+      }
+      rename(list, trimmed);
+      close();
+    },
+    [close, getError, list, rename]
+  );
   const submit = useCallback(() => {
-    const trimmed = value.trim();
-    if (!list || !trimmed || trimmed === list.name || error) {
-      if (!error) close();
-      return;
-    }
-    rename(list, trimmed);
-    close();
-  }, [value, list, error, rename, close]);
-  return { visible, value, error, setValue: onChange, open, close, submit };
+    submitText(value);
+  }, [submitText, value]);
+  return {
+    visible,
+    value,
+    error,
+    getError,
+    setValue: onChange,
+    open,
+    close,
+    submitText,
+    submit,
+  };
 };
 
 const useAddItemDialog = (

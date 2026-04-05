@@ -32,7 +32,9 @@ const WITHOUT_MEMBERS: NamedEntity = { id: WITHOUT_MEMBERS_ID, name: homeCopy.wi
 const getMembersInList = (members: NamedEntity[], items: PackItem[]) => {
   const memberIds = new Set(items.flatMap((i) => i.members.map((m) => m.id)));
   const filtered = members.filter((m) => memberIds.has(m.id)).sort((a, b) => b.rank - a.rank);
-  return [WITHOUT_MEMBERS, ...filtered];
+  if (filtered.length === 0) return [];
+  const hasItemsWithoutMembers = items.some((item) => item.members.length === 0);
+  return hasItemsWithoutMembers ? [WITHOUT_MEMBERS, ...filtered] : filtered;
 };
 
 export const useFilterDialog = (

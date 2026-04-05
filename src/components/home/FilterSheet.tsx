@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { LayoutAnimation, Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { LayoutAnimation, Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { FilterRow, MemberSection, sortSelectedFirst } from "./FilterComponents.tsx";
+import { PageSheet } from "../shared/PageSheet.tsx";
+import { CategorySection, MemberSection, sortSelectedFirst } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import { StatusSection } from "./StatusSection.tsx";
 import type { StatusFilter } from "./useFilterDialog.ts";
@@ -25,7 +26,8 @@ const animateReorder = () => LayoutAnimation.configureNext(LayoutAnimation.Prese
 export const FilterSheet = (props: FilterSheetProps) => {
   const totalCount =
     props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
-  const scrollRef = useRef<ScrollView>(null);
+  const categoryScrollRef = useRef<ScrollView>(null);
+  const memberScrollRef = useRef<ScrollView>(null);
   const sortedCategories = sortSelectedFirst(props.categories, props.selectedCategories);
   const sortedMembers = sortSelectedFirst(props.members, props.selectedMembers);
 
@@ -46,9 +48,36 @@ export const FilterSheet = (props: FilterSheetProps) => {
 
   useEffect(() => {
     if (props.visible) {
-      setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
+      setTimeout(() => {
+        categoryScrollRef.current?.flashScrollIndicators();
+        memberScrollRef.current?.flashScrollIndicators();
+      }, 100);
     }
   }, [props.visible]);
+
+  if (Platform.OS === "ios") {
+    return (
+      <PageSheet
+        visible={props.visible}
+        title="Filters"
+        onClose={props.onClose}
+        confirmLabel="Done"
+        onConfirm={props.onClose}
+        scrollable={false}
+      >
+        <SheetHeader count={totalCount} onClear={handleClear} iosSheet />
+        <FilterContent
+          {...props}
+          categoryScrollRef={categoryScrollRef}
+          memberScrollRef={memberScrollRef}
+          sortedCategories={sortedCategories}
+          sortedMembers={sortedMembers}
+          onToggleCategory={handleToggleCategory}
+          onToggleMember={handleToggleMember}
+        />
+      </PageSheet>
+    );
+  }
 
   return (
     <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
@@ -57,7 +86,8 @@ export const FilterSheet = (props: FilterSheetProps) => {
           <SheetHeader count={totalCount} onClear={handleClear} />
           <FilterContent
             {...props}
-            scrollRef={scrollRef}
+            categoryScrollRef={categoryScrollRef}
+            memberScrollRef={memberScrollRef}
             sortedCategories={sortedCategories}
             sortedMembers={sortedMembers}
             onToggleCategory={handleToggleCategory}
@@ -70,8 +100,16 @@ export const FilterSheet = (props: FilterSheetProps) => {
   );
 };
 
-const SheetHeader = ({ count, onClear }: { count: number; onClear: () => void }) => (
-  <View style={styles.header}>
+const SheetHeader = ({
+  count,
+  onClear,
+  iosSheet = false,
+}: {
+  count: number;
+  onClear: () => void;
+  iosSheet?: boolean;
+}) => (
+  <View style={iosSheet ? styles.sheetHeader : styles.header}>
     <Text style={styles.title}>Filters</Text>
     {count > 0 && (
       <Pressable onPress={onClear} hitSlop={8}>
@@ -82,38 +120,34 @@ const SheetHeader = ({ count, onClear }: { count: number; onClear: () => void })
 );
 
 type FilterContentProps = FilterSheetProps & {
-  scrollRef: React.RefObject<ScrollView | null>;
+  categoryScrollRef: React.RefObject<ScrollView | null>;
+  memberScrollRef: React.RefObject<ScrollView | null>;
   sortedCategories: NamedEntity[];
   sortedMembers: NamedEntity[];
 };
 
-const FilterContent = ({ scrollRef, sortedCategories, sortedMembers, ...props }: FilterContentProps) => (
-  <ScrollView ref={scrollRef} style={styles.list}>
+const FilterContent = ({
+  categoryScrollRef,
+  memberScrollRef,
+  sortedCategories,
+  sortedMembers,
+  ...props
+}: FilterContentProps) => (
+  <View style={styles.content}>
     <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
     <CategorySection
       categories={sortedCategories}
       selectedCategories={props.selectedCategories}
       onToggle={props.onToggleCategory}
+      scrollRef={categoryScrollRef}
     />
-    <MemberSection members={sortedMembers} selectedMembers={props.selectedMembers} onToggle={props.onToggleMember} />
-  </ScrollView>
-);
-
-type CategorySectionProps = { categories: NamedEntity[]; selectedCategories: string[]; onToggle: (id: string) => void };
-
-const CategorySection = ({ categories, selectedCategories, onToggle }: CategorySectionProps) => (
-  <>
-    <Text style={styles.sectionTitle}>Categories</Text>
-    {categories.map((cat) => (
-      <FilterRow
-        key={cat.id}
-        item={cat}
-        selected={selectedCategories.includes(cat.id)}
-        onToggle={() => onToggle(cat.id)}
-      />
-    ))}
-    {categories.length === 0 && <Text style={styles.empty}>No categories in this list</Text>}
-  </>
+    <MemberSection
+      members={sortedMembers}
+      selectedMembers={props.selectedMembers}
+      onToggle={props.onToggleMember}
+      scrollRef={memberScrollRef}
+    />
+  </View>
 );
 
 const DoneButton = ({ onPress }: { onPress: () => void }) => (
