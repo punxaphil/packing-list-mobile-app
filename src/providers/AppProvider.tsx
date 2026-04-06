@@ -57,7 +57,7 @@ function AppContent({ userId, email, children, signOut }: AppProviderProps & { s
   const { packingLists, hasLists, loading: listsLoading } = usePackingLists(spaceId);
   const { counts } = usePackItemCounts(spaceId);
   const lists = mergeListCounts(packingLists, counts);
-  const selection = useSelectedList(lists, hasLists);
+  const selection = useSelectedList(lists, hasLists, listsLoading);
 
   const value: AppContextValue = {
     userId,
