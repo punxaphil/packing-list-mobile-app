@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
+import { SquirrelLoader } from "~/components/shared/SquirrelLoader.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
@@ -41,7 +42,7 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
       )}
       {loading && (
         <View style={styles.avatarLoading}>
-          <ActivityIndicator size="small" color={homeColors.surface} />
+          <SquirrelLoader variant="compact" />
         </View>
       )}
     </Pressable>

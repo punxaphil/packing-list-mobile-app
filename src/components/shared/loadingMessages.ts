@@ -1,0 +1,15 @@
+export const loadingMessages = [
+  "Fetching suitcase...",
+  "Booking flight ticket...",
+  "Checking travel itinerary...",
+  "Packing toothbrush...",
+  "Hunting for passport...",
+  "Downloading travel guides...",
+  "Rolling extra socks...",
+  "Stuffing carry-on...",
+  "Finding travel pillow...",
+  "Confirming hotel reservations...",
+  "Organizing travel documents...",
+  "Wishing for good weather...",
+  "Ready for adventure...",
+] as const;

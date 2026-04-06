@@ -1,9 +1,9 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
-import { HOME_COPY, homeStyles } from "~/components/home/styles";
-import { AppLoadingState } from "~/components/shared/AppLoadingState.tsx";
+import { homeStyles } from "~/components/home/styles";
+import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { useCategories } from "~/hooks/useCategories";
 import { useImages } from "~/hooks/useImages";
 import { useMembers } from "~/hooks/useMembers";
@@ -18,16 +18,16 @@ function ItemsContent({ componentId }: { componentId: string }) {
   const membersState = useMembers(spaceId);
   const imagesState = useImages(spaceId);
   const itemsState = usePackingItems(spaceId, selection.selectedId);
+  const loading = listsLoading || itemsState.loading;
+  const showLoader = useDelayedLoading(loading);
 
-  if (listsLoading) return <AppLoadingState label={HOME_COPY.loading} />;
-  if (itemsState.loading) return <AppLoadingState label={HOME_COPY.itemsLoading} />;
+  if (showLoader) return <AppLoadingState />;
+  if (loading) return null;
 
   if (!hasLists) {
     return (
       <SafeAreaView edges={["top"]} style={homeStyles.home}>
-        <View style={homeStyles.loading}>
-          <Text>No lists yet. Create one in the Lists tab.</Text>
-        </View>
+        <View style={homeStyles.loading} />
       </SafeAreaView>
     );
   }

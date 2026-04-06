@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
+import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
@@ -8,8 +9,10 @@ type Props = PropsWithChildren<{ email: string; onSignOut: () => void }>;
 
 export function SubscriptionGate({ email, onSignOut, children }: Props) {
   const { isSubscribed, loading, processing, offerings, error, purchase, restore } = useSubscription();
+  const showLoader = useDelayedLoading(loading);
 
-  if (loading) return <SubscriptionLoadingState />;
+  if (showLoader) return <SubscriptionLoadingState />;
+  if (loading) return null;
   if (isSubscribed) return children;
 
   return (
@@ -36,11 +39,7 @@ export function SubscriptionGate({ email, onSignOut, children }: Props) {
 }
 
 function SubscriptionLoadingState() {
-  return (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color={homeColors.primary} />
-    </View>
-  );
+  return <AppLoadingState message="Checking boarding pass..." />;
 }
 
 const trialLabel = (pkg: PurchasesPackage): string | null => {

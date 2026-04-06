@@ -15,7 +15,6 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
     gap: spacing.sm,
   },
-  loadingText: { fontSize: 16, color: colors.muted, fontWeight: "500" },
   home: { flex: 1, width: "100%", gap: spacing.sm },
   panel: {
     flex: 1,

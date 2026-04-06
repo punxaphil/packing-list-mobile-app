@@ -1,13 +1,4 @@
-import {
-  ActivityIndicator,
-  Animated,
-  LayoutChangeEvent,
-  LayoutRectangle,
-  Pressable,
-  Image as RNImage,
-  Text,
-  View,
-} from "react-native";
+import { Animated, LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -18,6 +9,7 @@ import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
 import { hasDuplicateEntityName } from "./entityValidation.ts";
+import { SquirrelLoader } from "./SquirrelLoader.tsx";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
@@ -127,7 +119,7 @@ const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => 
     accessibilityLabel={copy.imageTitle}
   >
     {loading ? (
-      <ActivityIndicator size="small" color={homeColors.surface} />
+      <SquirrelLoader variant="compact" />
     ) : imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
     ) : (
