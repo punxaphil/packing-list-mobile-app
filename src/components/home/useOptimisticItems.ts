@@ -5,11 +5,18 @@ import { animateLayout } from "./layoutAnimation.ts";
 
 type PendingChecked = Record<string, boolean>;
 
-export const useOptimisticItems = (items: PackItem[]) => {
+export const useOptimisticItems = (items: PackItem[], listId?: string | null) => {
   const { writeDb } = useSpace();
   const [pendingChecked, setPendingChecked] = useState<PendingChecked>({});
   const pendingRef = useRef(pendingChecked);
+  const listIdRef = useRef(listId);
   pendingRef.current = pendingChecked;
+
+  useEffect(() => {
+    if (listIdRef.current === listId) return;
+    listIdRef.current = listId;
+    setPendingChecked({});
+  }, [listId]);
 
   useEffect(() => {
     if (Object.keys(pendingRef.current).length === 0) return;

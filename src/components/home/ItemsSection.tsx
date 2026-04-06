@@ -48,7 +48,7 @@ const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, s
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { writeDb } = useSpace();
   const list = props.selection.selectedList;
-  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items);
+  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items, list?.id);
   const categoryImageMap = useMemo(
     () => buildImageMap(props.imagesState.images, "categories"),
     [props.imagesState.images]
