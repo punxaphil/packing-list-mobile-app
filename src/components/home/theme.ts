@@ -2,7 +2,7 @@ export const homeColors = {
   background: "#ffffff",
   surface: "#ffffff",
   primary: "#DBEAFE",
-  primaryStrong: "#BFDBFE",
+  primaryStrong: "#54a2fb",
   primaryLight: "#EFF6FF",
   primaryForeground: "#374151",
   text: "#111827",

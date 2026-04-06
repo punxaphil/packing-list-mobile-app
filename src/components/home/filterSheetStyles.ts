@@ -63,10 +63,14 @@ export const filterSheetStyles = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxSelected: {
-    backgroundColor: homeColors.primary,
-    borderColor: homeColors.primary,
+    backgroundColor: homeColors.primaryStrong,
+    borderColor: homeColors.primaryStrong,
   },
-  checkmark: { color: homeColors.primaryForeground, fontSize: 14, fontWeight: "700" },
+  checkmark: {
+    color: homeColors.primaryForeground,
+    fontSize: 14,
+    fontWeight: "700",
+  },
   rowText: { flex: 1, fontSize: 16, color: homeColors.text },
   rowAvatarImage: { width: 24, height: 24, borderRadius: 6 },
   empty: {
@@ -82,5 +86,9 @@ export const filterSheetStyles = StyleSheet.create({
     backgroundColor: homeColors.primaryStrong,
     borderRadius: homeRadius / 2,
   },
-  doneText: { color: homeColors.primaryForeground, fontSize: 16, fontWeight: "600" },
+  doneText: {
+    color: homeColors.primaryForeground,
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });

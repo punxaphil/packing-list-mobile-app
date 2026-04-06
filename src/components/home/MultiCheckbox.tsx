@@ -1,9 +1,8 @@
-import Checkbox from "expo-checkbox";
 import { View } from "react-native";
 import { areAllMembersChecked } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { AppCheckbox } from "./AppCheckbox.tsx";
 import { homeStyles } from "./styles.ts";
-import { homeColors } from "./theme.ts";
 
 type MultiCheckboxProps = {
   item: PackItem;
@@ -11,20 +10,25 @@ type MultiCheckboxProps = {
   onToggle: (checked: boolean) => void;
 };
 
-export const MultiCheckbox = ({ item, disabled, onToggle }: MultiCheckboxProps) => {
+export const MultiCheckbox = ({
+  item,
+  disabled,
+  onToggle,
+}: MultiCheckboxProps) => {
   const allChecked = areAllMembersChecked(item.members);
   const allUnchecked = item.members.every((m) => !m.checked);
   const indeterminate = !allChecked && !allUnchecked;
   return (
     <View style={homeStyles.categoryCheckboxWrapper}>
-      <Checkbox
-        value={allChecked}
-        onValueChange={() => onToggle(!allChecked)}
-        color={allChecked ? homeColors.primary : undefined}
-        style={homeStyles.checkbox}
+      <AppCheckbox
+        checked={allChecked}
+        onToggle={() => onToggle(!allChecked)}
         disabled={disabled}
+        size={16}
       />
-      {indeterminate && <View pointerEvents="none" style={homeStyles.itemCheckboxIndicator} />}
+      {indeterminate && (
+        <View pointerEvents="none" style={homeStyles.itemCheckboxIndicator} />
+      )}
     </View>
   );
 };

@@ -1,11 +1,25 @@
 import { type RefObject } from "react";
-import { Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
+import {
+  Pressable,
+  Image as RNImage,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { AppCheckbox } from "./AppCheckbox.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 
-type MemberSectionProps = { members: NamedEntity[]; selectedMembers: string[]; onToggle: (id: string) => void };
+type MemberSectionProps = {
+  members: NamedEntity[];
+  selectedMembers: string[];
+  onToggle: (id: string) => void;
+};
 
-export const sortSelectedFirst = (entities: NamedEntity[], selected: string[]) => {
+export const sortSelectedFirst = (
+  entities: NamedEntity[],
+  selected: string[],
+) => {
   const selectedSet = new Set(selected);
   return [...entities].sort((a, b) => {
     const aSelected = selectedSet.has(a.id);
@@ -33,7 +47,12 @@ type EntitySectionProps = {
   containerStyle: object;
 };
 
-export const CategorySection = ({ categories, selectedCategories, onToggle, scrollRef }: CategorySectionProps) => (
+export const CategorySection = ({
+  categories,
+  selectedCategories,
+  onToggle,
+  scrollRef,
+}: CategorySectionProps) => (
   <EntitySection
     title="Categories"
     emptyText="No categories in list"
@@ -93,14 +112,27 @@ const EntitySection = ({
   </View>
 );
 
-type FilterRowProps = { item: NamedEntity; selected: boolean; onToggle: () => void; isLast?: boolean };
+type FilterRowProps = {
+  item: NamedEntity;
+  selected: boolean;
+  onToggle: () => void;
+  isLast?: boolean;
+};
 
-const FilterRow = ({ item, selected, onToggle, isLast = false }: FilterRowProps) => (
-  <Pressable style={[styles.row, isLast ? styles.rowLast : null]} onPress={onToggle}>
-    <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
-      {selected && <Text style={styles.checkmark}>✓</Text>}
-    </View>
+const FilterRow = ({
+  item,
+  selected,
+  onToggle,
+  isLast = false,
+}: FilterRowProps) => (
+  <Pressable
+    style={[styles.row, isLast ? styles.rowLast : null]}
+    onPress={onToggle}
+  >
+    <AppCheckbox checked={selected} onToggle={onToggle} size={16} />
     <Text style={styles.rowText}>{item.name}</Text>
-    {item.image ? <RNImage source={{ uri: item.image }} style={styles.rowAvatarImage} /> : null}
+    {item.image ? (
+      <RNImage source={{ uri: item.image }} style={styles.rowAvatarImage} />
+    ) : null}
   </Pressable>
 );
