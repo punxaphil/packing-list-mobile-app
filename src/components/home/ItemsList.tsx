@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
 import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { CategorySection } from "./CategorySection.tsx";
@@ -47,6 +46,7 @@ type ItemsListProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
   onBrowseKits: () => void;
@@ -134,6 +134,7 @@ export const ItemsList = (props: ItemsListProps) => {
             onToggleMemberPacked={props.onToggleMemberPacked}
             onToggleAllMembers={props.onToggleAllMembers}
             onMoveCategory={props.onMoveCategory}
+            onMoveItemsToCategory={props.onMoveItemsToCategory}
             onCopyToList={props.onCopyToList}
             onSortCategoryAlpha={props.onSortCategoryAlpha}
           />
@@ -156,28 +157,19 @@ const EmptyItems = ({
   onBrowseKits: () => void;
   onAddKit: (kits: PackingKit[]) => Promise<void>;
 }) => {
-  const [pendingKit, setPendingKit] = useState<PackingKit | null>(null);
-  const handleConfirm = useCallback(async () => {
-    if (!pendingKit) return;
-    setPendingKit(null);
-    await onAddKit([pendingKit]);
-  }, [pendingKit, onAddKit]);
-
-  useEffect(() => {
-    if (!pendingKit || Platform.OS !== "ios") return;
-    Alert.alert(
-      EMPTY_COPY.confirmTitle.replace("{name}", pendingKit.name),
-      EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit.items.length)),
-      [
-        {
-          text: EMPTY_COPY.cancel,
-          style: "cancel",
-          onPress: () => setPendingKit(null),
-        },
-        { text: EMPTY_COPY.confirmAdd, onPress: () => void handleConfirm() },
-      ]
-    );
-  }, [pendingKit, handleConfirm]);
+  const [addingKitId, setAddingKitId] = useState<string | null>(null);
+  const handleAddKit = useCallback(
+    async (kit: PackingKit) => {
+      if (addingKitId) return;
+      setAddingKitId(kit.id);
+      try {
+        await onAddKit([kit]);
+      } finally {
+        setAddingKitId(null);
+      }
+    },
+    [addingKitId, onAddKit]
+  );
 
   return (
     <View style={homeStyles.empty}>
@@ -186,35 +178,26 @@ const EmptyItems = ({
         <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
         <View style={emptyStyles.kitsList}>
           {PACKING_KITS.map((kit) => (
-            <Pressable key={kit.id} style={emptyStyles.kitChip} onPress={() => setPendingKit(kit)}>
+            <Pressable
+              key={kit.id}
+              style={[emptyStyles.kitChip, addingKitId ? emptyStyles.kitChipDisabled : null]}
+              onPress={() => void handleAddKit(kit)}
+              disabled={addingKitId !== null}
+            >
               <MaterialCommunityIcons name={kit.icon} size={18} color={homeColors.primary} />
-              <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
+              <View style={emptyStyles.kitChipContent}>
+                <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
+                <Text style={emptyStyles.kitChipCount}>
+                  {EMPTY_COPY.itemCount.replace("{count}", String(kit.items.length))}
+                </Text>
+              </View>
             </Pressable>
           ))}
         </View>
-        <Pressable onPress={onBrowseKits}>
+        <Pressable onPress={onBrowseKits} disabled={addingKitId !== null}>
           <Text style={emptyStyles.browseLink}>{EMPTY_COPY.browseKits}</Text>
         </Pressable>
       </View>
-      {Platform.OS !== "ios" && (
-        <DialogShell
-          visible={!!pendingKit}
-          title={EMPTY_COPY.confirmTitle.replace("{name}", pendingKit?.name ?? "")}
-          onClose={() => setPendingKit(null)}
-          actions={
-            <DialogActions
-              cancelLabel={EMPTY_COPY.cancel}
-              confirmLabel={EMPTY_COPY.confirmAdd}
-              onCancel={() => setPendingKit(null)}
-              onConfirm={handleConfirm}
-            />
-          }
-        >
-          <Text style={emptyStyles.confirmText}>
-            {EMPTY_COPY.confirmBody.replace("{count}", String(pendingKit?.items.length ?? 0))}
-          </Text>
-        </DialogShell>
-      )}
     </View>
   );
 };
@@ -229,10 +212,7 @@ const FILTERED_COPY = { noMatch: "No items match the current filters." };
 const EMPTY_COPY = {
   quickStart: "Quick start with a Packing Kit:",
   browseKits: "Browse Packing Kits",
-  confirmTitle: "Add {name} items?",
-  confirmBody: "This will add {count} items to your list.",
-  confirmAdd: "Add",
-  cancel: "Cancel",
+  itemCount: "{count} items",
 };
 
 const emptyStyles = StyleSheet.create({
@@ -259,12 +239,16 @@ const emptyStyles = StyleSheet.create({
     borderColor: homeColors.border,
     backgroundColor: homeColors.surface,
   },
+  kitChipContent: {
+    alignItems: "flex-start",
+  },
+  kitChipDisabled: { opacity: 0.6 },
   kitChipText: { fontSize: 14, color: homeColors.text },
+  kitChipCount: { fontSize: 12, color: homeColors.muted },
   browseLink: {
     fontSize: 14,
     fontWeight: "600",
     color: homeColors.primary,
     marginTop: homeSpacing.xs,
   },
-  confirmText: { fontSize: 14, color: homeColors.muted, textAlign: "center" },
 });

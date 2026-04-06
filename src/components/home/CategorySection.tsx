@@ -69,6 +69,7 @@ type CategorySectionProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
@@ -100,6 +101,7 @@ type CategoryItemRowProps = {
 const CategorySectionImpl = (props: CategorySectionProps) => {
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
+  const [moveCategoryVisible, setMoveCategoryVisible] = useState(false);
   const [copyItem, setCopyItem] = useState<PackItem | null>(null);
   const [pendingToggle, setPendingToggle] = useState<boolean | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -166,9 +168,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     if (!confirmDelete || Platform.OS !== "ios") return;
     Alert.alert(
       HOME_COPY.categoryMenuDeleteItems,
-      DELETE_COPY.body
-        .replace("{count}", String(props.section.items.length))
-        .replace("{name}", props.section.category.name),
+      DELETE_COPY.body.replace("{count}", String(props.section.items.length)).replace("{name}", props.section.title),
       [
         {
           text: DELETE_COPY.cancel,
@@ -185,7 +185,11 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         },
       ]
     );
-  }, [confirmDelete, props.section.category.name, props.section.items, props.onDeleteItem]);
+  }, [confirmDelete, props.section.items, props.section.title, props.onDeleteItem]);
+
+  const handleMoveSection = async (category: NamedEntity) => {
+    await props.onMoveItemsToCategory(props.section.items, category.id);
+  };
 
   const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
 
@@ -202,6 +206,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         onToggleCategory={handleCategoryToggle}
         pendingToggle={pendingToggle}
         onSortAlpha={() => props.onSortCategoryAlpha(props.section.items)}
+        onMoveCategory={() => setMoveCategoryVisible(true)}
         onDeleteItems={() => setConfirmDelete(true)}
         onRename={openRenameCategory}
       />
@@ -231,6 +236,15 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         onClose={() => setMoveItem(null)}
         onSelect={handleMoveCategory}
       />
+      <MoveCategoryModal
+        visible={moveCategoryVisible}
+        itemName={props.section.title}
+        categories={props.categories}
+        categoryImages={props.categoryImages}
+        currentCategoryId={props.section.category.id}
+        onClose={() => setMoveCategoryVisible(false)}
+        onSelect={handleMoveSection}
+      />
       <CopyToListModal
         visible={!!copyItem}
         lists={props.lists}
@@ -258,7 +272,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
           <Text style={deleteStyles.body}>
             {DELETE_COPY.body
               .replace("{count}", String(props.section.items.length))
-              .replace("{name}", props.section.category.name)}
+              .replace("{name}", props.section.title)}
           </Text>
         </DialogShell>
       )}
@@ -317,6 +331,7 @@ type CategoryHeaderProps = {
   onToggleCategory: (checked: boolean) => void;
   pendingToggle: boolean | null;
   onSortAlpha: () => void;
+  onMoveCategory: () => void;
   onDeleteItems: () => void;
   onRename: () => void;
 };
@@ -329,6 +344,7 @@ const CategoryHeader = ({
   onAdd,
   pendingToggle,
   onSortAlpha,
+  onMoveCategory,
   onDeleteItems,
   onRename,
 }: CategoryHeaderProps) => {
@@ -339,9 +355,10 @@ const CategoryHeader = ({
   const isUncategorized = section.category.id === "";
 
   const openMenu = () =>
-    showActionSheet(section.category.name, [
+    showActionSheet(section.title, [
       ...(isUncategorized ? [] : [{ text: HOME_COPY.rename, onPress: onRename }]),
       { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
+      { text: CATEGORY_COPY.changeCategory, onPress: onMoveCategory },
       { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
       {
         text: HOME_COPY.categoryMenuDeleteItems,
@@ -366,7 +383,7 @@ const CategoryHeader = ({
       </View>
       {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
       <Text style={homeStyles.categoryTitle} numberOfLines={1}>
-        {section.category.name}
+        {section.title}
       </Text>
       <Pressable
         style={homeStyles.addButton}
@@ -635,6 +652,8 @@ const DELETE_COPY = {
   confirm: "Delete",
   cancel: "Cancel",
 };
+
+const CATEGORY_COPY = { changeCategory: "Change Category" };
 
 const deleteStyles = StyleSheet.create({
   body: { fontSize: 14, color: homeColors.muted, textAlign: "center" },

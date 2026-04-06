@@ -5,8 +5,11 @@ import { PackItem } from "~/types/PackItem.ts";
 
 export type SectionGroup = {
   category: NamedEntity;
+  title: string;
   items: PackItem[];
 };
+
+const ALL_ITEMS_TITLE = "All items";
 
 const orderItems = (items: PackItem[]) =>
   [...items].sort((first, second) => {
@@ -51,8 +54,10 @@ const getOrderedCategories = (categories: NamedEntity[], groups: Map<string, Pac
 
 export const buildSections = (items: PackItem[], categories: NamedEntity[]): SectionGroup[] => {
   const grouped = groupItems(orderItems(items));
+  const showAllItemsTitle = grouped.size === 1 && grouped.has(UNCATEGORIZED.id);
   return getOrderedCategories(categories, grouped).map((category) => ({
     category,
+    title: showAllItemsTitle && category.id === UNCATEGORIZED.id ? ALL_ITEMS_TITLE : category.name,
     items: grouped.get(category.id) ?? [],
   }));
 };

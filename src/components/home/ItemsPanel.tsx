@@ -32,7 +32,12 @@ export type AddItemDialogState = {
   initialCategory?: NamedEntity;
   open: (initialCategory?: NamedEntity) => void;
   close: () => void;
-  submit: (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => void;
+  submit: (
+    itemName: string,
+    category: NamedEntity | null,
+    newCategoryName: string | null,
+    keepOpen: boolean
+  ) => Promise<NamedEntity>;
   onBrowseKits: () => void;
   kitPickerVisible: boolean;
   closeKitPicker: () => void;
@@ -49,6 +54,7 @@ export type ListHandlers = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
+  onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
@@ -141,6 +147,7 @@ const ItemsListView = ({
   onToggleMemberPacked,
   onToggleAllMembers,
   onMoveCategory,
+  onMoveItemsToCategory,
   onCopyToList,
   onSortCategoryAlpha,
 }: ItemsPanelProps) => {
@@ -174,6 +181,7 @@ const ItemsListView = ({
       onToggleMemberPacked={onToggleMemberPacked}
       onToggleAllMembers={onToggleAllMembers}
       onMoveCategory={onMoveCategory}
+      onMoveItemsToCategory={onMoveItemsToCategory}
       onCopyToList={onCopyToList}
       onSortCategoryAlpha={onSortCategoryAlpha}
       onBrowseKits={addItemDialog.onBrowseKits}

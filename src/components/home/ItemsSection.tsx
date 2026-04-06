@@ -18,6 +18,7 @@ import {
   useItemRename,
   useListRenamer,
   useMoveCategory,
+  useMoveItemsToCategory,
   useSortCategoryAlpha,
   useToggleAllMembers,
   useToggleMemberPacked,
@@ -144,6 +145,7 @@ const useItemsSectionHandlers = (toggleItem: ToggleItem, toggleCategory: ToggleC
   onToggleMemberPacked: useToggleMemberPacked(),
   onToggleAllMembers: useToggleAllMembers(),
   onMoveCategory: useMoveCategory(),
+  onMoveItemsToCategory: useMoveItemsToCategory(),
   onCopyToList: useCopyToList(),
   onSortCategoryAlpha: useSortCategoryAlpha(),
 });
@@ -216,10 +218,19 @@ const useAddItemDialog = (
   const [visible, setVisible] = useState(false);
   const [kitPickerVisible, setKitPickerVisible] = useState(false);
   const [initialCategory, setInitialCategory] = useState<NamedEntity | undefined>();
-  const open = useCallback((category?: NamedEntity) => {
-    setInitialCategory(category);
-    setVisible(true);
-  }, []);
+  const [lastSelectedCategoryId, setLastSelectedCategoryId] = useState(UNCATEGORIZED.id);
+  const resolveCategory = useCallback(
+    (category?: NamedEntity) =>
+      category ?? categories.find((entry) => entry.id === lastSelectedCategoryId) ?? UNCATEGORIZED,
+    [categories, lastSelectedCategoryId]
+  );
+  const open = useCallback(
+    (category?: NamedEntity) => {
+      setInitialCategory(resolveCategory(category));
+      setVisible(true);
+    },
+    [resolveCategory]
+  );
   const close = useCallback(() => setVisible(false), []);
   const onBrowseKits = useCallback(() => {
     setVisible(false);
@@ -227,18 +238,20 @@ const useAddItemDialog = (
   }, []);
   const closeKitPicker = useCallback(() => setKitPickerVisible(false), []);
   const submit = useCallback(
-    async (itemName: string, category: NamedEntity | null, newCategoryName: string | null) => {
-      if (!listId) return close();
+    async (itemName: string, category: NamedEntity | null, newCategoryName: string | null, keepOpen: boolean) => {
+      if (!listId) return UNCATEGORIZED;
       animateLayout();
       let categoryId = category?.id ?? UNCATEGORIZED.id;
+      let nextCategory = category ?? UNCATEGORIZED;
       if (newCategoryName) {
         const existing = categories.find((c) => c.name.toLowerCase() === newCategoryName.trim().toLowerCase());
-        categoryId = existing
-          ? existing.id
-          : (await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories))).id;
+        nextCategory = existing ?? (await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories)));
+        categoryId = nextCategory.id;
       }
-      void writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
-      close();
+      setLastSelectedCategoryId(categoryId);
+      await writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
+      if (!keepOpen) close();
+      return nextCategory;
     },
     [items, categories, writeDb, listId, close]
   );

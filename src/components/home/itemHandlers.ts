@@ -115,6 +115,18 @@ export const useMoveCategory = () => {
   );
 };
 
+export const useMoveItemsToCategory = () => {
+  const { writeDb } = useSpace();
+  return useCallback(
+    async (items: PackItem[], categoryId: string) => {
+      animateLayout();
+      const updatedItems = items.map((item) => ({ ...item, category: categoryId }));
+      await writeDb.updatePackItemsBatched(updatedItems);
+    },
+    [writeDb]
+  );
+};
+
 export const useCopyToList = () => {
   const { writeDb } = useSpace();
   return useCallback(
