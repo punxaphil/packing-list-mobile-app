@@ -22,6 +22,7 @@ type PageSheetProps = PropsWithChildren<{
   confirmLabel?: string;
   onConfirm?: () => void;
   confirmDisabled?: boolean;
+  confirmVariant?: "icon" | "text";
   scrollable?: boolean;
 }>;
 
@@ -32,6 +33,7 @@ export const PageSheet = ({
   confirmLabel,
   onConfirm,
   confirmDisabled = false,
+  confirmVariant = "icon",
   scrollable = true,
   children,
 }: PageSheetProps) => (
@@ -49,13 +51,22 @@ export const PageSheet = ({
             <SheetIconButton icon="close" onPress={onClose} accessibilityLabel="Cancel" />
             <Text style={styles.title}>{title}</Text>
             {confirmLabel && onConfirm ? (
-              <SheetIconButton
-                icon="check"
-                onPress={onConfirm}
-                primary
-                disabled={confirmDisabled}
-                accessibilityLabel={confirmLabel}
-              />
+              confirmVariant === "text" ? (
+                <SheetTextButton
+                  label={confirmLabel}
+                  onPress={onConfirm}
+                  disabled={confirmDisabled}
+                  accessibilityLabel={confirmLabel}
+                />
+              ) : (
+                <SheetIconButton
+                  icon="check"
+                  onPress={onConfirm}
+                  primary
+                  disabled={confirmDisabled}
+                  accessibilityLabel={confirmLabel}
+                />
+              )
             ) : (
               <View style={styles.iconSpacer} />
             )}
@@ -77,6 +88,29 @@ export const PageSheet = ({
       </KeyboardAvoidingView>
     </SafeAreaView>
   </Modal>
+);
+
+const SheetTextButton = ({
+  label,
+  onPress,
+  accessibilityLabel,
+  disabled = false,
+}: {
+  label: string;
+  onPress: () => void;
+  accessibilityLabel: string;
+  disabled?: boolean;
+}) => (
+  <Pressable
+    accessibilityLabel={accessibilityLabel}
+    accessibilityRole="button"
+    disabled={disabled}
+    hitSlop={8}
+    onPress={onPress}
+    style={styles.textButton}
+  >
+    <Text style={[styles.textButtonLabel, disabled ? styles.textButtonLabelDisabled : null]}>{label}</Text>
+  </Pressable>
 );
 
 const SheetIconButton = ({
@@ -104,7 +138,7 @@ const SheetIconButton = ({
 
   const backgroundColor = press.interpolate({
     inputRange: [0, 1],
-    outputRange: primary ? [homeColors.primary, "#79bfff"] : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
+    outputRange: primary ? [homeColors.primary, "#BFDBFE"] : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
   });
   const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] });
   const iconOpacity = press.interpolate({
@@ -156,6 +190,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   iconSpacer: { width: 44, height: 44 },
+  textButton: {
+    minWidth: 44,
+    height: 44,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    paddingHorizontal: homeSpacing.xs,
+  },
+  textButtonLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: homeColors.text,
+  },
+  textButtonLabelDisabled: { color: homeColors.muted },
   iconButton: {
     width: 44,
     height: 44,
@@ -172,7 +219,7 @@ const styles = StyleSheet.create({
   iconButtonPrimary: { backgroundColor: homeColors.primary },
   iconButtonDisabled: { opacity: 0.45 },
   icon: { color: homeColors.text },
-  iconPrimary: { color: homeColors.buttonText },
+  iconPrimary: { color: homeColors.primaryForeground },
   content: { flex: 1 },
   contentInner: {
     flex: 1,

@@ -1,14 +1,7 @@
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackingListSummary } from "./types.ts";
 
-const ORDERED_SOFT_PALETTE = [
-  "#DBEAFE",
-  "#FCE7F3",
-  "#DCFCE7",
-  "#FEE2E2",
-  "#EDE9FE",
-  "#FEF3C7",
-] as const;
+const ORDERED_SOFT_PALETTE = ["#DBEAFE", "#FCE7F3", "#DCFCE7", "#FEE2E2", "#EDE9FE", "#FEF3C7"] as const;
 
 type Palette = readonly string[];
 

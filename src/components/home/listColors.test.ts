@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildEntityColors,
-  buildItemCategoryColors,
-  buildListColors,
-} from "./listColors.ts";
+import { buildEntityColors, buildItemCategoryColors, buildListColors } from "./listColors.ts";
 
 const entities = [
   { id: "a", name: "A", rank: 0 },
@@ -51,11 +47,7 @@ describe("listColors", () => {
   });
 
   it("starts with blue and ends with yellow", () => {
-    const colors = buildEntityColors([
-      ...entities,
-      { id: "e", name: "E", rank: 4 },
-      { id: "f", name: "F", rank: 5 },
-    ]);
+    const colors = buildEntityColors([...entities, { id: "e", name: "E", rank: 4 }, { id: "f", name: "F", rank: 5 }]);
 
     expect(colors.a).toBe("#DBEAFE");
     expect(colors.f).toBe("#FEF3C7");

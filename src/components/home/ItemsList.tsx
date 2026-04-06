@@ -248,7 +248,7 @@ const emptyStyles = StyleSheet.create({
   browseLink: {
     fontSize: 14,
     fontWeight: "600",
-    color: homeColors.primary,
+    color: homeColors.muted,
     marginTop: homeSpacing.xs,
   },
 });

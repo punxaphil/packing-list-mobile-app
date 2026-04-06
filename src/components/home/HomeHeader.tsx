@@ -203,7 +203,7 @@ const headerLocalStyles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  avatarLabel: { color: "#ffffff", fontWeight: "700", fontSize: 18 },
+  avatarLabel: { color: homeColors.primaryForeground, fontWeight: "700", fontSize: 18 },
   avatarImage: {
     width: AVATAR_SIZE,
     height: AVATAR_SIZE,
@@ -232,5 +232,5 @@ const headerLocalStyles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 4,
   },
-  inviteBadgeText: { fontSize: 10, fontWeight: "700", color: homeColors.buttonText },
+  inviteBadgeText: { fontSize: 10, fontWeight: "700", color: homeColors.primaryForeground },
 });

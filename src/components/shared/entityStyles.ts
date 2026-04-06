@@ -21,7 +21,7 @@ export const entityStyles = StyleSheet.create({
   sortLabel: { fontSize: 12, color: homeColors.muted },
   spacer: { flex: 1 },
   addLink: { paddingVertical: homeSpacing.xs / 2 },
-  addLinkLabel: { fontSize: 14, fontWeight: "500", color: homeColors.primary },
+  addLinkLabel: { fontSize: 14, fontWeight: "500", color: homeColors.muted },
   actionButton: {
     backgroundColor: homeColors.primary,
     paddingHorizontal: homeSpacing.md,
@@ -29,7 +29,7 @@ export const entityStyles = StyleSheet.create({
     borderRadius: 8,
   },
   actionLabel: {
-    color: homeColors.buttonText,
+    color: homeColors.primaryForeground,
     fontSize: 14,
     fontWeight: "600",
   },

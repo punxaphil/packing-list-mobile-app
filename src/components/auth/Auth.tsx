@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emailButtonText: {
-    color: homeColors.buttonText,
+    color: homeColors.primaryForeground,
     fontSize: 16,
     fontWeight: "600",
   },

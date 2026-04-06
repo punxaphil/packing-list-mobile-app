@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     paddingVertical: homeSpacing.md,
   },
   backButton: { minWidth: 60 },
-  backText: { color: homeColors.primary, fontWeight: "600", fontSize: 16 },
+  backText: { color: homeColors.muted, fontWeight: "600", fontSize: 16 },
   title: { fontSize: 20, fontWeight: "700", color: homeColors.text },
   placeholder: { minWidth: 60 },
   content: { flex: 1, paddingHorizontal: homeSpacing.lg, gap: homeSpacing.lg },
@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   spaceName: { fontSize: 22, fontWeight: "700", color: homeColors.text },
-  renameLink: { fontSize: 14, fontWeight: "600", color: homeColors.primary },
+  renameLink: { fontSize: 14, fontWeight: "600", color: homeColors.muted },
   actions: { gap: homeSpacing.sm, marginTop: homeSpacing.md },
 });

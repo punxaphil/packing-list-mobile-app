@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   backButton: { minWidth: 60 },
-  backText: { color: colors.primary, fontWeight: "600", fontSize: 16 },
+  backText: { color: colors.muted, fontWeight: "600", fontSize: 16 },
   title: { fontSize: 20, fontWeight: "700", color: colors.text },
   placeholder: { minWidth: 60 },
   content: {
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: { color: "#ffffff", fontSize: 48, fontWeight: "700" },
+  avatarText: { color: colors.primaryForeground, fontSize: 48, fontWeight: "700" },
   email: { fontSize: 18, color: colors.text, fontWeight: "500" },
   signOutButton: { minWidth: 164 },
 });

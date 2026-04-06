@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   manageLink: {
     fontSize: 14,
-    color: homeColors.primary,
+    color: homeColors.muted,
     textAlign: "center",
     marginBottom: homeSpacing.md,
   },

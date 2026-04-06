@@ -93,17 +93,17 @@ const styles = StyleSheet.create({
     gap: homeSpacing.xs,
   },
   primaryTitle: {
-    color: homeColors.buttonText,
+    color: homeColors.primaryForeground,
     fontSize: 16,
     fontWeight: "700",
   },
   primaryPrice: {
-    color: homeColors.buttonText,
+    color: homeColors.primaryForeground,
     fontSize: 14,
     fontWeight: "500",
   },
   trialText: {
-    color: homeColors.buttonText,
+    color: homeColors.primaryForeground,
     fontSize: 13,
     fontWeight: "600",
     opacity: 0.85,

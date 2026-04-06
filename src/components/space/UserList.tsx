@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: { color: homeColors.buttonText, fontSize: 14, fontWeight: "700" },
+  avatarText: { color: homeColors.primaryForeground, fontSize: 14, fontWeight: "700" },
   avatarImage: { width: 32, height: 32, borderRadius: 16 },
   email: { flex: 1, fontSize: 14, color: homeColors.text },
   removeText: { fontSize: 14, fontWeight: "600", color: homeColors.danger },

@@ -175,7 +175,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
           items={[...spaceItems, ...inviteItems]}
           onClose={onClose}
           headerColor={homeColors.primary}
-          headerTextColor={homeColors.buttonText}
+          headerTextColor={homeColors.primaryForeground}
           headerRight={headerRight}
         />
       )}
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
   },
-  createButtonText: { fontSize: 15, fontWeight: "600", color: homeColors.primary },
+  createButtonText: { fontSize: 15, fontWeight: "600", color: homeColors.muted },
   sheetList: { flex: 1, minHeight: 0 },
   sheetListContent: { paddingBottom: homeSpacing.sm, gap: homeSpacing.xs },
   sectionTitle: {

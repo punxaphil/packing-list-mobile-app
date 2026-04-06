@@ -1,8 +1,10 @@
 export const homeColors = {
   background: "#ffffff",
   surface: "#ffffff",
-  primary: "#2563eb",
-  primaryLight: "#dbeafe",
+  primary: "#DBEAFE",
+  primaryStrong: "#BFDBFE",
+  primaryLight: "#EFF6FF",
+  primaryForeground: "#374151",
   text: "#111827",
   muted: "#6b7280",
   border: "#e5e7eb",
@@ -12,8 +14,8 @@ export const homeColors = {
   dropIndicator: "#000000",
   overlayMuted: "rgba(17,24,39,0.4)",
   overlayDark: "rgba(0,0,0,0.5)",
-  highlight: "rgba(59, 130, 246, 0.15)",
-  highlightSubtle: "rgba(59, 130, 246, 0.08)",
+  highlight: "rgba(191, 219, 254, 0.45)",
+  highlightSubtle: "rgba(219, 234, 254, 0.5)",
 } as const;
 
 export const homeSpacing = {

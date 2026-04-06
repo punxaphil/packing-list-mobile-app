@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: homeSpacing.md,
   },
-  actionLabel: { fontSize: 16, color: homeColors.primary },
+  actionLabel: { fontSize: 16, color: homeColors.muted },
   actionPrimary: { fontWeight: "600" },
   disabled: { opacity: 0.5 },
 });

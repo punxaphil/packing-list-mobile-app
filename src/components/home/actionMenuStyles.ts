@@ -26,5 +26,5 @@ export const actionMenuStyles = StyleSheet.create({
   destructive: { color: homeColors.danger },
   disabled: { color: homeColors.muted },
   cancelItem: { padding: homeSpacing.md, backgroundColor: homeColors.background },
-  cancelText: { fontSize: 16, fontWeight: "600", color: homeColors.primary, textAlign: "center" },
+  cancelText: { fontSize: 16, fontWeight: "600", color: homeColors.muted, textAlign: "center" },
 });

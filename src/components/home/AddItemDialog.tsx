@@ -216,6 +216,7 @@ export const AddItemDialog = ({
         confirmLabel={HOME_COPY.addItemConfirm}
         onConfirm={handleSubmit}
         confirmDisabled={isSubmitDisabled || submitting}
+        confirmVariant="text"
       >
         {content}
       </PageSheet>
@@ -438,7 +439,7 @@ const STYLES = {
     paddingVertical: 6,
     borderRadius: 999,
     backgroundColor: homeColors.primaryLight,
-    color: homeColors.primary,
+    color: homeColors.muted,
     fontSize: 13,
     fontWeight: "600" as const,
     textAlign: "center" as const,
@@ -519,7 +520,7 @@ const STYLES = {
   dropdownItemText: { flex: 1, fontSize: 16, color: homeColors.text },
   dropdownItemSelected: {
     fontWeight: "600" as const,
-    color: homeColors.primary,
+    color: homeColors.text,
   },
   pickerDisabled: { opacity: 0.5 },
   keepOpenRow: {
@@ -539,7 +540,7 @@ const STYLES = {
   },
   browseKitsLink: {
     fontSize: 14,
-    color: homeColors.primary,
+    color: homeColors.muted,
     textAlign: "center" as const,
     fontWeight: "600" as const,
   },

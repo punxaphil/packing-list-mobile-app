@@ -29,7 +29,7 @@ export const filterSheetStyles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: { fontSize: 18, fontWeight: "700", color: homeColors.text },
-  clearText: { fontSize: 14, fontWeight: "600", color: homeColors.primary },
+  clearText: { fontSize: 14, fontWeight: "600", color: homeColors.muted },
   content: { flex: 1, minHeight: 0, gap: homeSpacing.md },
   list: { flex: 1, minHeight: 0 },
   listContent: { paddingBottom: homeSpacing.lg },
@@ -66,7 +66,7 @@ export const filterSheetStyles = StyleSheet.create({
     backgroundColor: homeColors.primary,
     borderColor: homeColors.primary,
   },
-  checkmark: { color: "#fff", fontSize: 14, fontWeight: "700" },
+  checkmark: { color: homeColors.primaryForeground, fontSize: 14, fontWeight: "700" },
   rowText: { flex: 1, fontSize: 16, color: homeColors.text },
   rowAvatarImage: { width: 24, height: 24, borderRadius: 6 },
   empty: {
@@ -79,8 +79,8 @@ export const filterSheetStyles = StyleSheet.create({
     alignSelf: "flex-end",
     paddingHorizontal: homeSpacing.md,
     paddingVertical: homeSpacing.sm,
-    backgroundColor: homeColors.primary,
+    backgroundColor: homeColors.primaryStrong,
     borderRadius: homeRadius / 2,
   },
-  doneText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  doneText: { color: homeColors.primaryForeground, fontSize: 16, fontWeight: "600" },
 });

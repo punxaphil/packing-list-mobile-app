@@ -1,6 +1,6 @@
 import { Navigation } from "react-native-navigation";
+import { homeColors } from "~/components/home/theme.ts";
 
-const PRIMARY_COLOR = "#2563eb";
 const MUTED_COLOR = "#6b7280";
 
 export function setDefaultOptions() {
@@ -17,8 +17,8 @@ export function setDefaultOptions() {
       hideShadow: false,
     },
     bottomTab: {
-      selectedTextColor: PRIMARY_COLOR,
-      selectedIconColor: PRIMARY_COLOR,
+      selectedTextColor: MUTED_COLOR,
+      selectedIconColor: homeColors.primary,
       textColor: MUTED_COLOR,
       iconColor: MUTED_COLOR,
       fontSize: 10,

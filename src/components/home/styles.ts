@@ -40,7 +40,7 @@ export const homeStyles = StyleSheet.create({
     textAlign: "center",
   },
   quickAdd: { paddingVertical: spacing.xs / 2 },
-  quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.primary },
+  quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.muted },
   backButton: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
@@ -49,7 +49,7 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
   },
   backPlaceholder: { width: spacing.lg, height: spacing.lg },
-  backText: { color: colors.primary, fontWeight: "600" },
+  backText: { color: colors.muted, fontWeight: "600" },
   avatar: {
     width: spacing.lg,
     height: spacing.lg,
@@ -59,7 +59,7 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  avatarLabel: { color: "#ffffff", fontWeight: "700" },
+  avatarLabel: { color: colors.primaryForeground, fontWeight: "700" },
   avatarImage: {
     width: spacing.lg,
     height: spacing.lg,
@@ -149,7 +149,7 @@ export const homeStyles = StyleSheet.create({
   activeItem: {
     backgroundColor: colors.primary,
     borderRadius: homeRadius / 2,
-    color: "#ffffff",
+    color: colors.primaryForeground,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
@@ -312,7 +312,7 @@ export const homeStyles = StyleSheet.create({
   memberBadgeChecked: { backgroundColor: colors.primary },
   memberBadgeImage: { width: 16, height: 16, borderRadius: 8 },
   memberBadgeText: { fontSize: 10, fontWeight: "600", color: colors.text },
-  memberBadgeTextChecked: { color: colors.buttonText },
+  memberBadgeTextChecked: { color: colors.primaryForeground },
   menuButton: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
   menuIcon: { fontSize: 20, color: colors.muted, fontWeight: "700" },
   empty: { alignItems: "center", paddingVertical: spacing.md },
