@@ -1,8 +1,15 @@
 import { useEffect, useRef } from "react";
-import { LayoutAnimation, Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PageSheet } from "../shared/PageSheet.tsx";
-import { CategorySection, MemberSection, sortSelectedFirst } from "./FilterComponents.tsx";
+import { CategorySection, MemberSection } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import { StatusSection } from "./StatusSection.tsx";
 import type { StatusFilter } from "./useFilterDialog.ts";
@@ -21,30 +28,13 @@ type FilterSheetProps = {
   onClose: () => void;
 };
 
-const animateReorder = () => LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-
 export const FilterSheet = (props: FilterSheetProps) => {
   const totalCount =
-    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
+    props.selectedCategories.length +
+    props.selectedMembers.length +
+    (props.statusFilter !== "all" ? 1 : 0);
   const categoryScrollRef = useRef<ScrollView>(null);
   const memberScrollRef = useRef<ScrollView>(null);
-  const sortedCategories = sortSelectedFirst(props.categories, props.selectedCategories);
-  const sortedMembers = sortSelectedFirst(props.members, props.selectedMembers);
-
-  const handleToggleCategory = (id: string) => {
-    animateReorder();
-    props.onToggleCategory(id);
-  };
-
-  const handleToggleMember = (id: string) => {
-    animateReorder();
-    props.onToggleMember(id);
-  };
-
-  const handleClear = () => {
-    animateReorder();
-    props.onClear();
-  };
 
   useEffect(() => {
     if (props.visible) {
@@ -65,33 +55,34 @@ export const FilterSheet = (props: FilterSheetProps) => {
         onConfirm={props.onClose}
         scrollable={false}
       >
-        <SheetHeader count={totalCount} onClear={handleClear} iosSheet />
+        <SheetHeader count={totalCount} onClear={props.onClear} iosSheet />
         <FilterContent
           {...props}
           categoryScrollRef={categoryScrollRef}
           memberScrollRef={memberScrollRef}
-          sortedCategories={sortedCategories}
-          sortedMembers={sortedMembers}
-          onToggleCategory={handleToggleCategory}
-          onToggleMember={handleToggleMember}
+          sortedCategories={props.categories}
+          sortedMembers={props.members}
         />
       </PageSheet>
     );
   }
 
   return (
-    <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
+    <Modal
+      visible={props.visible}
+      transparent
+      animationType="fade"
+      onRequestClose={props.onClose}
+    >
       <Pressable style={styles.backdrop} onPress={props.onClose}>
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <SheetHeader count={totalCount} onClear={handleClear} />
+          <SheetHeader count={totalCount} onClear={props.onClear} />
           <FilterContent
             {...props}
             categoryScrollRef={categoryScrollRef}
             memberScrollRef={memberScrollRef}
-            sortedCategories={sortedCategories}
-            sortedMembers={sortedMembers}
-            onToggleCategory={handleToggleCategory}
-            onToggleMember={handleToggleMember}
+            sortedCategories={props.categories}
+            sortedMembers={props.members}
           />
           <DoneButton onPress={props.onClose} />
         </Pressable>
@@ -134,7 +125,10 @@ const FilterContent = ({
   ...props
 }: FilterContentProps) => (
   <View style={styles.content}>
-    <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
+    <StatusSection
+      statusFilter={props.statusFilter}
+      onSetStatus={props.onSetStatus}
+    />
     <CategorySection
       categories={sortedCategories}
       selectedCategories={props.selectedCategories}

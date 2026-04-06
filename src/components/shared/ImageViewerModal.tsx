@@ -51,17 +51,13 @@ export const ImageViewerModal = ({
 
   useEffect(() => {
     if (visible && imageUrl) {
-      RNImage.getSize(imageUrl, (w, h) =>
-        setImageSize({ width: w, height: h }),
-      );
+      RNImage.getSize(imageUrl, (w, h) => setImageSize({ width: w, height: h }));
       return;
     }
     setImageSize(null);
   }, [visible, imageUrl]);
 
-  const displaySize = imageSize
-    ? calculateDisplaySize(imageSize, Platform.OS === "ios")
-    : null;
+  const displaySize = imageSize ? calculateDisplaySize(imageSize, Platform.OS === "ios") : null;
 
   if (Platform.OS === "ios") {
     return (
@@ -74,12 +70,7 @@ export const ImageViewerModal = ({
               </Text>
             </View>
           ) : null}
-          <View
-            style={[
-              styles.sheetImageContainer,
-              displaySize && buildImageFrameStyle(displaySize),
-            ]}
-          >
+          <View style={[styles.sheetImageContainer, displaySize && buildImageFrameStyle(displaySize)]}>
             {displaySize && imageUrl ? (
               <RNImage
                 source={{ uri: imageUrl }}
@@ -92,19 +83,8 @@ export const ImageViewerModal = ({
             {loading && <ImageLoadingOverlay />}
           </View>
           <View style={styles.sheetActions}>
-            <ActionButton
-              label={replaceLabel}
-              onPress={onReplace}
-              disabled={loading}
-            />
-            {showRemove && (
-              <ActionButton
-                label={removeLabel}
-                onPress={onRemove}
-                destructive
-                disabled={loading}
-              />
-            )}
+            <ActionButton label={replaceLabel} onPress={onReplace} disabled={loading} />
+            {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive disabled={loading} />}
           </View>
         </View>
       </PageSheet>
@@ -112,12 +92,7 @@ export const ImageViewerModal = ({
   }
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <CloseButton onPress={onClose} />
         <View style={styles.imageContainer}>
@@ -133,71 +108,37 @@ export const ImageViewerModal = ({
           {loading && <ImageLoadingOverlay />}
         </View>
         <View style={styles.actions}>
-          <ActionButton
-            label={replaceLabel}
-            onPress={onReplace}
-            disabled={loading}
-          />
-          {showRemove && (
-            <ActionButton
-              label={removeLabel}
-              onPress={onRemove}
-              destructive
-              disabled={loading}
-            />
-          )}
+          <ActionButton label={replaceLabel} onPress={onReplace} disabled={loading} />
+          {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive disabled={loading} />}
         </View>
       </Pressable>
     </Modal>
   );
 };
 
-const calculateDisplaySize = (
-  size: { width: number; height: number },
-  isSheet: boolean,
-) => {
+const calculateDisplaySize = (size: { width: number; height: number }, isSheet: boolean) => {
   const screen = Dimensions.get("window");
   const maxW = screen.width - (isSheet ? 88 : 40);
-  const maxH = isSheet
-    ? Math.min(screen.height * 0.3, screen.height - 470)
-    : screen.height - 200;
+  const maxH = isSheet ? Math.min(screen.height * 0.3, screen.height - 470) : screen.height - 200;
   if (size.width <= maxW && size.height <= maxH) return size;
   const scale = Math.min(maxW / size.width, maxH / size.height);
   return { width: size.width * scale, height: size.height * scale };
 };
 
-const buildImageFrameStyle = ({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) => ({
+const buildImageFrameStyle = ({ width, height }: { width: number; height: number }) => ({
   width: width + homeSpacing.md * 2,
   height: height + homeSpacing.md * 2,
 });
 
-const ImagePlaceholder = ({
-  label,
-  dark = false,
-}: {
-  label: string;
-  dark?: boolean;
-}) => (
+const ImagePlaceholder = ({ label, dark = false }: { label: string; dark?: boolean }) => (
   <View style={[styles.placeholder, dark && styles.placeholderDark]}>
-    <Text style={[styles.placeholderText, dark && styles.placeholderTextDark]}>
-      {label}
-    </Text>
+    <Text style={[styles.placeholderText, dark && styles.placeholderTextDark]}>{label}</Text>
   </View>
 );
 
 const CloseButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable style={styles.closeButton} onPress={onPress}>
-    <MaterialCommunityIcons
-      name="close"
-      size={28}
-      color={homeColors.buttonText}
-    />
+    <MaterialCommunityIcons name="close" size={28} color={homeColors.buttonText} />
   </Pressable>
 );
 
@@ -214,19 +155,12 @@ type ActionButtonProps = {
   disabled?: boolean;
 };
 
-const ActionButton = ({
-  label,
-  onPress,
-  destructive,
-  disabled = false,
-}: ActionButtonProps) => (
+const ActionButton = ({ label, onPress, destructive, disabled = false }: ActionButtonProps) => (
   <Pressable
     style={[
       sheetButtonStyles.button,
       styles.button,
-      destructive
-        ? sheetButtonStyles.filledPrimary
-        : sheetButtonStyles.filledSoft,
+      destructive ? sheetButtonStyles.filledPrimary : sheetButtonStyles.filledSoft,
       destructive && styles.buttonDestructive,
       disabled && styles.buttonDisabled,
     ]}

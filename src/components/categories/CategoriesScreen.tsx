@@ -16,10 +16,7 @@ import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
-import {
-  computeEntityDropIndex,
-  useEntityOrdering,
-} from "../shared/useEntityOrdering.ts";
+import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 
 type CategoriesScreenProps = {
@@ -28,16 +25,11 @@ type CategoriesScreenProps = {
   onManageSpace: () => void;
 };
 
-export const CategoriesScreen = ({
-  email,
-  onProfile,
-  onManageSpace,
-}: CategoriesScreenProps) => {
+export const CategoriesScreen = ({ email, onProfile, onManageSpace }: CategoriesScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { categories } = useCategories(spaceId);
   const { images } = useImages(spaceId);
-  const { counts: itemCounts, refresh: refreshCounts } =
-    useCategoryItemCounts();
+  const { counts: itemCounts, refresh: refreshCounts } = useCategoryItemCounts();
   const [moveCategory, setMoveCategory] = useState<NamedEntity | null>(null);
 
   const categoryDb = {
@@ -52,24 +44,12 @@ export const CategoriesScreen = ({
     delete: writeDb.deleteImage,
   };
 
-  const actions = useEntityActions(
-    categories,
-    itemCounts,
-    CATEGORY_COPY,
-    categoryDb,
-    setMoveCategory,
-  );
-  const creation = useCreateEntityDialog(
-    actions.onAdd,
-    categories,
-    CATEGORY_COPY.type,
-  );
+  const actions = useEntityActions(categories, itemCounts, CATEGORY_COPY, categoryDb, setMoveCategory);
+  const creation = useCreateEntityDialog(actions.onAdd, categories, CATEGORY_COPY.type);
   const drag = useDragState();
   const ordering = useEntityOrdering(categories, writeDb.updateCategories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
-  const sorted = sortByAlpha
-    ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name))
-    : ordering.entities;
+  const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
   const colors = buildEntityColors(sorted);
   const categoryImages = images.filter((img) => img.type === "categories");
   const imageActions = useEntityImageActions("categories", imageDb);
@@ -130,12 +110,7 @@ export const CategoriesScreen = ({
             visible={true}
             imageUrl={imageActions.viewerState.image.url}
             title={CATEGORY_COPY.imageTitle}
-            connectedLabel={
-              categories.find(
-                (category) =>
-                  category.id === imageActions.viewerState?.entityId,
-              )?.name
-            }
+            connectedLabel={categories.find((category) => category.id === imageActions.viewerState?.entityId)?.name}
             replaceLabel={CATEGORY_COPY.imageReplace}
             removeLabel={CATEGORY_COPY.imageRemove}
             loading={imageActions.modalLoading}
@@ -155,11 +130,7 @@ type CategoryHeaderProps = {
   onToggleSort: () => void;
 };
 
-const CategoryHeader = ({
-  onAdd,
-  sortByAlpha,
-  onToggleSort,
-}: CategoryHeaderProps) => (
+const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={entityStyles.actions}>
     <Pressable
       style={entityStyles.addLink}
