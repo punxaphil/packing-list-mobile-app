@@ -1,4 +1,13 @@
-import { Animated, LayoutChangeEvent, LayoutRectangle, Pressable, Image as RNImage, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  Pressable,
+  Image as RNImage,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -9,7 +18,6 @@ import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
 import { hasDuplicateEntityName } from "./entityValidation.ts";
-import { SquirrelLoader } from "./SquirrelLoader.tsx";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
@@ -52,14 +60,22 @@ export const EntityCard = (props: EntityCardProps) => {
       onMove: props.onDragMove,
       onEnd: props.onDragEnd,
     },
-    { applyTranslation: false }
+    { applyTranslation: false },
   );
   const showToast = useToast();
-  const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
-  const handleRename = (name: string) => props.actions.onRename(props.entity, name);
-  const validateName = (name: string) => !hasDuplicateEntityName(name, props.entities, props.entity.id);
-  const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
-  const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
+  const handleLayout = (event: LayoutChangeEvent) =>
+    props.onLayout?.(event.nativeEvent.layout);
+  const handleRename = (name: string) =>
+    props.actions.onRename(props.entity, name);
+  const validateName = (name: string) =>
+    !hasDuplicateEntityName(name, props.entities, props.entity.id);
+  const onDuplicateName = () =>
+    showToast(COPY.duplicateName.replace("{type}", props.copy.type));
+  const cardStyle = [
+    entityStyles.card,
+    { backgroundColor: props.color },
+    props.hidden ? { opacity: 0 } : null,
+  ];
   const showHighlight = !!props.highlightOpacity;
   const openMenu = () =>
     showActionSheet(props.entity.name, [
@@ -71,11 +87,18 @@ export const EntityCard = (props: EntityCardProps) => {
     ]);
   return (
     <View onLayout={handleLayout}>
-      <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
+      <Pressable
+        style={cardStyle}
+        accessibilityRole="button"
+        accessibilityLabel={props.entity.name}
+      >
         {showHighlight && (
           <Animated.View
             pointerEvents="none"
-            style={[entityStyles.cardHighlight, { opacity: props.highlightOpacity }]}
+            style={[
+              entityStyles.cardHighlight,
+              { opacity: props.highlightOpacity },
+            ]}
           />
         )}
         <View style={entityStyles.cardInner}>
@@ -94,7 +117,9 @@ export const EntityCard = (props: EntityCardProps) => {
               onValidationFail={onDuplicateName}
               textStyle={entityStyles.cardName}
             />
-            <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
+            <Text style={entityStyles.itemSummary}>
+              {formatItemCount(props.itemCount)}
+            </Text>
           </View>
           <MenuButton onPress={openMenu} />
         </View>
@@ -110,32 +135,56 @@ type EntityImageProps = {
   copy: EntityCopy;
 };
 
-const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => (
+const EntityImage = ({
+  imageUrl,
+  loading,
+  onPress,
+  copy,
+}: EntityImageProps) => (
   <Pressable
-    style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
+    style={[
+      entityStyles.imageContainer,
+      !imageUrl && entityStyles.imagePlaceholder,
+    ]}
     onPress={onPress}
     disabled={loading}
     accessibilityRole="button"
     accessibilityLabel={copy.imageTitle}
   >
     {loading ? (
-      <SquirrelLoader variant="compact" />
+      <ActivityIndicator size="small" color={homeColors.surface} />
     ) : imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
     ) : (
-      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
+      <MaterialCommunityIcons
+        name="cloud-upload-outline"
+        size={20}
+        color={homeColors.surface}
+      />
     )}
   </Pressable>
 );
 
 const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   <View style={entityStyles.dragHandle}>
-    <Text style={[entityStyles.dragHandleIcon, disabled && entityStyles.dragHandleDisabled]}>{DRAG_HANDLE_ICON}</Text>
+    <Text
+      style={[
+        entityStyles.dragHandleIcon,
+        disabled && entityStyles.dragHandleDisabled,
+      ]}
+    >
+      {DRAG_HANDLE_ICON}
+    </Text>
   </View>
 );
 
 const MenuButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={entityStyles.menuButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="Menu">
+  <Pressable
+    style={entityStyles.menuButton}
+    onPress={onPress}
+    accessibilityRole="button"
+    accessibilityLabel="Menu"
+  >
     <Text style={entityStyles.menuIcon}>{MENU_ICON}</Text>
   </Pressable>
 );

@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  Image as RNImage,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
-import { SquirrelLoader } from "~/components/shared/SquirrelLoader.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
@@ -29,7 +35,12 @@ const PICKER_OPEN_DELAY_MS = 250;
 
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
-const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: boolean }) => {
+const Avatar = ({
+  email,
+  imageUrl,
+  onPress,
+  loading,
+}: AvatarProps & { loading: boolean }) => {
   const initial = email.trim()[0]?.toUpperCase() ?? "?";
   return (
     <Pressable onPress={onPress} disabled={loading} style={styles.avatarButton}>
@@ -42,14 +53,20 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
       )}
       {loading && (
         <View style={styles.avatarLoading}>
-          <SquirrelLoader variant="compact" />
+          <ActivityIndicator size="small" color={homeColors.surface} />
         </View>
       )}
     </Pressable>
   );
 };
 
-const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
+const SignOutButton = ({
+  email,
+  onSignOut,
+}: {
+  email: string;
+  onSignOut: () => void;
+}) => (
   <Pressable
     style={[
       sheetButtonStyles.button,
@@ -63,7 +80,12 @@ const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => v
   </Pressable>
 );
 
-export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
+export const ProfileScreen = ({
+  email,
+  onSignOut,
+  onBack,
+  embeddedInSheet = false,
+}: ProfileScreenProps) => {
   const { profile } = useSpace();
   const [viewerVisible, setViewerVisible] = useState(false);
   const imageUrl = profile?.imageUrl;
@@ -80,21 +102,24 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
   const closeViewer = () => setViewerVisible(false);
 
   const replaceImage = async () => {
-    closeViewer();
     await new Promise((resolve) => setTimeout(resolve, PICKER_OPEN_DELAY_MS));
-    await handlers.pick();
+    if (await handlers.pick()) closeViewer();
   };
 
   const removeImage = async () => {
-    closeViewer();
-    await handlers.remove();
+    if (await handlers.remove()) closeViewer();
   };
 
   return (
     <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
       {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
       <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
-        <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
+        <Avatar
+          email={email}
+          imageUrl={imageUrl}
+          onPress={handleAvatarPress}
+          loading={handlers.loading}
+        />
         <Text style={styles.email}>{email}</Text>
         <SignOutButton email={email} onSignOut={onSignOut} />
       </View>
@@ -107,6 +132,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         replaceLabel={imageUrl ? COPY.changePhoto : COPY.addPhoto}
         removeLabel={COPY.removePhoto}
         showRemove={Boolean(imageUrl)}
+        loading={handlers.loading}
         onClose={closeViewer}
         onReplace={replaceImage}
         onRemove={removeImage}
@@ -117,20 +143,29 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
 
 const useImageHandlers = (userId: string | undefined) => {
   const [loading, setLoading] = useState(false);
-  const pick = async () => {
-    if (!userId) return;
+  const runWithLoading = async (work: () => Promise<boolean>) => {
     setLoading(true);
     try {
-      const url = await pickAndResizeImage();
-      if (!url) return;
-      await updateProfileImageUrl(userId, url);
+      return await work();
     } finally {
       setLoading(false);
     }
   };
+  const pick = async () => {
+    if (!userId) return;
+    return runWithLoading(async () => {
+      const url = await pickAndResizeImage();
+      if (!url) return false;
+      await updateProfileImageUrl(userId, url);
+      return true;
+    });
+  };
   const remove = async () => {
     if (!userId) return;
-    await updateProfileImageUrl(userId, null);
+    return runWithLoading(async () => {
+      await updateProfileImageUrl(userId, null);
+      return true;
+    });
   };
   return { pick, remove, loading };
 };
@@ -188,7 +223,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: { color: colors.primaryForeground, fontSize: 48, fontWeight: "700" },
+  avatarText: {
+    color: colors.primaryForeground,
+    fontSize: 48,
+    fontWeight: "700",
+  },
   email: { fontSize: 18, color: colors.text, fontWeight: "500" },
   signOutButton: { minWidth: 164 },
 });

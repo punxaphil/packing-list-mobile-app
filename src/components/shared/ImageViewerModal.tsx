@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { Dimensions, Modal, Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+  Platform,
+  Pressable,
+  Image as RNImage,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { PageSheet } from "./PageSheet.tsx";
@@ -14,6 +24,7 @@ type ImageViewerModalProps = {
   replaceLabel?: string;
   removeLabel?: string;
   showRemove?: boolean;
+  loading?: boolean;
   onClose: () => void;
   onReplace: () => void;
   onRemove: () => void;
@@ -28,21 +39,29 @@ export const ImageViewerModal = ({
   replaceLabel = "Replace",
   removeLabel = "Remove",
   showRemove = true,
+  loading = false,
   onClose,
   onReplace,
   onRemove,
 }: ImageViewerModalProps) => {
-  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const [imageSize, setImageSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   useEffect(() => {
     if (visible && imageUrl) {
-      RNImage.getSize(imageUrl, (w, h) => setImageSize({ width: w, height: h }));
+      RNImage.getSize(imageUrl, (w, h) =>
+        setImageSize({ width: w, height: h }),
+      );
       return;
     }
     setImageSize(null);
   }, [visible, imageUrl]);
 
-  const displaySize = imageSize ? calculateDisplaySize(imageSize, Platform.OS === "ios") : null;
+  const displaySize = imageSize
+    ? calculateDisplaySize(imageSize, Platform.OS === "ios")
+    : null;
 
   if (Platform.OS === "ios") {
     return (
@@ -55,7 +74,12 @@ export const ImageViewerModal = ({
               </Text>
             </View>
           ) : null}
-          <View style={[styles.sheetImageContainer, displaySize && buildImageFrameStyle(displaySize)]}>
+          <View
+            style={[
+              styles.sheetImageContainer,
+              displaySize && buildImageFrameStyle(displaySize),
+            ]}
+          >
             {displaySize && imageUrl ? (
               <RNImage
                 source={{ uri: imageUrl }}
@@ -65,10 +89,22 @@ export const ImageViewerModal = ({
             ) : (
               <ImagePlaceholder label={placeholderLabel} />
             )}
+            {loading && <ImageLoadingOverlay />}
           </View>
           <View style={styles.sheetActions}>
-            <ActionButton label={replaceLabel} onPress={onReplace} />
-            {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive />}
+            <ActionButton
+              label={replaceLabel}
+              onPress={onReplace}
+              disabled={loading}
+            />
+            {showRemove && (
+              <ActionButton
+                label={removeLabel}
+                onPress={onRemove}
+                destructive
+                disabled={loading}
+              />
+            )}
           </View>
         </View>
       </PageSheet>
@@ -76,7 +112,12 @@ export const ImageViewerModal = ({
   }
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <CloseButton onPress={onClose} />
         <View style={styles.imageContainer}>
@@ -89,52 +130,107 @@ export const ImageViewerModal = ({
           ) : (
             <ImagePlaceholder label={placeholderLabel} dark />
           )}
+          {loading && <ImageLoadingOverlay />}
         </View>
         <View style={styles.actions}>
-          <ActionButton label={replaceLabel} onPress={onReplace} />
-          {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive />}
+          <ActionButton
+            label={replaceLabel}
+            onPress={onReplace}
+            disabled={loading}
+          />
+          {showRemove && (
+            <ActionButton
+              label={removeLabel}
+              onPress={onRemove}
+              destructive
+              disabled={loading}
+            />
+          )}
         </View>
       </Pressable>
     </Modal>
   );
 };
 
-const calculateDisplaySize = (size: { width: number; height: number }, isSheet: boolean) => {
+const calculateDisplaySize = (
+  size: { width: number; height: number },
+  isSheet: boolean,
+) => {
   const screen = Dimensions.get("window");
   const maxW = screen.width - (isSheet ? 88 : 40);
-  const maxH = isSheet ? Math.min(screen.height * 0.3, screen.height - 470) : screen.height - 200;
+  const maxH = isSheet
+    ? Math.min(screen.height * 0.3, screen.height - 470)
+    : screen.height - 200;
   if (size.width <= maxW && size.height <= maxH) return size;
   const scale = Math.min(maxW / size.width, maxH / size.height);
   return { width: size.width * scale, height: size.height * scale };
 };
 
-const buildImageFrameStyle = ({ width, height }: { width: number; height: number }) => ({
+const buildImageFrameStyle = ({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) => ({
   width: width + homeSpacing.md * 2,
   height: height + homeSpacing.md * 2,
 });
 
-const ImagePlaceholder = ({ label, dark = false }: { label: string; dark?: boolean }) => (
+const ImagePlaceholder = ({
+  label,
+  dark = false,
+}: {
+  label: string;
+  dark?: boolean;
+}) => (
   <View style={[styles.placeholder, dark && styles.placeholderDark]}>
-    <Text style={[styles.placeholderText, dark && styles.placeholderTextDark]}>{label}</Text>
+    <Text style={[styles.placeholderText, dark && styles.placeholderTextDark]}>
+      {label}
+    </Text>
   </View>
 );
 
 const CloseButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable style={styles.closeButton} onPress={onPress}>
-    <MaterialCommunityIcons name="close" size={28} color={homeColors.buttonText} />
+    <MaterialCommunityIcons
+      name="close"
+      size={28}
+      color={homeColors.buttonText}
+    />
   </Pressable>
 );
 
-type ActionButtonProps = { label: string; onPress: () => void; destructive?: boolean };
+const ImageLoadingOverlay = () => (
+  <View style={styles.loadingOverlay} pointerEvents="none">
+    <ActivityIndicator size="small" color={homeColors.surface} />
+  </View>
+);
 
-const ActionButton = ({ label, onPress, destructive }: ActionButtonProps) => (
+type ActionButtonProps = {
+  label: string;
+  onPress: () => void;
+  destructive?: boolean;
+  disabled?: boolean;
+};
+
+const ActionButton = ({
+  label,
+  onPress,
+  destructive,
+  disabled = false,
+}: ActionButtonProps) => (
   <Pressable
     style={[
       sheetButtonStyles.button,
       styles.button,
-      destructive ? sheetButtonStyles.filledPrimary : sheetButtonStyles.filledSoft,
+      destructive
+        ? sheetButtonStyles.filledPrimary
+        : sheetButtonStyles.filledSoft,
       destructive && styles.buttonDestructive,
+      disabled && styles.buttonDisabled,
     ]}
+    disabled={disabled}
     onPress={(e) => {
       e.stopPropagation();
       onPress();
@@ -159,11 +255,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  closeButton: { position: "absolute", top: 50, right: homeSpacing.lg, zIndex: 1, padding: homeSpacing.sm },
-  imageContainer: { flex: 1, width: "100%", justifyContent: "center", alignItems: "center", padding: homeSpacing.lg },
+  closeButton: {
+    position: "absolute",
+    top: 50,
+    right: homeSpacing.lg,
+    zIndex: 1,
+    padding: homeSpacing.sm,
+  },
+  imageContainer: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: homeSpacing.lg,
+  },
   sheetContent: { gap: homeSpacing.md, alignItems: "center" },
   connectionRow: { gap: 2 },
-  connectionValue: { fontSize: 15, fontWeight: "700", color: homeColors.text, textAlign: "center" },
+  connectionValue: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: homeColors.text,
+    textAlign: "center",
+  },
   sheetImageContainer: {
     alignSelf: "center",
     alignItems: "center",
@@ -171,6 +284,13 @@ const styles = StyleSheet.create({
     borderRadius: homeRadius,
     backgroundColor: "rgba(255,255,255,0.65)",
     padding: homeSpacing.md,
+    overflow: "hidden",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.28)",
   },
   placeholder: {
     width: 160,
@@ -181,12 +301,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   placeholderDark: { backgroundColor: "rgba(255,255,255,0.2)" },
-  placeholderText: { fontSize: 64, fontWeight: "700", color: homeColors.primaryForeground },
+  placeholderText: {
+    fontSize: 64,
+    fontWeight: "700",
+    color: homeColors.primaryForeground,
+  },
   placeholderTextDark: { color: homeColors.surface },
-  actions: { flexDirection: "row", gap: homeSpacing.md, paddingBottom: 50, paddingHorizontal: homeSpacing.lg },
+  actions: {
+    flexDirection: "row",
+    gap: homeSpacing.md,
+    paddingBottom: 50,
+    paddingHorizontal: homeSpacing.lg,
+  },
   sheetActions: { flexDirection: "row", gap: homeSpacing.md, width: "100%" },
   button: { flex: 1 },
   buttonDestructive: { backgroundColor: homeColors.danger },
+  buttonDisabled: { opacity: 0.55 },
   buttonText: { color: homeColors.muted },
   buttonTextDestructive: { color: homeColors.buttonText },
 });

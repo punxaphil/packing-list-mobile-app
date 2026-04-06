@@ -10,7 +10,10 @@ type ImageDbOperations = {
 
 type ViewerState = { entityId: string; image: Image } | null;
 
-export const useEntityImageActions = (imageType: string, db: ImageDbOperations) => {
+export const useEntityImageActions = (
+  imageType: string,
+  db: ImageDbOperations,
+) => {
   const [viewerState, setViewerState] = useState<ViewerState>(null);
   const [loadingEntityId, setLoadingEntityId] = useState<string | null>(null);
 
@@ -27,7 +30,7 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
         setLoadingEntityId(null);
       }
     },
-    [db, imageType]
+    [db, imageType],
   );
 
   const handleImagePress = useCallback(
@@ -35,11 +38,12 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
       if (image) setViewerState({ entityId, image });
       else void pickAndUpload(entityId);
     },
-    [pickAndUpload]
+    [pickAndUpload],
   );
 
   const handleReplace = () => {
-    if (viewerState) void pickAndUpload(viewerState.entityId, viewerState.image);
+    if (viewerState)
+      void pickAndUpload(viewerState.entityId, viewerState.image);
   };
 
   const handleRemove = async () => {
@@ -50,6 +54,7 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
   };
 
   const closeViewer = () => setViewerState(null);
+  const modalLoading = viewerState?.entityId === loadingEntityId;
 
   return {
     handleImagePress,
@@ -58,5 +63,6 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
     handleRemove,
     closeViewer,
     loadingEntityId,
+    modalLoading,
   };
 };

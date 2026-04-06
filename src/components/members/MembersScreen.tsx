@@ -16,7 +16,10 @@ import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
-import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
+import {
+  computeEntityDropIndex,
+  useEntityOrdering,
+} from "../shared/useEntityOrdering.ts";
 
 type MembersScreenProps = {
   email: string;
@@ -24,7 +27,11 @@ type MembersScreenProps = {
   onManageSpace: () => void;
 };
 
-export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreenProps) => {
+export const MembersScreen = ({
+  email,
+  onProfile,
+  onManageSpace,
+}: MembersScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { members } = useMembers(spaceId);
   const { images } = useImages(spaceId);
@@ -43,11 +50,17 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
   };
 
   const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb);
-  const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
+  const creation = useCreateEntityDialog(
+    actions.onAdd,
+    members,
+    MEMBER_COPY.type,
+  );
   const drag = useDragState();
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
   const [sortByAlpha, setSortByAlpha] = useState(false);
-  const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
+  const sorted = sortByAlpha
+    ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name))
+    : ordering.entities;
   const colors = buildEntityColors(sorted);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
@@ -99,9 +112,14 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
             visible={true}
             imageUrl={imageActions.viewerState.image.url}
             title={MEMBER_COPY.imageTitle}
-            connectedLabel={members.find((member) => member.id === imageActions.viewerState?.entityId)?.name}
+            connectedLabel={
+              members.find(
+                (member) => member.id === imageActions.viewerState?.entityId,
+              )?.name
+            }
             replaceLabel={MEMBER_COPY.imageReplace}
             removeLabel={MEMBER_COPY.imageRemove}
+            loading={imageActions.modalLoading}
             onClose={imageActions.closeViewer}
             onReplace={imageActions.handleReplace}
             onRemove={imageActions.handleRemove}
@@ -118,7 +136,11 @@ type MemberHeaderProps = {
   onToggleSort: () => void;
 };
 
-const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
+const MemberHeader = ({
+  onAdd,
+  sortByAlpha,
+  onToggleSort,
+}: MemberHeaderProps) => (
   <View style={entityStyles.actions}>
     <Pressable
       style={entityStyles.addLink}
