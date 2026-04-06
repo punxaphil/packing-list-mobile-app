@@ -47,12 +47,12 @@ export const ListSection = (props: ListSectionProps) => {
   );
   const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
   const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
-  const colors = useMemo(() => buildListColors(props.lists), [props.lists]);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
   const [showArchived, setShowArchived] = useState(false);
   const hasArchived = props.lists.some((list) => list.archived);
   const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
+  const colors = useMemo(() => buildListColors(filteredLists), [filteredLists]);
   return (
     <View style={homeStyles.panel}>
       <HomeHeader

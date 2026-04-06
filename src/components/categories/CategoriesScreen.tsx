@@ -6,7 +6,7 @@ import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
-import { buildCategoryColors } from "../home/listColors.ts";
+import { buildEntityColors } from "../home/listColors.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
@@ -50,7 +50,7 @@ export const CategoriesScreen = ({ email, onProfile, onManageSpace }: Categories
   const ordering = useEntityOrdering(categories, writeDb.updateCategories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
-  const colors = buildCategoryColors(categories);
+  const colors = buildEntityColors(sorted);
   const categoryImages = images.filter((img) => img.type === "categories");
   const imageActions = useEntityImageActions("categories", imageDb);
 

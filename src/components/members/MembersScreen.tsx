@@ -6,7 +6,7 @@ import { useMembers } from "~/hooks/useMembers.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
-import { buildCategoryColors } from "../home/listColors.ts";
+import { buildEntityColors } from "../home/listColors.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
@@ -48,7 +48,7 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
-  const colors = buildCategoryColors(members);
+  const colors = buildEntityColors(sorted);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
 

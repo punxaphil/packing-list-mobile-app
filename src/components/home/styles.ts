@@ -168,6 +168,12 @@ export const homeStyles = StyleSheet.create({
     marginLeft: spacing.xs,
     marginBlock: spacing.xs,
   },
+  categoryAccent: {
+    width: 8,
+    alignSelf: "stretch",
+    borderRadius: 999,
+    marginVertical: 2,
+  },
   categoryCheckboxWrapper: {
     position: "relative",
     width: spacing.md,

@@ -200,6 +200,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     >
       <CategoryHeader
         section={props.section}
+        color={props.color}
         imageUrl={categoryImageUrl}
         isTemplateList={props.isTemplateList}
         onAdd={onAdd}
@@ -325,6 +326,7 @@ export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 
 type CategoryHeaderProps = {
   section: SectionGroup;
+  color: string;
   imageUrl: string | undefined;
   isTemplateList: boolean;
   onAdd: () => void;
@@ -338,6 +340,7 @@ type CategoryHeaderProps = {
 
 const CategoryHeader = ({
   section,
+  color,
   imageUrl,
   isTemplateList,
   onToggleCategory,
@@ -369,6 +372,7 @@ const CategoryHeader = ({
 
   return (
     <View style={homeStyles.categoryHeader}>
+      <View style={[homeStyles.categoryAccent, { backgroundColor: color }]} />
       <View style={homeStyles.categoryCheckboxWrapper}>
         <Checkbox
           value={displayChecked}

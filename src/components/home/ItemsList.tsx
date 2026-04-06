@@ -11,7 +11,7 @@ import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
-import { buildCategoryColors } from "./listColors.ts";
+import { buildItemCategoryColors } from "./listColors.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
@@ -57,7 +57,7 @@ export const ItemsList = (props: ItemsListProps) => {
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
   const sections = buildSections(ordering.items, props.categories).filter((s) => s.items.length);
-  const colors = buildCategoryColors(sections.map((s) => s.category));
+  const colors = buildItemCategoryColors(sections.map((s) => s.category));
   const itemCategoryMap = buildItemCategoryMap(props.items);
   const prevItemIds = useRef(new Set(props.items.map((i) => i.id)));
   const pendingScrollId = useRef<string | null>(null);
@@ -109,7 +109,7 @@ export const ItemsList = (props: ItemsListProps) => {
           <CategorySection
             key={section.category.id || `uncategorized-${i}`}
             section={section}
-            color={section.category.color ?? colors[section.category.id]}
+            color={colors[section.category.id]}
             members={props.members}
             memberImages={props.memberImages}
             categoryImages={props.categoryImages}
