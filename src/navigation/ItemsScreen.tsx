@@ -1,9 +1,9 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
-import { homeStyles } from "~/components/home/styles";
-import { homeColors } from "~/components/home/theme";
+import { HOME_COPY, homeStyles } from "~/components/home/styles";
+import { AppLoadingState } from "~/components/shared/AppLoadingState.tsx";
 import { useCategories } from "~/hooks/useCategories";
 import { useImages } from "~/hooks/useImages";
 import { useMembers } from "~/hooks/useMembers";
@@ -19,44 +19,41 @@ function ItemsContent({ componentId }: { componentId: string }) {
   const imagesState = useImages(spaceId);
   const itemsState = usePackingItems(spaceId, selection.selectedId);
 
-  if (listsLoading) {
-    return (
-      <View style={homeStyles.loading}>
-        <ActivityIndicator size="large" color={homeColors.primary} />
-      </View>
-    );
-  }
+  if (listsLoading) return <AppLoadingState label={HOME_COPY.loading} />;
+  if (itemsState.loading) return <AppLoadingState label={HOME_COPY.itemsLoading} />;
 
   if (!hasLists) {
     return (
-      <View style={homeStyles.loading}>
-        <Text>No lists yet. Create one in the Lists tab.</Text>
-      </View>
+      <SafeAreaView edges={["top"]} style={homeStyles.home}>
+        <View style={homeStyles.loading}>
+          <Text>No lists yet. Create one in the Lists tab.</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ItemsSection
-      selection={selection}
-      categoriesState={categoriesState}
-      itemsState={itemsState}
-      membersState={membersState}
-      imagesState={imagesState}
-      lists={lists}
-      email={email}
-      onProfile={() => pushProfile(componentId)}
-      onManageSpace={() => pushSpaceManagement(componentId)}
-    />
+    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+      <ItemsSection
+        selection={selection}
+        categoriesState={categoriesState}
+        itemsState={itemsState}
+        membersState={membersState}
+        imagesState={imagesState}
+        lists={lists}
+        email={email}
+        onProfile={() => pushProfile(componentId)}
+        onManageSpace={() => pushSpaceManagement(componentId)}
+      />
+    </SafeAreaView>
   );
 }
 
 export function ItemsScreen({ componentId }: NavigationComponentProps) {
   const { userId, email } = getAppState();
   return (
-    <SafeAreaView edges={["top"]} style={homeStyles.home}>
-      <AppProvider userId={userId} email={email}>
-        <ItemsContent componentId={componentId} />
-      </AppProvider>
-    </SafeAreaView>
+    <AppProvider userId={userId} email={email}>
+      <ItemsContent componentId={componentId} />
+    </AppProvider>
   );
 }

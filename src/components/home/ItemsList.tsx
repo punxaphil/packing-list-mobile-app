@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
@@ -95,8 +95,6 @@ export const ItemsList = (props: ItemsListProps) => {
     if (categoryId === undefined) return;
     scrollToMatch(currentMatchId, categoryId, drag.layouts, drag.sectionLayouts, drag.bodyLayouts);
   }, [props.search, itemCategoryMap, drag.layouts, drag.sectionLayouts, drag.bodyLayouts]);
-
-  if (props.loading) return <ItemsLoader />;
 
   return (
     <FadeScrollView
@@ -223,13 +221,6 @@ const EmptyItems = ({
 const FilteredEmpty = () => (
   <View style={homeStyles.empty}>
     <Text style={homeStyles.emptyText}>{FILTERED_COPY.noMatch}</Text>
-  </View>
-);
-
-const ItemsLoader = () => (
-  <View style={homeStyles.loading}>
-    <ActivityIndicator size="small" />
-    <Text style={homeStyles.loadingText}>{HOME_COPY.itemsLoading}</Text>
   </View>
 );
 

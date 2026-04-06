@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
 import { Login, useCurrentUser } from "~/components/auth/Auth";
-import { HOME_COPY, homeStyles } from "~/components/home/styles";
-import { homeColors } from "~/components/home/theme";
+import { HOME_COPY } from "~/components/home/styles";
+import { AppLoadingState } from "~/components/shared/AppLoadingState.tsx";
 import { useSpaceBootstrap } from "~/hooks/useSpaces.ts";
 import { setAppState } from "./appState";
 import { showMainTabs } from "./navigation";
@@ -22,23 +21,14 @@ function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }
     }
   }, [ready, userId, email]);
 
-  return (
-    <View style={homeStyles.loading}>
-      <ActivityIndicator size="large" color={homeColors.primary} />
-    </View>
-  );
+  return <AppLoadingState label={HOME_COPY.loading} />;
 }
 
 export function AppRoot() {
   const { userId, email, loggingIn } = useCurrentUser();
 
   if (loggingIn) {
-    return (
-      <View style={homeStyles.loading}>
-        <ActivityIndicator size="large" color={homeColors.primary} />
-        <Text style={homeStyles.loadingText}>{HOME_COPY.loading}</Text>
-      </View>
-    );
+    return <AppLoadingState label={HOME_COPY.loading} />;
   }
 
   if (!userId) return <Login />;
