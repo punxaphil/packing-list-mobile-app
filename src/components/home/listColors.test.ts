@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildEntityColors, buildItemCategoryColors, buildListColors } from "./listColors.ts";
+import { buildEntityColors, buildItemCategoryColors, buildListColors, getItemCheckboxColor } from "./listColors.ts";
 
 const entities = [
   { id: "a", name: "A", rank: 0 },
@@ -51,5 +51,11 @@ describe("listColors", () => {
 
     expect(colors.a).toBe("#DBEAFE");
     expect(colors.f).toBe("#FEF3C7");
+  });
+
+  it("maps category colors to darker checkbox colors", () => {
+    expect(getItemCheckboxColor("#DBEAFE")).toBe("#54A2FB");
+    expect(getItemCheckboxColor("#FCE7F3")).toBe("#EC4899");
+    expect(getItemCheckboxColor("#DCFCE7")).toBe("#22C55E");
   });
 });

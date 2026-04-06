@@ -19,14 +19,11 @@ import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
-import {
-  CategoryRenameDialogs,
-  getRenameCategoryError,
-  getRenameItemError,
-} from "./CategoryRenameDialogs.tsx";
+import { CategoryRenameDialogs, getRenameCategoryError, getRenameItemError } from "./CategoryRenameDialogs.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { SectionGroup } from "./itemsSectionHelpers.ts";
+import { getItemCheckboxColor } from "./listColors.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
@@ -61,7 +58,7 @@ type CategorySectionProps = {
     snapshot: DragSnapshot,
     layouts: Record<string, LayoutRectangle>,
     sectionLayouts: Record<string, LayoutRectangle>,
-    bodyLayouts: Record<string, LayoutRectangle>,
+    bodyLayouts: Record<string, LayoutRectangle>
   ) => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
@@ -73,16 +70,14 @@ type CategorySectionProps = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
-  onMoveItemsToCategory: (
-    items: PackItem[],
-    categoryId: string,
-  ) => Promise<void>;
+  onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
 
 type CategoryItemRowProps = {
   item: PackItem;
+  checkboxColor: string;
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
   memberImages: Image[];
@@ -116,31 +111,17 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   const [renameItemText, setRenameItemText] = useState("");
   const [renameCategoryVisible, setRenameCategoryVisible] = useState(false);
   const [renameCategoryText, setRenameCategoryText] = useState("");
-  const renameItemErrorText = getRenameItemError(
-    renameItem,
-    renameItemText,
-    props.section.items,
-  );
-  const renameCategoryErrorText = getRenameCategoryError(
-    props.section.category,
-    renameCategoryText,
-    props.categories,
-  );
+  const renameItemErrorText = getRenameItemError(renameItem, renameItemText, props.section.items);
+  const renameCategoryErrorText = getRenameCategoryError(props.section.category, renameCategoryText, props.categories);
 
   const onAdd = () => props.onAddItem(props.section.category);
   const openRenameItem = (item: PackItem) => {
-    if (
-      showNativeRenameItemPrompt(item, props.section.items, (name) =>
-        props.onRenameItem(item, name),
-      )
-    )
-      return;
+    if (showNativeRenameItemPrompt(item, props.section.items, (name) => props.onRenameItem(item, name))) return;
     setRenameItem(item);
     setRenameItemText(item.name);
   };
   const submitRenameItem = () => {
-    if (renameItem && !renameItemErrorText)
-      props.onRenameItem(renameItem, renameItemText.trim());
+    if (renameItem && !renameItemErrorText) props.onRenameItem(renameItem, renameItemText.trim());
     setRenameItem(null);
   };
   const openRenameCategory = () => {
@@ -150,12 +131,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         confirmLabel: HOME_COPY.renameListConfirm,
         cancelLabel: HOME_COPY.cancel,
         value: props.section.category.name,
-        getError: (text) =>
-          getRenameCategoryError(
-            props.section.category,
-            text,
-            props.categories,
-          ),
+        getError: (text) => getRenameCategoryError(props.section.category, text, props.categories),
         onSubmit: (text) => {
           const trimmed = text.trim();
           if (!trimmed || trimmed === props.section.category.name) return;
@@ -169,8 +145,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     setRenameCategoryText(props.section.category.name);
   };
   const submitRenameCategory = () => {
-    if (!renameCategoryErrorText)
-      props.onRenameCategory(props.section.category, renameCategoryText.trim());
+    if (!renameCategoryErrorText) props.onRenameCategory(props.section.category, renameCategoryText.trim());
     setRenameCategoryVisible(false);
   };
   const handleMoveCategory = (category: NamedEntity) => {
@@ -195,9 +170,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     if (!confirmDelete || Platform.OS !== "ios") return;
     Alert.alert(
       HOME_COPY.categoryMenuDeleteItems,
-      DELETE_COPY.body
-        .replace("{count}", String(props.section.items.length))
-        .replace("{name}", props.section.title),
+      DELETE_COPY.body.replace("{count}", String(props.section.items.length)).replace("{name}", props.section.title),
       [
         {
           text: DELETE_COPY.cancel,
@@ -212,37 +185,27 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
             for (const item of props.section.items) props.onDeleteItem(item.id);
           },
         },
-      ],
+      ]
     );
-  }, [
-    confirmDelete,
-    props.section.items,
-    props.section.title,
-    props.onDeleteItem,
-  ]);
+  }, [confirmDelete, props.section.items, props.section.title, props.onDeleteItem]);
 
   const handleMoveSection = async (category: NamedEntity) => {
     await props.onMoveItemsToCategory(props.section.items, category.id);
   };
 
-  const categoryImageUrl = props.categoryImages.find(
-    (img) => img.typeId === props.section.category.id,
-  )?.url;
+  const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
+  const checkboxColor = getItemCheckboxColor(props.color);
 
   return (
     <View
       style={[homeStyles.category, { backgroundColor: props.color }]}
-      onLayout={(e) =>
-        props.drag.recordSectionLayout(
-          props.section.category.id,
-          e.nativeEvent.layout,
-        )
-      }
+      onLayout={(e) => props.drag.recordSectionLayout(props.section.category.id, e.nativeEvent.layout)}
     >
       <CategoryHeader
         section={props.section}
         color={props.color}
         imageUrl={categoryImageUrl}
+        checkboxColor={checkboxColor}
         isTemplateList={props.isTemplateList}
         onAdd={onAdd}
         onToggleCategory={handleCategoryToggle}
@@ -254,15 +217,14 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       />
       <CategoryItems
         {...props}
+        checkboxColor={checkboxColor}
         onOpenAssignMembers={setAssignItem}
         onOpenMoveCategory={setMoveItem}
         onOpenCopyToList={setCopyItem}
         onOpenRenameItem={openRenameItem}
         checkboxDisabled={props.isTemplateList}
       />
-      {pendingToggle !== null && (
-        <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />
-      )}
+      {pendingToggle !== null && <View style={homeStyles.categoryOverlay} pointerEvents="box-only" />}
       <AssignMembersModal
         visible={!!assignItem}
         item={assignItem}
@@ -308,8 +270,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
               onCancel={() => setConfirmDelete(false)}
               onConfirm={() => {
                 setConfirmDelete(false);
-                for (const item of props.section.items)
-                  props.onDeleteItem(item.id);
+                for (const item of props.section.items) props.onDeleteItem(item.id);
               }}
             />
           }
@@ -340,21 +301,13 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   );
 };
 
-const areSectionPropsEqual = (
-  prev: CategorySectionProps,
-  next: CategorySectionProps,
-): boolean => {
+const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionProps): boolean => {
   if (prev.section.category.id !== next.section.category.id) return false;
   if (prev.section.items.length !== next.section.items.length) return false;
   for (let i = 0; i < prev.section.items.length; i++) {
     const pItem = prev.section.items[i];
     const nItem = next.section.items[i];
-    if (
-      pItem.id !== nItem.id ||
-      pItem.checked !== nItem.checked ||
-      pItem.name !== nItem.name
-    )
-      return false;
+    if (pItem.id !== nItem.id || pItem.checked !== nItem.checked || pItem.name !== nItem.name) return false;
     if (pItem.members.length !== nItem.members.length) return false;
     for (let j = 0; j < pItem.members.length; j++) {
       if (pItem.members[j].checked !== nItem.members[j].checked) return false;
@@ -379,6 +332,7 @@ export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 type CategoryHeaderProps = {
   section: SectionGroup;
   color: string;
+  checkboxColor: string;
   imageUrl: string | undefined;
   isTemplateList: boolean;
   onAdd: () => void;
@@ -393,6 +347,7 @@ type CategoryHeaderProps = {
 const CategoryHeader = ({
   section,
   color,
+  checkboxColor,
   imageUrl,
   isTemplateList,
   onToggleCategory,
@@ -411,9 +366,7 @@ const CategoryHeader = ({
 
   const openMenu = () =>
     showActionSheet(section.title, [
-      ...(isUncategorized
-        ? []
-        : [{ text: HOME_COPY.rename, onPress: onRename }]),
+      ...(isUncategorized ? [] : [{ text: HOME_COPY.rename, onPress: onRename }]),
       { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
       { text: CATEGORY_COPY.changeCategory, onPress: onMoveCategory },
       { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
@@ -433,17 +386,13 @@ const CategoryHeader = ({
           onToggle={() => onToggleCategory(!displayChecked)}
           disabled={isTemplateList || pendingToggle !== null}
           size={16}
+          checkedColor={checkboxColor}
         />
         {indeterminate && pendingToggle === null && (
-          <View
-            pointerEvents="none"
-            style={homeStyles.categoryCheckboxIndicator}
-          />
+          <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
         )}
       </View>
-      {imageUrl && (
-        <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />
-      )}
+      {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
       <Text style={homeStyles.categoryTitle} numberOfLines={1}>
         {section.title}
       </Text>
@@ -453,17 +402,14 @@ const CategoryHeader = ({
         accessibilityRole="button"
         accessibilityLabel="Category menu"
       >
-        <MaterialCommunityIcons
-          name="dots-vertical"
-          size={20}
-          color={homeColors.muted}
-        />
+        <MaterialCommunityIcons name="dots-vertical" size={20} color={homeColors.muted} />
       </Pressable>
     </View>
   );
 };
 
 type CategoryItemsProps = CategorySectionProps & {
+  checkboxColor: string;
   onOpenAssignMembers: (item: PackItem) => void;
   onOpenMoveCategory: (item: PackItem) => void;
   onOpenCopyToList: (item: PackItem) => void;
@@ -493,22 +439,17 @@ const CategoryItems = (props: CategoryItemsProps) => {
   } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
-  const { indicatorTargetId, indicatorBelow } = computeIndicator(
-    items,
-    drag,
-    section.category.id,
-  );
+  const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
-      onLayout={(e) =>
-        drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)
-      }
+      onLayout={(e) => drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)}
     >
       {items.map((item) => (
         <CategoryItemRow
           key={item.id}
           item={item}
+          checkboxColor={props.checkboxColor}
           initialsMap={initialsMap}
           memberNames={props.memberNames}
           memberImages={memberImages}
@@ -516,51 +457,28 @@ const CategoryItems = (props: CategoryItemsProps) => {
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
-          highlightOpacity={
-            props.highlightId === item.id ? props.highlightOpacity : undefined
-          }
+          highlightOpacity={props.highlightId === item.id ? props.highlightOpacity : undefined}
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
-          onDragEnd={() =>
-            drag.end(
-              (s) =>
-                s &&
-                onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts),
-            )
-          }
+          onDragEnd={() => drag.end((s) => s && onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
           onToggle={onToggle}
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
           onOpenMoveCategory={() => onOpenMoveCategory(item)}
           onOpenCopyToList={() => onOpenCopyToList(item)}
           onOpenRename={() => onOpenRenameItem(item)}
-          onToggleMemberPacked={(memberId) =>
-            onToggleMemberPacked(item, memberId)
-          }
+          onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
       ))}
-      <DropIndicator
-        targetId={indicatorTargetId}
-        layouts={drag.layouts}
-        below={indicatorBelow}
-      />
-      <GhostRow
-        items={items}
-        drag={drag.snapshot}
-        layouts={drag.layouts}
-        animatedOffsetY={drag.animatedOffsetY}
-      />
+      <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
+      <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} animatedOffsetY={drag.animatedOffsetY} />
     </View>
   );
 };
 
-const computeIndicator = (
-  items: PackItem[],
-  drag: ReturnType<typeof useDragState>,
-  categoryId: string,
-) => {
+const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragState>, categoryId: string) => {
   const itemIds = items.map((i) => i.id);
   const dropIndex = computeDropIndex(
     itemIds,
@@ -568,10 +486,9 @@ const computeIndicator = (
     drag.layouts,
     drag.sectionLayouts,
     drag.bodyLayouts,
-    categoryId,
+    categoryId
   );
-  if (dropIndex === null)
-    return { indicatorTargetId: null, indicatorBelow: false };
+  if (dropIndex === null) return { indicatorTargetId: null, indicatorBelow: false };
   if (dropIndex === items.length && items.length > 0) {
     return {
       indicatorTargetId: items[items.length - 1].id,
@@ -584,18 +501,14 @@ const computeIndicator = (
   };
 };
 
-const areRowPropsEqual = (
-  prev: CategoryItemRowProps,
-  next: CategoryItemRowProps,
-): boolean => {
+const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps): boolean => {
   return (
     prev.item.id === next.item.id &&
     prev.item.checked === next.item.checked &&
     prev.item.name === next.item.name &&
+    prev.checkboxColor === next.checkboxColor &&
     prev.item.members.length === next.item.members.length &&
-    prev.item.members.every(
-      (m, i) => m.checked === next.item.members[i]?.checked,
-    ) &&
+    prev.item.members.every((m, i) => m.checked === next.item.members[i]?.checked) &&
     prev.hidden === next.hidden &&
     !!prev.highlightOpacity === !!next.highlightOpacity &&
     prev.hasOtherLists === next.hasOtherLists &&
@@ -630,9 +543,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
       { text: HOME_COPY.rename, onPress: props.onOpenRename },
       { text: "Edit Members", onPress: props.onOpenAssignMembers },
       { text: "Change Category", onPress: props.onOpenMoveCategory },
-      ...(props.hasOtherLists
-        ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }]
-        : []),
+      ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
       {
         text: "Delete",
         style: "destructive",
@@ -645,11 +556,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         {showHighlight && (
           <Animated.View
             pointerEvents="none"
-            style={[
-              homeStyles.itemHighlight,
-              homeStyles.itemHighlightOverlay,
-              { opacity: props.highlightOpacity },
-            ]}
+            style={[homeStyles.itemHighlight, homeStyles.itemHighlightOverlay, { opacity: props.highlightOpacity }]}
           />
         )}
         {wrap(<DragHandle />)}
@@ -658,6 +565,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             item={props.item}
             disabled={props.checkboxDisabled}
             onToggle={props.onToggleAllMembers}
+            checkedColor={props.checkboxColor}
           />
         ) : (
           <AppCheckbox
@@ -665,17 +573,12 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             onToggle={() => props.onToggle(props.item)}
             disabled={props.checkboxDisabled}
             size={16}
+            checkedColor={props.checkboxColor}
           />
         )}
         <View style={homeStyles.itemContent}>
           <View>
-            <Text
-              style={[
-                homeStyles.detailLabel,
-                checked && homeStyles.detailLabelChecked,
-              ]}
-              numberOfLines={1}
-            >
+            <Text style={[homeStyles.detailLabel, checked && homeStyles.detailLabelChecked]} numberOfLines={1}>
               {props.item.name}
             </Text>
           </View>
@@ -740,12 +643,7 @@ const GhostRow = ({ items, drag, layouts, animatedOffsetY }: GhostRowProps) => {
         }}
       >
         <DragHandle />
-        <View
-          style={[
-            homeStyles.checkbox,
-            { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 },
-          ]}
-        />
+        <View style={[homeStyles.checkbox, { borderColor: homeColors.border, borderWidth: 1, marginRight: 8 }]} />
         <Text style={[homeStyles.detailLabel, { flex: 1 }]} numberOfLines={1}>
           {item.name}
         </Text>

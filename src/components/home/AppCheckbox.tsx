@@ -6,6 +6,7 @@ type AppCheckboxProps = {
   onToggle: () => void;
   disabled?: boolean;
   size?: number;
+  checkedColor?: string;
 };
 
 export const AppCheckbox = ({
@@ -13,6 +14,7 @@ export const AppCheckbox = ({
   onToggle,
   disabled = false,
   size = 16,
+  checkedColor = homeColors.primaryStrong,
 }: AppCheckboxProps) => {
   const radius = Math.max(4, Math.round(size * 0.28));
   const markWidth = Math.max(5, Math.round(size * 0.3));
@@ -29,7 +31,7 @@ export const AppCheckbox = ({
       style={[
         styles.base,
         { width: size, height: size, borderRadius: radius },
-        checked ? styles.checked : null,
+        checked ? { borderColor: checkedColor, backgroundColor: checkedColor } : null,
         disabled ? styles.disabled : null,
       ]}
     >
@@ -57,10 +59,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: homeColors.border,
     backgroundColor: homeColors.surface,
-  },
-  checked: {
-    borderColor: homeColors.primaryStrong,
-    backgroundColor: homeColors.primaryStrong,
   },
   mark: {
     borderColor: homeColors.surface,

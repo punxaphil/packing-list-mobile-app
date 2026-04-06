@@ -8,13 +8,10 @@ type MultiCheckboxProps = {
   item: PackItem;
   disabled?: boolean;
   onToggle: (checked: boolean) => void;
+  checkedColor?: string;
 };
 
-export const MultiCheckbox = ({
-  item,
-  disabled,
-  onToggle,
-}: MultiCheckboxProps) => {
+export const MultiCheckbox = ({ item, disabled, onToggle, checkedColor }: MultiCheckboxProps) => {
   const allChecked = areAllMembersChecked(item.members);
   const allUnchecked = item.members.every((m) => !m.checked);
   const indeterminate = !allChecked && !allUnchecked;
@@ -25,10 +22,9 @@ export const MultiCheckbox = ({
         onToggle={() => onToggle(!allChecked)}
         disabled={disabled}
         size={16}
+        checkedColor={checkedColor}
       />
-      {indeterminate && (
-        <View pointerEvents="none" style={homeStyles.itemCheckboxIndicator} />
-      )}
+      {indeterminate && <View pointerEvents="none" style={homeStyles.itemCheckboxIndicator} />}
     </View>
   );
 };

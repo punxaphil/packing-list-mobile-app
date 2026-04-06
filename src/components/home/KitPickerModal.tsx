@@ -1,12 +1,5 @@
 import { useCallback, useState } from "react";
-import {
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { PACKING_KITS, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
@@ -28,11 +21,7 @@ const COPY = {
   items: "items",
 };
 
-export const KitPickerModal = ({
-  visible,
-  onClose,
-  onAdd,
-}: KitPickerModalProps) => {
+export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const toggle = useCallback((id: string) => {
@@ -69,13 +58,7 @@ export const KitPickerModal = ({
         <Text style={styles.subtitle}>{COPY.subtitle}</Text>
         <ScrollView style={styles.list}>
           {PACKING_KITS.map((kit) => (
-            <KitRow
-              key={kit.id}
-              kit={kit}
-              checked={selected.has(kit.id)}
-              onToggle={() => toggle(kit.id)}
-              iosSheet
-            />
+            <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} iosSheet />
           ))}
         </ScrollView>
       </PageSheet>
@@ -100,12 +83,7 @@ export const KitPickerModal = ({
       <Text style={styles.subtitle}>{COPY.subtitle}</Text>
       <ScrollView style={styles.list}>
         {PACKING_KITS.map((kit) => (
-          <KitRow
-            key={kit.id}
-            kit={kit}
-            checked={selected.has(kit.id)}
-            onToggle={() => toggle(kit.id)}
-          />
+          <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
         ))}
       </ScrollView>
     </DialogShell>
@@ -120,16 +98,9 @@ type KitRowProps = {
 };
 
 const KitRow = ({ kit, checked, onToggle, iosSheet = false }: KitRowProps) => (
-  <Pressable
-    style={[styles.row, iosSheet ? styles.sheetRow : null]}
-    onPress={onToggle}
-  >
+  <Pressable style={[styles.row, iosSheet ? styles.sheetRow : null]} onPress={onToggle}>
     <AppCheckbox checked={checked} onToggle={onToggle} size={16} />
-    <MaterialCommunityIcons
-      name={kit.icon}
-      size={22}
-      color={checked ? homeColors.primaryStrong : homeColors.muted}
-    />
+    <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primaryStrong : homeColors.muted} />
     <View style={styles.kitInfo}>
       <Text style={styles.kitName}>{kit.name}</Text>
       <Text style={styles.kitCount}>
