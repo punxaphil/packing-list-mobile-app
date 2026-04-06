@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildEntityColors, buildItemCategoryColors, buildListColors } from "./listColors.ts";
+import {
+  buildEntityColors,
+  buildItemCategoryColors,
+  buildListColors,
+} from "./listColors.ts";
 
 const entities = [
   { id: "a", name: "A", rank: 0 },
@@ -8,7 +12,11 @@ const entities = [
   { id: "d", name: "D", rank: 3 },
 ] as const;
 
-const lists = entities.map((entity) => ({ ...entity, itemCount: 0, packedCount: 0 }));
+const lists = entities.map((entity) => ({
+  ...entity,
+  itemCount: 0,
+  packedCount: 0,
+}));
 
 describe("listColors", () => {
   it("assigns different adjacent colors in items view", () => {
@@ -40,5 +48,16 @@ describe("listColors", () => {
 
     expect(listColors.a).toBe(itemColors.a);
     expect(listColors.b).toBe(itemColors.b);
+  });
+
+  it("starts with blue and ends with yellow", () => {
+    const colors = buildEntityColors([
+      ...entities,
+      { id: "e", name: "E", rank: 4 },
+      { id: "f", name: "F", rank: 5 },
+    ]);
+
+    expect(colors.a).toBe("#DBEAFE");
+    expect(colors.f).toBe("#FEF3C7");
   });
 });
