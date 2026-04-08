@@ -64,6 +64,8 @@ ios/*.xcworkspace
 *.xcodeproj/project.xcworkspace/
 *.xcuserstate
 *.xcuserdata/
+.last_build_configuration
+hermes-engine/
 
 # CocoaPods
 Podfile.lock
