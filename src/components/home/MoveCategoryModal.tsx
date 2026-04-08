@@ -81,7 +81,7 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
 const buildCategoryList = (categories: NamedEntity[], currentCategoryId: string) => {
   const filtered = categories.filter((c) => c.id !== currentCategoryId);
   const uncategorized = currentCategoryId !== "" ? [UNCATEGORIZED] : [];
-  return [...uncategorized, ...filtered].sort((a, b) => b.rank - a.rank);
+  return [...uncategorized, ...filtered].sort((a, b) => a.name.localeCompare(b.name));
 };
 
 const getCurrentCategoryName = (categories: NamedEntity[], currentCategoryId: string) => {
