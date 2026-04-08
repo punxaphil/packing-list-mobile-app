@@ -1,5 +1,6 @@
 export const spaceCopy = {
   switchSpace: "Switch Space",
+  createSpace: "Create Space",
   createSpacePrompt: "Name your new space",
   createSpaceConfirm: "Create",
   createSpacePlaceholder: "Family trip",

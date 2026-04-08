@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
+import { AppLoadingState } from "../shared/AppLoadingState.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { ActionMenu } from "./ActionMenu.tsx";
 import { InviteSentDialog } from "./InviteSentDialog.tsx";
@@ -27,6 +28,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
   const [subDialog, setSubDialog] = useState<SubDialog>("none");
   const [promptValue, setPromptValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [creatingSpace, setCreatingSpace] = useState(false);
   const isIosSheet = Platform.OS === "ios";
 
   const handleManageSpace = (targetSpaceId: string) => {
@@ -41,29 +43,26 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
     onClose();
   };
 
-  const handleCreateSubmit = async () => {
-    const trimmed = promptValue.trim();
-    if (!trimmed || submitting) return;
-    setSubmitting(true);
+  const createSpace = async (name: string) => {
+    setSubDialog("none");
+    setCreatingSpace(true);
     try {
-      const space = await createNewSpace(trimmed);
+      const space = await createNewSpace(name);
       switchSpace(space.id);
       resetAndClose();
     } finally {
-      setSubmitting(false);
+      setCreatingSpace(false);
     }
   };
-  const handleCreateText = async (text: string) => {
+  const handleCreateSubmit = () => {
+    const trimmed = promptValue.trim();
+    if (!trimmed || creatingSpace) return;
+    void createSpace(trimmed);
+  };
+  const handleCreateText = (text: string) => {
     const trimmed = text.trim();
-    if (!trimmed || submitting) return;
-    setSubmitting(true);
-    try {
-      const space = await createNewSpace(trimmed);
-      switchSpace(space.id);
-      resetAndClose();
-    } finally {
-      setSubmitting(false);
-    }
+    if (!trimmed || creatingSpace) return;
+    void createSpace(trimmed);
   };
 
   const handleInviteSubmit = async () => {
@@ -134,14 +133,14 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
     <>
       {isIosSheet ? (
         <PageSheet
-          visible={visible && subDialog === "none"}
+          visible={visible && subDialog === "none" && !creatingSpace}
           title={spaceCopy.switchSpace}
           onClose={onClose}
           scrollable={false}
         >
           <Pressable style={styles.createButton} onPress={() => setSubDialog("create")}>
             <MaterialCommunityIcons name="plus" size={20} color={homeColors.primary} />
-            <Text style={styles.createButtonText}>Create Space</Text>
+            <Text style={styles.createButtonText}>{spaceCopy.createSpace}</Text>
           </Pressable>
           <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>
             {spaces.map((space) => (
@@ -170,7 +169,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         </PageSheet>
       ) : (
         <ActionMenu
-          visible={visible && subDialog === "none"}
+          visible={visible && subDialog === "none" && !creatingSpace}
           title={spaceCopy.switchSpace}
           items={[...spaceItems, ...inviteItems]}
           onClose={onClose}
@@ -185,7 +184,7 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         confirmLabel={spaceCopy.createSpaceConfirm}
         value={promptValue}
         placeholder={spaceCopy.createSpacePlaceholder}
-        disabled={submitting}
+        disabled={creatingSpace}
         onChange={setPromptValue}
         onCancel={resetSubDialog}
         onSubmitText={handleCreateText}
@@ -206,6 +205,9 @@ export const SpacePicker = ({ visible, onClose, onManageSpace }: SpacePickerProp
         onSubmit={handleInviteSubmit}
       />
       <InviteSentDialog visible={subDialog === "inviteSent"} onClose={resetAndClose} />
+      <Modal visible={creatingSpace} transparent animationType="fade">
+        <AppLoadingState />
+      </Modal>
     </>
   );
 };

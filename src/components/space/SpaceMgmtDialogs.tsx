@@ -16,6 +16,7 @@ type Props = {
 
 export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onRename, onInvite }: Props) => {
   const [promptValue, setPromptValue] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (dialogState === "rename") setPromptValue(currentName);
@@ -41,17 +42,28 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
 
   const handleInvite = async () => {
     const trimmed = promptValue.trim();
-    if (!trimmed) return;
-    await onInvite(trimmed);
-    setPromptValue("");
-    setDialogState("inviteSent");
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    try {
+      await onInvite(trimmed);
+      setPromptValue("");
+      setDialogState("inviteSent");
+    } finally {
+      setSubmitting(false);
+    }
   };
   const handleInviteText = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return reset();
-    await onInvite(trimmed);
-    setPromptValue("");
-    setDialogState("inviteSent");
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await onInvite(trimmed);
+      setPromptValue("");
+      setDialogState("inviteSent");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -74,6 +86,7 @@ export const SpaceMgmtDialogs = ({ dialogState, setDialogState, currentName, onR
         placeholder={SPACE_MGMT_COPY.invitePlaceholder}
         autoCapitalize="none"
         keyboardType="email-address"
+        disabled={submitting}
         onChange={setPromptValue}
         onCancel={reset}
         onSubmitText={handleInviteText}
