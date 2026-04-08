@@ -587,6 +587,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             initialsMap={props.initialsMap}
             memberNames={props.memberNames}
             memberImages={props.memberImages}
+            checkedColor={props.checkboxColor}
             onToggle={props.onToggleMemberPacked}
           />
         </View>

@@ -20,10 +20,18 @@ type MemberInitialsProps = {
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
   memberImages: Image[];
+  checkedColor: string;
   onToggle: (memberId: string) => void;
 };
 
-export const MemberInitials = ({ item, initialsMap, memberNames, memberImages, onToggle }: MemberInitialsProps) => {
+export const MemberInitials = ({
+  item,
+  initialsMap,
+  memberNames,
+  memberImages,
+  checkedColor,
+  onToggle,
+}: MemberInitialsProps) => {
   const [containerWidth, setContainerWidth] = useState(0);
   if (item.members.length === 0) return null;
 
@@ -44,6 +52,7 @@ export const MemberInitials = ({ item, initialsMap, memberNames, memberImages, o
             imageUrl={getImageUrl(mp.id)}
             label={label}
             checked={mp.checked}
+            checkedColor={checkedColor}
             onPress={() => onToggle(mp.id)}
           />
         );
@@ -86,11 +95,12 @@ type MemberBadgeProps = {
   imageUrl: string | undefined;
   label: string;
   checked: boolean;
+  checkedColor: string;
   onPress: () => void;
 };
 
-const MemberBadge = ({ imageUrl, label, checked, onPress }: MemberBadgeProps) => (
-  <Pressable onPress={onPress} style={[homeStyles.memberBadge, checked && homeStyles.memberBadgeChecked]}>
+const MemberBadge = ({ imageUrl, label, checked, checkedColor, onPress }: MemberBadgeProps) => (
+  <Pressable onPress={onPress} style={[homeStyles.memberBadge, checked && { backgroundColor: checkedColor }]}>
     {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.memberBadgeImage} />}
     <Text style={[homeStyles.memberBadgeText, checked && homeStyles.memberBadgeTextChecked]} numberOfLines={1}>
       {label}
