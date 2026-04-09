@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { LayoutRectangle } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -39,7 +39,9 @@ export const useSearch = (items: PackItem[], categories: NamedEntity[]): SearchS
 
   const matchedIds = useMemo(() => findMatchingItemIds(items, searchText, categories), [items, searchText, categories]);
 
-  useEffect(() => setCurrentIndex(0), []);
+  if (currentIndex >= matchedIds.length && matchedIds.length > 0) {
+    setCurrentIndex(0);
+  }
 
   const onSearchChange = useCallback((text: string) => setSearchText(text), []);
 
