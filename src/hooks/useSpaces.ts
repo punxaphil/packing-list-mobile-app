@@ -11,9 +11,12 @@ export function useActiveSpaceId() {
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
-async function bootstrapSpace(userId: string, email: string): Promise<string> {
-  const existing = await getUserProfile(userId);
-  if (existing) return existing.personalSpaceId;
+export function resolveValidSpaceId(stored: string, profile: UserProfile): string {
+  if (stored && profile.spaceIds.includes(stored)) return stored;
+  return profile.personalSpaceId;
+}
+
+async function bootstrapNewUser(userId: string, email: string): Promise<string> {
   const space = await createSpace("Personal", email);
   await setUserProfile(userId, {
     email,
@@ -28,11 +31,10 @@ export function useSpaceBootstrap(userId: string, email: string) {
 
   useEffect(() => {
     const init = async () => {
-      const restored = await initSpaceState();
-      if (!restored) {
-        const spaceId = await bootstrapSpace(userId, email);
-        setActiveSpaceId(spaceId);
-      }
+      const stored = await initSpaceState();
+      const profile = await getUserProfile(userId);
+      const validId = profile ? resolveValidSpaceId(stored, profile) : await bootstrapNewUser(userId, email);
+      if (validId !== stored) setActiveSpaceId(validId);
       setReady(true);
     };
     init();

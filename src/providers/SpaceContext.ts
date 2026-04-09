@@ -1,9 +1,9 @@
-import { createContext, useContext } from "react";
+import { createContext, type MutableRefObject, useContext } from "react";
 import type { WriteDb } from "~/services/database.ts";
 import type { Space } from "~/types/Space.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
 
-type SpaceContextValue = {
+export type SpaceContextValue = {
   spaceId: string;
   spaces: Space[];
   activeSpace: Space | undefined;
@@ -11,6 +11,7 @@ type SpaceContextValue = {
   writeDb: WriteDb;
   switchSpace: (spaceId: string) => void;
   createNewSpace: (name: string) => Promise<Space>;
+  suppressRemovalAlert: MutableRefObject<boolean>;
 };
 
 export const SpaceContext = createContext<SpaceContextValue | null>(null);

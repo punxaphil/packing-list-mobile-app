@@ -87,7 +87,7 @@ const PanelCard = (props: ItemsPanelProps) => (
   </View>
 );
 
-const HeaderRow = ({ displayName, email, renameDialog, onProfile, onManageSpace }: ItemsPanelProps) => {
+const HeaderRow = ({ displayName, email, renameDialog, onProfile }: ItemsPanelProps) => {
   const { profile } = useSpace();
   return (
     <HomeHeader
@@ -96,7 +96,6 @@ const HeaderRow = ({ displayName, email, renameDialog, onProfile, onManageSpace 
       profileImageUrl={profile?.imageUrl}
       onPressTitle={renameDialog.open}
       onProfile={onProfile}
-      onManageSpace={onManageSpace}
     />
   );
 };

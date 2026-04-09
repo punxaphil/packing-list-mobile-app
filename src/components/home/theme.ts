@@ -16,6 +16,8 @@ export const homeColors = {
   overlayDark: "rgba(0,0,0,0.5)",
   highlight: "rgba(191, 219, 254, 0.45)",
   highlightSubtle: "rgba(219, 234, 254, 0.5)",
+  rowBg: "rgba(255,255,255,0.9)",
+  rowPressed: "rgba(219,234,254,0.95)",
 } as const;
 
 export const homeSpacing = {

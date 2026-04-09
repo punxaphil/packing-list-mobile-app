@@ -22,10 +22,9 @@ import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 type CategoriesScreenProps = {
   email: string;
   onProfile: () => void;
-  onManageSpace: () => void;
 };
 
-export const CategoriesScreen = ({ email, onProfile, onManageSpace }: CategoriesScreenProps) => {
+export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { categories } = useCategories(spaceId);
   const { images } = useImages(spaceId);
@@ -62,7 +61,6 @@ export const CategoriesScreen = ({ email, onProfile, onManageSpace }: Categories
           email={email}
           profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
-          onManageSpace={onManageSpace}
         />
         <CategoryHeader
           onAdd={creation.open}

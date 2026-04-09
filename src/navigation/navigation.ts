@@ -91,17 +91,6 @@ export function pushProfile(componentId: string) {
   });
 }
 
-export function pushSpaceManagement(componentId: string) {
-  Navigation.push(componentId, {
-    component: {
-      name: SCREEN_IDS.SPACE_MANAGEMENT,
-      options: {
-        bottomTabs: { visible: false },
-      },
-    },
-  });
-}
-
 export function popScreen(componentId: string) {
   Navigation.pop(componentId);
 }

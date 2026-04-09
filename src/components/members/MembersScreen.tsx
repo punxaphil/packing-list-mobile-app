@@ -21,10 +21,9 @@ import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOr
 type MembersScreenProps = {
   email: string;
   onProfile: () => void;
-  onManageSpace: () => void;
 };
 
-export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreenProps) => {
+export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { members } = useMembers(spaceId);
   const { images } = useImages(spaceId);
@@ -60,7 +59,6 @@ export const MembersScreen = ({ email, onProfile, onManageSpace }: MembersScreen
           email={email}
           profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
-          onManageSpace={onManageSpace}
         />
         <MemberHeader
           onAdd={creation.open}

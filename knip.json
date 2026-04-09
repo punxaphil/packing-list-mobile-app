@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["babel.config.js", "metro.config.js"],
+  "entry": ["src/**/*.test.ts"],
   "ignoreBinaries": ["lsof", "awk", "xcrun"],
   "ignoreDependencies": [
     "@babel/core",

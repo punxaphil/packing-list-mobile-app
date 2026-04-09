@@ -1,4 +1,5 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Alert } from "react-native";
 import { useActiveSpaceId, useSpaceActions, useUserProfile } from "~/hooks/useSpaces.ts";
 import { createWriteDb } from "~/services/database.ts";
 import { ensureUserMemberId, subscribeToSpaces } from "~/services/spaceDatabase.ts";
@@ -12,11 +13,35 @@ export function SpaceProvider({ userId, email, children }: Props) {
   const profile = useUserProfile(userId);
   const [spaces, setSpaces] = useState<Space[]>([]);
   const { switchSpace, createNewSpace } = useSpaceActions();
+  const prevSpaceIdsRef = useRef<string[] | undefined>(undefined);
+  const spacesRef = useRef<Space[]>([]);
+  const suppressRemovalAlert = useRef(false);
+
+  const spaceIdsKey = [...(profile?.spaceIds ?? [])].sort().join(",");
+  useEffect(() => {
+    const ids = spaceIdsKey.split(",").filter(Boolean);
+    if (!ids.length) return;
+    return subscribeToSpaces(ids, setSpaces);
+  }, [spaceIdsKey]);
 
   useEffect(() => {
-    if (!profile?.spaceIds?.length) return;
-    return subscribeToSpaces(profile.spaceIds, setSpaces);
-  }, [profile?.spaceIds]);
+    spacesRef.current = spaces;
+  }, [spaces]);
+
+  useEffect(() => {
+    const prev = prevSpaceIdsRef.current;
+    prevSpaceIdsRef.current = profile?.spaceIds;
+    if (!prev?.includes(spaceId) || !profile?.spaceIds) return;
+    if (profile.spaceIds.includes(spaceId)) return;
+    const name = spacesRef.current.find((s) => s.id === spaceId)?.name;
+    const fallback = profile.spaceIds[0] ?? profile.personalSpaceId;
+    switchSpace(fallback);
+    if (suppressRemovalAlert.current) {
+      suppressRemovalAlert.current = false;
+    } else {
+      Alert.alert("Removed from space", `You were removed from "${name}".`);
+    }
+  }, [profile?.spaceIds, spaceId, switchSpace, profile?.personalSpaceId]);
 
   useEffect(() => {
     if (!spaceId || !email) return;
@@ -24,6 +49,12 @@ export function SpaceProvider({ userId, email, children }: Props) {
   }, [spaceId, userId, email]);
 
   const activeSpace = useMemo(() => spaces.find((s) => s.id === spaceId), [spaces, spaceId]);
+
+  useEffect(() => {
+    if (activeSpace || !spaces.length) return;
+    switchSpace(spaces[0].id);
+  }, [activeSpace, spaces, switchSpace]);
+
   const writeDb = useMemo(() => createWriteDb(spaceId), [spaceId]);
 
   const handleCreate = useCallback(
@@ -32,7 +63,16 @@ export function SpaceProvider({ userId, email, children }: Props) {
   );
 
   const value = useMemo(
-    () => ({ spaceId, spaces, activeSpace, profile, writeDb, switchSpace, createNewSpace: handleCreate }),
+    () => ({
+      spaceId,
+      spaces,
+      activeSpace,
+      profile,
+      writeDb,
+      switchSpace,
+      createNewSpace: handleCreate,
+      suppressRemovalAlert,
+    }),
     [spaceId, spaces, activeSpace, profile, writeDb, switchSpace, handleCreate]
   );
 

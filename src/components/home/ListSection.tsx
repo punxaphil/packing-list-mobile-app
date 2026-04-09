@@ -33,7 +33,6 @@ type ListSectionProps = {
   selection: SelectionState;
   email: string;
   onProfile: () => void;
-  onManageSpace: () => void;
   onListSelect: (id: string) => void;
 };
 export const ListSection = (props: ListSectionProps) => {
@@ -60,7 +59,6 @@ export const ListSection = (props: ListSectionProps) => {
         email={props.email}
         profileImageUrl={profile?.imageUrl}
         onProfile={props.onProfile}
-        onManageSpace={props.onManageSpace}
         useSpaceAsTitle
       />
       <ListHeader

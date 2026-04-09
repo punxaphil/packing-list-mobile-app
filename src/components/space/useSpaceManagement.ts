@@ -13,7 +13,7 @@ import {
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
 export function useSpaceManagement(onBack: () => void) {
-  const { activeSpace, spaceId, profile, switchSpace } = useSpace();
+  const { activeSpace, spaceId, profile, switchSpace, suppressRemovalAlert } = useSpace();
   const { sendInvite } = useInvites();
   const currentEmail = profile?.email ?? "";
   const isPersonalSpace = spaceId === profile?.personalSpaceId;
@@ -37,6 +37,7 @@ export function useSpaceManagement(onBack: () => void) {
       if (!activeSpace) return;
       const userId = findUserIdByEmail(activeSpace.members, activeSpace.memberEmails, email);
       await removeMemberFromSpace(spaceId, userId ?? "", email);
+      if (userId) await removeSpaceFromProfile(userId, spaceId);
     },
     [activeSpace, spaceId]
   );
@@ -49,11 +50,12 @@ export function useSpaceManagement(onBack: () => void) {
 
   const leave = useCallback(async () => {
     const userId = getUserId();
+    suppressRemovalAlert.current = true;
     await leaveSpace(spaceId, userId, currentEmail);
     await removeSpaceFromProfile(userId, spaceId);
     switchToFallbackSpace();
     onBack();
-  }, [spaceId, currentEmail, onBack, switchToFallbackSpace]);
+  }, [spaceId, currentEmail, onBack, switchToFallbackSpace, suppressRemovalAlert]);
 
   const getDeleteError = useCallback(() => {
     if (!activeSpace) return;
@@ -64,11 +66,12 @@ export function useSpaceManagement(onBack: () => void) {
 
   const deleteCurrentSpace = useCallback(async () => {
     const userId = getUserId();
+    suppressRemovalAlert.current = true;
     await deleteSpace(spaceId);
     await removeSpaceFromProfile(userId, spaceId);
     switchToFallbackSpace();
     onBack();
-  }, [spaceId, onBack, switchToFallbackSpace]);
+  }, [spaceId, onBack, switchToFallbackSpace, suppressRemovalAlert]);
 
   const confirmDelete = useCallback(() => {
     const error = getDeleteError();

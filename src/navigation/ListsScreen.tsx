@@ -5,7 +5,7 @@ import { homeStyles } from "~/components/home/styles";
 import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile, pushSpaceManagement, switchToItemsTab } from "./navigation";
+import { pushProfile, switchToItemsTab } from "./navigation";
 
 function ListsContent({ componentId }: { componentId: string }) {
   const { email, lists, listsLoading, selection } = useApp();
@@ -25,7 +25,6 @@ function ListsContent({ componentId }: { componentId: string }) {
       selection={selection}
       email={email}
       onProfile={() => pushProfile(componentId)}
-      onManageSpace={() => pushSpaceManagement(componentId)}
       onListSelect={handleListSelect}
     />
   );

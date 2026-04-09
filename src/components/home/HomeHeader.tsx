@@ -2,11 +2,10 @@ import { useState } from "react";
 import { Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
 import { PageSheet } from "~/components/shared/PageSheet.tsx";
-import { SpaceManagementScreen } from "~/components/space/SpaceManagementScreen.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { SpacePicker } from "./SpacePicker.tsx";
+import { SpaceSheet } from "./SpaceSheet.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
@@ -20,7 +19,6 @@ type HeaderProps = {
   onBack?: () => void;
   onPressTitle?: () => void;
   onProfile?: () => void;
-  onManageSpace?: () => void;
   useSpaceAsTitle?: boolean;
 };
 
@@ -72,12 +70,10 @@ export const HomeHeader = ({
   onBack,
   onPressTitle,
   onProfile,
-  onManageSpace,
   useSpaceAsTitle,
 }: HeaderProps) => {
-  const [pickerVisible, setPickerVisible] = useState(false);
+  const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
-  const [spaceManagementVisible, setSpaceManagementVisible] = useState(false);
   const { signOut } = useApp();
 
   const openProfile = () => {
@@ -88,38 +84,22 @@ export const HomeHeader = ({
     onProfile?.();
   };
 
-  const openManageSpace = () => {
-    if (Platform.OS === "ios") {
-      setSpaceManagementVisible(true);
-      return;
-    }
-    onManageSpace?.();
-  };
-
   return (
     <View style={headerLocalStyles.wrapper}>
       <View style={headerLocalStyles.header}>
         <BackButton onBack={onBack} />
         <View style={headerLocalStyles.titleStack}>
           {useSpaceAsTitle ? (
-            <SpaceTitle onPress={() => setPickerVisible(true)} />
+            <SpaceTitle onPress={() => setSpaceSheetVisible(true)} />
           ) : (
             <StackedTitle title={title} onPress={onPressTitle} />
           )}
         </View>
         <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} />
       </View>
-      <SpacePicker visible={pickerVisible} onClose={() => setPickerVisible(false)} onManageSpace={openManageSpace} />
+      <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
       <PageSheet visible={profileVisible} title="Profile" onClose={() => setProfileVisible(false)} scrollable={false}>
         <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
-      </PageSheet>
-      <PageSheet
-        visible={spaceManagementVisible}
-        title="Manage Space"
-        onClose={() => setSpaceManagementVisible(false)}
-        scrollable={false}
-      >
-        <SpaceManagementScreen embeddedInSheet onBack={() => setSpaceManagementVisible(false)} />
       </PageSheet>
     </View>
   );

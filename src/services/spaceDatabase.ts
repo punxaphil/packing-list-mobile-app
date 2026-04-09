@@ -6,6 +6,7 @@ import {
   deleteDoc,
   deleteField,
   doc,
+  documentId,
   getDoc,
   getDocs,
   onSnapshot,
@@ -37,14 +38,17 @@ export async function createSpace(name: string, email: string): Promise<Space> {
 }
 
 export function subscribeToSpaces(spaceIds: string[], onUpdate: (spaces: Space[]) => void) {
-  if (spaceIds.length === 0) {
+  const unique = [...new Set(spaceIds)];
+  if (!unique.length) {
     onUpdate([]);
     return () => undefined;
   }
-  const q = query(collection(firestore, SPACES), where("__name__", "in", spaceIds));
-  return onSnapshot(q, (snap) => {
-    onUpdate(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Space));
-  });
+  const q = query(collection(firestore, SPACES), where(documentId(), "in", unique));
+  return onSnapshot(
+    q,
+    (snap) => onUpdate(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Space)),
+    (error) => console.error("subscribeToSpaces error:", error)
+  );
 }
 
 export async function updateSpaceName(spaceId: string, name: string) {

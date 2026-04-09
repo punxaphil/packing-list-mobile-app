@@ -10,7 +10,7 @@ import { useMembers } from "~/hooks/useMembers";
 import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile, pushSpaceManagement } from "./navigation";
+import { pushProfile } from "./navigation";
 
 function ItemsContent({ componentId }: { componentId: string }) {
   const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
@@ -43,7 +43,6 @@ function ItemsContent({ componentId }: { componentId: string }) {
         lists={lists}
         email={email}
         onProfile={() => pushProfile(componentId)}
-        onManageSpace={() => pushSpaceManagement(componentId)}
       />
     </SafeAreaView>
   );

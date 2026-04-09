@@ -4,18 +4,14 @@ import { CategoriesScreen as CategoriesScreenComponent } from "~/components/cate
 import { homeStyles } from "~/components/home/styles";
 import { AppProvider } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile, pushSpaceManagement } from "./navigation";
+import { pushProfile } from "./navigation";
 
 export function CategoriesScreen({ componentId }: NavigationComponentProps) {
   const { userId, email } = getAppState();
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <CategoriesScreenComponent
-          email={email}
-          onProfile={() => pushProfile(componentId)}
-          onManageSpace={() => pushSpaceManagement(componentId)}
-        />
+        <CategoriesScreenComponent email={email} onProfile={() => pushProfile(componentId)} />
       </AppProvider>
     </SafeAreaView>
   );

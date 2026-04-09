@@ -13,7 +13,6 @@ export const SPACE_MGMT_COPY = {
   remove: "Remove",
   leave: "Leave Space",
   delete: "Delete Space",
-  confirmLeave: "Are you sure you want to leave this space?",
   confirmDelete: "Are you sure you want to delete this space?",
   confirmRemove: "Remove this user from the space?",
   confirm: "Confirm",

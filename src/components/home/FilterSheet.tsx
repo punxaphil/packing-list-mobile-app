@@ -1,12 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { CategorySection, MemberSection } from "./FilterComponents.tsx";
@@ -30,9 +23,7 @@ type FilterSheetProps = {
 
 export const FilterSheet = (props: FilterSheetProps) => {
   const totalCount =
-    props.selectedCategories.length +
-    props.selectedMembers.length +
-    (props.statusFilter !== "all" ? 1 : 0);
+    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   const categoryScrollRef = useRef<ScrollView>(null);
   const memberScrollRef = useRef<ScrollView>(null);
 
@@ -68,12 +59,7 @@ export const FilterSheet = (props: FilterSheetProps) => {
   }
 
   return (
-    <Modal
-      visible={props.visible}
-      transparent
-      animationType="fade"
-      onRequestClose={props.onClose}
-    >
+    <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
       <Pressable style={styles.backdrop} onPress={props.onClose}>
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
           <SheetHeader count={totalCount} onClear={props.onClear} />
@@ -125,10 +111,7 @@ const FilterContent = ({
   ...props
 }: FilterContentProps) => (
   <View style={styles.content}>
-    <StatusSection
-      statusFilter={props.statusFilter}
-      onSetStatus={props.onSetStatus}
-    />
+    <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
     <CategorySection
       categories={sortedCategories}
       selectedCategories={props.selectedCategories}

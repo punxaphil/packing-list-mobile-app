@@ -26,12 +26,8 @@ function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }
 
 export function AppRoot() {
   const { userId, email, loggingIn } = useCurrentUser();
-  const showLoader = useDelayedLoading(loggingIn);
 
-  if (showLoader) {
-    return <AppLoadingState />;
-  }
-
+  if (loggingIn) return <AppLoadingState />;
   if (!userId) return <Login />;
 
   return <BootstrapAndLaunch userId={userId} email={email} />;

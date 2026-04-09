@@ -83,8 +83,8 @@ type ActionButtonsProps = {
 
 const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButtonsProps) => (
   <View style={styles.actions}>
-    <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.filledPrimary]} onPress={onInvite}>
-      <Text style={sheetButtonStyles.textPrimary}>{SPACE_MGMT_COPY.invite}</Text>
+    <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
+      <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.invite}</Text>
     </Pressable>
     {!isPersonal && (
       <>
