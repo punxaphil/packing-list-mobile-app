@@ -18,4 +18,6 @@ export const SPACE_MGMT_COPY = {
   confirm: "Confirm",
   cancel: "Cancel",
   cannotDeleteHasUsers: "Remove other users first.",
+  removedTitle: "Removed from space",
+  removedMessage: (name: string) => `You were removed from "${name}".`,
 } as const;
