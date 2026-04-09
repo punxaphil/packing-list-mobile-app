@@ -52,14 +52,24 @@ export function useDelayedLoading(loading: boolean) {
   return visible;
 }
 
+function shuffle<T>(array: readonly T[]): T[] {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 function useLoadingMessage(message?: string) {
   const [index, setIndex] = useState(0);
+  const shuffled = useRef(shuffle(loadingMessages));
   useEffect(() => {
     if (message) return;
-    const id = setInterval(() => setIndex((value) => (value + 1) % loadingMessages.length), MESSAGE_SWAP_MS);
+    const id = setInterval(() => setIndex((value) => (value + 1) % shuffled.current.length), MESSAGE_SWAP_MS);
     return () => clearInterval(id);
   }, [message]);
-  return message ?? loadingMessages[index];
+  return message ?? shuffled.current[index];
 }
 
 const styles = StyleSheet.create({
