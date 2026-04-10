@@ -1,9 +1,15 @@
-import { type AuthError, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  type AuthError,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signInWithApple } from "~/services/appleAuth.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
 
 const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
   "auth/invalid-credential": "Incorrect email or password",
@@ -13,7 +19,8 @@ const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
   "auth/weak-password": "Password must be at least 6 characters",
   "auth/invalid-email": "Please enter a valid email address",
   "auth/too-many-requests": "Too many attempts. Please try again later",
-  "auth/account-exists-with-different-credential": "This email is already linked to Apple sign-in. Use that instead",
+  "auth/account-exists-with-different-credential":
+    "This email is already linked to Apple sign-in. Use that instead",
 };
 
 const friendlyAuthError = (e: unknown, fallback: string): string =>
@@ -75,8 +82,13 @@ export function Login() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Text style={styles.title}>Welcome to PackSmarter</Text>
-        <Pressable style={styles.appleButton} onPress={() => void handleApple()}>
-          <Text style={styles.appleButtonText}>{"\uF8FF"} Sign in with Apple</Text>
+        <Pressable
+          style={styles.appleButton}
+          onPress={() => void handleApple()}
+        >
+          <Text style={styles.appleButtonText}>
+            {"\uF8FF"} Sign in with Apple
+          </Text>
         </Pressable>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {!showEmail && (
@@ -105,7 +117,14 @@ type EmailFormProps = {
   onRegister: () => void;
 };
 
-function EmailForm({ email, setEmail, password, setPassword, onLogin, onRegister }: EmailFormProps) {
+function EmailForm({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  onLogin,
+  onRegister,
+}: EmailFormProps) {
   return (
     <View style={styles.emailSection}>
       <TextInput
@@ -125,11 +144,17 @@ function EmailForm({ email, setEmail, password, setPassword, onLogin, onRegister
         value={password}
         onChangeText={setPassword}
       />
-      <Pressable style={styles.emailButton} onPress={onLogin}>
-        <Text style={styles.emailButtonText}>Login</Text>
+      <Pressable
+        style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]}
+        onPress={onLogin}
+      >
+        <Text style={sheetButtonStyles.textNeutral}>Login</Text>
       </Pressable>
-      <Pressable style={styles.emailButton} onPress={onRegister}>
-        <Text style={styles.emailButtonText}>Register</Text>
+      <Pressable
+        style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]}
+        onPress={onRegister}
+      >
+        <Text style={sheetButtonStyles.textNeutral}>Register</Text>
       </Pressable>
     </View>
   );
@@ -175,16 +200,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: homeSpacing.md,
   },
-  emailButton: {
-    backgroundColor: homeColors.primary,
-    borderRadius: homeRadius,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  emailButtonText: {
-    color: homeColors.primaryForeground,
-    fontSize: 16,
-    fontWeight: "600",
-  },
+
   error: { color: homeColors.danger, textAlign: "center", fontSize: 14 },
 });
