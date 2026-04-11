@@ -566,13 +566,14 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             disabled={props.checkboxDisabled}
             onToggle={props.onToggleAllMembers}
             checkedColor={props.checkboxColor}
+            size={28}
           />
         ) : (
           <AppCheckbox
             checked={checked}
             onToggle={() => props.onToggle(props.item)}
             disabled={props.checkboxDisabled}
-            size={16}
+            size={28}
             checkedColor={props.checkboxColor}
           />
         )}
