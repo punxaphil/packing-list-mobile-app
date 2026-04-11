@@ -6,14 +6,25 @@ import { spaceCopy } from "./spaceCopy.ts";
 import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
-export const buildLabel = (name: string, isPersonal: boolean) =>
-  isPersonal ? `${name} (${spaceCopy.personalSpace})` : name;
+export const buildLabel = (name: string, isPersonal: boolean, isOwner = false) => {
+  const label = isPersonal ? `${name} (${spaceCopy.personalSpace})` : name;
+  return isOwner ? `${label} · ${spaceCopy.ownerBadge}` : label;
+};
 
-export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
+export const SpaceNameRow = ({
+  name,
+  onRename,
+  isOwner,
+}: {
+  name: string;
+  onRename: () => void;
+  isOwner: boolean;
+}) => (
   <View style={styles.nameRow}>
     <Text style={styles.spaceName} numberOfLines={1}>
       {name}
     </Text>
+    {isOwner && <Text style={styles.ownerBadge}>{spaceCopy.ownerBadge}</Text>}
     <Pressable onPress={onRename} hitSlop={8}>
       <MaterialCommunityIcons name="pencil-outline" size={18} color={homeColors.muted} />
     </Pressable>
@@ -25,35 +36,25 @@ type SpaceActionsProps = {
   onLeave: () => void;
   onDelete: () => void;
   isPersonal: boolean;
-  isSoleUser: boolean;
+  isOwner: boolean;
 };
 
-export const SpaceActions = ({ onInvite, onLeave, onDelete, isPersonal, isSoleUser }: SpaceActionsProps) => (
+export const SpaceActions = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: SpaceActionsProps) => (
   <View style={styles.actions}>
-    <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
-      <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.inviteUser}</Text>
-    </Pressable>
-    {!isPersonal && (
-      <View style={styles.buttonRow}>
-        <Pressable
-          style={[
-            sheetButtonStyles.button,
-            sheetButtonStyles.outlineNeutral,
-            styles.actionButton,
-            isSoleUser && styles.disabled,
-          ]}
-          onPress={onLeave}
-          disabled={isSoleUser}
-        >
-          <Text style={[sheetButtonStyles.textNeutral, isSoleUser && styles.disabledText]}>{spaceCopy.leaveSpace}</Text>
-        </Pressable>
-        <Pressable
-          style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger, styles.actionButton]}
-          onPress={onDelete}
-        >
-          <Text style={sheetButtonStyles.textDanger}>{spaceCopy.deleteSpace}</Text>
-        </Pressable>
-      </View>
+    {isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
+        <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.inviteUser}</Text>
+      </Pressable>
+    )}
+    {!isPersonal && !isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
+        <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.leaveSpace}</Text>
+      </Pressable>
+    )}
+    {!isPersonal && isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
+        <Text style={sheetButtonStyles.textDanger}>{spaceCopy.deleteSpace}</Text>
+      </Pressable>
     )}
   </View>
 );

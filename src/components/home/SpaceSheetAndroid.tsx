@@ -18,7 +18,7 @@ type Props = {
 
 export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => {
   const items = s.spaces.map((space) => ({
-    text: buildLabel(space.name, space.id === s.profile?.personalSpaceId),
+    text: buildLabel(space.name, space.id === s.profile?.personalSpaceId, space.ownerId === s.profile?.id),
     onPress: () => {
       s.switchSpace(space.id);
       onClose();

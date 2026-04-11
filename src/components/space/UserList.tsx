@@ -7,9 +7,10 @@ type UserListProps = {
   currentEmail: string;
   onRemove: (email: string) => void;
   imagesByEmail: Record<string, string>;
+  isOwner: boolean;
 };
 
-export const UserList = ({ emails, currentEmail, onRemove, imagesByEmail }: UserListProps) => (
+export const UserList = ({ emails, currentEmail, onRemove, imagesByEmail, isOwner }: UserListProps) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>{SPACE_MGMT_COPY.users}</Text>
     {emails.map((email) => (
@@ -19,14 +20,15 @@ export const UserList = ({ emails, currentEmail, onRemove, imagesByEmail }: User
         isSelf={email.toLowerCase() === currentEmail.toLowerCase()}
         imageUrl={imagesByEmail[email.toLowerCase()]}
         onRemove={() => confirmRemove(email, onRemove)}
+        canRemove={isOwner}
       />
     ))}
   </View>
 );
 
-type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemove: () => void };
+type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemove: () => void; canRemove: boolean };
 
-const UserRow = ({ email, isSelf, imageUrl, onRemove }: UserRowProps) => (
+const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps) => (
   <View style={styles.row}>
     <View style={styles.avatar}>
       {imageUrl ? (
@@ -39,7 +41,7 @@ const UserRow = ({ email, isSelf, imageUrl, onRemove }: UserRowProps) => (
       {email}
       {isSelf ? " (you)" : ""}
     </Text>
-    {!isSelf && (
+    {canRemove && !isSelf && (
       <Pressable onPress={onRemove} hitSlop={8}>
         <Text style={styles.removeText}>{SPACE_MGMT_COPY.remove}</Text>
       </Pressable>
