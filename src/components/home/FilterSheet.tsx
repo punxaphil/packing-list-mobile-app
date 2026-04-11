@@ -19,6 +19,8 @@ type FilterSheetProps = {
   onSetStatus: (status: StatusFilter) => void;
   onClear: () => void;
   onClose: () => void;
+  shownCount: number;
+  totalItemCount: number;
 };
 
 export const FilterSheet = (props: FilterSheetProps) => {
@@ -111,6 +113,12 @@ const FilterContent = ({
   ...props
 }: FilterContentProps) => (
   <View style={styles.content}>
+    <Text
+      style={styles.itemCount}
+      accessibilityLabel={`${props.shownCount} items showing of ${props.totalItemCount}`}
+    >
+      {props.shownCount} items showing (of {props.totalItemCount})
+    </Text>
     <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
     <CategorySection
       categories={sortedCategories}

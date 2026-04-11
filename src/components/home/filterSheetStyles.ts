@@ -30,6 +30,11 @@ export const filterSheetStyles = StyleSheet.create({
   },
   title: { fontSize: 18, fontWeight: "700", color: homeColors.text },
   clearText: { fontSize: 14, fontWeight: "600", color: homeColors.muted },
+  itemCount: {
+    fontSize: 13,
+    color: homeColors.muted,
+    textAlign: "center",
+  },
   content: { flex: 1, minHeight: 0, gap: homeSpacing.md },
   list: { flex: 1, minHeight: 0 },
   listContent: { paddingBottom: homeSpacing.lg },
