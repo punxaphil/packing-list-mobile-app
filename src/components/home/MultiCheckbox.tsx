@@ -4,6 +4,10 @@ import { PackItem } from "~/types/PackItem.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { homeColors } from "./theme.ts";
 
+const INDICATOR_WIDTH_RATIO = 0.6;
+const INDICATOR_LEFT_RATIO = 0.2;
+const INDICATOR_TOP_OFFSET = 1;
+
 type MultiCheckboxProps = {
   item: PackItem;
   disabled?: boolean;
@@ -28,7 +32,14 @@ export const MultiCheckbox = ({ item, disabled, onToggle, checkedColor, size = 1
       {indeterminate && (
         <View
           pointerEvents="none"
-          style={[styles.indicator, { width: size * 0.6, top: size / 2 - 1, left: size * 0.2 }]}
+          style={[
+            styles.indicator,
+            {
+              width: size * INDICATOR_WIDTH_RATIO,
+              top: size / 2 - INDICATOR_TOP_OFFSET,
+              left: size * INDICATOR_LEFT_RATIO,
+            },
+          ]}
         />
       )}
     </View>
