@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
 import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
+import { Button } from "~/components/shared/Button.tsx";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
@@ -27,12 +28,8 @@ export function SubscriptionGate({ email, onSignOut, children }: Props) {
           <Text style={styles.info}>No products available yet. Check RevenueCat offerings setup.</Text>
         )}
         {error && <Text style={styles.error}>{error}</Text>}
-        <Pressable style={styles.secondaryButton} onPress={() => void restore()} disabled={processing}>
-          <Text style={styles.secondaryText}>Restore Purchases</Text>
-        </Pressable>
-        <Pressable style={styles.ghostButton} onPress={onSignOut}>
-          <Text style={styles.ghostText}>Sign Out ({email})</Text>
-        </Pressable>
+        <Button label="Restore Purchases" onPress={() => void restore()} disabled={processing} />
+        <Button variant="ghost" label={`Sign Out (${email})`} onPress={onSignOut} />
       </ScrollView>
     </View>
   );
@@ -67,12 +64,6 @@ function PackageRow({ pkg, onPress, disabled }: PackageRowProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: homeColors.background },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: homeColors.background,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   content: {
     padding: homeSpacing.lg,
     gap: homeSpacing.md,
@@ -108,16 +99,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     opacity: 0.85,
   },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: homeRadius,
-    padding: homeSpacing.md,
-    alignItems: "center",
-  },
-  secondaryText: { color: homeColors.text, fontSize: 16, fontWeight: "600" },
-  ghostButton: { alignItems: "center", padding: homeSpacing.sm },
-  ghostText: { color: homeColors.muted, fontSize: 14 },
   info: { color: homeColors.muted, textAlign: "center" },
   error: { color: homeColors.danger, textAlign: "center" },
   disabled: { opacity: 0.6 },

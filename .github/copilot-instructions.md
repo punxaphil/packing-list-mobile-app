@@ -20,6 +20,7 @@
 # React Native Specific
 
 - Don't use colored icons, use mdi or similar icon font and style.
+- Reuse components. Don't create several versions of a button for instance. Instead create one button component that can be styled via a `variant` prop (e.g. `default`, `primary`, `danger`). Avoid allowing arbitrary styles via props.
 
 # Workflow
 

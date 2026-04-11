@@ -84,16 +84,4 @@ export const filterSheetStyles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: homeSpacing.md,
   },
-  doneButton: {
-    alignSelf: "flex-end",
-    paddingHorizontal: homeSpacing.md,
-    paddingVertical: homeSpacing.sm,
-    backgroundColor: homeColors.primaryStrong,
-    borderRadius: homeRadius / 2,
-  },
-  doneText: {
-    color: homeColors.primaryForeground,
-    fontSize: 16,
-    fontWeight: "600",
-  },
 });

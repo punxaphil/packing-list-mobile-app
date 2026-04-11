@@ -14,9 +14,9 @@ import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
-import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 
@@ -90,12 +90,7 @@ export const AssignMembersModal = ({
       <PageSheet visible={visible} title={COPY.title} onClose={onClose} confirmLabel={COPY.save} onConfirm={handleSave}>
         <Text style={styles.subtitle}>{item.name}</Text>
         <MemberList members={members} memberImages={memberImages} selected={selected} onToggle={toggle} iosSheet />
-        <Pressable
-          onPress={handleManageMembers}
-          style={[sheetButtonStyles.button, sheetButtonStyles.centered, sheetButtonStyles.filledSoft]}
-        >
-          <Text style={sheetButtonStyles.text}>{COPY.manageMembers}</Text>
-        </Pressable>
+        <Button label={COPY.manageMembers} onPress={handleManageMembers} centered />
       </PageSheet>
     );
   }

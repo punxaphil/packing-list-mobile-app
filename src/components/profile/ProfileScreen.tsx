@@ -6,7 +6,7 @@ import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
-import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
+import { Button } from "../shared/Button.tsx";
 
 type ProfileScreenProps = {
   email: string;
@@ -49,17 +49,7 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
 };
 
 const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
-  <Pressable
-    style={[
-      sheetButtonStyles.button,
-      sheetButtonStyles.centered,
-      sheetButtonStyles.outlineDanger,
-      styles.signOutButton,
-    ]}
-    onPress={() => confirmSignOut(email, onSignOut)}
-  >
-    <Text style={sheetButtonStyles.textDanger}>{COPY.signOut}</Text>
-  </Pressable>
+  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" centered />
 );
 
 export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
@@ -201,5 +191,4 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   email: { fontSize: 18, color: colors.text, fontWeight: "500" },
-  signOutButton: { minWidth: 164 },
 });

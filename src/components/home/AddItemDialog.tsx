@@ -15,6 +15,7 @@ import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
@@ -202,9 +203,7 @@ export const AddItemDialog = ({
         </View>
         <Text style={STYLES.keepOpenText}>{COPY.keepOpen}</Text>
       </Pressable>
-      <Pressable onPress={onBrowseKits} style={isIosSheet ? STYLES.kitsButton : null} disabled={submitting}>
-        <Text style={STYLES.browseKitsLink}>{COPY.browseKits}</Text>
-      </Pressable>
+      <Button label={COPY.browseKits} onPress={onBrowseKits} disabled={submitting} />
     </>
   );
   if (isIosSheet) {
@@ -529,18 +528,4 @@ const STYLES = {
     marginBottom: 12,
   },
   keepOpenText: { fontSize: 15, color: homeColors.text },
-  kitsButton: {
-    alignSelf: "center" as const,
-    backgroundColor: "rgba(255,255,255,0.82)",
-    borderRadius: 18,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    marginTop: 4,
-  },
-  browseKitsLink: {
-    fontSize: 14,
-    color: homeColors.muted,
-    textAlign: "center" as const,
-    fontWeight: "600" as const,
-  },
 };

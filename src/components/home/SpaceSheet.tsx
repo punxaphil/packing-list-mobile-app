@@ -56,7 +56,11 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
               {s.otherSpaces.map((space) => (
                 <SpaceRow
                   key={space.id}
-                  label={buildLabel(space.name, space.id === s.profile?.personalSpaceId, space.ownerId === s.profile?.id)}
+                  label={buildLabel(
+                    space.name,
+                    space.id === s.profile?.personalSpaceId,
+                    space.ownerId === s.profile?.id
+                  )}
                   onPress={() => {
                     s.switchSpace(space.id);
                     onClose();

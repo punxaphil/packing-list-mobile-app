@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { Button } from "./Button.tsx";
 import { PageSheet } from "./PageSheet.tsx";
-import { sheetButtonStyles } from "./sheetButtonStyles.ts";
 
 type ImageViewerModalProps = {
   visible: boolean;
@@ -83,8 +83,8 @@ export const ImageViewerModal = ({
             {loading && <ImageLoadingOverlay />}
           </View>
           <View style={styles.sheetActions}>
-            <ActionButton label={replaceLabel} onPress={onReplace} disabled={loading} />
-            {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive disabled={loading} />}
+            <Button flex label={replaceLabel} onPress={onReplace} disabled={loading} />
+            {showRemove && <Button variant="danger" flex label={removeLabel} onPress={onRemove} disabled={loading} />}
           </View>
         </View>
       </PageSheet>
@@ -107,10 +107,10 @@ export const ImageViewerModal = ({
           )}
           {loading && <ImageLoadingOverlay />}
         </View>
-        <View style={styles.actions}>
-          <ActionButton label={replaceLabel} onPress={onReplace} disabled={loading} />
-          {showRemove && <ActionButton label={removeLabel} onPress={onRemove} destructive disabled={loading} />}
-        </View>
+        <Pressable style={styles.actions} onPress={(e) => e.stopPropagation()}>
+          <Button flex label={replaceLabel} onPress={onReplace} disabled={loading} />
+          {showRemove && <Button variant="danger" flex label={removeLabel} onPress={onRemove} disabled={loading} />}
+        </Pressable>
       </Pressable>
     </Modal>
   );
@@ -146,40 +146,6 @@ const ImageLoadingOverlay = () => (
   <View style={styles.loadingOverlay} pointerEvents="none">
     <ActivityIndicator size="small" color={homeColors.surface} />
   </View>
-);
-
-type ActionButtonProps = {
-  label: string;
-  onPress: () => void;
-  destructive?: boolean;
-  disabled?: boolean;
-};
-
-const ActionButton = ({ label, onPress, destructive, disabled = false }: ActionButtonProps) => (
-  <Pressable
-    style={[
-      sheetButtonStyles.button,
-      styles.button,
-      destructive ? sheetButtonStyles.filledPrimary : sheetButtonStyles.filledSoft,
-      destructive && styles.buttonDestructive,
-      disabled && styles.buttonDisabled,
-    ]}
-    disabled={disabled}
-    onPress={(e) => {
-      e.stopPropagation();
-      onPress();
-    }}
-  >
-    <Text
-      style={[
-        destructive ? sheetButtonStyles.textPrimary : sheetButtonStyles.text,
-        !destructive && styles.buttonText,
-        destructive && styles.buttonTextDestructive,
-      ]}
-    >
-      {label}
-    </Text>
-  </Pressable>
 );
 
 const styles = StyleSheet.create({
@@ -248,9 +214,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: homeSpacing.lg,
   },
   sheetActions: { flexDirection: "row", gap: homeSpacing.md, width: "100%" },
-  button: { flex: 1 },
-  buttonDestructive: { backgroundColor: homeColors.danger },
-  buttonDisabled: { opacity: 0.55 },
-  buttonText: { color: homeColors.muted },
-  buttonTextDestructive: { color: homeColors.buttonText },
 });
