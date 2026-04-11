@@ -28,7 +28,6 @@ export const filterSheetStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  title: { fontSize: 18, fontWeight: "700", color: homeColors.text },
   clearText: { fontSize: 14, fontWeight: "600", color: homeColors.muted },
   itemCount: {
     fontSize: 13,

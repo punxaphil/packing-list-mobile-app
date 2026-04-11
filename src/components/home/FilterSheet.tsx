@@ -1,5 +1,12 @@
 import { useEffect, useRef } from "react";
-import { Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { Button } from "../shared/Button.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
@@ -26,7 +33,9 @@ type FilterSheetProps = {
 
 export const FilterSheet = (props: FilterSheetProps) => {
   const totalCount =
-    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
+    props.selectedCategories.length +
+    props.selectedMembers.length +
+    (props.statusFilter !== "all" ? 1 : 0);
   const categoryScrollRef = useRef<ScrollView>(null);
   const memberScrollRef = useRef<ScrollView>(null);
 
@@ -49,7 +58,13 @@ export const FilterSheet = (props: FilterSheetProps) => {
         onConfirm={props.onClose}
         scrollable={false}
       >
-        <SheetHeader count={totalCount} onClear={props.onClear} iosSheet />
+        <SheetHeader
+          count={totalCount}
+          onClear={props.onClear}
+          shownCount={props.shownCount}
+          totalItemCount={props.totalItemCount}
+          iosSheet
+        />
         <FilterContent
           {...props}
           categoryScrollRef={categoryScrollRef}
@@ -62,10 +77,20 @@ export const FilterSheet = (props: FilterSheetProps) => {
   }
 
   return (
-    <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
+    <Modal
+      visible={props.visible}
+      transparent
+      animationType="fade"
+      onRequestClose={props.onClose}
+    >
       <Pressable style={styles.backdrop} onPress={props.onClose}>
         <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <SheetHeader count={totalCount} onClear={props.onClear} />
+          <SheetHeader
+            count={totalCount}
+            onClear={props.onClear}
+            shownCount={props.shownCount}
+            totalItemCount={props.totalItemCount}
+          />
           <FilterContent
             {...props}
             categoryScrollRef={categoryScrollRef}
@@ -80,17 +105,25 @@ export const FilterSheet = (props: FilterSheetProps) => {
   );
 };
 
+type SheetHeaderProps = {
+  count: number;
+  onClear: () => void;
+  shownCount: number;
+  totalItemCount: number;
+  iosSheet?: boolean;
+};
+
 const SheetHeader = ({
   count,
   onClear,
+  shownCount,
+  totalItemCount,
   iosSheet = false,
-}: {
-  count: number;
-  onClear: () => void;
-  iosSheet?: boolean;
-}) => (
+}: SheetHeaderProps) => (
   <View style={iosSheet ? styles.sheetHeader : styles.header}>
-    <Text style={styles.title}>Filters</Text>
+    <Text style={styles.itemCount}>
+      {shownCount} items showing (of {totalItemCount})
+    </Text>
     {count > 0 && (
       <Pressable onPress={onClear} hitSlop={8}>
         <Text style={styles.clearText}>Clear ({count})</Text>
@@ -114,10 +147,10 @@ const FilterContent = ({
   ...props
 }: FilterContentProps) => (
   <View style={styles.content}>
-    <Text style={styles.itemCount} accessibilityLabel={`${props.shownCount} items showing of ${props.totalItemCount}`}>
-      {props.shownCount} items showing (of {props.totalItemCount})
-    </Text>
-    <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
+    <StatusSection
+      statusFilter={props.statusFilter}
+      onSetStatus={props.onSetStatus}
+    />
     <CategorySection
       categories={sortedCategories}
       selectedCategories={props.selectedCategories}
