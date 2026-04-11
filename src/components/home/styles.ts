@@ -164,7 +164,7 @@ export const homeStyles = StyleSheet.create({
   categoryHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.md,
+    gap: spacing.xs,
     minHeight: spacing.lg,
     marginLeft: spacing.xs,
     marginBlock: spacing.xs,
