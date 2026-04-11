@@ -32,13 +32,14 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
         scrollable={false}
       >
         <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>
-          <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} />
+          <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} isOwner={s.mgmt.isOwner} />
           {s.activeSpace && (
             <UserList
               emails={s.activeSpace.memberEmails}
               onRemove={s.mgmt.removeUser}
               currentEmail={s.mgmt.currentEmail}
               imagesByEmail={s.imagesByEmail}
+              isOwner={s.mgmt.isOwner}
             />
           )}
           <SpaceActions
@@ -46,7 +47,7 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
             onLeave={s.mgmt.leave}
             onDelete={s.mgmt.confirmDelete}
             isPersonal={s.mgmt.isPersonalSpace}
-            isSoleUser={(s.activeSpace?.memberEmails.length ?? 0) <= 1}
+            isOwner={s.mgmt.isOwner}
           />
           <InviteSection invites={s.pendingInvites} onAccept={s.handleAccept} />
           {s.otherSpaces.length > 0 && (
@@ -55,7 +56,7 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
               {s.otherSpaces.map((space) => (
                 <SpaceRow
                   key={space.id}
-                  label={buildLabel(space.name, space.id === s.profile?.personalSpaceId)}
+                  label={buildLabel(space.name, space.id === s.profile?.personalSpaceId, space.ownerId === s.profile?.id)}
                   onPress={() => {
                     s.switchSpace(space.id);
                     onClose();

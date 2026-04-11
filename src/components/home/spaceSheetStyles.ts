@@ -37,4 +37,10 @@ export const spaceSheetStyles = StyleSheet.create({
     transform: [{ scale: 0.985 }],
   },
   rowLabel: { flex: 1, fontSize: 16, color: homeColors.text },
+  ownerBadge: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: homeColors.primaryStrong,
+    marginRight: homeSpacing.xs,
+  },
 });

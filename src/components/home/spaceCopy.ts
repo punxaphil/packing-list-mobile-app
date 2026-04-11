@@ -17,4 +17,6 @@ export const spaceCopy = {
   invitePrompt: "Invite someone to this space",
   inviteConfirm: "Send",
   inviteSent: "Invitation sent!",
+  ownerBadge: "Owner",
+  ownerSeparator: " · ",
 } as const;
