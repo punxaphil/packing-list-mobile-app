@@ -216,7 +216,6 @@ export const AddItemDialog = ({
         confirmLabel={HOME_COPY.addItemConfirm}
         onConfirm={handleSubmit}
         confirmDisabled={isSubmitDisabled || submitting}
-        confirmVariant="text"
       >
         {content}
       </PageSheet>
