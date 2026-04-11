@@ -102,7 +102,7 @@ export const ListCard = (props: ListCardProps) => {
         accessibilityHint={summary}
       >
         <View style={homeStyles.listCardInner}>
-          {wrap(<DragHandle />)}
+          {!isTemplate && wrap(<DragHandle />)}
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
