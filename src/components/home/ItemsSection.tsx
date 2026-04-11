@@ -112,6 +112,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         onSetStatus={filterDialog.onSetStatus}
         onClear={filterDialog.onClear}
         onClose={filterDialog.close}
+        shownCount={filteredItems.length}
+        totalItemCount={optimisticItems.length}
       />
       <KitPickerModal
         visible={addItemDialog.kitPickerVisible}
