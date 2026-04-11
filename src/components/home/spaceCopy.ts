@@ -18,4 +18,5 @@ export const spaceCopy = {
   inviteConfirm: "Send",
   inviteSent: "Invitation sent!",
   ownerBadge: "Owner",
+  ownerSeparator: " · ",
 } as const;

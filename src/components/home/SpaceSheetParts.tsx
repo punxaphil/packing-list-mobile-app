@@ -7,8 +7,8 @@ import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
 export const buildLabel = (name: string, isPersonal: boolean, isOwner = false) => {
-  const label = isPersonal ? `${name} (${spaceCopy.personalSpace})` : name;
-  return isOwner ? `${label} · ${spaceCopy.ownerBadge}` : label;
+  const base = isPersonal ? `${name} (${spaceCopy.personalSpace})` : name;
+  return isOwner ? `${base}${spaceCopy.ownerSeparator}${spaceCopy.ownerBadge}` : base;
 };
 
 export const SpaceNameRow = ({
