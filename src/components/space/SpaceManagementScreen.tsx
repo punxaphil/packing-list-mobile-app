@@ -36,12 +36,14 @@ export const SpaceManagementScreen = ({ onBack, embeddedInSheet = false }: Space
           onRemove={mgmt.removeUser}
           currentEmail={mgmt.currentEmail}
           imagesByEmail={imagesByEmail}
+          isOwner={mgmt.isOwner}
         />
         <ActionButtons
           onInvite={() => setDialogState("invite")}
           onLeave={mgmt.leave}
           onDelete={mgmt.confirmDelete}
           isPersonal={mgmt.isPersonalSpace}
+          isOwner={mgmt.isOwner}
         />
       </View>
       <SpaceMgmtDialogs
@@ -79,22 +81,25 @@ type ActionButtonsProps = {
   onLeave: () => void;
   onDelete: () => void;
   isPersonal: boolean;
+  isOwner: boolean;
 };
 
-const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal }: ActionButtonsProps) => (
+const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: ActionButtonsProps) => (
   <View style={styles.actions}>
-    <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
-      <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.invite}</Text>
-    </Pressable>
-    {!isPersonal && (
-      <>
-        <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
-          <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.leave}</Text>
-        </Pressable>
-        <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
-          <Text style={sheetButtonStyles.textDanger}>{SPACE_MGMT_COPY.delete}</Text>
-        </Pressable>
-      </>
+    {isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
+        <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.invite}</Text>
+      </Pressable>
+    )}
+    {!isPersonal && !isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
+        <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.leave}</Text>
+      </Pressable>
+    )}
+    {!isPersonal && isOwner && (
+      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
+        <Text style={sheetButtonStyles.textDanger}>{SPACE_MGMT_COPY.delete}</Text>
+      </Pressable>
     )}
   </View>
 );
