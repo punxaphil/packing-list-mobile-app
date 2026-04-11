@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserImagesByEmail } from "~/services/spaceDatabase.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
-import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
+import { Button } from "../shared/Button.tsx";
 import { SpaceMgmtDialogs } from "./SpaceMgmtDialogs.tsx";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 import { UserList } from "./UserList.tsx";
@@ -86,21 +86,9 @@ type ActionButtonsProps = {
 
 const ActionButtons = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: ActionButtonsProps) => (
   <View style={styles.actions}>
-    {isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
-        <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.invite}</Text>
-      </Pressable>
-    )}
-    {!isPersonal && !isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
-        <Text style={sheetButtonStyles.textNeutral}>{SPACE_MGMT_COPY.leave}</Text>
-      </Pressable>
-    )}
-    {!isPersonal && isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
-        <Text style={sheetButtonStyles.textDanger}>{SPACE_MGMT_COPY.delete}</Text>
-      </Pressable>
-    )}
+    {isOwner && <Button label={SPACE_MGMT_COPY.invite} onPress={onInvite} />}
+    {!isPersonal && !isOwner && <Button label={SPACE_MGMT_COPY.leave} onPress={onLeave} />}
+    {!isPersonal && isOwner && <Button label={SPACE_MGMT_COPY.delete} onPress={onDelete} variant="danger" />}
   </View>
 );
 

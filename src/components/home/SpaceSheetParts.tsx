@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
-import { sheetButtonStyles } from "../shared/sheetButtonStyles.ts";
+import { Button } from "../shared/Button.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
@@ -11,15 +11,7 @@ export const buildLabel = (name: string, isPersonal: boolean, isOwner = false) =
   return isOwner ? `${base}${spaceCopy.ownerSeparator}${spaceCopy.ownerBadge}` : base;
 };
 
-export const SpaceNameRow = ({
-  name,
-  onRename,
-  isOwner,
-}: {
-  name: string;
-  onRename: () => void;
-  isOwner: boolean;
-}) => (
+export const SpaceNameRow = ({ name, onRename, isOwner }: { name: string; onRename: () => void; isOwner: boolean }) => (
   <View style={styles.nameRow}>
     <Text style={styles.spaceName} numberOfLines={1}>
       {name}
@@ -41,28 +33,14 @@ type SpaceActionsProps = {
 
 export const SpaceActions = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: SpaceActionsProps) => (
   <View style={styles.actions}>
-    {isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onInvite}>
-        <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.inviteUser}</Text>
-      </Pressable>
-    )}
-    {!isPersonal && !isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onLeave}>
-        <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.leaveSpace}</Text>
-      </Pressable>
-    )}
-    {!isPersonal && isOwner && (
-      <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineDanger]} onPress={onDelete}>
-        <Text style={sheetButtonStyles.textDanger}>{spaceCopy.deleteSpace}</Text>
-      </Pressable>
-    )}
+    {isOwner && <Button label={spaceCopy.inviteUser} onPress={onInvite} />}
+    {!isPersonal && !isOwner && <Button label={spaceCopy.leaveSpace} onPress={onLeave} />}
+    {!isPersonal && isOwner && <Button label={spaceCopy.deleteSpace} onPress={onDelete} variant="danger" />}
   </View>
 );
 
 export const CreateSpaceButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={[sheetButtonStyles.button, sheetButtonStyles.outlineNeutral]} onPress={onPress}>
-    <Text style={sheetButtonStyles.textNeutral}>{spaceCopy.createSpace}</Text>
-  </Pressable>
+  <Button label={spaceCopy.createSpace} onPress={onPress} />
 );
 
 export const InviteSection = ({

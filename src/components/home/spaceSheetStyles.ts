@@ -12,10 +12,6 @@ export const spaceSheetStyles = StyleSheet.create({
   },
   spaceName: { fontSize: 22, fontWeight: "700", color: homeColors.text, flex: 1 },
   actions: { gap: homeSpacing.sm },
-  buttonRow: { flexDirection: "row", gap: homeSpacing.sm },
-  actionButton: { flexDirection: "row", gap: homeSpacing.xs, flex: 1 },
-  disabled: { opacity: 0.4 },
-  disabledText: { opacity: 0.6 },
   sectionTitle: {
     fontSize: 13,
     fontWeight: "600",

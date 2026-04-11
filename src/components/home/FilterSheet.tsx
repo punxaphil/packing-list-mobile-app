@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { Button } from "../shared/Button.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { CategorySection, MemberSection } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
@@ -113,10 +114,7 @@ const FilterContent = ({
   ...props
 }: FilterContentProps) => (
   <View style={styles.content}>
-    <Text
-      style={styles.itemCount}
-      accessibilityLabel={`${props.shownCount} items showing of ${props.totalItemCount}`}
-    >
+    <Text style={styles.itemCount} accessibilityLabel={`${props.shownCount} items showing of ${props.totalItemCount}`}>
       {props.shownCount} items showing (of {props.totalItemCount})
     </Text>
     <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
@@ -136,7 +134,5 @@ const FilterContent = ({
 );
 
 const DoneButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable style={styles.doneButton} onPress={onPress}>
-    <Text style={styles.doneText}>Done</Text>
-  </Pressable>
+  <Button variant="primary" label="Done" onPress={onPress} />
 );
