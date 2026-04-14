@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { getUserImagesByEmail } from "~/services/spaceDatabase.ts";
+import { fetchMemberData, type MemberData } from "~/services/spaceDatabase.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import { useSpaceManagement } from "../space/useSpaceManagement.ts";
 import type { SpaceSheetSubDialog } from "./SpaceSheetAndroid.tsx";
@@ -16,12 +16,15 @@ export function useSpaceSheet(onClose: () => void) {
   const [subDialog, setSubDialog] = useState<SpaceSheetSubDialog>("none");
   const [promptValue, setPromptValue] = useState("");
   const [creatingSpace, setCreatingSpace] = useState(false);
-  const [imagesByEmail, setImagesByEmail] = useState<Record<string, string>>({});
+  const [memberData, setMemberData] = useState<MemberData>({ imagesByEmail: {}, emailById: {} });
 
   useEffect(() => {
-    if (!activeSpace?.members?.length) return;
-    void getUserImagesByEmail(activeSpace.members).then(setImagesByEmail);
-  }, [activeSpace?.members]);
+    const ownerIds = spaces.map((s) => s.ownerId).filter(Boolean);
+    const activeMembers = activeSpace?.members ?? [];
+    const allIds = [...new Set([...activeMembers, ...ownerIds])];
+    if (!allIds.length) return;
+    void fetchMemberData(allIds).then(setMemberData);
+  }, [activeSpace?.members, spaces]);
 
   const resetSubDialog = useCallback(() => {
     setPromptValue("");
@@ -89,6 +92,18 @@ export function useSpaceSheet(onClose: () => void) {
 
   const otherSpaces = spaces.filter((s) => s.id !== spaceId);
 
+  const imagesByEmail = memberData.imagesByEmail;
+  const ownerEmail = activeSpace ? memberData.emailById[activeSpace.ownerId] : undefined;
+
+  const ownerInfoBySpaceId = useMemo(() => {
+    const result: Record<string, { email: string; imageUrl?: string }> = {};
+    for (const space of spaces) {
+      const email = memberData.emailById[space.ownerId];
+      if (email) result[space.id] = { email, imageUrl: memberData.imagesByEmail[email] };
+    }
+    return result;
+  }, [spaces, memberData]);
+
   return {
     spaces,
     spaceId,
@@ -103,6 +118,8 @@ export function useSpaceSheet(onClose: () => void) {
     setPromptValue,
     creatingSpace,
     imagesByEmail,
+    ownerEmail,
+    ownerInfoBySpaceId,
     resetSubDialog,
     handleAccept,
     handleCreate,

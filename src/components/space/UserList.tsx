@@ -5,25 +5,54 @@ import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 type UserListProps = {
   emails: string[];
   currentEmail: string;
+  ownerEmail?: string;
   onRemove: (email: string) => void;
   imagesByEmail: Record<string, string>;
   isOwner: boolean;
 };
 
-export const UserList = ({ emails, currentEmail, onRemove, imagesByEmail, isOwner }: UserListProps) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{SPACE_MGMT_COPY.users}</Text>
-    {emails.map((email) => (
-      <UserRow
-        key={email}
-        email={email}
-        isSelf={email.toLowerCase() === currentEmail.toLowerCase()}
-        imageUrl={imagesByEmail[email.toLowerCase()]}
-        onRemove={() => confirmRemove(email, onRemove)}
-        canRemove={isOwner}
-      />
-    ))}
-  </View>
+export const UserList = ({ emails, currentEmail, ownerEmail, onRemove, imagesByEmail, isOwner }: UserListProps) => {
+  const lowerOwner = ownerEmail?.toLowerCase();
+  const otherEmails = lowerOwner ? emails.filter((e) => e.toLowerCase() !== lowerOwner) : emails;
+
+  return (
+    <View style={styles.section}>
+      {ownerEmail && (
+        <UserSection title={SPACE_MGMT_COPY.owner}>
+          <UserRow
+            email={ownerEmail}
+            isSelf={lowerOwner === currentEmail.toLowerCase()}
+            imageUrl={imagesByEmail[lowerOwner ?? ""]}
+            onRemove={() => {}}
+            canRemove={false}
+          />
+        </UserSection>
+      )}
+      <UserSection title={SPACE_MGMT_COPY.otherUsers}>
+        {otherEmails.length > 0 ? (
+          otherEmails.map((email) => (
+            <UserRow
+              key={email}
+              email={email}
+              isSelf={email.toLowerCase() === currentEmail.toLowerCase()}
+              imageUrl={imagesByEmail[email.toLowerCase()]}
+              onRemove={() => confirmRemove(email, onRemove)}
+              canRemove={isOwner}
+            />
+          ))
+        ) : (
+          <Text style={styles.emptyText}>{SPACE_MGMT_COPY.noOtherUsers}</Text>
+        )}
+      </UserSection>
+    </View>
+  );
+};
+
+const UserSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    {children}
+  </>
 );
 
 type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemove: () => void; canRemove: boolean };
@@ -72,4 +101,5 @@ const styles = StyleSheet.create({
   avatarImage: { width: 32, height: 32, borderRadius: 16 },
   email: { flex: 1, fontSize: 14, color: homeColors.text },
   removeText: { fontSize: 14, fontWeight: "600", color: homeColors.danger },
+  emptyText: { fontSize: 14, color: homeColors.muted, paddingVertical: homeSpacing.xs },
 });

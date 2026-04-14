@@ -288,13 +288,21 @@ export async function getUserProfile(userId: string): Promise<UserProfile | unde
   return snap.exists() ? ({ id: snap.id, ...snap.data() } as UserProfile) : undefined;
 }
 
-export async function getUserImagesByEmail(memberIds: string[]): Promise<Record<string, string>> {
-  const profiles = await Promise.all(memberIds.map(getUserProfile));
-  const result: Record<string, string> = {};
+export type MemberData = {
+  imagesByEmail: Record<string, string>;
+  emailById: Record<string, string>;
+};
+
+export async function fetchMemberData(memberIds: string[]): Promise<MemberData> {
+  const profiles = await Promise.all([...new Set(memberIds)].map(getUserProfile));
+  const imagesByEmail: Record<string, string> = {};
+  const emailById: Record<string, string> = {};
   for (const p of profiles) {
-    if (p?.email && p.imageUrl) result[p.email.toLowerCase()] = p.imageUrl;
+    if (!p?.email) continue;
+    emailById[p.id] = p.email.toLowerCase();
+    if (p.imageUrl) imagesByEmail[p.email.toLowerCase()] = p.imageUrl;
   }
-  return result;
+  return { imagesByEmail, emailById };
 }
 
 export async function setUserProfile(userId: string, profile: Omit<UserProfile, "id">) {
