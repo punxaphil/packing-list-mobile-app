@@ -32,7 +32,7 @@ import { showActionSheet } from "./showActionSheet.ts";
 import { showNativeRenameItemPrompt } from "./showNativeRenameItemPrompt.ts";
 import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
-import { homeColors } from "./theme.ts";
+import { CHECKBOX_SIZE, homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "./useDragState.ts";
@@ -203,7 +203,6 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     >
       <CategoryHeader
         section={props.section}
-        color={props.color}
         imageUrl={categoryImageUrl}
         checkboxColor={checkboxColor}
         isTemplateList={props.isTemplateList}
@@ -331,7 +330,6 @@ export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 
 type CategoryHeaderProps = {
   section: SectionGroup;
-  color: string;
   checkboxColor: string;
   imageUrl: string | undefined;
   isTemplateList: boolean;
@@ -346,7 +344,6 @@ type CategoryHeaderProps = {
 
 const CategoryHeader = ({
   section,
-  color,
   checkboxColor,
   imageUrl,
   isTemplateList,
@@ -379,13 +376,12 @@ const CategoryHeader = ({
 
   return (
     <View style={homeStyles.categoryHeader}>
-      <View style={[homeStyles.categoryAccent, { backgroundColor: color }]} />
       <View style={homeStyles.categoryCheckboxWrapper}>
         <AppCheckbox
           checked={displayChecked}
           onToggle={() => onToggleCategory(!displayChecked)}
           disabled={isTemplateList || pendingToggle !== null}
-          size={16}
+          size={CHECKBOX_SIZE}
           checkedColor={checkboxColor}
         />
         {indeterminate && pendingToggle === null && (
@@ -566,14 +562,14 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             disabled={props.checkboxDisabled}
             onToggle={props.onToggleAllMembers}
             checkedColor={props.checkboxColor}
-            size={28}
+            size={CHECKBOX_SIZE}
           />
         ) : (
           <AppCheckbox
             checked={checked}
             onToggle={() => props.onToggle(props.item)}
             disabled={props.checkboxDisabled}
-            size={28}
+            size={CHECKBOX_SIZE}
             checkedColor={props.checkboxColor}
           />
         )}
