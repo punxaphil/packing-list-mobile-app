@@ -7,7 +7,6 @@ import { ListsScreen } from "./ListsScreen";
 import { LoginScreen } from "./LoginScreen";
 import { MembersScreen } from "./MembersScreen";
 import { ProfileScreen } from "./ProfileScreen";
-import { SpaceManagementScreen } from "./SpaceManagementScreen";
 import { SCREEN_IDS } from "./screenIds";
 import { withProviders } from "./withProviders";
 
@@ -23,5 +22,4 @@ export function registerScreens() {
   Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () => wrapScreen(CategoriesScreen));
   Navigation.registerComponent(SCREEN_IDS.MEMBERS, () => wrapScreen(MembersScreen));
   Navigation.registerComponent(SCREEN_IDS.PROFILE, () => wrapScreen(ProfileScreen));
-  Navigation.registerComponent(SCREEN_IDS.SPACE_MANAGEMENT, () => wrapScreen(SpaceManagementScreen));
 }

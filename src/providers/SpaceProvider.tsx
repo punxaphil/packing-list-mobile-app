@@ -60,9 +60,9 @@ export function SpaceProvider({ userId, email, children }: Props) {
   }, [spaceId, userId, email]);
 
   useEffect(() => {
-    if (activeSpace || !spaces.length) return;
+    if (spaceId || !spaces.length) return;
     switchSpace(spaces[0].id);
-  }, [activeSpace, spaces, switchSpace]);
+  }, [spaceId, spaces, switchSpace]);
 
   const writeDb = useMemo(() => createWriteDb(spaceId), [spaceId]);
 

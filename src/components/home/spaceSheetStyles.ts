@@ -33,10 +33,14 @@ export const spaceSheetStyles = StyleSheet.create({
     transform: [{ scale: 0.985 }],
   },
   rowLabel: { flex: 1, fontSize: 16, color: homeColors.text },
-  ownerBadge: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: homeColors.primaryStrong,
-    marginRight: homeSpacing.xs,
+  ownerAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: homeColors.primary,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  ownerAvatarImage: { width: 24, height: 24, borderRadius: 12 },
+  ownerAvatarText: { color: homeColors.primaryForeground, fontSize: 11, fontWeight: "700" },
 });
