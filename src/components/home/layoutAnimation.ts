@@ -1,10 +1,16 @@
 import { LayoutAnimation, Platform, UIManager } from "react-native";
 
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 const LAYOUT_DURATION = 300;
+
+let animating = false;
+export const isAnimatingLayout = () => animating;
 
 const layoutConfig = {
   duration: LAYOUT_DURATION,
@@ -20,7 +26,13 @@ const layoutConfig = {
 } as const;
 
 export const animateLayout = () => {
-  LayoutAnimation.configureNext(layoutConfig);
+  animating = true;
+  LayoutAnimation.configureNext(layoutConfig, () => {
+    animating = false;
+  });
+  setTimeout(() => {
+    animating = false;
+  }, LAYOUT_DURATION);
 };
 
 const listEntryAnimation = {
