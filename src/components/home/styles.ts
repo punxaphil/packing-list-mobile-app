@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { homeCopy } from "./copy.ts";
-import { homeColors, homeRadius, homeSpacing } from "./theme.ts";
+import { CHECKBOX_SIZE, homeColors, homeRadius, homeSpacing } from "./theme.ts";
 
 const colors = homeColors;
 const spacing = homeSpacing;
@@ -164,32 +164,27 @@ export const homeStyles = StyleSheet.create({
   categoryHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.xs,
+    gap: spacing.sm,
     minHeight: spacing.lg,
     marginLeft: spacing.xs,
     marginBlock: spacing.xs,
   },
-  categoryAccent: {
-    width: 8,
-    alignSelf: "stretch",
-    borderRadius: 999,
-    marginVertical: 2,
-  },
   categoryCheckboxWrapper: {
     position: "relative",
-    width: spacing.md,
-    height: spacing.md,
+    width: CHECKBOX_SIZE,
+    height: CHECKBOX_SIZE,
+    flexShrink: 0,
     justifyContent: "center",
     alignItems: "center",
   },
   categoryCheckboxIndicator: {
     position: "absolute",
-    width: spacing.md * 0.6,
+    width: CHECKBOX_SIZE * 0.6,
     height: 2,
     backgroundColor: colors.text,
     borderRadius: 2,
-    top: spacing.md / 2 - 1,
-    left: spacing.md * 0.2,
+    top: CHECKBOX_SIZE / 2 - 1,
+    left: CHECKBOX_SIZE * 0.2,
   },
   categoryImage: { width: 24, height: 24, borderRadius: 4 },
   categoryTitle: {
