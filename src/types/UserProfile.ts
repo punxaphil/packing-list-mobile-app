@@ -4,4 +4,5 @@ export interface UserProfile {
   personalSpaceId: string;
   spaceIds: string[];
   imageUrl?: string;
+  wrapItemText?: boolean;
 }
