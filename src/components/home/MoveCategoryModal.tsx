@@ -6,8 +6,10 @@ import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
-import { CATEGORY_FIELD_COPY, CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
+import { commonCopy, homeCopy } from "./copy.ts";
+import { addItemCopy, moveCategoryCopy } from "./listCopy.ts";
+import { homeStyles } from "./styles.ts";
 
 type MoveCategoryModalProps = {
   visible: boolean;
@@ -56,7 +58,7 @@ export const MoveCategoryModal = ({
       onClose();
     } catch (cause) {
       if (cause instanceof DuplicateNameError) {
-        setError(COPY.duplicateCategory);
+        setError(homeCopy.duplicateCategoryName);
         inputRef.current?.focus();
         return;
       }
@@ -69,7 +71,7 @@ export const MoveCategoryModal = ({
   const content = (
     <>
       <Text style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetLabel : homeStyles.modalLabel}>
-        {CATEGORY_FIELD_COPY.existingCategory}
+        {addItemCopy.existingCategory}
       </Text>
       <CategoryDropdown
         categories={categories}
@@ -83,7 +85,7 @@ export const MoveCategoryModal = ({
         iosSheet={isIosSheet}
       />
       <Text style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetLabel : homeStyles.modalLabel}>
-        {CATEGORY_FIELD_COPY.newCategory}
+        {addItemCopy.newCategory}
       </Text>
       <TextInput
         ref={inputRef}
@@ -92,7 +94,7 @@ export const MoveCategoryModal = ({
           setNewCategoryName(text);
           setError(null);
         }}
-        placeholder={CATEGORY_FIELD_COPY.newCategoryPlaceholder}
+        placeholder={addItemCopy.newCategoryPlaceholder}
         style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetInput : homeStyles.modalInput}
         editable={!submitting}
       />
@@ -104,9 +106,9 @@ export const MoveCategoryModal = ({
     return (
       <PageSheet
         visible={visible}
-        title={COPY.title}
+        title={moveCategoryCopy.title}
         onClose={onClose}
-        confirmLabel={COPY.confirm}
+        confirmLabel={homeCopy.renameListConfirm}
         onConfirm={handleSubmit}
         confirmDisabled={isSubmitDisabled}
       >
@@ -118,12 +120,12 @@ export const MoveCategoryModal = ({
   return (
     <DialogShell
       visible={visible}
-      title={COPY.title}
+      title={moveCategoryCopy.title}
       onClose={onClose}
       actions={
         <DialogActions
-          cancelLabel={COPY.cancel}
-          confirmLabel={COPY.confirm}
+          cancelLabel={commonCopy.cancel}
+          confirmLabel={homeCopy.renameListConfirm}
           onCancel={onClose}
           onConfirm={handleSubmit}
           disabled={isSubmitDisabled}
@@ -133,11 +135,4 @@ export const MoveCategoryModal = ({
       {content}
     </DialogShell>
   );
-};
-
-const COPY = {
-  title: "Change Category",
-  cancel: HOME_COPY.cancel,
-  confirm: HOME_COPY.renameListConfirm,
-  duplicateCategory: HOME_COPY.duplicateCategoryName,
 };

@@ -1,0 +1,42 @@
+import { translatedCopy } from "~/i18n/translatedCopy.ts";
+
+type ProfileCopy = {
+  title: string;
+  imageTitle: string;
+  signOut: string;
+  changePhoto: string;
+  addPhoto: string;
+  removePhoto: string;
+  choosePhoto: string;
+  chooseEmoji: string;
+  noListSelected: string;
+  noListMessage: string;
+  showLists: string;
+  subscriptionTitle: string;
+  manageSubscription: string;
+  subscriptionLoading: string;
+  noSubscription: string;
+  trialAccess: string;
+  subscriptionBadge: string;
+  subscriptionTrialEnds: string;
+  subscriptionRenews: string;
+  subscriptionAccessUntil: string;
+  subscriptionEnds: string;
+  deleteAccount: string;
+  deleteAccountTitle: string;
+  deleteAccountBody: string;
+  deleteAccountConfirm: string;
+  deleteAccountCannotTitle: string;
+  deleteAccountErrorTitle: string;
+  deleteAccountErrorBody: string;
+  deleteAccountSharedBody: string;
+  preferencesTitle: string;
+  wrapItemText: string;
+  hideImagePlaceholder: string;
+  addNewItemsOnTop: string;
+  firstName: string;
+  lastName: string;
+  updateName: string;
+};
+
+export const profileCopy = translatedCopy<ProfileCopy>("profile");

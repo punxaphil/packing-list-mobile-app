@@ -9,12 +9,6 @@ import { homeColors } from "./theme.ts";
 const DROPDOWN_ROW_HEIGHT = 49;
 const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
 
-export const CATEGORY_FIELD_COPY = {
-  existingCategory: "Existing category",
-  newCategory: "Or create new category",
-  newCategoryPlaceholder: "New category name",
-};
-
 export const CategoryDropdown = ({
   categories,
   categoryImages,

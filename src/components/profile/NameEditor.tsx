@@ -2,15 +2,10 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { updateProfileName } from "~/services/spaceDatabase.ts";
+import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
-
-const COPY = {
-  firstName: "First Name",
-  lastName: "Last Name",
-  cancel: "Cancel",
-  update: "Update",
-};
+import { profileCopy } from "./profileCopy.ts";
 
 export const NameEditor = () => {
   const { profile } = useSpace();
@@ -37,25 +32,31 @@ export const NameEditor = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.inputLabel}>{COPY.firstName}</Text>
+      <Text style={styles.inputLabel}>{profileCopy.firstName}</Text>
       <TextInput
         autoCapitalize="words"
-        placeholder={COPY.firstName}
+        placeholder={profileCopy.firstName}
         style={styles.input}
         value={firstName}
         onChangeText={setFirstName}
       />
-      <Text style={styles.inputLabel}>{COPY.lastName}</Text>
+      <Text style={styles.inputLabel}>{profileCopy.lastName}</Text>
       <TextInput
         autoCapitalize="words"
-        placeholder={COPY.lastName}
+        placeholder={profileCopy.lastName}
         style={styles.input}
         value={lastName}
         onChangeText={setLastName}
       />
       <View style={styles.actions}>
-        <Button label={COPY.cancel} onPress={restore} disabled={!hasChanges} flex />
-        <Button variant="primary" label={COPY.update} onPress={() => void save()} disabled={!hasChanges} flex />
+        <Button label={commonCopy.cancel} onPress={restore} disabled={!hasChanges} flex />
+        <Button
+          variant="primary"
+          label={profileCopy.updateName}
+          onPress={() => void save()}
+          disabled={!hasChanges}
+          flex
+        />
       </View>
     </View>
   );

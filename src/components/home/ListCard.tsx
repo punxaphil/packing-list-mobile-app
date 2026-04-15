@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, Pressable, Image as RNImage, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Image as RNImage, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { Image } from "~/types/Image.ts";
 import type { Space } from "~/types/Space.ts";
+import { CATEGORY_COPY } from "../shared/entityStyles.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
+import { listCopy } from "./listCopy.ts";
 import { ListActions } from "./listSectionState.ts";
 import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -59,25 +61,23 @@ export const ListCard = (props: ListCardProps) => {
   const canMove = props.spaces.length > 1;
 
   const openDeleteConfirm = () =>
-    Alert.alert(`Delete "${props.list.name}"?`, undefined, [
-      { text: "Cancel", style: "cancel" },
+    showActionSheet(listCopy.deleteConfirm.replace("{name}", props.list.name), [
       {
-        text: "Delete",
+        text: listCopy.delete,
         style: "destructive",
         onPress: () => void props.actions.onDelete(props.list),
       },
     ]);
   const openUncheckConfirm = () =>
-    Alert.alert(`Uncheck all items in "${props.list.name}"?`, undefined, [
-      { text: "Cancel", style: "cancel" },
+    showActionSheet(listCopy.uncheckConfirm.replace("{name}", props.list.name), [
       {
-        text: "Uncheck All",
+        text: listCopy.uncheckAll,
         onPress: () => void props.actions.onUncheckAll(props.list),
       },
     ]);
   const openMovePicker = () =>
     showActionSheet(
-      "Move to Space",
+      listCopy.moveToSpace,
       props.spaces
         .filter((s) => s.id !== props.currentSpaceId)
         .map((s) => ({
@@ -130,8 +130,8 @@ export const ListCard = (props: ListCardProps) => {
       </Pressable>
       <TextPromptDialog
         visible={rename.visible}
-        title="Rename List"
-        confirmLabel="Rename"
+        title={listCopy.renameList}
+        confirmLabel={listCopy.renameConfirm}
         value={rename.value}
         error={rename.error}
         getError={rename.getError}
@@ -215,19 +215,24 @@ const ListCardText = ({ list, summary }: ListCardTextProps) => (
 
 const TemplateBadge = () => (
   <View style={homeStyles.templateBadge}>
-    <Text style={homeStyles.templateBadgeText}>Template</Text>
+    <Text style={homeStyles.templateBadgeText}>{listCopy.template}</Text>
   </View>
 );
 
 const PinButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable onPress={onPress} style={homeStyles.pinButton} accessibilityRole="button" accessibilityLabel="Unpin">
+  <Pressable
+    onPress={onPress}
+    style={homeStyles.pinButton}
+    accessibilityRole="button"
+    accessibilityLabel={listCopy.unpin}
+  >
     <MaterialCommunityIcons name="pin-outline" size={18} color={homeColors.muted} />
   </Pressable>
 );
 
 const ArchivedBadge = () => (
   <View style={homeStyles.archivedBadge}>
-    <Text style={homeStyles.archivedBadgeText}>Archived</Text>
+    <Text style={homeStyles.archivedBadgeText}>{listCopy.archived}</Text>
   </View>
 );
 
@@ -267,7 +272,7 @@ const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
     style={homeStyles.listMenuButton}
     onPress={onPress}
     accessibilityRole="button"
-    accessibilityLabel="List menu"
+    accessibilityLabel={listCopy.listMenu}
   >
     <Text style={homeStyles.listMenuIcon}>{MENU_ICON}</Text>
   </Pressable>
@@ -322,61 +327,59 @@ const buildMenuItems = (
   hasImage: boolean,
   showMoveToSpace?: () => void
 ) => {
+  const t = (key: string) => (listCopy as Record<string, string>)[key] ?? key;
   const items = [];
-  items.push({ text: "Rename", onPress: showRename });
+  items.push({ text: t("rename"), onPress: showRename });
   if (showImageMenuAction) {
-    items.push({ text: hasImage ? "Update image" : "Add image", onPress: handleImageAction });
+    items.push({
+      text: hasImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage,
+      onPress: handleImageAction,
+    });
   }
   if (isArchived) {
     items.push({
-      text: "Restore",
+      text: t("restore"),
       onPress: () => void actions.onRestore(list),
     });
   } else {
     if (isPinned) {
-      items.push({ text: "Unpin", onPress: () => void actions.onUnpin(list) });
+      items.push({ text: t("unpin"), onPress: () => void actions.onUnpin(list) });
     } else {
       items.push({
-        text: "Pin to Top",
+        text: t("pinToTop"),
         onPress: () => void actions.onPin(list),
       });
     }
     const hasPacked = (list.packedCount ?? 0) > 0;
     if (isTemplate) {
       items.push({
-        text: "Remove Template",
+        text: t("removeTemplate"),
         onPress: () => void actions.onRemoveTemplate(list),
       });
     } else {
       items.push({
-        text: "Set as Template",
-        onPress: () => {
-          if (hasPacked) {
-            Alert.alert(HOME_COPY.templateHasCheckedTitle, HOME_COPY.templateHasCheckedMessage);
-          } else {
-            void actions.onSetTemplate(list);
-          }
-        },
+        text: t("setAsTemplate"),
+        onPress: () => void actions.onSetTemplate(list),
       });
       items.push({
-        text: "Archive",
+        text: t("archive"),
         onPress: () => void actions.onArchive(list),
       });
       items.push({
-        text: "Uncheck All",
+        text: t("uncheckAll"),
         onPress: showUncheckConfirm,
         disabled: !hasPacked,
       });
     }
   }
   if (showMoveToSpace) {
-    items.push({ text: "Move to Space", onPress: showMoveToSpace });
+    items.push({ text: t("moveToSpace"), onPress: showMoveToSpace });
   }
   items.push({
-    text: "Delete",
+    text: t("delete"),
     style: "destructive" as const,
     onPress: showDeleteConfirm,
   });
-  items.push({ text: "Cancel", style: "cancel" as const });
+  items.push({ text: t("cancel"), style: "cancel" as const });
   return items;
 };

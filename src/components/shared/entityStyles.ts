@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { translatedCopy } from "~/i18n/translatedCopy.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 
 export const entityStyles = StyleSheet.create({
@@ -125,46 +126,14 @@ export type EntityCopy = {
   deleteAction: string;
   moveItems: string;
   imageTitle: string;
+  imageReplace: string;
+  imageRemove: string;
+  changeCategory: string;
+  addImage: string;
+  updateImage: string;
+  deleteItemsBody: string;
 };
 
-export const CATEGORY_COPY: EntityCopy = {
-  type: "Category",
-  header: "Categories",
-  addButton: "+ Add Category",
-  renamePrompt: "Rename category",
-  renameConfirm: "Save",
-  createPrompt: "New Category",
-  createConfirm: "Create",
-  createPlaceholder: "Category name",
-  delete: "Delete category",
-  deleteIcon: "×",
-  deleteConfirmTitle: "Delete Category",
-  deleteConfirmMessage: 'Delete "{name}"?',
-  deleteBlockedTitle: "Has Items",
-  deleteBlockedMessage: '"{name}" has {count} items. Move them first?',
-  cancel: "Cancel",
-  deleteAction: "Delete",
-  moveItems: "Move Items",
-  imageTitle: "Category Image",
-};
+export const CATEGORY_COPY: EntityCopy = translatedCopy<EntityCopy>("category");
 
-export const MEMBER_COPY: EntityCopy = {
-  type: "Member",
-  header: "Members",
-  addButton: "+ Add Member",
-  renamePrompt: "Rename member",
-  renameConfirm: "Save",
-  createPrompt: "New Member",
-  createConfirm: "Create",
-  createPlaceholder: "Member name",
-  delete: "Delete member",
-  deleteIcon: "×",
-  deleteConfirmTitle: "Delete Member",
-  deleteConfirmMessage: 'Delete "{name}"?',
-  deleteBlockedTitle: "Has Items",
-  deleteBlockedMessage: '"{name}" has {count} items. Move them first?',
-  cancel: "Cancel",
-  deleteAction: "Delete",
-  moveItems: "Move Items",
-  imageTitle: "Member image",
-};
+export const MEMBER_COPY: EntityCopy = translatedCopy<EntityCopy>("member");

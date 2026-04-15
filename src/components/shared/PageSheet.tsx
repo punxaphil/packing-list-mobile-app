@@ -110,7 +110,7 @@ const SheetTextButton = ({
   </Pressable>
 );
 
-export const SheetIconButton = ({
+const SheetIconButton = ({
   icon,
   onPress,
   accessibilityLabel,

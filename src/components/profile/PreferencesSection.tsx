@@ -6,13 +6,7 @@ import {
   updateProfileWrapItemText,
 } from "~/services/spaceDatabase.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
-
-const COPY = {
-  title: "Preferences",
-  wrapItemText: "Show full item text (even if it takes up multiple lines)",
-  hideImagePlaceholder: "Hide image placeholder when no image is connected",
-  addNewItemsOnTop: "Add new items on top instead of bottom",
-};
+import { profileCopy } from "./profileCopy.ts";
 
 export const PreferencesSection = () => {
   const { profile } = useSpace();
@@ -37,9 +31,9 @@ export const PreferencesSection = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{COPY.title}</Text>
+      <Text style={styles.title}>{profileCopy.preferencesTitle}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>{COPY.wrapItemText}</Text>
+        <Text style={styles.label}>{profileCopy.wrapItemText}</Text>
         <Switch
           value={wrapItemText}
           onValueChange={toggleWrapItemText}
@@ -47,7 +41,7 @@ export const PreferencesSection = () => {
         />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{COPY.hideImagePlaceholder}</Text>
+        <Text style={styles.label}>{profileCopy.hideImagePlaceholder}</Text>
         <Switch
           value={hideImagePlaceholder}
           onValueChange={toggleHideImagePlaceholder}
@@ -55,7 +49,7 @@ export const PreferencesSection = () => {
         />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{COPY.addNewItemsOnTop}</Text>
+        <Text style={styles.label}>{profileCopy.addNewItemsOnTop}</Text>
         <Switch
           value={addNewItemsOnTop}
           onValueChange={toggleAddNewItemsOnTop}

@@ -1,6 +1,6 @@
-import { Alert, Modal, Platform, ScrollView, Text } from "react-native";
+import { Modal, Platform, ScrollView, Text } from "react-native";
 import { AppLoadingState } from "../shared/AppLoadingState.tsx";
-import { PageSheet, SheetIconButton } from "../shared/PageSheet.tsx";
+import { PageSheet } from "../shared/PageSheet.tsx";
 import { UserList } from "../space/UserList.tsx";
 import { SpaceSheetAndroid } from "./SpaceSheetAndroid.tsx";
 import { CreateSpaceButton, InviteSection, SpaceActions, SpaceNameRow, SpaceRow } from "./SpaceSheetParts.tsx";
@@ -12,8 +12,6 @@ import { useSpaceSheet } from "./useSpaceSheet.ts";
 export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const s = useSpaceSheet(onClose);
 
-  const showHelp = () => Alert.alert(spaceCopy.spaceHelpTitle, spaceCopy.spaceHelp);
-
   if (Platform.OS !== "ios") {
     return <SpaceSheetAndroid visible={visible} onClose={onClose} sheet={s} />;
   }
@@ -24,7 +22,6 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
         visible={visible && !s.creatingSpace && s.subDialog !== "create"}
         title={spaceCopy.spacesTitle}
         onClose={onClose}
-        headerRight={<SheetIconButton icon="help-circle-outline" onPress={showHelp} accessibilityLabel="Help" />}
         scrollable={false}
       >
         <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>

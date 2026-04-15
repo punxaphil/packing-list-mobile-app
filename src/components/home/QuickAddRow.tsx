@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { AddItemDialogState } from "./ItemsPanel.tsx";
@@ -103,6 +104,7 @@ const SearchRow = ({
   onSubmitSearch,
   onClose,
 }: SearchRowProps) => {
+  const { t } = useTranslation();
   const hasText = localText.length > 0;
   const searchSettled = localText === search.searchText;
   const hasMatches = search.totalMatches > 0;
@@ -115,14 +117,14 @@ const SearchRow = ({
           style={styles.searchInput}
           value={localText}
           onChangeText={onTextChange}
-          placeholder="Search items by name..."
+          placeholder={t("search.placeholder")}
           placeholderTextColor={homeColors.muted}
           autoFocus
           returnKeyType="search"
           blurOnSubmit={false}
           onSubmitEditing={onSubmitSearch}
         />
-        {hasText && searchSettled && !hasMatches && <Text style={styles.noMatch}>No matches</Text>}
+        {hasText && searchSettled && !hasMatches && <Text style={styles.noMatch}>{t("search.noMatches")}</Text>}
         {hasMatches && (
           <Text style={styles.matchCount}>
             {search.currentIndex + 1}/{search.totalMatches}

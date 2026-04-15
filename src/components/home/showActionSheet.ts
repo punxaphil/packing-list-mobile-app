@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { ActionSheetIOS } from "react-native";
 
 type ActionSheetItem = {
@@ -9,7 +10,7 @@ type ActionSheetItem = {
 
 export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
   const actionItems = items.filter((i) => i.style !== "cancel");
-  const options = [...actionItems.map((i) => i.text), "Cancel"];
+  const options = [...actionItems.map((i) => i.text), i18next.t("common.cancel")];
   const cancelButtonIndex = actionItems.length;
   const destructiveIndices = actionItems
     .map((item, index) => (item.style === "destructive" ? index : -1))

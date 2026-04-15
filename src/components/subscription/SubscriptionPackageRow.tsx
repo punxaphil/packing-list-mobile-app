@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Pressable, StyleSheet, Text } from "react-native";
 import type { PurchasesPackage } from "react-native-purchases";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
@@ -11,7 +12,10 @@ type Props = {
 const trialLabel = (pkg: PurchasesPackage): string | null => {
   const intro = pkg.product.introPrice;
   if (!intro || intro.price !== 0) return null;
-  return `${intro.periodNumberOfUnits}-${intro.periodUnit.toLowerCase()} free trial`;
+  return i18next.t("subscription.freeTrialLabel", {
+    count: intro.periodNumberOfUnits,
+    unit: intro.periodUnit.toLowerCase(),
+  });
 };
 
 export function SubscriptionPackageRow({ pkg, onPress, disabled }: Props) {

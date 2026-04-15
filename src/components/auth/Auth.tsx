@@ -6,7 +6,9 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
+import i18next from "i18next";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signInWithApple } from "~/services/appleAuth.ts";
@@ -15,21 +17,24 @@ import { Button } from "../shared/Button.tsx";
 import { authStyles } from "./authStyles.ts";
 import { EmailForm } from "./EmailForm.tsx";
 
-const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
-  "auth/invalid-credential": "Incorrect email or password",
-  "auth/user-not-found": "No account found with this email",
-  "auth/wrong-password": "Incorrect password",
-  "auth/email-already-in-use": "An account with this email already exists",
-  "auth/weak-password": "Password must be at least 6 characters",
-  "auth/invalid-email": "Please enter a valid email address",
-  "auth/too-many-requests": "Too many attempts. Please try again later",
-  "auth/account-exists-with-different-credential": "This email is already linked to Apple sign-in. Use that instead",
+const AUTH_ERROR_KEYS: Record<string, string> = {
+  "auth/invalid-credential": "auth.errors.invalidCredential",
+  "auth/user-not-found": "auth.errors.userNotFound",
+  "auth/wrong-password": "auth.errors.wrongPassword",
+  "auth/email-already-in-use": "auth.errors.emailAlreadyInUse",
+  "auth/weak-password": "auth.errors.weakPassword",
+  "auth/invalid-email": "auth.errors.invalidEmail",
+  "auth/too-many-requests": "auth.errors.tooManyRequests",
+  "auth/account-exists-with-different-credential": "auth.errors.existsWithDifferentCredential",
 };
 
-const friendlyAuthError = (e: unknown, fallback: string): string =>
-  FRIENDLY_AUTH_ERRORS[(e as AuthError)?.code] ?? fallback;
+const friendlyAuthError = (e: unknown, fallbackKey: string): string => {
+  const key = AUTH_ERROR_KEYS[(e as AuthError)?.code];
+  return key ? i18next.t(key) : i18next.t(fallbackKey);
+};
 
 export function Login() {
+  const { t } = useTranslation();
   const [showEmail, setShowEmail] = useState(false);
   const [emailMode, setEmailMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -43,7 +48,7 @@ export function Login() {
     try {
       await signInWithApple();
     } catch (e) {
-      setError(friendlyAuthError(e, "Apple sign-in failed"));
+      setError(friendlyAuthError(e, "auth.appleSignInFailed"));
     }
   };
 
@@ -52,7 +57,7 @@ export function Login() {
     try {
       await signInWithEmailAndPassword(getAuth(), email.trim(), password);
     } catch (e) {
-      setError(friendlyAuthError(e, "Login failed"));
+      setError(friendlyAuthError(e, "auth.loginFailed"));
     }
   };
 
@@ -68,19 +73,19 @@ export function Login() {
       }
       await sendEmailVerification(user);
     } catch (e) {
-      setError(friendlyAuthError(e, "Registration failed"));
+      setError(friendlyAuthError(e, "auth.registrationFailed"));
     }
   };
 
   return (
     <SafeAreaView style={authStyles.safeArea}>
       <View style={authStyles.container}>
-        <Text style={authStyles.title}>Welcome to FastPack</Text>
-        <Button variant="apple" label="Sign in with Apple" onPress={() => void handleApple()} />
+        <Text style={authStyles.title}>{t("auth.welcome")}</Text>
+        <Button variant="apple" label={t("auth.signInApple")} onPress={() => void handleApple()} />
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {!showEmail && (
           <Pressable onPress={() => setShowEmail(true)}>
-            <Text style={styles.emailToggle}>Sign in with email instead</Text>
+            <Text style={styles.emailToggle}>{t("auth.signInEmail")}</Text>
           </Pressable>
         )}
         {showEmail && (

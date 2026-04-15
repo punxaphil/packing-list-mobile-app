@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -218,7 +219,10 @@ const buildMenuItems = (
     items.unshift({ text: HOME_COPY.rename, onPress: openRename });
   }
   if (!isReadOnly && props.showImageMenuAction) {
-    items.push({ text: hasImage ? "Update image" : "Add image", onPress: props.onImagePress });
+    items.push({
+      text: hasImage ? i18next.t("category.updateImage") : i18next.t("category.addImage"),
+      onPress: props.onImagePress,
+    });
   }
   if (!isReadOnly) {
     items.push({ text: "Delete", style: "destructive" as const, onPress: onDelete });

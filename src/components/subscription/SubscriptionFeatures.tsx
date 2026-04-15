@@ -1,15 +1,8 @@
+import i18next from "i18next";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeSpacing } from "../home/theme.ts";
-
-const FEATURES = [
-  "Create unlimited packing lists and items",
-  "Share spaces with family and friends",
-  "Reuse your best lists with templates",
-  "Set due dates with iPhone reminders",
-  "Pack and check off items per member",
-  "Sync across all your devices",
-];
+import { subscriptionCopy } from "./subscriptionCopy.ts";
 
 const FeatureRow = ({ label }: { label: string }) => (
   <View style={styles.row}>
@@ -18,14 +11,17 @@ const FeatureRow = ({ label }: { label: string }) => (
   </View>
 );
 
-export const SubscriptionFeatures = () => (
-  <View style={styles.container}>
-    <Text style={styles.heading}>FastPack lets you:</Text>
-    {FEATURES.map((f) => (
-      <FeatureRow key={f} label={f} />
-    ))}
-  </View>
-);
+export const SubscriptionFeatures = () => {
+  const features = i18next.t("subscription.features", { returnObjects: true }) as string[];
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>{subscriptionCopy.featuresHeading}</Text>
+      {features.map((f) => (
+        <FeatureRow key={f} label={f} />
+      ))}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: { gap: homeSpacing.xs },

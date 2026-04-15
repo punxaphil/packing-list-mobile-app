@@ -1,14 +1,40 @@
+import i18next from "i18next";
+
+const t = (key: string) => i18next.t(`spaceMgmt.${key}`);
+
 export const SPACE_MGMT_COPY = {
-  owner: "Owner",
-  otherUsers: "Other Users",
-  noOtherUsers: "No other users",
-  remove: "Remove",
-  delete: "Delete Space",
-  confirmDelete: "Are you sure you want to delete this space?",
-  confirmRemove: "Remove this user from the space?",
-  confirm: "Confirm",
-  cancel: "Cancel",
-  cannotDeleteHasUsers: "Remove other users first.",
-  removedTitle: "Removed from space",
-  removedMessage: (name: string) => `You were removed from "${name}".`,
-} as const;
+  get owner() {
+    return t("owner");
+  },
+  get otherUsers() {
+    return t("otherUsers");
+  },
+  get noOtherUsers() {
+    return t("noOtherUsers");
+  },
+  get remove() {
+    return t("remove");
+  },
+  get delete() {
+    return t("delete");
+  },
+  get confirmDelete() {
+    return t("confirmDelete");
+  },
+  get confirmRemove() {
+    return t("confirmRemove");
+  },
+  get confirm() {
+    return t("confirm");
+  },
+  get cancel() {
+    return t("cancel");
+  },
+  get cannotDeleteHasUsers() {
+    return t("cannotDeleteHasUsers");
+  },
+  get removedTitle() {
+    return t("removedTitle");
+  },
+  removedMessage: (name: string) => i18next.t("spaceMgmt.removedMessage", { name }),
+};
