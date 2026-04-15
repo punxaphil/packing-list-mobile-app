@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { homeColors, homeSpacing } from "~/components/home/theme.ts";
-import { loadingMessages } from "~/components/shared/loadingMessages.ts";
+import { getLoadingMessages } from "~/components/shared/loadingMessages.ts";
 import { SquirrelLoader } from "~/components/shared/SquirrelLoader.tsx";
 
 type AppLoadingStateProps = {
@@ -34,7 +34,7 @@ function shuffle<T>(array: readonly T[]): T[] {
 
 function useLoadingMessage(message?: string) {
   const [index, setIndex] = useState(0);
-  const shuffled = useRef(shuffle(loadingMessages));
+  const shuffled = useRef(shuffle(getLoadingMessages()));
   useEffect(() => {
     if (message) return;
     const id = setInterval(() => setIndex((value) => (value + 1) % shuffled.current.length), MESSAGE_SWAP_MS);

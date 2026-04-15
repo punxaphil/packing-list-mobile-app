@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Platform,
   Pressable,
@@ -30,14 +31,6 @@ type AssignMembersModalProps = {
   onSave: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
 };
 
-const COPY = {
-  title: "Assign Members",
-  save: "Save",
-  cancel: "Cancel",
-  noMembers: "No members yet",
-  manageMembers: "Manage Members",
-};
-
 const IOS_SHEET_LIST_RATIO = 0.52;
 const DIALOG_LIST_RATIO = 0.42;
 const IOS_ROW_HEIGHT = 48;
@@ -53,6 +46,7 @@ export const AssignMembersModal = ({
   onSave,
 }: AssignMembersModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (visible && item) {
@@ -88,10 +82,16 @@ export const AssignMembersModal = ({
 
   if (Platform.OS === "ios") {
     return (
-      <PageSheet visible={visible} title={COPY.title} onClose={onClose} confirmLabel={COPY.save} onConfirm={handleSave}>
+      <PageSheet
+        visible={visible}
+        title={t("assignMembers.title")}
+        onClose={onClose}
+        confirmLabel={t("assignMembers.save")}
+        onConfirm={handleSave}
+      >
         <Text style={styles.subtitle}>{item.name}</Text>
         <MemberList members={members} memberImages={memberImages} selected={selected} onToggle={toggle} iosSheet />
-        <Button label={COPY.manageMembers} onPress={handleManageMembers} centered />
+        <Button label={t("assignMembers.manageMembers")} onPress={handleManageMembers} centered />
       </PageSheet>
     );
   }
@@ -99,16 +99,21 @@ export const AssignMembersModal = ({
   return (
     <DialogShell
       visible={visible}
-      title={COPY.title}
+      title={t("assignMembers.title")}
       onClose={onClose}
       actions={
-        <DialogActions cancelLabel={COPY.cancel} confirmLabel={COPY.save} onCancel={onClose} onConfirm={handleSave} />
+        <DialogActions
+          cancelLabel={t("assignMembers.cancel")}
+          confirmLabel={t("assignMembers.save")}
+          onCancel={onClose}
+          onConfirm={handleSave}
+        />
       }
     >
       <Text style={styles.subtitle}>{item.name}</Text>
       <MemberList members={members} memberImages={memberImages} selected={selected} onToggle={toggle} />
       <Pressable onPress={handleManageMembers}>
-        <Text style={styles.manageLink}>{COPY.manageMembers}</Text>
+        <Text style={styles.manageLink}>{t("assignMembers.manageMembers")}</Text>
       </Pressable>
     </DialogShell>
   );
@@ -123,11 +128,12 @@ type MemberListProps = {
 };
 
 const MemberList = ({ members, memberImages, selected, onToggle, iosSheet = false }: MemberListProps) => {
+  const { t } = useTranslation();
   const listMaxHeight = useListMaxHeight(members.length, iosSheet);
 
   return (
     <ScrollView style={[styles.list, { maxHeight: listMaxHeight }]}>
-      {members.length === 0 && <Text style={styles.empty}>{COPY.noMembers}</Text>}
+      {members.length === 0 && <Text style={styles.empty}>{t("assignMembers.noMembers")}</Text>}
       {members.map((member, index) => (
         <MemberRow
           key={member.id}

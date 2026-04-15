@@ -1,21 +1,24 @@
-export const spaceCopy = {
-  spacesTitle: "Current Space",
-  switchSpace: "Switch Space",
-  createSpace: "Create Space",
-  createSpacePrompt: "Name your new space",
-  createSpaceConfirm: "Create",
-  createSpacePlaceholder: "Family trip",
-  inviteUser: "Invite User",
-  pendingInvites: "Pending Invitations",
-  inviteFrom: "From",
-  chevron: " \u25BE",
-  leaveSpace: "Leave Space",
-  deleteSpace: "Delete Space",
-  renamePrompt: "Rename space",
-  renameConfirm: "Rename",
-  invitePrompt: "Invite someone to this space",
-  inviteConfirm: "Send",
-  inviteSent: "Invitation sent!",
-  spaceHelp: "A Space is a collection of lists. Create multiple groups of lists and share selected groups with others.",
-  spaceHelpTitle: "What is a Space?",
-} as const;
+import { translatedCopy } from "~/i18n/translatedCopy.ts";
+
+type SpaceCopy = {
+  spacesTitle: string;
+  switchSpace: string;
+  createSpace: string;
+  createSpacePrompt: string;
+  createSpaceConfirm: string;
+  createSpacePlaceholder: string;
+  inviteUser: string;
+  pendingInvites: string;
+  inviteFrom: string;
+  personalSpace: string;
+  chevron: string;
+  leaveSpace: string;
+  deleteSpace: string;
+  renamePrompt: string;
+  renameConfirm: string;
+  invitePrompt: string;
+  inviteConfirm: string;
+  inviteSent: string;
+};
+
+export const spaceCopy = translatedCopy<SpaceCopy>("space");

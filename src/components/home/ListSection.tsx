@@ -23,6 +23,7 @@ import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
 import { buildListColors } from "./listColors.ts";
+import { listCopy } from "./listCopy.ts";
 import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
 import { ListActions, useListActions } from "./listSectionState.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -144,12 +145,12 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
       accessibilityLabel={HOME_COPY.createList}
       hitSlop={8}
     >
-      <Text style={homeStyles.quickAddLabel}>Create list...</Text>
+      <Text style={homeStyles.quickAddLabel}>{listCopy.createList}</Text>
     </Pressable>
     <View style={localStyles.spacer} />
     {hasArchived && (
       <View style={localStyles.archiveToggle}>
-        <Text style={localStyles.archiveToggleText}>Archived</Text>
+        <Text style={localStyles.archiveToggleText}>{listCopy.archived}</Text>
         <Switch
           value={showArchived}
           onValueChange={onToggleArchived}

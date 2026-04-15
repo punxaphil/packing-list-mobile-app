@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button } from "~/components/shared/Button.tsx";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
@@ -5,19 +6,9 @@ import { homeColors, homeSpacing } from "../home/theme.ts";
 import { SubscriptionFeatures } from "./SubscriptionFeatures.tsx";
 import { SubscriptionLegalLinks } from "./SubscriptionLegalLinks.tsx";
 import { SubscriptionPackageRow } from "./SubscriptionPackageRow.tsx";
+import { subscriptionCopy } from "./subscriptionCopy.ts";
 
 type Props = { email: string; onSignOut: () => void };
-
-const COPY = {
-  title: "Subscribe to Continue",
-  subtitle: "FastPack is free for your first 7 days. A subscription is required to keep using the app after the trial.",
-  info: "Pricing and trial details are shown before you confirm your purchase.",
-  noOfferings: "No subscriptions available. Please try again later.",
-  renewalNote:
-    "Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your Apple ID Account Settings.",
-  restore: "Restore Purchases",
-  signOut: (email: string) => `Sign Out (${email})`,
-};
 
 export function SubscriptionGate({ email, onSignOut }: Props) {
   const { processing, offerings, error, purchase, restore } = useSubscription();
@@ -25,10 +16,10 @@ export function SubscriptionGate({ email, onSignOut }: Props) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{COPY.title}</Text>
-        <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+        <Text style={styles.title}>{subscriptionCopy.title}</Text>
+        <Text style={styles.subtitle}>{subscriptionCopy.subtitle}</Text>
         <SubscriptionFeatures />
-        <Text style={styles.info}>{COPY.info}</Text>
+        <Text style={styles.info}>{subscriptionCopy.info}</Text>
         {offerings.map((pkg) => (
           <SubscriptionPackageRow
             key={pkg.identifier}
@@ -37,12 +28,12 @@ export function SubscriptionGate({ email, onSignOut }: Props) {
             disabled={processing}
           />
         ))}
-        {offerings.length === 0 && <Text style={styles.info}>{COPY.noOfferings}</Text>}
+        {offerings.length === 0 && <Text style={styles.info}>{subscriptionCopy.noOfferings}</Text>}
         {error && <Text style={styles.error}>{error}</Text>}
-        <Text style={styles.legalNote}>{COPY.renewalNote}</Text>
-        <Button label={COPY.restore} onPress={() => void restore()} disabled={processing} />
+        <Text style={styles.legalNote}>{subscriptionCopy.renewalNote}</Text>
+        <Button label={subscriptionCopy.restorePurchases} onPress={() => void restore()} disabled={processing} />
         <SubscriptionLegalLinks />
-        <Button variant="ghost" label={COPY.signOut(email)} onPress={onSignOut} />
+        <Button variant="ghost" label={i18next.t("subscription.signOut", { email })} onPress={onSignOut} />
       </ScrollView>
     </View>
   );

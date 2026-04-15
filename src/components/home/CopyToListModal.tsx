@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Platform, Pressable, ScrollView, Text } from "react-native";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
@@ -14,6 +15,7 @@ type CopyToListModalProps = {
 
 export const CopyToListModal = (props: CopyToListModalProps) => {
   const { visible, lists, currentListId, onClose, onSelect } = props;
+  const { t } = useTranslation();
   const availableLists = lists.filter((l) => l.id !== currentListId);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -24,14 +26,14 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   const handleSelect = async (list: PackingListSummary) => {
     onClose();
     await onSelect(list);
-    Alert.alert(COPY.confirmTitle, `${COPY.confirmMessage} "${list.name}"`);
+    Alert.alert(t("copyToList.confirmTitle"), `${t("copyToList.confirmMessage")} "${list.name}"`);
   };
 
   if (availableLists.length === 0) return null;
 
   if (Platform.OS === "ios") {
     return (
-      <PageSheet visible={visible} title={COPY.title} onClose={onClose} scrollable={false}>
+      <PageSheet visible={visible} title={t("copyToList.title")} onClose={onClose} scrollable={false}>
         <ScrollView ref={scrollRef} style={STYLES.sheetList} contentContainerStyle={STYLES.sheetListContent}>
           {availableLists.map((list) => (
             <ListOption key={list.id} list={list} onSelect={handleSelect} iosSheet />
@@ -44,9 +46,9 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   return (
     <DialogShell
       visible={visible}
-      title={COPY.title}
+      title={t("copyToList.title")}
       onClose={onClose}
-      actions={<DialogSingleAction label={COPY.cancel} onPress={onClose} />}
+      actions={<DialogSingleAction label={t("copyToList.cancel")} onPress={onClose} />}
     >
       <ScrollView ref={scrollRef} style={STYLES.list}>
         {availableLists.map((list) => (
@@ -64,8 +66,9 @@ type ListOptionProps = {
 };
 
 const ListOption = ({ list, onSelect, iosSheet = false }: ListOptionProps) => {
+  const { t } = useTranslation();
   const count = list.itemCount ?? 0;
-  const label = count === 1 ? "item" : "items";
+  const label = count === 1 ? t("copyToList.item") : t("copyToList.items");
   return (
     <Pressable style={[STYLES.option, iosSheet ? STYLES.sheetOption : null]} onPress={() => onSelect(list)}>
       <Text style={STYLES.optionText}>{list.name}</Text>
@@ -74,13 +77,6 @@ const ListOption = ({ list, onSelect, iosSheet = false }: ListOptionProps) => {
       </Text>
     </Pressable>
   );
-};
-
-const COPY = {
-  title: "Copy to List",
-  cancel: "Cancel",
-  confirmTitle: "Copied",
-  confirmMessage: "Item copied to",
 };
 
 const STYLES = {

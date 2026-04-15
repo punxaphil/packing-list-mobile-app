@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { memo, useEffect, useState } from "react";
 import {
   Alert,
@@ -20,13 +21,16 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
+import { CATEGORY_COPY } from "../shared/entityStyles.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { AssignMembersModal } from "./AssignMembersModal.tsx";
 import { CategoryRenameDialogs, getRenameCategoryError, getRenameItemError } from "./CategoryRenameDialogs.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
+import { commonCopy, homeCopy } from "./copy.ts";
 import { computeDropIndex } from "./itemOrdering.ts";
 import { getNextCategoryRank, SectionGroup } from "./itemsSectionHelpers.ts";
 import { getItemCheckboxColor } from "./listColors.ts";
+import { assignMembersCopy, copyToListCopy } from "./listCopy.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
@@ -195,15 +199,15 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     if (!confirmDelete || Platform.OS !== "ios") return;
     Alert.alert(
       HOME_COPY.categoryMenuDeleteItems,
-      DELETE_COPY.body.replace("{count}", String(props.section.items.length)).replace("{name}", props.section.title),
+      i18next.t("category.deleteItemsBody", { count: props.section.items.length, name: props.section.title }),
       [
         {
-          text: DELETE_COPY.cancel,
+          text: commonCopy.cancel,
           style: "cancel",
           onPress: () => setConfirmDelete(false),
         },
         {
-          text: DELETE_COPY.confirm,
+          text: homeCopy.deleteListAction,
           style: "destructive",
           onPress: () => {
             setConfirmDelete(false);
@@ -288,8 +292,8 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
           onClose={() => setConfirmDelete(false)}
           actions={
             <DialogActions
-              cancelLabel={DELETE_COPY.cancel}
-              confirmLabel={DELETE_COPY.confirm}
+              cancelLabel={commonCopy.cancel}
+              confirmLabel={homeCopy.deleteListAction}
               onCancel={() => setConfirmDelete(false)}
               onConfirm={() => {
                 setConfirmDelete(false);
@@ -299,9 +303,10 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
           }
         >
           <Text style={deleteStyles.body}>
-            {DELETE_COPY.body
-              .replace("{count}", String(props.section.items.length))
-              .replace("{name}", props.section.title)}
+            {i18next.t("category.deleteItemsBody", {
+              count: props.section.items.length,
+              name: props.section.title,
+            })}
           </Text>
         </DialogShell>
       )}
@@ -577,12 +582,15 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const openMenu = () =>
     showActionSheet(props.item.name, [
       { text: HOME_COPY.rename, onPress: props.onOpenRename },
-      { text: "Edit Members", onPress: props.onOpenAssignMembers },
-      { text: "Change Category", onPress: props.onOpenMoveCategory },
-      { text: props.itemImage ? "Update image" : "Add image", onPress: props.onOpenImagePicker },
-      ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
+      { text: assignMembersCopy.title, onPress: props.onOpenAssignMembers },
+      { text: CATEGORY_COPY.changeCategory, onPress: props.onOpenMoveCategory },
       {
-        text: "Delete",
+        text: props.itemImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage,
+        onPress: props.onOpenImagePicker,
+      },
+      ...(props.hasOtherLists ? [{ text: copyToListCopy.title, onPress: props.onOpenCopyToList }] : []),
+      {
+        text: homeCopy.deleteItem,
         style: "destructive",
         onPress: () => props.onDeleteItem(props.item.id),
       },
@@ -721,14 +729,6 @@ const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
   const top = below ? layout.y + layout.height - 2 : layout.y - 2;
   return <View style={[homeStyles.itemIndicator, { top }]} />;
 };
-
-const DELETE_COPY = {
-  body: 'Delete {count} items from "{name}"?',
-  confirm: "Delete",
-  cancel: "Cancel",
-};
-
-const CATEGORY_COPY = { changeCategory: "Change Category" };
 
 const deleteStyles = StyleSheet.create({
   body: { fontSize: 14, color: homeColors.muted, textAlign: "center" },

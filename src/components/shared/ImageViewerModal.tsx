@@ -13,15 +13,10 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getEmojiValue } from "~/services/mediaValue.ts";
+import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "./Button.tsx";
 import { PageSheet } from "./PageSheet.tsx";
-
-const COPY = {
-  pickImage: "Pick Image",
-  removeImage: "Remove Image",
-  useText: "Use Text",
-};
 
 type ImageViewerModalProps = {
   visible: boolean;
@@ -110,13 +105,13 @@ export const ImageViewerModal = ({
                 returnKeyType="done"
                 onSubmitEditing={onTextSubmit}
               />
-              <Button label={COPY.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
+              <Button label={commonCopy.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
             </View>
           ) : null}
           <View style={styles.sheetActions}>
-            <Button flex label={COPY.pickImage} onPress={onReplace} disabled={loading} />
+            <Button flex label={commonCopy.pickImage} onPress={onReplace} disabled={loading} />
             {showRemove && (
-              <Button variant="danger" flex label={COPY.removeImage} onPress={onRemove} disabled={loading} />
+              <Button variant="danger" flex label={commonCopy.removeImage} onPress={onRemove} disabled={loading} />
             )}
           </View>
         </View>
@@ -155,12 +150,12 @@ export const ImageViewerModal = ({
                 returnKeyType="done"
                 onSubmitEditing={onTextSubmit}
               />
-              <Button label={COPY.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
+              <Button label={commonCopy.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
             </View>
           ) : null}
-          <Button flex label={COPY.pickImage} onPress={onReplace} disabled={loading} />
+          <Button flex label={commonCopy.pickImage} onPress={onReplace} disabled={loading} />
           {showRemove && (
-            <Button variant="danger" flex label={COPY.removeImage} onPress={onRemove} disabled={loading} />
+            <Button variant="danger" flex label={commonCopy.removeImage} onPress={onRemove} disabled={loading} />
           )}
         </Pressable>
       </Pressable>

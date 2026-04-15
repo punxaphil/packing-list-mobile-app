@@ -1,15 +1,3 @@
-export const loadingMessages = [
-  "Fetching suitcase...",
-  "Booking flight ticket...",
-  "Checking travel itinerary...",
-  "Packing toothbrush...",
-  "Hunting for passport...",
-  "Downloading travel guides...",
-  "Rolling extra socks...",
-  "Stuffing carry-on...",
-  "Finding travel pillow...",
-  "Confirming hotel reservations...",
-  "Organizing travel documents...",
-  "Wishing for good weather...",
-  "Ready for adventure...",
-] as const;
+import i18next from "i18next";
+
+export const getLoadingMessages = (): readonly string[] => i18next.t("loading", { returnObjects: true }) as string[];

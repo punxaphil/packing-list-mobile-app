@@ -1,17 +1,20 @@
 import { StyleSheet } from "react-native";
+import { translatedCopy } from "~/i18n/translatedCopy.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 
-export const MOVE_COPY = {
-  title: "Move Items",
-  subtitle: 'Move {count} items from "{name}":',
-  noItems: 'No items in "{name}"',
-  selectTarget: "Select target:",
-  noCategories: "No other categories",
-  selectCategory: "Select a category",
-  moveTo: "Move to {name}",
-  cancel: "Cancel",
-  close: "Close",
+type MoveCopy = {
+  title: string;
+  subtitle: string;
+  noItems: string;
+  selectTarget: string;
+  noCategories: string;
+  selectCategory: string;
+  moveTo: string;
+  cancel: string;
+  close: string;
 };
+
+export const MOVE_COPY = translatedCopy<MoveCopy>("move");
 
 export const moveStyles = StyleSheet.create({
   subtitle: {

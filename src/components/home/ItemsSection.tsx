@@ -16,6 +16,7 @@ import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
+import { homeCopy } from "./copy.ts";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
@@ -54,11 +55,6 @@ const buildImageMap = (images: Image[], type: string) =>
 
 const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, string>) =>
   entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
-
-const INFO_COPY = {
-  reminderErrorMessage: "Enable iPhone notifications for FastPack to receive due date reminders.",
-  reminderErrorTitle: "Reminder unavailable",
-};
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { profile, spaceId, writeDb } = useSpace();
@@ -438,7 +434,7 @@ const useListNotes = (list: NamedEntity | null, spaceId: string, writeDb: WriteD
       await syncPackingListReminder({ ...reminder, dueAt, id: list.id, spaceId });
     } catch (error) {
       console.error(error);
-      Alert.alert(INFO_COPY.reminderErrorTitle, INFO_COPY.reminderErrorMessage);
+      Alert.alert(homeCopy.reminderErrorTitle, homeCopy.reminderErrorMessage);
     }
   }, [dueAt, list, notes, showNotes, spaceId, writeDb]);
 

@@ -2,6 +2,8 @@ import { Platform, Pressable, Image as RNImage, ScrollView, StyleSheet, Text, Vi
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { MOVE_COPY } from "../categories/styles.ts";
+import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
@@ -44,7 +46,7 @@ export const MoveMemberItemsDialog = ({
 
   if (Platform.OS === "ios") {
     return (
-      <PageSheet visible={visible} title={COPY.title} onClose={onClose} scrollable={false}>
+      <PageSheet visible={visible} title={MOVE_COPY.title} onClose={onClose} scrollable={false}>
         {content}
       </PageSheet>
     );
@@ -53,18 +55,13 @@ export const MoveMemberItemsDialog = ({
   return (
     <DialogShell
       visible={visible}
-      title={COPY.title}
+      title={MOVE_COPY.title}
       onClose={onClose}
-      actions={<DialogSingleAction label={COPY.cancel} onPress={onClose} />}
+      actions={<DialogSingleAction label={commonCopy.cancel} onPress={onClose} />}
     >
       {content}
     </DialogShell>
   );
-};
-
-const COPY = {
-  title: "Move Items",
-  cancel: "Cancel",
 };
 
 const styles = StyleSheet.create({

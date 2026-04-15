@@ -1,4 +1,5 @@
 import { Navigation } from "react-native-navigation";
+import "./src/i18n";
 import "./src/services/database";
 import { setDefaultOptions } from "./src/navigation/options";
 import { registerScreens } from "./src/navigation/screens";

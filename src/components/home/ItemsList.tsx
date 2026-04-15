@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -9,9 +10,11 @@ import { PackItem } from "~/types/PackItem.ts";
 import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
 import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { CategorySection } from "./CategorySection.tsx";
+import { filterCopy, homeCopy } from "./copy.ts";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections } from "./itemsSectionHelpers.ts";
 import { buildItemCategoryColors } from "./listColors.ts";
+import { addItemCopy } from "./listCopy.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
@@ -179,7 +182,7 @@ const EmptyItems = ({
     <View style={homeStyles.empty}>
       <Text style={homeStyles.emptyText}>{HOME_COPY.emptyItems}</Text>
       <View style={emptyStyles.kitsSection}>
-        <Text style={emptyStyles.kitsTitle}>{EMPTY_COPY.quickStart}</Text>
+        <Text style={emptyStyles.kitsTitle}>{homeCopy.quickStart}</Text>
         <View style={emptyStyles.kitsList}>
           {PACKING_KITS.map((kit) => (
             <Pressable
@@ -192,14 +195,14 @@ const EmptyItems = ({
               <View style={emptyStyles.kitChipContent}>
                 <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
                 <Text style={emptyStyles.kitChipCount}>
-                  {EMPTY_COPY.itemCount.replace("{count}", String(kit.items.length))}
+                  {i18next.t("home.kitPickerItemCount", { count: kit.items.length })}
                 </Text>
               </View>
             </Pressable>
           ))}
         </View>
         <Pressable onPress={onBrowseKits} disabled={addingKitId !== null}>
-          <Text style={emptyStyles.browseLink}>{EMPTY_COPY.browseKits}</Text>
+          <Text style={emptyStyles.browseLink}>{addItemCopy.browseKits}</Text>
         </Pressable>
       </View>
     </View>
@@ -207,17 +210,9 @@ const EmptyItems = ({
 };
 const FilteredEmpty = () => (
   <View style={homeStyles.empty}>
-    <Text style={homeStyles.emptyText}>{FILTERED_COPY.noMatch}</Text>
+    <Text style={homeStyles.emptyText}>{filterCopy.noMatch}</Text>
   </View>
 );
-
-const FILTERED_COPY = { noMatch: "No items match the current filters." };
-
-const EMPTY_COPY = {
-  quickStart: "Quick start with a Packing Kit:",
-  browseKits: "Browse Packing Kits",
-  itemCount: "{count} items",
-};
 
 const emptyStyles = StyleSheet.create({
   kitsSection: {

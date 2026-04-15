@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
@@ -139,6 +140,8 @@ export const HomeHeader = ({
     onProfile?.();
   };
 
+  const { t } = useTranslation();
+
   return (
     <View style={headerLocalStyles.wrapper}>
       <View style={headerLocalStyles.header}>
@@ -159,7 +162,12 @@ export const HomeHeader = ({
         <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} showBadge={!isSubscribed} />
       </View>
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-      <PageSheet visible={profileVisible} title="Profile" onClose={() => setProfileVisible(false)}>
+      <PageSheet
+        visible={profileVisible}
+        title={t("profile.title")}
+        onClose={() => setProfileVisible(false)}
+        scrollable={false}
+      >
         <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
       </PageSheet>
     </View>

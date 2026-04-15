@@ -14,12 +14,14 @@ import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils.ts";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
+import { commonCopy } from "../home/copy.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
 import { NameEditor } from "./NameEditor.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
+import { profileCopy } from "./profileCopy.ts";
 import { SubscriptionSection } from "./SubscriptionSection.tsx";
 
 type ProfileScreenProps = {
@@ -29,20 +31,8 @@ type ProfileScreenProps = {
   embeddedInSheet?: boolean;
 };
 
-const COPY = {
-  title: "Profile",
-  imageTitle: "Profile image",
-  signOut: "Sign Out",
-  changePhoto: "Change Photo",
-  addPhoto: "Add Photo",
-  removePhoto: "Remove",
-};
-
 const PICKER_OPEN_DELAY_MS = 250;
 const MODAL_TRANSITION_DELAY_MS = 280;
-const PHOTO_OPTION = "Choose Photo";
-const EMOJI_OPTION = "Choose Emoji";
-const CANCEL_OPTION = "Cancel";
 
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
@@ -72,7 +62,7 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
 };
 
 const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
-  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" flex />
+  <Button label={profileCopy.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" flex />
 );
 
 export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
@@ -128,7 +118,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         visible={viewerVisible}
         imageUrl={imageUrl}
         placeholderLabel={email.trim()[0]?.toUpperCase() ?? "?"}
-        title={COPY.imageTitle}
+        title={profileCopy.imageTitle}
         connectedLabel={email}
         showRemove={Boolean(imageUrl)}
         loading={handlers.loading}
@@ -176,7 +166,7 @@ const useImageHandlers = (userId: string | undefined) => {
     if (!userId) return false;
     if (Platform.OS !== "ios") return pickPhoto();
     return new Promise<boolean>((resolve) => {
-      const options = [PHOTO_OPTION, EMOJI_OPTION, CANCEL_OPTION];
+      const options = [profileCopy.choosePhoto, profileCopy.chooseEmoji, commonCopy.cancel];
       ActionSheetIOS.showActionSheetWithOptions({ options, cancelButtonIndex: options.length - 1 }, (index) => {
         if (index === 0) {
           void pickPhoto().then(resolve);
@@ -215,7 +205,7 @@ const Header = ({ onBack }: { onBack: () => void }) => (
     <Pressable style={styles.backButton} onPress={onBack} hitSlop={8}>
       <Text style={styles.backText}>← Back</Text>
     </Pressable>
-    <Text style={styles.title}>{COPY.title}</Text>
+    <Text style={styles.title}>{profileCopy.title}</Text>
     <View style={styles.placeholder} />
   </View>
 );

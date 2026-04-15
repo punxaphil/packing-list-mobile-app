@@ -1,8 +1,10 @@
+import i18next from "i18next";
 import { useEffect, useRef } from "react";
 import { Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { Button } from "../shared/Button.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
+import { filterCopy } from "./copy.ts";
 import { CategorySection, MemberSection } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import { StatusSection } from "./StatusSection.tsx";
@@ -43,9 +45,9 @@ export const FilterSheet = (props: FilterSheetProps) => {
     return (
       <PageSheet
         visible={props.visible}
-        title="Filters"
+        title={filterCopy.title}
         onClose={props.onClose}
-        confirmLabel="Done"
+        confirmLabel={filterCopy.done}
         onConfirm={props.onClose}
         scrollable={false}
       >
@@ -101,12 +103,10 @@ type SheetHeaderProps = {
 
 const SheetHeader = ({ count, onClear, shownCount, totalItemCount, iosSheet = false }: SheetHeaderProps) => (
   <View style={iosSheet ? styles.sheetHeader : styles.header}>
-    <Text style={styles.itemCount}>
-      {shownCount} items showing (of {totalItemCount})
-    </Text>
+    <Text style={styles.itemCount}>{i18next.t("filter.itemsShowing", { shownCount, totalItemCount })}</Text>
     {count > 0 && (
       <Pressable onPress={onClear} hitSlop={8}>
-        <Text style={styles.clearText}>Clear ({count})</Text>
+        <Text style={styles.clearText}>{i18next.t("filter.clear", { count })}</Text>
       </Pressable>
     )}
   </View>
@@ -144,5 +144,5 @@ const FilterContent = ({
 );
 
 const DoneButton = ({ onPress }: { onPress: () => void }) => (
-  <Button variant="primary" label="Done" onPress={onPress} />
+  <Button variant="primary" label={filterCopy.done} onPress={onPress} />
 );

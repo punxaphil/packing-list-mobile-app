@@ -1,4 +1,5 @@
 import { type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -28,34 +29,40 @@ type EntitySectionProps = {
   containerStyle: object;
 };
 
-export const CategorySection = ({ categories, selectedCategories, onToggle, scrollRef }: CategorySectionProps) => (
-  <EntitySection
-    title="Categories"
-    emptyText="No categories in list"
-    entities={categories}
-    selectedIds={selectedCategories}
-    onToggle={onToggle}
-    scrollRef={scrollRef}
-    containerStyle={styles.categorySection}
-  />
-);
+export const CategorySection = ({ categories, selectedCategories, onToggle, scrollRef }: CategorySectionProps) => {
+  const { t } = useTranslation();
+  return (
+    <EntitySection
+      title={t("filterSection.categories")}
+      emptyText={t("filterSection.noCategories")}
+      entities={categories}
+      selectedIds={selectedCategories}
+      onToggle={onToggle}
+      scrollRef={scrollRef}
+      containerStyle={styles.categorySection}
+    />
+  );
+};
 
 export const MemberSection = ({
   members,
   selectedMembers,
   onToggle,
   scrollRef,
-}: MemberSectionProps & { scrollRef: RefObject<ScrollView | null> }) => (
-  <EntitySection
-    title="Members"
-    emptyText="No members in list"
-    entities={members}
-    selectedIds={selectedMembers}
-    onToggle={onToggle}
-    scrollRef={scrollRef}
-    containerStyle={styles.memberSection}
-  />
-);
+}: MemberSectionProps & { scrollRef: RefObject<ScrollView | null> }) => {
+  const { t } = useTranslation();
+  return (
+    <EntitySection
+      title={t("filterSection.members")}
+      emptyText={t("filterSection.noMembers")}
+      entities={members}
+      selectedIds={selectedMembers}
+      onToggle={onToggle}
+      scrollRef={scrollRef}
+      containerStyle={styles.memberSection}
+    />
+  );
+};
 
 const EntitySection = ({
   title,

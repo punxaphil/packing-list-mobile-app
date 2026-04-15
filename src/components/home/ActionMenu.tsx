@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Modal, Pressable, Text, View } from "react-native";
 import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
+import { commonCopy } from "./copy.ts";
 import { homeColors } from "./theme.ts";
 
 type ActionMenuItem = {
@@ -87,6 +88,6 @@ const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void
 
 const CancelButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable style={styles.cancelItem} onPress={onPress}>
-    <Text style={styles.cancelText}>Cancel</Text>
+    <Text style={styles.cancelText}>{commonCopy.cancel}</Text>
   </Pressable>
 );

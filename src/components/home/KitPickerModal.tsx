@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { useCallback, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -5,6 +6,7 @@ import { PACKING_KITS, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
+import { commonCopy, homeCopy } from "./copy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type KitPickerModalProps = {
@@ -13,13 +15,7 @@ type KitPickerModalProps = {
   onAdd: (kits: PackingKit[]) => void;
 };
 
-const COPY = {
-  title: "Packing Kits",
-  subtitle: "Add pre-made items to your list",
-  add: "Add to List",
-  cancel: "Cancel",
-  items: "items",
-};
+const kitItemCount = (count: number) => i18next.t("home.kitPickerItemCount", { count });
 
 export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -49,13 +45,13 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
     return (
       <PageSheet
         visible={visible}
-        title={COPY.title}
+        title={homeCopy.kitPickerTitle}
         onClose={handleClose}
-        confirmLabel={COPY.add}
+        confirmLabel={homeCopy.kitPickerAdd}
         onConfirm={handleAdd}
         confirmDisabled={selected.size === 0}
       >
-        <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+        <Text style={styles.subtitle}>{homeCopy.kitPickerSubtitle}</Text>
         <ScrollView style={styles.list}>
           {PACKING_KITS.map((kit) => (
             <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} iosSheet />
@@ -68,19 +64,19 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
   return (
     <DialogShell
       visible={visible}
-      title={COPY.title}
+      title={homeCopy.kitPickerTitle}
       onClose={handleClose}
       actions={
         <DialogActions
-          cancelLabel={COPY.cancel}
-          confirmLabel={COPY.add}
+          cancelLabel={commonCopy.cancel}
+          confirmLabel={homeCopy.kitPickerAdd}
           onCancel={handleClose}
           onConfirm={handleAdd}
           disabled={selected.size === 0}
         />
       }
     >
-      <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+      <Text style={styles.subtitle}>{homeCopy.kitPickerSubtitle}</Text>
       <ScrollView style={styles.list}>
         {PACKING_KITS.map((kit) => (
           <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
@@ -103,9 +99,7 @@ const KitRow = ({ kit, checked, onToggle, iosSheet = false }: KitRowProps) => (
     <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primaryStrong : homeColors.muted} />
     <View style={styles.kitInfo}>
       <Text style={styles.kitName}>{kit.name}</Text>
-      <Text style={styles.kitCount}>
-        {kit.items.length} {COPY.items}
-      </Text>
+      <Text style={styles.kitCount}>{kitItemCount(kit.items.length)}</Text>
     </View>
   </Pressable>
 );

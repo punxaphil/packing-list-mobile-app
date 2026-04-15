@@ -30,5 +30,3 @@ export const homeSpacing = {
 export const homeRadius = 12;
 export const CHECKBOX_SIZE = 20;
 export const TAB_BAR_HEIGHT = 90;
-
-export const homeEmptyStateCopy = "No packing lists yet.";

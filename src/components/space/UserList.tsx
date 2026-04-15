@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Alert, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
@@ -58,28 +59,31 @@ const UserSection = ({ title, children }: { title: string; children: React.React
 
 type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemove: () => void; canRemove: boolean };
 
-const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps) => (
-  <View style={styles.row}>
-    <View style={styles.avatar}>
-      {getEmojiValue(imageUrl) ? (
-        <Text style={styles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
-      ) : imageUrl ? (
-        <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
-      ) : (
-        <Text style={styles.avatarText}>{email[0]?.toUpperCase() ?? "?"}</Text>
+const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps) => {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.row}>
+      <View style={styles.avatar}>
+        {getEmojiValue(imageUrl) ? (
+          <Text style={styles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
+        ) : imageUrl ? (
+          <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
+        ) : (
+          <Text style={styles.avatarText}>{email[0]?.toUpperCase() ?? "?"}</Text>
+        )}
+      </View>
+      <Text style={styles.email} numberOfLines={1}>
+        {email}
+        {isSelf ? t("userList.youSuffix") : ""}
+      </Text>
+      {canRemove && !isSelf && (
+        <Pressable onPress={onRemove} hitSlop={8}>
+          <Text style={styles.removeText}>{SPACE_MGMT_COPY.remove}</Text>
+        </Pressable>
       )}
     </View>
-    <Text style={styles.email} numberOfLines={1}>
-      {email}
-      {isSelf ? " (you)" : ""}
-    </Text>
-    {canRemove && !isSelf && (
-      <Pressable onPress={onRemove} hitSlop={8}>
-        <Text style={styles.removeText}>{SPACE_MGMT_COPY.remove}</Text>
-      </Pressable>
-    )}
-  </View>
-);
+  );
+};
 
 const confirmRemove = (email: string, onRemove: (email: string) => void) => {
   Alert.alert(SPACE_MGMT_COPY.confirmRemove, email, [

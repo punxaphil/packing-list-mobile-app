@@ -1,4 +1,4 @@
-import { homeEmptyStateCopy } from "./theme.ts";
+import { translatedCopy } from "~/i18n/translatedCopy.ts";
 
 type HomeCopy = {
   rename: string;
@@ -54,74 +54,37 @@ type HomeCopy = {
   duplicateListName: string;
   duplicateCopyToList: string;
   duplicateCopyToListTitle: string;
-  templateHasCheckedTitle: string;
-  templateHasCheckedMessage: string;
   deleteCategoryQuestionTitle: string;
   deleteCategoryQuestionMessage: string;
   keepCategory: string;
   deleteCategoryAction: string;
   withoutMembers: string;
+  reminderErrorTitle: string;
+  reminderErrorMessage: string;
+  kitPickerTitle: string;
+  kitPickerSubtitle: string;
+  kitPickerAdd: string;
+  kitPickerItemCount: string;
+  quickStart: string;
 };
 
-export const homeCopy: HomeCopy = {
-  rename: "Rename",
-  unknownUser: "Unknown user",
-  signOutTitle: "Sign out?",
-  signOutMessage: "Sign out as",
-  signOutCancel: "Stay signed in",
-  signOutConfirm: "Sign out",
-  loading: "Loading...",
-  itemsLoading: "Loading items...",
-  empty: homeEmptyStateCopy,
-  emptyItems: "No items in this list.",
-  listHeader: "Your Packing Lists",
-  detailHeader: "Packing Items",
-  back: "< Back",
-  avatarFallback: "?",
-  addItem: "Add item",
-  addItemQuick: "Add item...",
-  addItemPrompt: "Add a packing item",
-  addItemConfirm: "Add",
-  addItemPlaceholder: "Travel adapter",
-  deleteItem: "Remove item",
-  newItem: "New item",
-  listNoItems: "No items",
-  itemSingular: "item",
-  itemPlural: "items",
-  packedSingular: "packed",
-  packedPlural: "packed",
-  createList: "Create new Packing List",
-  deleteList: "Delete packing list",
-  deleteListAction: "Delete",
-  cancel: "Cancel",
-  createListPrompt: "Name your new packing list",
-  createListConfirm: "Create",
-  createListPlaceholder: "Summer getaway",
-  renameListPrompt: "Rename packing list",
-  renameListConfirm: "Save",
-  renameItemPrompt: "Rename item",
-  renameCategoryPrompt: "Rename category",
-  deleteConfirmTitle: "Delete this list?",
-  deleteConfirmMessage: 'Delete "{name}"? This removes the list and its items.',
-  deleteIcon: "\u{1F5D1}",
-  dragHandleLabel: "Drag handle",
-  useTemplateTitle: "Use template?",
-  useTemplateMessage: "Create this list with items from your template?",
-  useTemplateYes: "Yes, use template",
-  useTemplateNo: "No, start empty",
-  categoryMenuAddItem: "Add Item",
-  categoryMenuSortAlpha: "Sort Alphabetically",
-  categoryMenuDeleteItems: "Delete All Items",
-  duplicateItemName: "Item with this name already exists in category",
-  duplicateCategoryName: "A category with this name already exists",
-  duplicateListName: "A list with this name already exists",
-  duplicateCopyToList: '"{name}" already exists in that list',
-  duplicateCopyToListTitle: "Duplicate Item",
-  templateHasCheckedTitle: "Checked items",
-  templateHasCheckedMessage: "Uncheck all items before setting this list as a template.",
-  deleteCategoryQuestionTitle: "Delete category?",
-  deleteCategoryQuestionMessage: '"{name}" will be empty after removing this item. Delete the category too?',
-  keepCategory: "Keep category",
-  deleteCategoryAction: "Delete category",
-  withoutMembers: "Without members",
-} as const;
+export const homeCopy = translatedCopy<HomeCopy>("home");
+
+type CommonCopy = {
+  cancel: string;
+  pickImage: string;
+  removeImage: string;
+  useText: string;
+};
+
+export const commonCopy = translatedCopy<CommonCopy>("common");
+
+type FilterCopy = {
+  title: string;
+  done: string;
+  itemsShowing: string;
+  clear: string;
+  noMatch: string;
+};
+
+export const filterCopy = translatedCopy<FilterCopy>("filter");
