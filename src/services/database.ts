@@ -16,6 +16,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { ArrayError } from "~/types/ArrayError.ts";
+import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -136,6 +137,42 @@ async function deletePackItemsForList(
   }
 }
 
+async function assertUniqueEntityName(
+  spaceId: string,
+  collKey: string,
+  name: string,
+  excludeId?: string,
+) {
+  const existing = fromQueryResult<NamedEntity>(
+    await getDocs(spaceColl(spaceId, collKey)),
+  );
+  const lower = name.trim().toLowerCase();
+  const dup = existing.find(
+    (e) => e.name.toLowerCase() === lower && e.id !== excludeId,
+  );
+  if (dup) throw new DuplicateNameError(name);
+}
+
+async function assertUniqueItemName(
+  spaceId: string,
+  name: string,
+  category: string,
+  packingList: string,
+  excludeId?: string,
+) {
+  const q = query(
+    spaceColl(spaceId, PACK_ITEMS_KEY),
+    where("packingList", "==", packingList),
+    where("category", "==", category),
+  );
+  const items = fromQueryResult<PackItem>(await getDocs(q));
+  const lower = name.trim().toLowerCase();
+  const dup = items.find(
+    (i) => i.name.toLowerCase() === lower && i.id !== excludeId,
+  );
+  if (dup) throw new DuplicateNameError(name);
+}
+
 export function createWriteDb(spaceId: string) {
   const db = {
     addPackItem: async (
@@ -145,6 +182,7 @@ export function createWriteDb(spaceId: string) {
       packingList: string,
       rank: number,
     ): Promise<PackItem> => {
+      await assertUniqueItemName(spaceId, name, category, packingList);
       const ref = await add(spaceId, PACK_ITEMS_KEY, {
         name,
         members,
@@ -176,20 +214,46 @@ export function createWriteDb(spaceId: string) {
       await batch.commit();
     },
     addMember: async (name: string, rank = 0): Promise<NamedEntity> => {
+      await assertUniqueEntityName(spaceId, MEMBERS_KEY, name);
       const ref = await add(spaceId, MEMBERS_KEY, { name, rank });
       return { id: ref.id, name, rank };
     },
     updateMembers: async (toUpdate: NamedEntity[] | NamedEntity) => {
+      if (!Array.isArray(toUpdate)) {
+        await assertUniqueEntityName(
+          spaceId,
+          MEMBERS_KEY,
+          toUpdate.name,
+          toUpdate.id,
+        );
+      }
       await updateNamedEntities(spaceId, MEMBERS_KEY, toUpdate);
     },
     addCategory: async (name: string, rank = 0): Promise<NamedEntity> => {
+      await assertUniqueEntityName(spaceId, CATEGORIES_KEY, name);
       const ref = await add(spaceId, CATEGORIES_KEY, { name, rank });
       return { id: ref.id, name, rank };
     },
     updateCategories: async (categories: NamedEntity[] | NamedEntity) => {
+      if (!Array.isArray(categories)) {
+        await assertUniqueEntityName(
+          spaceId,
+          CATEGORIES_KEY,
+          categories.name,
+          categories.id,
+        );
+      }
       await updateNamedEntities(spaceId, CATEGORIES_KEY, categories);
     },
     updatePackingLists: async (packingLists: NamedEntity[] | NamedEntity) => {
+      if (!Array.isArray(packingLists)) {
+        await assertUniqueEntityName(
+          spaceId,
+          PACKING_LISTS_KEY,
+          packingLists.name,
+          packingLists.id,
+        );
+      }
       await updateNamedEntities(spaceId, PACKING_LISTS_KEY, packingLists);
     },
     addImage: async (
@@ -305,6 +369,7 @@ export function createWriteDb(spaceId: string) {
       return lists.length ? lists[0] : undefined;
     },
     async addPackingList(name: string, rank: number) {
+      await assertUniqueEntityName(spaceId, PACKING_LISTS_KEY, name);
       const ref = await add(spaceId, PACKING_LISTS_KEY, { name, rank });
       return ref.id;
     },
@@ -314,7 +379,13 @@ export function createWriteDb(spaceId: string) {
         ? ({ ...res.data(), id: res.id } as NamedEntity)
         : undefined;
     },
-    updatePackingList(packingList: NamedEntity) {
+    async updatePackingList(packingList: NamedEntity) {
+      await assertUniqueEntityName(
+        spaceId,
+        PACKING_LISTS_KEY,
+        packingList.name,
+        packingList.id,
+      );
       return update(spaceId, PACKING_LISTS_KEY, packingList.id, packingList);
     },
     deletePackingListBatch(id: string, batch: WriteBatch) {
@@ -336,8 +407,16 @@ export function createWriteDb(spaceId: string) {
     ): Promise<void> {
       const items = await db.getPackItemsForList(sourceListId);
       if (items.length === 0) return;
+      const existing = await db.getPackItemsForList(targetListId);
+      const existingKeys = new Set(
+        existing.map((i) => `${i.category}::${i.name.toLowerCase()}`),
+      );
+      const unique = items.filter(
+        (i) => !existingKeys.has(`${i.category}::${i.name.toLowerCase()}`),
+      );
+      if (unique.length === 0) return;
       const batch = writeBatch(firestore);
-      for (const item of items) {
+      for (const item of unique) {
         db.addPackItemBatch(
           batch,
           item.name,

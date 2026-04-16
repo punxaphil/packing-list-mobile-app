@@ -3,6 +3,7 @@ import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
+import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -342,20 +343,29 @@ const useAddItemDialog = (
           const catKey = kitItem.category.toLowerCase();
           let categoryId = categoryMap.get(catKey);
           if (!categoryId) {
-            const newCat = await writeDb.addCategory(
-              kitItem.category,
-              currentCategoryRank++,
-            );
-            categoryId = newCat.id;
-            categoryMap.set(catKey, categoryId);
+            try {
+              const newCat = await writeDb.addCategory(
+                kitItem.category,
+                currentCategoryRank++,
+              );
+              categoryId = newCat.id;
+              categoryMap.set(catKey, categoryId);
+            } catch (e) {
+              if (!(e instanceof DuplicateNameError)) throw e;
+              continue;
+            }
           }
-          await writeDb.addPackItem(
-            kitItem.name,
-            [],
-            categoryId,
-            listId,
-            currentItemRank++,
-          );
+          try {
+            await writeDb.addPackItem(
+              kitItem.name,
+              [],
+              categoryId,
+              listId,
+              currentItemRank++,
+            );
+          } catch (e) {
+            if (!(e instanceof DuplicateNameError)) throw e;
+          }
         }
       }
     },
