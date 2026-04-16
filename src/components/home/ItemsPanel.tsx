@@ -36,7 +36,7 @@ export type AddItemDialogState = {
     itemName: string,
     category: NamedEntity | null,
     newCategoryName: string | null,
-    keepOpen: boolean
+    keepOpen: boolean,
   ) => Promise<NamedEntity>;
   onBrowseKits: () => void;
   kitPickerVisible: boolean;
@@ -54,7 +54,10 @@ export type ListHandlers = {
   onToggleMemberPacked: (item: PackItem, memberId: string) => void;
   onToggleAllMembers: (item: PackItem, checked: boolean) => void;
   onMoveCategory: (item: PackItem, categoryId: string) => void;
-  onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
+  onMoveItemsToCategory: (
+    items: PackItem[],
+    categoryId: string,
+  ) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
 };
@@ -63,6 +66,7 @@ type ItemsPanelProps = ItemsSectionProps &
   ListHandlers & {
     list: NamedEntity;
     displayName: string;
+    listImageUrl?: string;
     renameDialog: TextDialogState;
     addItemDialog: AddItemDialogState;
     filterDialog: FilterDialogState;
@@ -78,8 +82,15 @@ export const ItemsPanel = (props: ItemsPanelProps) => (
 const PanelCard = (props: ItemsPanelProps) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
-    <KeyboardAvoidingView style={homeStyles.panelBody} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
+    <KeyboardAvoidingView
+      style={homeStyles.panelBody}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <QuickAddRow
+        addDialog={props.addItemDialog}
+        filterDialog={props.filterDialog}
+        search={props.search}
+      />
       <ItemsListView {...props} />
     </KeyboardAvoidingView>
     <RenameDialog dialog={props.renameDialog} />
@@ -87,13 +98,20 @@ const PanelCard = (props: ItemsPanelProps) => (
   </View>
 );
 
-const HeaderRow = ({ displayName, email, renameDialog, onProfile }: ItemsPanelProps) => {
+const HeaderRow = ({
+  displayName,
+  email,
+  listImageUrl,
+  renameDialog,
+  onProfile,
+}: ItemsPanelProps) => {
   const { profile } = useSpace();
   return (
     <HomeHeader
       title={displayName}
       email={email}
       profileImageUrl={profile?.imageUrl}
+      leftImageUrl={listImageUrl}
       onPressTitle={renameDialog.open}
       onProfile={onProfile}
     />
@@ -115,12 +133,19 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
   />
 );
 
-const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState, imagesState }: ItemsPanelProps) => (
+const AddItemDialogView = ({
+  addItemDialog,
+  categoriesState,
+  itemsState,
+  imagesState,
+}: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
     initialCategory={addItemDialog.initialCategory}
     categories={categoriesState.categories}
-    categoryImages={imagesState.images.filter((img) => img.type === "categories")}
+    categoryImages={imagesState.images.filter(
+      (img) => img.type === "categories",
+    )}
     items={itemsState.items}
     onCancel={addItemDialog.close}
     onSubmit={addItemDialog.submit}
@@ -150,8 +175,12 @@ const ItemsListView = ({
   onCopyToList,
   onSortCategoryAlpha,
 }: ItemsPanelProps) => {
-  const memberImages = imagesState.images.filter((img) => img.type === "members");
-  const categoryImages = imagesState.images.filter((img) => img.type === "categories");
+  const memberImages = imagesState.images.filter(
+    (img) => img.type === "members",
+  );
+  const categoryImages = imagesState.images.filter(
+    (img) => img.type === "categories",
+  );
   const { isTemplateList } = useTemplate();
   const isTemplate = isTemplateList(selection.selectedId);
   return (

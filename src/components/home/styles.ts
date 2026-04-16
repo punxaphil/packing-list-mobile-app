@@ -100,6 +100,15 @@ export const homeStyles = StyleSheet.create({
     flex: 1,
   },
   listCardBody: { flex: 1 },
+  listImageContainer: {
+    width: 32,
+    height: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+  },
+  listImagePlaceholder: { backgroundColor: "rgba(0,0,0,0.1)" },
+  listImage: { width: 32, height: 32, borderRadius: 16 },
   listDragHandle: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.xs,
