@@ -52,6 +52,8 @@ type HomeCopy = {
   duplicateItemName: string;
   duplicateCategoryName: string;
   duplicateListName: string;
+  duplicateCopyToList: string;
+  duplicateCopyToListTitle: string;
   withoutMembers: string;
 };
 
@@ -107,5 +109,7 @@ export const homeCopy: HomeCopy = {
   duplicateItemName: "Item with this name already exists in category",
   duplicateCategoryName: "A category with this name already exists",
   duplicateListName: "A list with this name already exists",
+  duplicateCopyToList: '"{name}" already exists in that list',
+  duplicateCopyToListTitle: "Duplicate Item",
   withoutMembers: "Without members",
 } as const;
