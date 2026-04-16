@@ -1,9 +1,23 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Alert } from "react-native";
 import { SPACE_MGMT_COPY } from "~/components/space/spaceMgmtCopy.ts";
-import { useActiveSpaceId, useSpaceActions, useUserProfile } from "~/hooks/useSpaces.ts";
+import {
+  useActiveSpaceId,
+  useSpaceActions,
+  useUserProfile,
+} from "~/hooks/useSpaces.ts";
 import { createWriteDb } from "~/services/database.ts";
-import { ensureUserMemberId, subscribeToSpaces } from "~/services/spaceDatabase.ts";
+import {
+  ensureUserMemberId,
+  subscribeToSpaces,
+} from "~/services/spaceDatabase.ts";
 import type { Space } from "~/types/Space.ts";
 import { SpaceContext } from "./SpaceContext.ts";
 
@@ -24,18 +38,24 @@ export function SpaceProvider({ userId, email, children }: Props) {
     return subscribeToSpaces(ids, setSpaces);
   }, [spaceIdsKey]);
 
-  const activeSpace = useMemo(() => spaces.find((s) => s.id === spaceId), [spaces, spaceId]);
+  const activeSpace = useMemo(
+    () => spaces.find((s) => s.id === spaceId),
+    [spaces, spaceId],
+  );
 
   const handleRemoval = useCallback(
     (fallback: string, name?: string) => {
       switchSpace(fallback);
       if (suppressRemovalAlert.current) {
         suppressRemovalAlert.current = false;
-      } else {
-        Alert.alert(SPACE_MGMT_COPY.removedTitle, SPACE_MGMT_COPY.removedMessage(name ?? ""));
+      } else if (name) {
+        Alert.alert(
+          SPACE_MGMT_COPY.removedTitle,
+          SPACE_MGMT_COPY.removedMessage(name),
+        );
       }
     },
-    [switchSpace]
+    [switchSpace],
   );
 
   useEffect(() => {
@@ -45,14 +65,30 @@ export function SpaceProvider({ userId, email, children }: Props) {
     if (profile.spaceIds.includes(spaceId)) return;
     const fallback = profile.spaceIds[0] ?? profile.personalSpaceId;
     handleRemoval(fallback, activeSpace?.name);
-  }, [profile?.spaceIds, spaceId, profile?.personalSpaceId, handleRemoval, activeSpace?.name]);
+  }, [
+    profile?.spaceIds,
+    spaceId,
+    profile?.personalSpaceId,
+    handleRemoval,
+    activeSpace?.name,
+  ]);
 
   useEffect(() => {
     if (!activeSpace || activeSpace.members.includes(userId)) return;
-    const fallback = profile?.spaceIds?.find((id) => id !== spaceId) ?? profile?.personalSpaceId ?? "";
+    const fallback =
+      profile?.spaceIds?.find((id) => id !== spaceId) ??
+      profile?.personalSpaceId ??
+      "";
     if (!fallback) return;
     handleRemoval(fallback, activeSpace.name);
-  }, [activeSpace, userId, profile?.spaceIds, profile?.personalSpaceId, spaceId, handleRemoval]);
+  }, [
+    activeSpace,
+    userId,
+    profile?.spaceIds,
+    profile?.personalSpaceId,
+    spaceId,
+    handleRemoval,
+  ]);
 
   useEffect(() => {
     if (!spaceId || !email) return;
@@ -68,7 +104,7 @@ export function SpaceProvider({ userId, email, children }: Props) {
 
   const handleCreate = useCallback(
     (name: string) => createNewSpace(name, userId, email),
-    [createNewSpace, userId, email]
+    [createNewSpace, userId, email],
   );
 
   const value = useMemo(
@@ -82,10 +118,12 @@ export function SpaceProvider({ userId, email, children }: Props) {
       createNewSpace: handleCreate,
       suppressRemovalAlert,
     }),
-    [spaceId, spaces, activeSpace, profile, writeDb, switchSpace, handleCreate]
+    [spaceId, spaces, activeSpace, profile, writeDb, switchSpace, handleCreate],
   );
 
   if (!spaceId) return null;
 
-  return <SpaceContext.Provider value={value}>{children}</SpaceContext.Provider>;
+  return (
+    <SpaceContext.Provider value={value}>{children}</SpaceContext.Provider>
+  );
 }
