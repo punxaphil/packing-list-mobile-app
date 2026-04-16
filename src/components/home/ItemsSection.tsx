@@ -272,12 +272,30 @@ const useAddItemDialog = (
   const [lastSelectedCategoryId, setLastSelectedCategoryId] = useState(
     UNCATEGORIZED.id,
   );
+  const hasUncategorizedItems = useMemo(
+    () => items.some((i) => !i.category),
+    [items],
+  );
+  const firstUsedCategory = useMemo(() => {
+    const usedIds = new Set(items.map((i) => i.category).filter(Boolean));
+    return categories.find((c) => usedIds.has(c.id));
+  }, [items, categories]);
   const resolveCategory = useCallback(
-    (category?: NamedEntity) =>
-      category ??
-      categories.find((entry) => entry.id === lastSelectedCategoryId) ??
-      UNCATEGORIZED,
-    [categories, lastSelectedCategoryId],
+    (category?: NamedEntity) => {
+      const resolved =
+        category ??
+        categories.find((entry) => entry.id === lastSelectedCategoryId);
+      if (resolved) return resolved;
+      return !hasUncategorizedItems && firstUsedCategory
+        ? firstUsedCategory
+        : UNCATEGORIZED;
+    },
+    [
+      categories,
+      lastSelectedCategoryId,
+      hasUncategorizedItems,
+      firstUsedCategory,
+    ],
   );
   const open = useCallback(
     (category?: NamedEntity) => {
