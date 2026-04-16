@@ -1,4 +1,9 @@
-import { collection, getFirestore, onSnapshot, QuerySnapshot } from "firebase/firestore";
+import {
+  collection,
+  getFirestore,
+  onSnapshot,
+  QuerySnapshot,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { getPackItemChecked } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -7,8 +12,8 @@ type CountEntry = { total: number; packed: number };
 export type PackItemCountRecord = Record<string, CountEntry>;
 type CountState = { counts: PackItemCountRecord; loading: boolean };
 
-const SPACES_COLLECTION = "spaces";
-const PACK_ITEMS_COLLECTION = "packItems";
+const SPACES = "spaces";
+const PACK_ITEMS = "packItems";
 const createInitialState = (): CountState => ({ counts: {}, loading: true });
 const createEmptyState = (): CountState => ({ counts: {}, loading: false });
 const mapSnapshot = (snapshot: QuerySnapshot) =>
@@ -24,14 +29,27 @@ const sumCounts = (items: PackItem[]): PackItemCountRecord => {
   }
   return counts;
 };
-const handleSnapshot = (setState: (value: CountState) => void) => (snapshot: QuerySnapshot) => {
-  setState({ counts: sumCounts(mapSnapshot(snapshot)), loading: false });
-};
-const handleError = (setState: (value: CountState) => void) => () => setState(createEmptyState());
-const buildQuery = (spaceId: string) => collection(getFirestore(), SPACES_COLLECTION, spaceId, PACK_ITEMS_COLLECTION);
-const subscribeToCounts = (spaceId: string, setState: (value: CountState) => void) =>
-  onSnapshot(buildQuery(spaceId), handleSnapshot(setState), handleError(setState));
-const manageSubscription = (spaceId: string | null | undefined, setState: (value: CountState) => void) => {
+const handleSnapshot =
+  (setState: (value: CountState) => void) => (snapshot: QuerySnapshot) => {
+    setState({ counts: sumCounts(mapSnapshot(snapshot)), loading: false });
+  };
+const handleError = (setState: (value: CountState) => void) => () =>
+  setState(createEmptyState());
+const buildQuery = (spaceId: string) =>
+  collection(getFirestore(), SPACES, spaceId, PACK_ITEMS);
+const subscribeToCounts = (
+  spaceId: string,
+  setState: (value: CountState) => void,
+) =>
+  onSnapshot(
+    buildQuery(spaceId),
+    handleSnapshot(setState),
+    handleError(setState),
+  );
+const manageSubscription = (
+  spaceId: string | null | undefined,
+  setState: (value: CountState) => void,
+) => {
   if (!spaceId) {
     setState(createEmptyState());
     return undefined;
