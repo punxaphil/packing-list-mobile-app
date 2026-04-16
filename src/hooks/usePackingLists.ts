@@ -1,6 +1,14 @@
 import { getAuth } from "firebase/auth";
-import { collection, getFirestore, onSnapshot, orderBy, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  QuerySnapshot,
+  query,
+  Unsubscribe,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { firestore } from "~/services/firebase.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 type HookState = { lists: NamedEntity[]; loading: boolean };
@@ -29,12 +37,15 @@ function createEmptyState(): HookState {
 
 function mapSnapshot(snapshot: QuerySnapshot): NamedEntity[] {
   return snapshot.docs.map((item) => ({
-    id: item.id,
     ...item.data(),
+    id: item.id,
   })) as NamedEntity[];
 }
 
-function createSnapshotHandler(spaceId: string, setState: (value: HookState) => void) {
+function createSnapshotHandler(
+  spaceId: string,
+  setState: (value: HookState) => void,
+) {
   return (snapshot: QuerySnapshot) => {
     const lists = mapSnapshot(snapshot);
     logInfo("Loaded packing lists", { spaceId, count: lists.length });
@@ -42,10 +53,16 @@ function createSnapshotHandler(spaceId: string, setState: (value: HookState) => 
   };
 }
 
-function createErrorHandler(spaceId: string, setState: (value: HookState) => void) {
+function createErrorHandler(
+  spaceId: string,
+  setState: (value: HookState) => void,
+) {
   return (error: unknown) => {
     const isSignedOut = !getAuth().currentUser;
-    const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
+    const code =
+      typeof error === "object" && error !== null && "code" in error
+        ? error.code
+        : undefined;
     const isPermissionDenied = code === "permission-denied";
     if (isSignedOut && isPermissionDenied) {
       setState(createEmptyState());
@@ -58,16 +75,19 @@ function createErrorHandler(spaceId: string, setState: (value: HookState) => voi
 
 function buildQuery(spaceId: string) {
   return query(
-    collection(getFirestore(), SPACES_COLLECTION, spaceId, PACKING_LISTS_COLLECTION),
-    orderBy(ORDER_FIELD, "desc")
+    collection(firestore, SPACES_COLLECTION, spaceId, PACKING_LISTS_COLLECTION),
+    orderBy(ORDER_FIELD, "desc"),
   );
 }
 
-function subscribeToLists(spaceId: string, setState: (value: HookState) => void) {
+function subscribeToLists(
+  spaceId: string,
+  setState: (value: HookState) => void,
+) {
   return onSnapshot(
     buildQuery(spaceId),
     createSnapshotHandler(spaceId, setState),
-    createErrorHandler(spaceId, setState)
+    createErrorHandler(spaceId, setState),
   );
 }
 
@@ -77,14 +97,22 @@ function unsubscribeMissingUser(setState: (value: HookState) => void) {
   return NOOP_UNSUBSCRIBE;
 }
 
-function createSubscription(spaceId: string, setState: (value: HookState) => void) {
+function createSubscription(
+  spaceId: string,
+  setState: (value: HookState) => void,
+) {
   logInfo("Subscribing to packing lists", { spaceId });
   setState(createInitialState());
   return subscribeToLists(spaceId, setState) ?? NOOP_UNSUBSCRIBE;
 }
 
-function manageSubscription(spaceId: string | null | undefined, setState: (value: HookState) => void) {
-  return spaceId ? createSubscription(spaceId, setState) : unsubscribeMissingUser(setState);
+function manageSubscription(
+  spaceId: string | null | undefined,
+  setState: (value: HookState) => void,
+) {
+  return spaceId
+    ? createSubscription(spaceId, setState)
+    : unsubscribeMissingUser(setState);
 }
 
 function buildResult(state: HookState) {

@@ -1,5 +1,6 @@
-import { collection, getFirestore, onSnapshot, type QuerySnapshot } from "firebase/firestore";
+import { collection, onSnapshot, type QuerySnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { firestore } from "~/services/firebase.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { PackItem } from "~/types/PackItem.ts";
 
@@ -21,7 +22,7 @@ export const useMemberItemCounts = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    const ref = collection(getFirestore(), SPACES, spaceId, PACK_ITEMS);
+    const ref = collection(firestore, SPACES, spaceId, PACK_ITEMS);
     return onSnapshot(ref, (snap) => setCounts(computeCounts(snap)));
   }, [spaceId]);
 

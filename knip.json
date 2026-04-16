@@ -1,7 +1,12 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": ["babel.config.js"],
+  "ignore": ["babel.config.js", "scripts/**"],
   "entry": ["src/**/*.test.ts"],
   "ignoreBinaries": ["lsof", "awk", "xcrun"],
-  "ignoreDependencies": ["@babel/core", "@types/hoist-non-react-statics", "@types/lodash", "@types/prop-types"]
+  "ignoreDependencies": [
+    "@babel/core",
+    "@types/hoist-non-react-statics",
+    "@types/lodash",
+    "@types/prop-types"
+  ]
 }

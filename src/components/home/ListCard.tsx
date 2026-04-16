@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
@@ -42,9 +42,13 @@ export const ListCard = (props: ListCardProps) => {
       onMove: props.onDragMove,
       onEnd: props.onDragEnd,
     },
-    { applyTranslation: false }
+    { applyTranslation: false },
   );
-  const rename = useRenameDialog(props.list, props.lists, props.actions.onRename);
+  const rename = useRenameDialog(
+    props.list,
+    props.lists,
+    props.actions.onRename,
+  );
   const summary = formatSummary(props.list);
   const isTemplate = props.list.isTemplate === true;
   const isPinned = props.list.pinned === true;
@@ -52,7 +56,8 @@ export const ListCard = (props: ListCardProps) => {
   const canMove = props.spaces.length > 1;
 
   const openDeleteConfirm = () =>
-    showActionSheet(`Delete "${props.list.name}"?`, [
+    Alert.alert(`Delete "${props.list.name}"?`, undefined, [
+      { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
@@ -60,7 +65,8 @@ export const ListCard = (props: ListCardProps) => {
       },
     ]);
   const openUncheckConfirm = () =>
-    showActionSheet(`Uncheck all items in "${props.list.name}"?`, [
+    Alert.alert(`Uncheck all items in "${props.list.name}"?`, undefined, [
+      { text: "Cancel", style: "cancel" },
       {
         text: "Uncheck All",
         onPress: () => void props.actions.onUncheckAll(props.list),
@@ -74,7 +80,7 @@ export const ListCard = (props: ListCardProps) => {
         .map((s) => ({
           text: s.name,
           onPress: () => props.onMoveToSpace(props.list.id, s.id),
-        }))
+        })),
     );
   const openMenu = () =>
     showActionSheet(
@@ -88,8 +94,8 @@ export const ListCard = (props: ListCardProps) => {
         openDeleteConfirm,
         openUncheckConfirm,
         rename.open,
-        canMove ? openMovePicker : undefined
-      )
+        canMove ? openMovePicker : undefined,
+      ),
     );
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
@@ -106,7 +112,9 @@ export const ListCard = (props: ListCardProps) => {
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
-          {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
+          {isPinned && (
+            <PinButton onPress={() => void props.actions.onUnpin(props.list)} />
+          )}
           <ListMenuButton onPress={openMenu} />
         </View>
       </Pressable>
@@ -129,7 +137,7 @@ export const ListCard = (props: ListCardProps) => {
 const useRenameDialog = (
   list: PackingListSummary,
   lists: PackingListSummary[],
-  onRename: (list: PackingListSummary, name: string) => Promise<void>
+  onRename: (list: PackingListSummary, name: string) => Promise<void>,
 ) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
@@ -142,7 +150,10 @@ const useRenameDialog = (
   const close = () => setVisible(false);
   const getError = (text: string) => {
     const trimmed = text.trim();
-    const isDuplicate = trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
+    const isDuplicate =
+      trimmed &&
+      trimmed !== list.name &&
+      hasDuplicateEntityName(trimmed, lists, list.id);
     return isDuplicate ? HOME_COPY.duplicateListName : null;
   };
   const onChange = (text: string) => {
@@ -202,8 +213,17 @@ const TemplateBadge = () => (
 );
 
 const PinButton = ({ onPress }: { onPress: () => void }) => (
-  <Pressable onPress={onPress} style={homeStyles.pinButton} accessibilityRole="button" accessibilityLabel="Unpin">
-    <MaterialCommunityIcons name="pin-outline" size={18} color={homeColors.muted} />
+  <Pressable
+    onPress={onPress}
+    style={homeStyles.pinButton}
+    accessibilityRole="button"
+    accessibilityLabel="Unpin"
+  >
+    <MaterialCommunityIcons
+      name="pin-outline"
+      size={18}
+      color={homeColors.muted}
+    />
   </Pressable>
 );
 
@@ -228,13 +248,22 @@ const formatSummary = (list: PackingListSummary) => {
   const total = isNumber(list.itemCount) ? list.itemCount : 0;
   const packed = isNumber(list.packedCount) ? list.packedCount : 0;
   if (!total) return HOME_COPY.listNoItems;
-  if (list.isTemplate) return `${total} ${total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural}`;
-  const itemsLabel = total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural;
-  const packedLabel = packed === 1 ? HOME_COPY.packedSingular : HOME_COPY.packedPlural;
+  if (list.isTemplate)
+    return `${total} ${total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural}`;
+  const itemsLabel =
+    total === 1 ? HOME_COPY.itemSingular : HOME_COPY.itemPlural;
+  const packedLabel =
+    packed === 1 ? HOME_COPY.packedSingular : HOME_COPY.packedPlural;
   return `${total} ${itemsLabel} (${packed} ${packedLabel})`;
 };
 
-export const ListCardPreview = ({ list, color }: { list: PackingListSummary; color: string }) => (
+export const ListCardPreview = ({
+  list,
+  color,
+}: {
+  list: PackingListSummary;
+  color: string;
+}) => (
   <View style={[getCardStyle(false, color, false), { flex: 1 }]}>
     <View style={homeStyles.listCardInner}>
       <View style={homeStyles.listDragHandle}>
@@ -250,7 +279,8 @@ export const ListCardPreview = ({ list, color }: { list: PackingListSummary; col
   </View>
 );
 
-const isNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+const isNumber = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
 
 const getCardStyle = (selected: boolean, color: string, archived: boolean) => [
   homeStyles.listCard,
@@ -268,7 +298,7 @@ const buildMenuItems = (
   showDeleteConfirm: () => void,
   showUncheckConfirm: () => void,
   showRename: () => void,
-  showMoveToSpace?: () => void
+  showMoveToSpace?: () => void,
 ) => {
   const items = [];
   items.push({ text: "Rename", onPress: showRename });

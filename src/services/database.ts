@@ -32,8 +32,8 @@ const PACKING_LISTS_KEY = "packingLists";
 
 function fromQueryResult<K>(res: QuerySnapshot) {
   return res.docs.map((d: QueryDocumentSnapshot) => ({
-    id: d.id,
     ...d.data(),
+    id: d.id,
   })) as K[];
 }
 
@@ -45,36 +45,60 @@ function spaceDoc(spaceId: string, sub: string, docId: string) {
   return doc(firestore, SPACES_KEY, spaceId, sub, docId);
 }
 
-async function add<K extends DocumentData>(spaceId: string, sub: string, data: WithFieldValue<K>) {
+async function add<K extends DocumentData>(
+  spaceId: string,
+  sub: string,
+  data: WithFieldValue<K>,
+) {
   const docRef = await addDoc(spaceColl(spaceId, sub), data);
   if (docRef) return docRef;
   throw new Error("Unable to add to database");
 }
 
-async function update<K extends DocumentData>(spaceId: string, sub: string, id: string, data: WithFieldValue<K>) {
-  await updateDoc(doc(spaceColl(spaceId, sub), id), data);
+async function update<K extends DocumentData>(
+  spaceId: string,
+  sub: string,
+  id: string,
+  data: WithFieldValue<K>,
+) {
+  const { id: _, ...rest } = data as DocumentData;
+  await updateDoc(doc(spaceColl(spaceId, sub), id), rest);
 }
 
 async function del(spaceId: string, sub: string, id: string) {
   await deleteDoc(spaceDoc(spaceId, sub, id));
 }
 
-async function updateInBatch<K extends DocumentData>(spaceId: string, sub: string, data: WithFieldValue<K>[]) {
+async function updateInBatch<K extends DocumentData>(
+  spaceId: string,
+  sub: string,
+  data: WithFieldValue<K>[],
+) {
   const batch = writeBatch(firestore);
   const coll = spaceColl(spaceId, sub);
   for (const d of data) {
-    batch.update(doc(coll, d.id), d);
+    const { id: docId, ...rest } = d as DocumentData;
+    batch.update(doc(coll, docId), rest);
   }
   await batch.commit();
 }
 
-function addBatch<K extends DocumentData>(spaceId: string, sub: string, batch: WriteBatch, data: WithFieldValue<K>) {
+function addBatch<K extends DocumentData>(
+  spaceId: string,
+  sub: string,
+  batch: WriteBatch,
+  data: WithFieldValue<K>,
+) {
   const docRef = doc(spaceColl(spaceId, sub));
   batch.set(docRef, data);
   return docRef.id;
 }
 
-async function updateNamedEntities(spaceId: string, sub: string, entities: NamedEntity[] | NamedEntity) {
+async function updateNamedEntities(
+  spaceId: string,
+  sub: string,
+  entities: NamedEntity[] | NamedEntity,
+) {
   if (Array.isArray(entities)) {
     await updateInBatch(spaceId, sub, entities);
   } else {
@@ -82,7 +106,11 @@ async function updateNamedEntities(spaceId: string, sub: string, entities: Named
   }
 }
 
-function throwNamedEntityArrayError(type: string, packItems: PackItem[], packingLists: NamedEntity[]) {
+function throwNamedEntityArrayError(
+  type: string,
+  packItems: PackItem[],
+  packingLists: NamedEntity[],
+) {
   throw new ArrayError([
     `${type} was not deleted. It's in use by the following pack items:`,
     ...packItems.slice(0, 5).map((t) => {
@@ -93,8 +121,15 @@ function throwNamedEntityArrayError(type: string, packItems: PackItem[], packing
   ]);
 }
 
-async function deletePackItemsForList(spaceId: string, listId: string, batch: WriteBatch) {
-  const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("packingList", "==", listId));
+async function deletePackItemsForList(
+  spaceId: string,
+  listId: string,
+  batch: WriteBatch,
+) {
+  const q = query(
+    spaceColl(spaceId, PACK_ITEMS_KEY),
+    where("packingList", "==", listId),
+  );
   const items = fromQueryResult<PackItem>(await getDocs(q));
   for (const item of items) {
     batch.delete(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id));
@@ -108,7 +143,7 @@ export function createWriteDb(spaceId: string) {
       members: MemberPackItem[],
       category: string,
       packingList: string,
-      rank: number
+      rank: number,
     ): Promise<PackItem> => {
       const ref = await add(spaceId, PACK_ITEMS_KEY, {
         name,
@@ -157,7 +192,11 @@ export function createWriteDb(spaceId: string) {
     updatePackingLists: async (packingLists: NamedEntity[] | NamedEntity) => {
       await updateNamedEntities(spaceId, PACKING_LISTS_KEY, packingLists);
     },
-    addImage: async (type: string, typeId: string, url: string): Promise<void> => {
+    addImage: async (
+      type: string,
+      typeId: string,
+      url: string,
+    ): Promise<void> => {
       await add(spaceId, IMAGES_KEY, { type, typeId, url });
     },
     async updateImage(imageId: string, fileUrl: string) {
@@ -176,13 +215,18 @@ export function createWriteDb(spaceId: string) {
     addMemberBatch(member: string, batch: WriteBatch) {
       return addBatch(spaceId, MEMBERS_KEY, batch, { name: member });
     },
-    updatePackItemBatch<K extends DocumentData>(data: WithFieldValue<K>, batch: WriteBatch) {
-      batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, data.id), data);
+    updatePackItemBatch<K extends DocumentData>(
+      data: WithFieldValue<K>,
+      batch: WriteBatch,
+    ) {
+      const { id, ...rest } = data as DocumentData;
+      batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, id), rest);
     },
     async updatePackItemsBatched(items: PackItem[]) {
       const batch = writeBatch(firestore);
       for (const item of items) {
-        batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id), item as DocumentData);
+        const { id, ...rest } = item as DocumentData;
+        batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, id), rest);
       }
       await batch.commit();
     },
@@ -193,7 +237,7 @@ export function createWriteDb(spaceId: string) {
       category: string,
       rank: number,
       packingList: string,
-      checked = false
+      checked = false,
     ) {
       return addBatch(spaceId, PACK_ITEMS_KEY, batch, {
         name,
@@ -204,11 +248,19 @@ export function createWriteDb(spaceId: string) {
         rank,
       });
     },
-    async deleteCategory(id: string, packingLists: NamedEntity[], deleteEvenIfUsed = false) {
-      const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("category", "==", id));
+    async deleteCategory(
+      id: string,
+      packingLists: NamedEntity[],
+      deleteEvenIfUsed = false,
+    ) {
+      const q = query(
+        spaceColl(spaceId, PACK_ITEMS_KEY),
+        where("category", "==", id),
+      );
       const packItems: PackItem[] = fromQueryResult(await getDocs(q));
       if (packItems.length) {
-        if (!deleteEvenIfUsed) throwNamedEntityArrayError("Category", packItems, packingLists);
+        if (!deleteEvenIfUsed)
+          throwNamedEntityArrayError("Category", packItems, packingLists);
         const batch = writeBatch(firestore);
         for (const packItem of packItems) {
           packItem.category = "";
@@ -218,20 +270,28 @@ export function createWriteDb(spaceId: string) {
       }
       await del(spaceId, CATEGORIES_KEY, id);
     },
-    async deleteMember(id: string, packingLists: NamedEntity[], deleteEvenIfUsed = false) {
-      const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("members", "!=", []));
+    async deleteMember(
+      id: string,
+      packingLists: NamedEntity[],
+      deleteEvenIfUsed = false,
+    ) {
+      const q = query(
+        spaceColl(spaceId, PACK_ITEMS_KEY),
+        where("members", "!=", []),
+      );
       let packItems: PackItem[] = fromQueryResult(await getDocs(q));
       packItems = packItems.filter((t) => t.members.find((m) => m.id === id));
       if (packItems.length) {
-        if (!deleteEvenIfUsed) throwNamedEntityArrayError("Member", packItems, packingLists);
+        if (!deleteEvenIfUsed)
+          throwNamedEntityArrayError("Member", packItems, packingLists);
         const batch = writeBatch(firestore);
         for (const packItem of packItems) {
           db.updatePackItemBatch(
             withPackItemMembers(
               packItem,
-              packItem.members.filter((m) => m.id !== id)
+              packItem.members.filter((m) => m.id !== id),
             ),
-            batch
+            batch,
           );
         }
         await batch.commit();
@@ -239,7 +299,9 @@ export function createWriteDb(spaceId: string) {
       await del(spaceId, MEMBERS_KEY, id);
     },
     async getFirstPackingList(): Promise<NamedEntity | undefined> {
-      const lists = fromQueryResult(await getDocs(spaceColl(spaceId, PACKING_LISTS_KEY))) as NamedEntity[];
+      const lists = fromQueryResult(
+        await getDocs(spaceColl(spaceId, PACKING_LISTS_KEY)),
+      ) as NamedEntity[];
       return lists.length ? lists[0] : undefined;
     },
     async addPackingList(name: string, rank: number) {
@@ -248,7 +310,9 @@ export function createWriteDb(spaceId: string) {
     },
     async getPackingList(id: string) {
       const res = await getDoc(spaceDoc(spaceId, PACKING_LISTS_KEY, id));
-      return res.exists() ? ({ id: res.id, ...res.data() } as NamedEntity) : undefined;
+      return res.exists()
+        ? ({ ...res.data(), id: res.id } as NamedEntity)
+        : undefined;
     },
     updatePackingList(packingList: NamedEntity) {
       return update(spaceId, PACKING_LISTS_KEY, packingList.id, packingList);
@@ -260,15 +324,29 @@ export function createWriteDb(spaceId: string) {
       return addBatch(spaceId, PACKING_LISTS_KEY, batch, { name, rank });
     },
     async getPackItemsForList(packingListId: string): Promise<PackItem[]> {
-      const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("packingList", "==", packingListId));
+      const q = query(
+        spaceColl(spaceId, PACK_ITEMS_KEY),
+        where("packingList", "==", packingListId),
+      );
       return fromQueryResult(await getDocs(q)) as PackItem[];
     },
-    async copyPackItemsToList(sourceListId: string, targetListId: string): Promise<void> {
+    async copyPackItemsToList(
+      sourceListId: string,
+      targetListId: string,
+    ): Promise<void> {
       const items = await db.getPackItemsForList(sourceListId);
       if (items.length === 0) return;
       const batch = writeBatch(firestore);
       for (const item of items) {
-        db.addPackItemBatch(batch, item.name, item.members, item.category, item.rank, targetListId, false);
+        db.addPackItemBatch(
+          batch,
+          item.name,
+          item.members,
+          item.category,
+          item.rank,
+          targetListId,
+          false,
+        );
       }
       await batch.commit();
     },
@@ -288,8 +366,12 @@ export function createWriteDb(spaceId: string) {
       }
       await batch.commit();
     },
-    updateCategoryBatch<K extends DocumentData>(data: WithFieldValue<K>, batch: WriteBatch) {
-      batch.update(spaceDoc(spaceId, CATEGORIES_KEY, data.id), data);
+    updateCategoryBatch<K extends DocumentData>(
+      data: WithFieldValue<K>,
+      batch: WriteBatch,
+    ) {
+      const { id, ...rest } = data as DocumentData;
+      batch.update(spaceDoc(spaceId, CATEGORIES_KEY, id), rest);
     },
     getPackItemsForAllPackingLists: async () => {
       const q = query(spaceColl(spaceId, PACK_ITEMS_KEY));
