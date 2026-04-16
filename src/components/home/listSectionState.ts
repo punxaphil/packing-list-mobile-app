@@ -24,7 +24,7 @@ export const useListActions = (
   lists: PackingListSummary[],
   selection: SelectionState,
   templateList: NamedEntity | null,
-  onListSelect?: (id: string) => void
+  onListSelect?: (id: string) => void,
 ): ListActions => {
   const { writeDb } = useSpace();
   return {
@@ -46,7 +46,7 @@ const useAddList = (
   selection: SelectionState,
   templateList: NamedEntity | null,
   writeDb: WriteDb,
-  onListSelect?: (id: string) => void
+  onListSelect?: (id: string) => void,
 ) =>
   useCallback(
     async (name: string, useTemplate: boolean) => {
@@ -63,7 +63,7 @@ const useAddList = (
         selection.select(id);
       }
     },
-    [lists, selection, templateList, writeDb, onListSelect]
+    [lists, selection, templateList, writeDb, onListSelect],
   );
 
 const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
@@ -73,7 +73,7 @@ const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
       await writeDb.deletePackingList(list.id);
       if (selection.selectedId === list.id) selection.clear();
     },
-    [selection, writeDb]
+    [selection, writeDb],
   );
 
 const useRenameList = (writeDb: WriteDb) =>
@@ -81,18 +81,25 @@ const useRenameList = (writeDb: WriteDb) =>
     async (list: PackingListSummary, name: string) => {
       await writeDb.updatePackingList({ ...list, name });
     },
-    [writeDb]
+    [writeDb],
   );
 
-const useSetTemplate = (currentTemplate: NamedEntity | null, writeDb: WriteDb) =>
+const useSetTemplate = (
+  currentTemplate: NamedEntity | null,
+  writeDb: WriteDb,
+) =>
   useCallback(
     async (list: PackingListSummary) => {
       await delay(50);
       animateLayout();
-      if (currentTemplate) await writeDb.updatePackingList({ ...currentTemplate, isTemplate: false });
+      if (currentTemplate)
+        await writeDb.updatePackingList({
+          ...currentTemplate,
+          isTemplate: false,
+        });
       await writeDb.updatePackingList({ ...list, isTemplate: true });
     },
-    [currentTemplate, writeDb]
+    [currentTemplate, writeDb],
   );
 
 const useRemoveTemplate = (writeDb: WriteDb) =>
@@ -102,7 +109,7 @@ const useRemoveTemplate = (writeDb: WriteDb) =>
       animateLayout();
       await writeDb.updatePackingList({ ...list, isTemplate: false });
     },
-    [writeDb]
+    [writeDb],
   );
 
 const usePin = (writeDb: WriteDb) =>
@@ -112,7 +119,7 @@ const usePin = (writeDb: WriteDb) =>
       animateLayout();
       await writeDb.updatePackingList({ ...list, pinned: true });
     },
-    [writeDb]
+    [writeDb],
   );
 
 const useUnpin = (writeDb: WriteDb) =>
@@ -122,7 +129,7 @@ const useUnpin = (writeDb: WriteDb) =>
       animateLayout();
       await writeDb.updatePackingList({ ...list, pinned: false });
     },
-    [writeDb]
+    [writeDb],
   );
 
 const useArchive = (writeDb: WriteDb) =>
@@ -130,7 +137,7 @@ const useArchive = (writeDb: WriteDb) =>
     async (list: PackingListSummary) => {
       await writeDb.updatePackingList({ ...list, archived: true });
     },
-    [writeDb]
+    [writeDb],
   );
 
 const useRestore = (writeDb: WriteDb) =>
@@ -138,7 +145,7 @@ const useRestore = (writeDb: WriteDb) =>
     async (list: PackingListSummary) => {
       await writeDb.updatePackingList({ ...list, archived: false });
     },
-    [writeDb]
+    [writeDb],
   );
 
 const useUncheckAll = (writeDb: WriteDb) =>
@@ -146,7 +153,8 @@ const useUncheckAll = (writeDb: WriteDb) =>
     async (list: PackingListSummary) => {
       await writeDb.uncheckAllItems(list.id);
     },
-    [writeDb]
+    [writeDb],
   );
 
-const getNextListRank = (lists: PackingListSummary[]) => Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;
+const getNextListRank = (lists: PackingListSummary[]) =>
+  Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;

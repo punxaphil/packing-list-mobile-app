@@ -1,5 +1,13 @@
-import { collection, getFirestore, onSnapshot, orderBy, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  QuerySnapshot,
+  query,
+  Unsubscribe,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { firestore } from "~/services/firebase.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 type HookState = { items: NamedEntity[]; loading: boolean };
@@ -12,19 +20,30 @@ const createInitialState = (): HookState => ({ items: [], loading: true });
 const createEmptyState = (): HookState => ({ items: [], loading: false });
 
 const mapSnapshot = (snapshot: QuerySnapshot): NamedEntity[] =>
-  snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as NamedEntity[];
+  snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as NamedEntity[];
 
 const buildQuery = (spaceId: string, collectionName: string) =>
-  query(collection(getFirestore(), SPACES_COLLECTION, spaceId, collectionName), orderBy(ORDER_FIELD, "desc"));
+  query(
+    collection(firestore, SPACES_COLLECTION, spaceId, collectionName),
+    orderBy(ORDER_FIELD, "desc"),
+  );
 
-const subscribe = (spaceId: string, collectionName: string, setState: (value: HookState) => void) =>
+const subscribe = (
+  spaceId: string,
+  collectionName: string,
+  setState: (value: HookState) => void,
+) =>
   onSnapshot(
     buildQuery(spaceId, collectionName),
     (snapshot) => setState({ items: mapSnapshot(snapshot), loading: false }),
-    () => setState(createEmptyState())
+    () => setState(createEmptyState()),
   );
 
-const manage = (spaceId: string | null | undefined, collectionName: string, setState: (s: HookState) => void) => {
+const manage = (
+  spaceId: string | null | undefined,
+  collectionName: string,
+  setState: (s: HookState) => void,
+) => {
   if (!spaceId) {
     setState(createEmptyState());
     return NOOP_UNSUBSCRIBE;
@@ -32,8 +51,14 @@ const manage = (spaceId: string | null | undefined, collectionName: string, setS
   return subscribe(spaceId, collectionName, setState);
 };
 
-export const useNamedEntities = (spaceId: string | null | undefined, collectionName: string) => {
+export const useNamedEntities = (
+  spaceId: string | null | undefined,
+  collectionName: string,
+) => {
   const [state, setState] = useState<HookState>(createInitialState);
-  useEffect(() => manage(spaceId, collectionName, setState), [spaceId, collectionName]);
+  useEffect(
+    () => manage(spaceId, collectionName, setState),
+    [spaceId, collectionName],
+  );
   return state;
 };
