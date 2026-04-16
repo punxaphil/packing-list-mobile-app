@@ -2,13 +2,17 @@ import { Modal, Pressable } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { AppLoadingState } from "../shared/AppLoadingState.tsx";
 import { ActionMenu } from "./ActionMenu.tsx";
-import { buildLabel } from "./SpaceSheetParts.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors } from "./theme.ts";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
 
-export type SpaceSheetSubDialog = "none" | "create" | "rename" | "invite" | "inviteSent";
+export type SpaceSheetSubDialog =
+  | "none"
+  | "create"
+  | "rename"
+  | "invite"
+  | "inviteSent";
 
 type Props = {
   visible: boolean;
@@ -18,7 +22,7 @@ type Props = {
 
 export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => {
   const items = s.spaces.map((space) => ({
-    text: buildLabel(space.name, space.id === s.profile?.personalSpaceId),
+    text: space.name,
     onPress: () => {
       s.switchSpace(space.id);
       onClose();
@@ -30,7 +34,11 @@ export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => {
   }));
   const headerRight = (
     <Pressable onPress={() => s.setSubDialog("create")} hitSlop={8}>
-      <MaterialCommunityIcons name="plus" size={22} color={homeColors.buttonText} />
+      <MaterialCommunityIcons
+        name="plus"
+        size={22}
+        color={homeColors.buttonText}
+      />
     </Pressable>
   );
 
