@@ -1,12 +1,14 @@
+import { Platform } from "react-native";
 import ImageCropPicker from "react-native-image-crop-picker";
 
 const MAX_SIZE = 400;
 const JPEG_QUALITY = 0.8;
+const isIPad = Platform.OS === "ios" && Platform.isPad;
 
 export const pickAndResizeImage = async (): Promise<string | null> => {
   try {
     const image = await ImageCropPicker.openPicker({
-      cropping: true,
+      cropping: !isIPad,
       width: MAX_SIZE,
       height: MAX_SIZE,
       compressImageMaxWidth: MAX_SIZE,
