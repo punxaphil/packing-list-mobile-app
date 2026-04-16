@@ -1,4 +1,9 @@
-import { type AuthError, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  type AuthError,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,7 +19,8 @@ const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
   "auth/weak-password": "Password must be at least 6 characters",
   "auth/invalid-email": "Please enter a valid email address",
   "auth/too-many-requests": "Too many attempts. Please try again later",
-  "auth/account-exists-with-different-credential": "This email is already linked to Apple sign-in. Use that instead",
+  "auth/account-exists-with-different-credential":
+    "This email is already linked to Apple sign-in. Use that instead",
 };
 
 const friendlyAuthError = (e: unknown, fallback: string): string =>
@@ -75,8 +81,12 @@ export function Login() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text style={styles.title}>Welcome to PackSmarter</Text>
-        <Button variant="apple" label="Sign in with Apple" onPress={() => void handleApple()} />
+        <Text style={styles.title}>Welcome to Packsy</Text>
+        <Button
+          variant="apple"
+          label="Sign in with Apple"
+          onPress={() => void handleApple()}
+        />
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {!showEmail && (
           <Pressable onPress={() => setShowEmail(true)}>
@@ -104,7 +114,14 @@ type EmailFormProps = {
   onRegister: () => void;
 };
 
-function EmailForm({ email, setEmail, password, setPassword, onLogin, onRegister }: EmailFormProps) {
+function EmailForm({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  onLogin,
+  onRegister,
+}: EmailFormProps) {
   return (
     <View style={styles.emailSection}>
       <TextInput

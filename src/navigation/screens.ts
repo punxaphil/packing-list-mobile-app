@@ -20,13 +20,7 @@ export function registerScreens() {
   Navigation.registerComponent(SCREEN_IDS.LOGIN, () => wrapScreen(LoginScreen));
   Navigation.registerComponent(SCREEN_IDS.ITEMS, () => wrapScreen(ItemsScreen));
   Navigation.registerComponent(SCREEN_IDS.LISTS, () => wrapScreen(ListsScreen));
-  Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () =>
-    wrapScreen(CategoriesScreen),
-  );
-  Navigation.registerComponent(SCREEN_IDS.MEMBERS, () =>
-    wrapScreen(MembersScreen),
-  );
-  Navigation.registerComponent(SCREEN_IDS.PROFILE, () =>
-    wrapScreen(ProfileScreen),
-  );
+  Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () => wrapScreen(CategoriesScreen));
+  Navigation.registerComponent(SCREEN_IDS.MEMBERS, () => wrapScreen(MembersScreen));
+  Navigation.registerComponent(SCREEN_IDS.PROFILE, () => wrapScreen(ProfileScreen));
 }

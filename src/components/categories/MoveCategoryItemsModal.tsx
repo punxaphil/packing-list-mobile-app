@@ -1,21 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Platform,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  View,
-} from "react-native";
+import { Platform, Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { homeColors } from "../home/theme.ts";
-import {
-  DialogActions,
-  DialogShell,
-  DialogSingleAction,
-} from "../shared/DialogShell.tsx";
+import { DialogActions, DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { entityStyles } from "../shared/entityStyles.ts";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { MOVE_COPY, moveStyles } from "./styles.ts";
@@ -42,18 +31,14 @@ export const MoveCategoryItemsModal = ({
     if (visible) {
       writeDb
         .getPackItemsForAllPackingLists()
-        .then((all) =>
-          setItems(all.filter((i) => i.category === sourceCategory.id)),
-        );
+        .then((all) => setItems(all.filter((i) => i.category === sourceCategory.id)));
       setSelectedId(null);
     }
   }, [visible, sourceCategory.id, writeDb]);
 
   const targets = useMemo(() => {
     const filtered = categories.filter((c) => c.id !== sourceCategory.id);
-    return sortByAlpha
-      ? [...filtered].sort((a, b) => a.name.localeCompare(b.name))
-      : filtered;
+    return sortByAlpha ? [...filtered].sort((a, b) => a.name.localeCompare(b.name)) : filtered;
   }, [categories, sourceCategory.id, sortByAlpha]);
 
   const handleMove = async () => {
@@ -63,10 +48,7 @@ export const MoveCategoryItemsModal = ({
     const batch = writeDb.initBatch();
     let rank = bottomRank;
     for (const item of items) {
-      writeDb.updatePackItemBatch(
-        { ...item, category: selectedId, rank },
-        batch,
-      );
+      writeDb.updatePackItemBatch({ ...item, category: selectedId, rank }, batch);
       rank--;
     }
     await batch.commit();
@@ -77,9 +59,7 @@ export const MoveCategoryItemsModal = ({
     if (Platform.OS === "ios") {
       return (
         <PageSheet visible={visible} title={MOVE_COPY.title} onClose={onClose}>
-          <Text style={moveStyles.empty}>
-            {MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}
-          </Text>
+          <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
         </PageSheet>
       );
     }
@@ -88,22 +68,16 @@ export const MoveCategoryItemsModal = ({
         visible={visible}
         title={MOVE_COPY.title}
         onClose={onClose}
-        actions={
-          <DialogSingleAction label={MOVE_COPY.close} onPress={onClose} />
-        }
+        actions={<DialogSingleAction label={MOVE_COPY.close} onPress={onClose} />}
       >
-        <Text style={moveStyles.empty}>
-          {MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}
-        </Text>
+        <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
       </DialogShell>
     );
   }
 
   if (Platform.OS === "ios") {
     const targetName = targets.find((c) => c.id === selectedId)?.name;
-    const confirmLabel = selectedId
-      ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "")
-      : MOVE_COPY.selectCategory;
+    const confirmLabel = selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory;
     return (
       <PageSheet
         visible={visible}
@@ -114,21 +88,11 @@ export const MoveCategoryItemsModal = ({
         confirmDisabled={!selectedId}
       >
         <Text style={moveStyles.subtitle}>
-          {MOVE_COPY.subtitle
-            .replace("{name}", sourceCategory.name)
-            .replace("{count}", String(items.length))}
+          {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
         </Text>
         <ItemsList items={items} />
-        <SortToggle
-          sortByAlpha={sortByAlpha}
-          onToggle={() => setSortByAlpha(!sortByAlpha)}
-        />
-        <CategoryPicker
-          targets={targets}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          iosSheet
-        />
+        <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
+        <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} iosSheet />
       </PageSheet>
     );
   }
@@ -138,30 +102,14 @@ export const MoveCategoryItemsModal = ({
       visible={visible}
       title={MOVE_COPY.title}
       onClose={onClose}
-      actions={
-        <ActionButtons
-          selectedId={selectedId}
-          targets={targets}
-          onMove={handleMove}
-          onClose={onClose}
-        />
-      }
+      actions={<ActionButtons selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />}
     >
       <Text style={moveStyles.subtitle}>
-        {MOVE_COPY.subtitle
-          .replace("{name}", sourceCategory.name)
-          .replace("{count}", String(items.length))}
+        {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
       </Text>
       <ItemsList items={items} />
-      <SortToggle
-        sortByAlpha={sortByAlpha}
-        onToggle={() => setSortByAlpha(!sortByAlpha)}
-      />
-      <CategoryPicker
-        targets={targets}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-      />
+      <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
+      <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
     </DialogShell>
   );
 };
@@ -176,13 +124,7 @@ const ItemsList = ({ items }: { items: PackItem[] }) => (
   </ScrollView>
 );
 
-const SortToggle = ({
-  sortByAlpha,
-  onToggle,
-}: {
-  sortByAlpha: boolean;
-  onToggle: () => void;
-}) => (
+const SortToggle = ({ sortByAlpha, onToggle }: { sortByAlpha: boolean; onToggle: () => void }) => (
   <View style={moveStyles.sortRow}>
     <Text style={moveStyles.sortLabel}>{MOVE_COPY.selectTarget}</Text>
     <View style={entityStyles.sortToggle}>
@@ -221,9 +163,7 @@ const CategoryPicker = ({
         <Text style={moveStyles.categoryName}>{cat.name}</Text>
       </Pressable>
     ))}
-    {targets.length === 0 && (
-      <Text style={moveStyles.empty}>{MOVE_COPY.noCategories}</Text>
-    )}
+    {targets.length === 0 && <Text style={moveStyles.empty}>{MOVE_COPY.noCategories}</Text>}
   </ScrollView>
 );
 
@@ -239,9 +179,7 @@ const ActionButtons = ({
   onClose: () => void;
 }) => {
   const targetName = targets.find((c) => c.id === selectedId)?.name;
-  const confirmLabel = selectedId
-    ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "")
-    : MOVE_COPY.selectCategory;
+  const confirmLabel = selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory;
   return (
     <DialogActions
       cancelLabel={MOVE_COPY.cancel}
@@ -255,7 +193,5 @@ const ActionButtons = ({
 
 const getBottomRank = (items: PackItem[], categoryId: string): number => {
   const inCategory = items.filter((i) => i.category === categoryId);
-  return inCategory.length === 0
-    ? 0
-    : Math.min(...inCategory.map((i) => i.rank)) - 1;
+  return inCategory.length === 0 ? 0 : Math.min(...inCategory.map((i) => i.rank)) - 1;
 };
