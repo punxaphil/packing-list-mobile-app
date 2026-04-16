@@ -1,28 +1,33 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  collection,
+  getFirestore,
+  onSnapshot,
+  type QuerySnapshot,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { PackItem } from "~/types/PackItem.ts";
+import type { PackItem } from "~/types/PackItem.ts";
 
-export const useCategoryItemCounts = () => {
-  const { writeDb } = useSpace();
-  const [counts, setCounts] = useState<Record<string, number>>({});
+const SPACES = "spaces";
+const PACK_ITEMS = "packItems";
 
-  const refresh = useCallback(() => {
-    writeDb.getPackItemsForAllPackingLists().then((items) => setCounts(computeCounts(items)));
-  }, [writeDb]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  return { counts, refresh };
-};
-
-const computeCounts = (items: PackItem[]): Record<string, number> => {
+const computeCounts = (snapshot: QuerySnapshot): Record<string, number> => {
   const result: Record<string, number> = {};
-  for (const item of items) {
-    if (item.category) {
-      result[item.category] = (result[item.category] ?? 0) + 1;
-    }
+  for (const doc of snapshot.docs) {
+    const { category } = doc.data() as PackItem;
+    if (category) result[category] = (result[category] ?? 0) + 1;
   }
   return result;
+};
+
+export const useCategoryItemCounts = () => {
+  const { spaceId } = useSpace();
+  const [counts, setCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const ref = collection(getFirestore(), SPACES, spaceId, PACK_ITEMS);
+    return onSnapshot(ref, (snap) => setCounts(computeCounts(snap)));
+  }, [spaceId]);
+
+  return { counts };
 };
