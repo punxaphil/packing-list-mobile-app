@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { Alert, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  Image as RNImage,
+  Text,
+  View,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import type { Image } from "~/types/Image.ts";
 import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { ListActions } from "./listSectionState.ts";
@@ -23,6 +31,9 @@ type ListCardProps = {
   spaces: Space[];
   currentSpaceId: string;
   onMoveToSpace: (listId: string, targetSpaceId: string) => void;
+  image?: Image;
+  imageLoading?: boolean;
+  onImagePress: (listId: string, image?: Image) => void;
   hidden?: boolean;
   onDragStart?: () => void;
   onDragMove?: (offset: DragOffset) => void;
@@ -109,6 +120,11 @@ export const ListCard = (props: ListCardProps) => {
       >
         <View style={homeStyles.listCardInner}>
           {!isTemplate && wrap(<DragHandle />)}
+          <ListImage
+            imageUrl={props.image?.url}
+            loading={props.imageLoading}
+            onPress={() => props.onImagePress(props.list.id, props.image)}
+          />
           <View style={homeStyles.listCardBody}>
             <ListCardText list={props.list} summary={summary} />
           </View>
@@ -231,6 +247,37 @@ const ArchivedBadge = () => (
   <View style={homeStyles.archivedBadge}>
     <Text style={homeStyles.archivedBadgeText}>Archived</Text>
   </View>
+);
+
+type ListImageProps = {
+  imageUrl?: string;
+  loading?: boolean;
+  onPress: () => void;
+};
+
+const ListImage = ({ imageUrl, loading, onPress }: ListImageProps) => (
+  <Pressable
+    style={[
+      homeStyles.listImageContainer,
+      !imageUrl && homeStyles.listImagePlaceholder,
+    ]}
+    onPress={onPress}
+    disabled={loading}
+    accessibilityRole="button"
+    accessibilityLabel="List image"
+  >
+    {loading ? (
+      <ActivityIndicator size="small" color={homeColors.surface} />
+    ) : imageUrl ? (
+      <RNImage source={{ uri: imageUrl }} style={homeStyles.listImage} />
+    ) : (
+      <MaterialCommunityIcons
+        name="cloud-upload-outline"
+        size={20}
+        color={homeColors.surface}
+      />
+    )}
+  </Pressable>
 );
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (

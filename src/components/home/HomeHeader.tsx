@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  Image as RNImage,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
 import { PageSheet } from "~/components/shared/PageSheet.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
@@ -16,27 +23,60 @@ type HeaderProps = {
   title: string;
   email: string;
   profileImageUrl?: string;
+  leftImageUrl?: string;
   onBack?: () => void;
   onPressTitle?: () => void;
   onProfile?: () => void;
   useSpaceAsTitle?: boolean;
 };
 
-const BackButton = ({ onBack }: { onBack?: () => void }) => (
+const BackButton = ({
+  onBack,
+  leftImageUrl,
+}: {
+  onBack?: () => void;
+  leftImageUrl?: string;
+}) => (
   <View style={headerLocalStyles.sideSlot}>
     {onBack ? (
-      <Pressable style={headerLocalStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
+      <Pressable
+        style={headerLocalStyles.backButton}
+        onPress={onBack}
+        accessibilityRole="button"
+        hitSlop={8}
+      >
         <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
       </Pressable>
+    ) : leftImageUrl ? (
+      <RNImage
+        source={{ uri: leftImageUrl }}
+        style={headerLocalStyles.avatarImage}
+      />
     ) : null}
   </View>
 );
 
-const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
+const AvatarButton = ({
+  email,
+  imageUrl,
+  onProfile,
+}: {
+  email: string;
+  imageUrl?: string;
+  onProfile?: () => void;
+}) => (
   <View style={headerLocalStyles.avatarSlot}>
-    <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
+    <Pressable
+      style={headerLocalStyles.avatarButton}
+      onPress={onProfile}
+      accessibilityRole="button"
+      hitSlop={8}
+    >
       {imageUrl ? (
-        <RNImage source={{ uri: imageUrl }} style={headerLocalStyles.avatarImage} />
+        <RNImage
+          source={{ uri: imageUrl }}
+          style={headerLocalStyles.avatarImage}
+        />
       ) : (
         <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
       )}
@@ -52,7 +92,12 @@ const buildInitial = (email: string) => {
 
 const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
   onPress ? (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={homeStyles.panelTitleWrapper}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      hitSlop={8}
+      style={homeStyles.panelTitleWrapper}
+    >
       <Text style={homeStyles.panelTitle} numberOfLines={1}>
         {title}
       </Text>
@@ -67,6 +112,7 @@ export const HomeHeader = ({
   title,
   email,
   profileImageUrl,
+  leftImageUrl,
   onBack,
   onPressTitle,
   onProfile,
@@ -87,7 +133,7 @@ export const HomeHeader = ({
   return (
     <View style={headerLocalStyles.wrapper}>
       <View style={headerLocalStyles.header}>
-        <BackButton onBack={onBack} />
+        <BackButton onBack={onBack} leftImageUrl={leftImageUrl} />
         <View style={headerLocalStyles.titleStack}>
           {useSpaceAsTitle ? (
             <SpaceTitle onPress={() => setSpaceSheetVisible(true)} />
@@ -95,17 +141,35 @@ export const HomeHeader = ({
             <StackedTitle title={title} onPress={onPressTitle} />
           )}
         </View>
-        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} />
+        <AvatarButton
+          email={email}
+          imageUrl={profileImageUrl}
+          onProfile={openProfile}
+        />
       </View>
-      <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-      <PageSheet visible={profileVisible} title="Profile" onClose={() => setProfileVisible(false)} scrollable={false}>
+      <SpaceSheet
+        visible={spaceSheetVisible}
+        onClose={() => setSpaceSheetVisible(false)}
+      />
+      <PageSheet
+        visible={profileVisible}
+        title="Profile"
+        onClose={() => setProfileVisible(false)}
+        scrollable={false}
+      >
         <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
       </PageSheet>
     </View>
   );
 };
 
-const StackedTitle = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+const StackedTitle = ({
+  title,
+  onPress,
+}: {
+  title: string;
+  onPress?: () => void;
+}) => (
   <>
     <SpaceBar />
     <Title title={title} onPress={onPress} />
@@ -115,12 +179,19 @@ const StackedTitle = ({ title, onPress }: { title: string; onPress?: () => void 
 const SpaceTitle = ({ onPress }: { onPress: () => void }) => {
   const { activeSpace } = useSpace();
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={headerLocalStyles.spaceTitlePressable}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      hitSlop={8}
+      style={headerLocalStyles.spaceTitlePressable}
+    >
       <View style={headerLocalStyles.spaceTitleRow}>
         <Text style={homeStyles.panelTitle} numberOfLines={1}>
           {activeSpace?.name ?? ""}
         </Text>
-        <Text style={headerLocalStyles.spaceTitleChevron}>{spaceCopy.chevron}</Text>
+        <Text style={headerLocalStyles.spaceTitleChevron}>
+          {spaceCopy.chevron}
+        </Text>
       </View>
     </Pressable>
   );
@@ -136,7 +207,9 @@ const SpaceBar = () => {
       </Text>
       {pendingInvites.length > 0 && (
         <View style={headerLocalStyles.inviteBadge}>
-          <Text style={headerLocalStyles.inviteBadgeText}>{pendingInvites.length}</Text>
+          <Text style={headerLocalStyles.inviteBadgeText}>
+            {pendingInvites.length}
+          </Text>
         </View>
       )}
     </View>
@@ -183,7 +256,11 @@ const headerLocalStyles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
-  avatarLabel: { color: homeColors.primaryForeground, fontWeight: "700", fontSize: 18 },
+  avatarLabel: {
+    color: homeColors.primaryForeground,
+    fontWeight: "700",
+    fontSize: 18,
+  },
   avatarImage: {
     width: AVATAR_SIZE,
     height: AVATAR_SIZE,
@@ -193,8 +270,17 @@ const headerLocalStyles = StyleSheet.create({
     alignSelf: "stretch",
     justifyContent: "center",
   },
-  spaceTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-  spaceTitleChevron: { fontSize: 20, fontWeight: "700", color: homeColors.text, marginLeft: 4 },
+  spaceTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  spaceTitleChevron: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: homeColors.text,
+    marginLeft: 4,
+  },
   spaceBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -202,7 +288,12 @@ const headerLocalStyles = StyleSheet.create({
     gap: homeSpacing.xs,
     paddingBottom: 2,
   },
-  spaceName: { fontSize: 12, fontWeight: "500", color: homeColors.muted, textAlign: "center" },
+  spaceName: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: homeColors.muted,
+    textAlign: "center",
+  },
   inviteBadge: {
     backgroundColor: homeColors.primary,
     borderRadius: 8,
@@ -212,5 +303,9 @@ const headerLocalStyles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 4,
   },
-  inviteBadgeText: { fontSize: 10, fontWeight: "700", color: homeColors.primaryForeground },
+  inviteBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: homeColors.primaryForeground,
+  },
 });
