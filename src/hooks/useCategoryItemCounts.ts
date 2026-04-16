@@ -1,9 +1,4 @@
-import {
-  collection,
-  getFirestore,
-  onSnapshot,
-  type QuerySnapshot,
-} from "firebase/firestore";
+import { collection, getFirestore, onSnapshot, type QuerySnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { PackItem } from "~/types/PackItem.ts";

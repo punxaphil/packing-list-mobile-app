@@ -62,7 +62,7 @@ export function showMainTabs(showItems: boolean, currentTabIndex = 0) {
           },
         },
       },
-    },
+    }
   );
 
   Navigation.setRoot({

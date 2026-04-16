@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  Image as RNImage,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
@@ -36,12 +29,7 @@ const PICKER_OPEN_DELAY_MS = 250;
 
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
-const Avatar = ({
-  email,
-  imageUrl,
-  onPress,
-  loading,
-}: AvatarProps & { loading: boolean }) => {
+const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: boolean }) => {
   const initial = email.trim()[0]?.toUpperCase() ?? "?";
   return (
     <Pressable onPress={onPress} disabled={loading} style={styles.avatarButton}>
@@ -61,27 +49,11 @@ const Avatar = ({
   );
 };
 
-const SignOutButton = ({
-  email,
-  onSignOut,
-}: {
-  email: string;
-  onSignOut: () => void;
-}) => (
-  <Button
-    label={COPY.signOut}
-    onPress={() => confirmSignOut(email, onSignOut)}
-    variant="danger"
-    centered
-  />
+const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
+  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" centered />
 );
 
-export const ProfileScreen = ({
-  email,
-  onSignOut,
-  onBack,
-  embeddedInSheet = false,
-}: ProfileScreenProps) => {
+export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
   const { profile } = useSpace();
   const [viewerVisible, setViewerVisible] = useState(false);
   const imageUrl = profile?.imageUrl;
@@ -110,12 +82,7 @@ export const ProfileScreen = ({
     <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
       {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
       <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
-        <Avatar
-          email={email}
-          imageUrl={imageUrl}
-          onPress={handleAvatarPress}
-          loading={handlers.loading}
-        />
+        <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
         <Text style={styles.email}>{email}</Text>
         <PreferencesSection />
         <SignOutButton email={email} onSignOut={onSignOut} />
