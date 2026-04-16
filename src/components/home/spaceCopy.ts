@@ -8,7 +8,6 @@ export const spaceCopy = {
   inviteUser: "Invite User",
   pendingInvites: "Pending Invitations",
   inviteFrom: "From",
-  personalSpace: "Personal",
   chevron: " \u25BE",
   leaveSpace: "Leave Space",
   deleteSpace: "Delete Space",

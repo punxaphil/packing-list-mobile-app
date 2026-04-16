@@ -4,7 +4,6 @@ import { PageSheet } from "../shared/PageSheet.tsx";
 import { UserList } from "../space/UserList.tsx";
 import { SpaceSheetAndroid } from "./SpaceSheetAndroid.tsx";
 import {
-  buildLabel,
   CreateSpaceButton,
   InviteSection,
   SpaceActions,
@@ -16,7 +15,13 @@ import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { useSpaceSheet } from "./useSpaceSheet.ts";
 
-export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+export const SpaceSheet = ({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) => {
   const s = useSpaceSheet(onClose);
 
   if (Platform.OS !== "ios") {
@@ -31,8 +36,14 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
         onClose={onClose}
         scrollable={false}
       >
-        <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>
-          <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} />
+        <ScrollView
+          style={styles.sheetList}
+          contentContainerStyle={styles.sheetListContent}
+        >
+          <SpaceNameRow
+            name={s.activeSpace?.name ?? ""}
+            onRename={s.handleRename}
+          />
           {s.activeSpace && (
             <UserList
               emails={s.activeSpace.memberEmails}
@@ -57,7 +68,7 @@ export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: ()
               {s.otherSpaces.map((space) => (
                 <SpaceRow
                   key={space.id}
-                  label={buildLabel(space.name, space.id === s.profile?.personalSpaceId)}
+                  label={space.name}
                   ownerInfo={s.ownerInfoBySpaceId[space.id]}
                   onPress={() => {
                     s.switchSpace(space.id);

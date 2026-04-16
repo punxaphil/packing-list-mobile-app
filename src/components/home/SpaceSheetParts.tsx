@@ -6,17 +6,23 @@ import { spaceCopy } from "./spaceCopy.ts";
 import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
-export const buildLabel = (name: string, isPersonal: boolean) => {
-  return isPersonal ? `${name} (${spaceCopy.personalSpace})` : name;
-};
-
-export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
+export const SpaceNameRow = ({
+  name,
+  onRename,
+}: {
+  name: string;
+  onRename: () => void;
+}) => (
   <View style={styles.nameRow}>
     <Text style={styles.spaceName} numberOfLines={1}>
       {name}
     </Text>
     <Pressable onPress={onRename} hitSlop={8}>
-      <MaterialCommunityIcons name="pencil-outline" size={18} color={homeColors.muted} />
+      <MaterialCommunityIcons
+        name="pencil-outline"
+        size={18}
+        color={homeColors.muted}
+      />
     </Pressable>
   </View>
 );
@@ -29,11 +35,25 @@ type SpaceActionsProps = {
   isOwner: boolean;
 };
 
-export const SpaceActions = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: SpaceActionsProps) => (
+export const SpaceActions = ({
+  onInvite,
+  onLeave,
+  onDelete,
+  isPersonal,
+  isOwner,
+}: SpaceActionsProps) => (
   <View style={styles.actions}>
     {isOwner && <Button label={spaceCopy.inviteUser} onPress={onInvite} />}
-    {!isPersonal && !isOwner && <Button label={spaceCopy.leaveSpace} onPress={onLeave} variant="danger" />}
-    {!isPersonal && isOwner && <Button label={spaceCopy.deleteSpace} onPress={onDelete} variant="danger" />}
+    {!isPersonal && !isOwner && (
+      <Button label={spaceCopy.leaveSpace} onPress={onLeave} variant="danger" />
+    )}
+    {!isPersonal && isOwner && (
+      <Button
+        label={spaceCopy.deleteSpace}
+        onPress={onDelete}
+        variant="danger"
+      />
+    )}
   </View>
 );
 
@@ -64,9 +84,14 @@ export const InviteSection = ({
 };
 
 export const SpaceRow = ({ label, onPress, ownerInfo }: SpaceRowProps) => (
-  <Pressable style={({ pressed }) => [styles.rowMain, pressed && styles.rowPressed]} onPress={onPress}>
+  <Pressable
+    style={({ pressed }) => [styles.rowMain, pressed && styles.rowPressed]}
+    onPress={onPress}
+  >
     <Text style={styles.rowLabel}>{label}</Text>
-    {ownerInfo && <OwnerAvatar email={ownerInfo.email} imageUrl={ownerInfo.imageUrl} />}
+    {ownerInfo && (
+      <OwnerAvatar email={ownerInfo.email} imageUrl={ownerInfo.imageUrl} />
+    )}
   </Pressable>
 );
 
@@ -76,12 +101,20 @@ type SpaceRowProps = {
   ownerInfo?: { email: string; imageUrl?: string };
 };
 
-const OwnerAvatar = ({ email, imageUrl }: { email: string; imageUrl?: string }) => (
+const OwnerAvatar = ({
+  email,
+  imageUrl,
+}: {
+  email: string;
+  imageUrl?: string;
+}) => (
   <View style={styles.ownerAvatar}>
     {imageUrl ? (
       <RNImage source={{ uri: imageUrl }} style={styles.ownerAvatarImage} />
     ) : (
-      <Text style={styles.ownerAvatarText}>{email[0]?.toUpperCase() ?? "?"}</Text>
+      <Text style={styles.ownerAvatarText}>
+        {email[0]?.toUpperCase() ?? "?"}
+      </Text>
     )}
   </View>
 );
