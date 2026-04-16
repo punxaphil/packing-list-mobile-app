@@ -23,6 +23,7 @@ type PageSheetProps = PropsWithChildren<{
   onConfirm?: () => void;
   confirmDisabled?: boolean;
   confirmVariant?: "icon" | "text";
+  headerRight?: React.ReactNode;
   scrollable?: boolean;
 }>;
 
@@ -34,6 +35,7 @@ export const PageSheet = ({
   onConfirm,
   confirmDisabled = false,
   confirmVariant = "icon",
+  headerRight,
   scrollable = true,
   children,
 }: PageSheetProps) => (
@@ -48,9 +50,15 @@ export const PageSheet = ({
       <KeyboardAvoidingView behavior="padding" style={styles.safeArea}>
         <View style={styles.headerWrap}>
           <View style={styles.header}>
-            <SheetIconButton icon="close" onPress={onClose} accessibilityLabel="Cancel" />
+            <SheetIconButton
+              icon="close"
+              onPress={onClose}
+              accessibilityLabel="Cancel"
+            />
             <Text style={styles.title}>{title}</Text>
-            {confirmLabel && onConfirm ? (
+            {headerRight ? (
+              headerRight
+            ) : confirmLabel && onConfirm ? (
               confirmVariant === "text" ? (
                 <SheetTextButton
                   label={confirmLabel}
@@ -74,7 +82,10 @@ export const PageSheet = ({
         </View>
         {scrollable ? (
           <Pressable style={styles.content} onPress={Keyboard.dismiss}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollContent}
+            >
               <View style={styles.panel}>{children}</View>
             </ScrollView>
           </Pressable>
@@ -109,11 +120,18 @@ const SheetTextButton = ({
     onPress={onPress}
     style={styles.textButton}
   >
-    <Text style={[styles.textButtonLabel, disabled ? styles.textButtonLabelDisabled : null]}>{label}</Text>
+    <Text
+      style={[
+        styles.textButtonLabel,
+        disabled ? styles.textButtonLabelDisabled : null,
+      ]}
+    >
+      {label}
+    </Text>
   </Pressable>
 );
 
-const SheetIconButton = ({
+export const SheetIconButton = ({
   icon,
   onPress,
   accessibilityLabel,
@@ -138,14 +156,22 @@ const SheetIconButton = ({
 
   const backgroundColor = press.interpolate({
     inputRange: [0, 1],
-    outputRange: primary ? [homeColors.primary, "#BFDBFE"] : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
+    outputRange: primary
+      ? [homeColors.primary, "#BFDBFE"]
+      : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
   });
-  const scale = press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.92] });
+  const scale = press.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.92],
+  });
   const iconOpacity = press.interpolate({
     inputRange: [0, 1],
     outputRange: primary ? [1, 0.58] : [1, 0.26],
   });
-  const shadowOpacity = press.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.04] });
+  const shadowOpacity = press.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.12, 0.04],
+  });
 
   return (
     <Pressable
@@ -161,11 +187,20 @@ const SheetIconButton = ({
           styles.iconButton,
           primary ? styles.iconButtonPrimary : null,
           disabled ? styles.iconButtonDisabled : null,
-          { backgroundColor, opacity: disabled ? 0.45 : 1, transform: [{ scale }], shadowOpacity },
+          {
+            backgroundColor,
+            opacity: disabled ? 0.45 : 1,
+            transform: [{ scale }],
+            shadowOpacity,
+          },
         ]}
       >
         <Animated.View style={{ opacity: disabled ? 0.45 : iconOpacity }}>
-          <MaterialCommunityIcons name={icon} size={28} style={[styles.icon, primary ? styles.iconPrimary : null]} />
+          <MaterialCommunityIcons
+            name={icon}
+            size={28}
+            style={[styles.icon, primary ? styles.iconPrimary : null]}
+          />
         </Animated.View>
       </Animated.View>
     </Pressable>
@@ -225,12 +260,14 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom:
+      homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
   },
   scrollContent: {
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom:
+      homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
   },
   panel: {
     backgroundColor: "rgba(255,255,255,0.52)",
