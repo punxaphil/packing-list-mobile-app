@@ -1,7 +1,9 @@
-import { Pressable, Image as RNImage, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import { Button } from "../shared/Button.tsx";
+import { MemberAvatars } from "./MemberAvatars.tsx";
+import type { MemberInfo } from "./memberInfo.ts";
 import { spaceCopy } from "./spaceCopy.ts";
 import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
@@ -83,38 +85,18 @@ export const InviteSection = ({
   );
 };
 
-export const SpaceRow = ({ label, onPress, ownerInfo }: SpaceRowProps) => (
+export const SpaceRow = ({ label, onPress, members }: SpaceRowProps) => (
   <Pressable
     style={({ pressed }) => [styles.rowMain, pressed && styles.rowPressed]}
     onPress={onPress}
   >
     <Text style={styles.rowLabel}>{label}</Text>
-    {ownerInfo && (
-      <OwnerAvatar email={ownerInfo.email} imageUrl={ownerInfo.imageUrl} />
-    )}
+    {members && <MemberAvatars members={members} />}
   </Pressable>
 );
 
 type SpaceRowProps = {
   label: string;
   onPress: () => void;
-  ownerInfo?: { email: string; imageUrl?: string };
+  members?: MemberInfo[];
 };
-
-const OwnerAvatar = ({
-  email,
-  imageUrl,
-}: {
-  email: string;
-  imageUrl?: string;
-}) => (
-  <View style={styles.ownerAvatar}>
-    {imageUrl ? (
-      <RNImage source={{ uri: imageUrl }} style={styles.ownerAvatarImage} />
-    ) : (
-      <Text style={styles.ownerAvatarText}>
-        {email[0]?.toUpperCase() ?? "?"}
-      </Text>
-    )}
-  </View>
-);

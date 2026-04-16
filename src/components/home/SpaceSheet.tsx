@@ -69,7 +69,7 @@ export const SpaceSheet = ({
                 <SpaceRow
                   key={space.id}
                   label={space.name}
-                  ownerInfo={s.ownerInfoBySpaceId[space.id]}
+                  members={s.memberInfoBySpaceId[space.id]}
                   onPress={() => {
                     s.switchSpace(space.id);
                     onClose();
