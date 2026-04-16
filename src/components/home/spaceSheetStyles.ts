@@ -7,10 +7,16 @@ export const spaceSheetStyles = StyleSheet.create({
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 6,
     paddingVertical: homeSpacing.xs,
   },
-  spaceName: { fontSize: 22, fontWeight: "700", color: homeColors.text, flex: 1 },
+  spaceName: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: homeColors.text,
+    flexShrink: 1,
+  },
   actions: { gap: homeSpacing.sm },
   sectionTitle: {
     fontSize: 13,
@@ -42,5 +48,9 @@ export const spaceSheetStyles = StyleSheet.create({
     justifyContent: "center",
   },
   ownerAvatarImage: { width: 24, height: 24, borderRadius: 12 },
-  ownerAvatarText: { color: homeColors.primaryForeground, fontSize: 11, fontWeight: "700" },
+  ownerAvatarText: {
+    color: homeColors.primaryForeground,
+    fontSize: 11,
+    fontWeight: "700",
+  },
 });
