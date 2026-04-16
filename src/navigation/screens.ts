@@ -1,5 +1,6 @@
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { Navigation } from "react-native-navigation";
+import "~/services/firebase.ts";
 import { AppRoot } from "./AppRoot";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
@@ -19,7 +20,13 @@ export function registerScreens() {
   Navigation.registerComponent(SCREEN_IDS.LOGIN, () => wrapScreen(LoginScreen));
   Navigation.registerComponent(SCREEN_IDS.ITEMS, () => wrapScreen(ItemsScreen));
   Navigation.registerComponent(SCREEN_IDS.LISTS, () => wrapScreen(ListsScreen));
-  Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () => wrapScreen(CategoriesScreen));
-  Navigation.registerComponent(SCREEN_IDS.MEMBERS, () => wrapScreen(MembersScreen));
-  Navigation.registerComponent(SCREEN_IDS.PROFILE, () => wrapScreen(ProfileScreen));
+  Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () =>
+    wrapScreen(CategoriesScreen),
+  );
+  Navigation.registerComponent(SCREEN_IDS.MEMBERS, () =>
+    wrapScreen(MembersScreen),
+  );
+  Navigation.registerComponent(SCREEN_IDS.PROFILE, () =>
+    wrapScreen(ProfileScreen),
+  );
 }

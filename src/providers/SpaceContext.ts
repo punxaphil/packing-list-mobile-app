@@ -3,7 +3,7 @@ import type { WriteDb } from "~/services/database.ts";
 import type { Space } from "~/types/Space.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
 
-export type SpaceContextValue = {
+type SpaceContextValue = {
   spaceId: string;
   spaces: Space[];
   activeSpace: Space | undefined;

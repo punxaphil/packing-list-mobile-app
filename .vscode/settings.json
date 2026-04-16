@@ -2,13 +2,11 @@
   "files.exclude": {
     "node_modules": true,
     "ios": true,
-    "android": true,
-    ".expo": true
+    "android": true
   },
   "search.exclude": {
     "node_modules": true,
     "ios": true,
-    "android": true,
-    ".expo": true
+    "android": true
   }
 }
