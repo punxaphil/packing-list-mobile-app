@@ -1,7 +1,7 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "target": "ES2020",
+    "lib": ["ES2023"],
     "module": "ES2020",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
@@ -18,5 +18,10 @@
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"],
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }

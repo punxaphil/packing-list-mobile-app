@@ -1,12 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignore": ["babel.config.js", "metro.config.js"],
+  "ignore": ["babel.config.js"],
   "entry": ["src/**/*.test.ts"],
   "ignoreBinaries": ["lsof", "awk", "xcrun"],
   "ignoreDependencies": [
     "@babel/core",
-    "@react-native-community/cli",
-    "@react-native-community/cli-platform-ios",
     "@types/hoist-non-react-statics",
     "@types/lodash",
     "@types/prop-types"

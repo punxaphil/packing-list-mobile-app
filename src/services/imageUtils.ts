@@ -1,25 +1,25 @@
-import * as ImageManipulator from "expo-image-manipulator";
-import * as ImagePicker from "expo-image-picker";
+import ImageCropPicker from "react-native-image-crop-picker";
 
 const MAX_SIZE = 400;
 const JPEG_QUALITY = 0.8;
 
 export const pickAndResizeImage = async (): Promise<string | null> => {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ["images"],
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 1,
-  });
-  if (result.canceled || !result.assets[0]) return null;
-  return resizeImage(result.assets[0].uri);
-};
-
-const resizeImage = async (uri: string): Promise<string> => {
-  const manipulated = await ImageManipulator.manipulateAsync(uri, [{ resize: { width: MAX_SIZE, height: MAX_SIZE } }], {
-    compress: JPEG_QUALITY,
-    format: ImageManipulator.SaveFormat.JPEG,
-    base64: true,
-  });
-  return `data:image/jpeg;base64,${manipulated.base64}`;
+  try {
+    const image = await ImageCropPicker.openPicker({
+      cropping: true,
+      width: MAX_SIZE,
+      height: MAX_SIZE,
+      compressImageMaxWidth: MAX_SIZE,
+      compressImageMaxHeight: MAX_SIZE,
+      compressImageQuality: JPEG_QUALITY,
+      mediaType: "photo",
+      includeBase64: true,
+      cropperCircleOverlay: false,
+      freeStyleCropEnabled: false,
+    });
+    if (!image.data) return null;
+    return `data:image/jpeg;base64,${image.data}`;
+  } catch {
+    return null;
+  }
 };
