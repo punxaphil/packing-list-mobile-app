@@ -5,7 +5,7 @@ import { homeColors, homeSpacing } from "../home/theme.ts";
 
 const COPY = {
   title: "Preferences",
-  wrapItemText: "Show full item text",
+  wrapItemText: "Show full item text (even if it takes up multiple lines)",
 };
 
 export const PreferencesSection = () => {
@@ -44,5 +44,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  label: { fontSize: 16, color: homeColors.text },
+  label: {
+    flex: 1,
+    fontSize: 16,
+    color: homeColors.text,
+    marginRight: homeSpacing.sm,
+  },
 });
