@@ -363,6 +363,7 @@ const buildMenuItems = (
         onPress: () => void actions.onPin(list),
       });
     }
+    const hasPacked = (list.packedCount ?? 0) > 0;
     if (isTemplate) {
       items.push({
         text: "Remove Template",
@@ -371,15 +372,21 @@ const buildMenuItems = (
     } else {
       items.push({
         text: "Set as Template",
-        onPress: () => void actions.onSetTemplate(list),
+        onPress: () => {
+          if (hasPacked) {
+            Alert.alert(
+              HOME_COPY.templateHasCheckedTitle,
+              HOME_COPY.templateHasCheckedMessage,
+            );
+          } else {
+            void actions.onSetTemplate(list);
+          }
+        },
       });
       items.push({
         text: "Archive",
         onPress: () => void actions.onArchive(list),
       });
-    }
-    if (!isTemplate) {
-      const hasPacked = (list.packedCount ?? 0) > 0;
       items.push({
         text: "Uncheck All",
         onPress: showUncheckConfirm,
