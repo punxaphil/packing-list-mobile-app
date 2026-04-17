@@ -110,6 +110,8 @@ export type EntityCopy = {
   type: string;
   header: string;
   addButton: string;
+  renamePrompt: string;
+  renameConfirm: string;
   createPrompt: string;
   createConfirm: string;
   createPlaceholder: string;
@@ -131,6 +133,8 @@ export const CATEGORY_COPY: EntityCopy = {
   type: "Category",
   header: "Categories",
   addButton: "+ Add Category",
+  renamePrompt: "Rename category",
+  renameConfirm: "Save",
   createPrompt: "New Category",
   createConfirm: "Create",
   createPlaceholder: "Category name",
@@ -152,6 +156,8 @@ export const MEMBER_COPY: EntityCopy = {
   type: "Member",
   header: "Members",
   addButton: "+ Add Member",
+  renamePrompt: "Rename member",
+  renameConfirm: "Save",
   createPrompt: "New Member",
   createConfirm: "Create",
   createPlaceholder: "Member name",
