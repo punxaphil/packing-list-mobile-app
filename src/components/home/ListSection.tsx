@@ -49,34 +49,20 @@ export const ListSection = (props: ListSectionProps) => {
     delete: writeDb.deleteImage,
   };
   const imgActions = useEntityImageActions("packingLists", imageDb);
-  const listImages = useMemo(
-    () => images.filter((img) => img.type === "packingLists"),
-    [images],
-  );
+  const listImages = useMemo(() => images.filter((img) => img.type === "packingLists"), [images]);
   const handleMoveToSpace = useCallback(
     async (listId: string, targetSpaceId: string) => {
       await moveListToSpace(spaceId, targetSpaceId, listId);
     },
-    [spaceId],
+    [spaceId]
   );
-  const actions = useListActions(
-    props.lists,
-    props.selection,
-    templateList,
-    props.onListSelect,
-  );
-  const creation = useCreateListDialog(
-    actions.onAdd,
-    props.lists,
-    !!templateList,
-  );
+  const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
+  const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
   const [showArchived, setShowArchived] = useState(false);
   const hasArchived = props.lists.some((list) => list.archived);
-  const filteredLists = showArchived
-    ? ordering.lists
-    : ordering.lists.filter((list) => !list.archived);
+  const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
   const colors = useMemo(() => buildListColors(filteredLists), [filteredLists]);
   return (
     <View style={homeStyles.panel}>
@@ -143,12 +129,7 @@ type ListHeaderProps = {
   onToggleArchived: () => void;
 };
 
-const ListHeader = ({
-  onAdd,
-  showArchived,
-  hasArchived,
-  onToggleArchived,
-}: ListHeaderProps) => (
+const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: ListHeaderProps) => (
   <View style={localStyles.headerRow}>
     <Pressable
       style={localStyles.createLink}
@@ -186,10 +167,7 @@ type ScrollProps = {
   imageLoadingId: string | null;
   onImagePress: (entityId: string, image?: Image) => void;
   drag: ReturnType<typeof useDragState>;
-  onDrop: (
-    snapshot: DragSnapshot,
-    layouts: Record<string, LayoutRectangle>,
-  ) => void;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   onListSelect: (id: string) => void;
 };
 
@@ -216,17 +194,14 @@ const ListScroll = ({
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   const isDropping = drag.snapshot?.frozenY !== undefined;
   const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
-  const handleLayout = (id: string, e: LayoutChangeEvent) =>
-    drag.recordLayout(id, e.nativeEvent.layout);
+  const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
     <FadeScrollView style={homeStyles.scroll}>
       <View style={[homeStyles.list, dragStyles.relative]}>
         {lists.map((list, index) => (
           <View
             key={list.id}
-            style={
-              separatorIndices.has(index) ? localStyles.sectionSeparator : null
-            }
+            style={separatorIndices.has(index) ? localStyles.sectionSeparator : null}
             onLayout={(e) => handleLayout(list.id, e)}
           >
             <ListCard
@@ -244,30 +219,13 @@ const ListScroll = ({
               hidden={drag.snapshot?.id === list.id}
               onDragStart={() => drag.start(list.id, "")}
               onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
-              onDragEnd={() =>
-                drag.end(
-                  (snapshot) => snapshot && onDrop(snapshot, drag.layouts),
-                  drag.layouts,
-                )
-              }
+              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts), drag.layouts)}
               onSelect={onListSelect}
             />
           </View>
         ))}
-        {!isDropping && (
-          <DropIndicator
-            dropIndex={dropIndex}
-            lists={lists}
-            layouts={drag.layouts}
-            below={showBelow}
-          />
-        )}
-        <GhostRow
-          lists={lists}
-          colors={colors}
-          drag={drag.snapshot}
-          layouts={drag.layouts}
-        />
+        {!isDropping && <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />}
+        <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
       </View>
     </FadeScrollView>
   );
@@ -275,24 +233,18 @@ const ListScroll = ({
 
 const getSeparatorIndices = (lists: PackingListSummary[]): Set<number> => {
   const indices = new Set<number>();
-  const lastTemplateIdx = lists.findLastIndex(
-    (l) => l.isTemplate && !l.archived,
-  );
-  const lastPinnedIdx = lists.findLastIndex(
-    (l) => l.pinned && !l.isTemplate && !l.archived,
-  );
+  const lastTemplateIdx = lists.findLastIndex((l) => l.isTemplate && !l.archived);
+  const lastPinnedIdx = lists.findLastIndex((l) => l.pinned && !l.isTemplate && !l.archived);
   const lastActiveIdx = lists.findLastIndex((l) => !l.archived);
-  if (lastTemplateIdx >= 0 && lastTemplateIdx < lastActiveIdx)
-    indices.add(lastTemplateIdx);
-  if (lastPinnedIdx >= 0 && lastPinnedIdx < lastActiveIdx)
-    indices.add(lastPinnedIdx);
+  if (lastTemplateIdx >= 0 && lastTemplateIdx < lastActiveIdx) indices.add(lastTemplateIdx);
+  if (lastPinnedIdx >= 0 && lastPinnedIdx < lastActiveIdx) indices.add(lastPinnedIdx);
   return indices;
 };
 
 const useCreateListDialog = (
   create: (name: string, useTemplate: boolean) => Promise<void>,
   lists: PackingListSummary[],
-  hasTemplate: boolean,
+  hasTemplate: boolean
 ) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState("");
@@ -306,18 +258,16 @@ const useCreateListDialog = (
   const getError = useCallback(
     (text: string) => {
       const trimmed = text.trim();
-      return trimmed && hasDuplicateEntityName(trimmed, lists)
-        ? HOME_COPY.duplicateListName
-        : null;
+      return trimmed && hasDuplicateEntityName(trimmed, lists) ? HOME_COPY.duplicateListName : null;
     },
-    [lists],
+    [lists]
   );
   const onChange = useCallback(
     (text: string) => {
       setValue(text);
       setError(getError(text));
     },
-    [getError],
+    [getError]
   );
   const submitText = useCallback(
     (text: string) => {
@@ -334,7 +284,7 @@ const useCreateListDialog = (
         void create(trimmed, false);
       }
     },
-    [close, create, getError, hasTemplate],
+    [close, create, getError, hasTemplate]
   );
   const submit = useCallback(() => {
     submitText(value);
@@ -352,10 +302,7 @@ const useCreateListDialog = (
   } as const;
 };
 
-const askUseTemplate = (
-  name: string,
-  create: (name: string, useTemplate: boolean) => Promise<void>,
-) => {
+const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
   Alert.alert(HOME_COPY.useTemplateTitle, HOME_COPY.useTemplateMessage, [
     { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
     { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
@@ -377,13 +324,7 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   if (!list) return null;
   const top = drag.frozenY ?? layout.y + drag.offsetY;
   return (
-    <Animated.View
-      pointerEvents="none"
-      style={[
-        dragStyles.ghost,
-        { top, height: layout.height, width: layout.width },
-      ]}
-    >
+    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top, height: layout.height, width: layout.width }]}>
       <ListCardPreview list={list} color={colors[list.id]} />
     </Animated.View>
   );
@@ -396,12 +337,7 @@ type DropIndicatorProps = {
   below: boolean;
 };
 
-const DropIndicator = ({
-  dropIndex,
-  lists,
-  layouts,
-  below,
-}: DropIndicatorProps) => {
+const DropIndicator = ({ dropIndex, lists, layouts, below }: DropIndicatorProps) => {
   if (dropIndex === null) return null;
   const targetId = lists[dropIndex]?.id;
   if (!targetId) return null;

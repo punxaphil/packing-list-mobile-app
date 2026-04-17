@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -8,14 +9,13 @@ import {
   Text,
   View,
 } from "react-native";
-import { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { HOME_COPY } from "../home/styles.ts";
-import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { showActionSheet } from "../home/showActionSheet.ts";
 import { showNativeTextPrompt } from "../home/showNativeTextPrompt.ts";
+import { HOME_COPY } from "../home/styles.ts";
+import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";

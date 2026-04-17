@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Platform,
-  Pressable,
-  Image as RNImage,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
 import { PageSheet } from "~/components/shared/PageSheet.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
@@ -30,53 +23,23 @@ type HeaderProps = {
   useSpaceAsTitle?: boolean;
 };
 
-const BackButton = ({
-  onBack,
-  leftImageUrl,
-}: {
-  onBack?: () => void;
-  leftImageUrl?: string;
-}) => (
+const BackButton = ({ onBack, leftImageUrl }: { onBack?: () => void; leftImageUrl?: string }) => (
   <View style={headerLocalStyles.sideSlot}>
     {onBack ? (
-      <Pressable
-        style={headerLocalStyles.backButton}
-        onPress={onBack}
-        accessibilityRole="button"
-        hitSlop={8}
-      >
+      <Pressable style={headerLocalStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
         <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
       </Pressable>
     ) : leftImageUrl ? (
-      <RNImage
-        source={{ uri: leftImageUrl }}
-        style={headerLocalStyles.avatarImage}
-      />
+      <RNImage source={{ uri: leftImageUrl }} style={headerLocalStyles.avatarImage} />
     ) : null}
   </View>
 );
 
-const AvatarButton = ({
-  email,
-  imageUrl,
-  onProfile,
-}: {
-  email: string;
-  imageUrl?: string;
-  onProfile?: () => void;
-}) => (
+const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
   <View style={headerLocalStyles.avatarSlot}>
-    <Pressable
-      style={headerLocalStyles.avatarButton}
-      onPress={onProfile}
-      accessibilityRole="button"
-      hitSlop={8}
-    >
+    <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
       {imageUrl ? (
-        <RNImage
-          source={{ uri: imageUrl }}
-          style={headerLocalStyles.avatarImage}
-        />
+        <RNImage source={{ uri: imageUrl }} style={headerLocalStyles.avatarImage} />
       ) : (
         <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
       )}
@@ -92,12 +55,7 @@ const buildInitial = (email: string) => {
 
 const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
   onPress ? (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      hitSlop={8}
-      style={homeStyles.panelTitleWrapper}
-    >
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={homeStyles.panelTitleWrapper}>
       <Text style={homeStyles.panelTitle} numberOfLines={1}>
         {title}
       </Text>
@@ -141,35 +99,17 @@ export const HomeHeader = ({
             <StackedTitle title={title} onPress={onPressTitle} />
           )}
         </View>
-        <AvatarButton
-          email={email}
-          imageUrl={profileImageUrl}
-          onProfile={openProfile}
-        />
+        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} />
       </View>
-      <SpaceSheet
-        visible={spaceSheetVisible}
-        onClose={() => setSpaceSheetVisible(false)}
-      />
-      <PageSheet
-        visible={profileVisible}
-        title="Profile"
-        onClose={() => setProfileVisible(false)}
-        scrollable={false}
-      >
+      <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
+      <PageSheet visible={profileVisible} title="Profile" onClose={() => setProfileVisible(false)} scrollable={false}>
         <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
       </PageSheet>
     </View>
   );
 };
 
-const StackedTitle = ({
-  title,
-  onPress,
-}: {
-  title: string;
-  onPress?: () => void;
-}) => (
+const StackedTitle = ({ title, onPress }: { title: string; onPress?: () => void }) => (
   <>
     <SpaceBar />
     <Title title={title} onPress={onPress} />
@@ -179,19 +119,12 @@ const StackedTitle = ({
 const SpaceTitle = ({ onPress }: { onPress: () => void }) => {
   const { activeSpace } = useSpace();
   return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      hitSlop={8}
-      style={headerLocalStyles.spaceTitlePressable}
-    >
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={headerLocalStyles.spaceTitlePressable}>
       <View style={headerLocalStyles.spaceTitleRow}>
         <Text style={homeStyles.panelTitle} numberOfLines={1}>
           {activeSpace?.name ?? ""}
         </Text>
-        <Text style={headerLocalStyles.spaceTitleChevron}>
-          {spaceCopy.chevron}
-        </Text>
+        <Text style={headerLocalStyles.spaceTitleChevron}>{spaceCopy.chevron}</Text>
       </View>
     </Pressable>
   );
@@ -207,9 +140,7 @@ const SpaceBar = () => {
       </Text>
       {pendingInvites.length > 0 && (
         <View style={headerLocalStyles.inviteBadge}>
-          <Text style={headerLocalStyles.inviteBadgeText}>
-            {pendingInvites.length}
-          </Text>
+          <Text style={headerLocalStyles.inviteBadgeText}>{pendingInvites.length}</Text>
         </View>
       )}
     </View>

@@ -1,7 +1,7 @@
 import { collection, onSnapshot, type QuerySnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { firestore } from "~/services/firebase.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { firestore } from "~/services/firebase.ts";
 import type { PackItem } from "~/types/PackItem.ts";
 
 const SPACES = "spaces";

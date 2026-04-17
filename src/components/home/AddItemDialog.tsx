@@ -35,7 +35,7 @@ type AddItemDialogProps = {
     itemName: string,
     category: NamedEntity | null,
     newCategoryName: string | null,
-    keepOpen: boolean,
+    keepOpen: boolean
   ) => Promise<NamedEntity>;
   onBrowseKits: () => void;
 };
@@ -68,18 +68,13 @@ export const AddItemDialog = ({
   const inputRef = useRef<TextInput>(null);
   const addedAnim = useRef(new Animated.Value(0)).current;
   const submittingRef = useRef(false);
-  const [visibleAddedMessage, setVisibleAddedMessage] = useState<string | null>(
-    null,
-  );
+  const [visibleAddedMessage, setVisibleAddedMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const isIosSheet = Platform.OS === "ios";
   const isSubmitDisabled = itemName.trim().length === 0;
   const hasNewCategory = newCategoryName.trim().length > 0;
   const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
-  const toggleKeepOpen = useCallback(
-    () => setKeepOpen((value) => !value),
-    [setKeepOpen],
-  );
+  const toggleKeepOpen = useCallback(() => setKeepOpen((value) => !value), [setKeepOpen]);
   const submit = useSubmitHandler(
     itemName,
     selectedCategory,
@@ -94,7 +89,7 @@ export const AddItemDialog = ({
     keepOpen,
     setAddedMessage,
     inputRef,
-    onSubmit,
+    onSubmit
   );
   const handleSubmit = useCallback(async () => {
     if (submittingRef.current) return;
@@ -174,9 +169,7 @@ export const AddItemDialog = ({
         )}
       </View>
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>
-        {COPY.existingCategory}
-      </Text>
+      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.existingCategory}</Text>
       <CategoryDropdown
         categories={categories}
         categoryImages={categoryImages}
@@ -188,9 +181,7 @@ export const AddItemDialog = ({
         disabled={submitting || hasNewCategory}
         iosSheet={isIosSheet}
       />
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>
-        {COPY.newCategory}
-      </Text>
+      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.newCategory}</Text>
       <TextInput
         value={newCategoryName}
         onChangeText={(text) => {
@@ -213,11 +204,7 @@ export const AddItemDialog = ({
         </View>
         <Text style={STYLES.keepOpenText}>{COPY.keepOpen}</Text>
       </Pressable>
-      <Button
-        label={COPY.browseKits}
-        onPress={onBrowseKits}
-        disabled={submitting}
-      />
+      <Button label={COPY.browseKits} onPress={onBrowseKits} disabled={submitting} />
     </>
   );
   if (isIosSheet) {
@@ -256,8 +243,7 @@ export const AddItemDialog = ({
 
 const useDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
   const [itemName, setItemName] = useState("");
-  const [selectedCategory, setSelectedCategory] =
-    useState<NamedEntity>(UNCATEGORIZED);
+  const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [keepOpen, setKeepOpen] = useState(false);
   const [addedMessage, setAddedMessage] = useState<string | null>(null);
@@ -301,15 +287,12 @@ const useSubmitHandler = (
   keepOpen: boolean,
   setAddedMessage: (message: string | null) => void,
   inputRef: React.RefObject<TextInput | null>,
-  onSubmit: AddItemDialogProps["onSubmit"],
+  onSubmit: AddItemDialogProps["onSubmit"]
 ) =>
   useCallback(async () => {
     const trimmedName = itemName.trim();
     if (!trimmedName) return;
-    if (
-      !hasNewCategory &&
-      hasDuplicateName(trimmedName, targetCategoryId, items)
-    ) {
+    if (!hasNewCategory && hasDuplicateName(trimmedName, targetCategoryId, items)) {
       setError(COPY.duplicateError);
       return;
     }
@@ -319,7 +302,7 @@ const useSubmitHandler = (
         trimmedName,
         hasNewCategory ? null : selectedCategory,
         hasNewCategory ? newCategoryName.trim() : null,
-        keepOpen,
+        keepOpen
       );
     } catch (e) {
       if (e instanceof DuplicateNameError) {
@@ -375,13 +358,11 @@ const CategoryDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { height } = useWindowDimensions();
-  const sorted = [...categories.filter((c) => c.id !== UNCATEGORIZED.id)].sort(
-    (a, b) => a.name.localeCompare(b.name),
-  );
+  const sorted = [...categories.filter((c) => c.id !== UNCATEGORIZED.id)].sort((a, b) => a.name.localeCompare(b.name));
   const allCategories = [UNCATEGORIZED, ...sorted];
   const dropdownMaxHeight = Math.min(
     allCategories.length * DROPDOWN_ROW_HEIGHT,
-    Math.floor(height * DROPDOWN_MAX_SCREEN_RATIO),
+    Math.floor(height * DROPDOWN_MAX_SCREEN_RATIO)
   );
   const toggle = () => {
     if (disabled) return;
@@ -394,58 +375,30 @@ const CategoryDropdown = ({
   };
   const selectedImageUrl = getCategoryImageUrl(categoryImages, selected.id);
   return (
-    <View
-      style={[
-        STYLES.dropdownContainer,
-        disabled ? STYLES.pickerDisabled : null,
-      ]}
-    >
-      <Pressable
-        style={iosSheet ? STYLES.sheetDropdownButton : STYLES.dropdownButton}
-        onPress={toggle}
-      >
+    <View style={[STYLES.dropdownContainer, disabled ? STYLES.pickerDisabled : null]}>
+      <Pressable style={iosSheet ? STYLES.sheetDropdownButton : STYLES.dropdownButton} onPress={toggle}>
         <View style={STYLES.dropdownValue}>
           <Text style={STYLES.dropdownText}>{selected.name}</Text>
           <View style={STYLES.dropdownMedia}>
-            {selectedImageUrl ? (
-              <RNImage
-                source={{ uri: selectedImageUrl }}
-                style={STYLES.dropdownImage}
-              />
-            ) : null}
+            {selectedImageUrl ? <RNImage source={{ uri: selectedImageUrl }} style={STYLES.dropdownImage} /> : null}
           </View>
         </View>
         <Text style={STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
       </Pressable>
       {open && (
-        <View
-          style={[
-            STYLES.dropdownList,
-            iosSheet ? STYLES.sheetDropdownList : null,
-          ]}
-        >
-          <ScrollView
-            style={[STYLES.dropdownScroll, { maxHeight: dropdownMaxHeight }]}
-            nestedScrollEnabled
-          >
+        <View style={[STYLES.dropdownList, iosSheet ? STYLES.sheetDropdownList : null]}>
+          <ScrollView style={[STYLES.dropdownScroll, { maxHeight: dropdownMaxHeight }]} nestedScrollEnabled>
             {allCategories.map((c, index) => (
               <Pressable
                 key={getCategoryKey(c)}
-                style={[
-                  STYLES.dropdownItem,
-                  index === allCategories.length - 1
-                    ? STYLES.dropdownItemLast
-                    : null,
-                ]}
+                style={[STYLES.dropdownItem, index === allCategories.length - 1 ? STYLES.dropdownItemLast : null]}
                 onPress={() => handleSelect(c)}
               >
                 <View style={STYLES.dropdownValue}>
                   <Text
                     style={[
                       STYLES.dropdownItemText,
-                      getCategoryKey(c) === getCategoryKey(selected)
-                        ? STYLES.dropdownItemSelected
-                        : null,
+                      getCategoryKey(c) === getCategoryKey(selected) ? STYLES.dropdownItemSelected : null,
                     ]}
                   >
                     {c.name}

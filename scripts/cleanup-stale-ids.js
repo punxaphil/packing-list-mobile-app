@@ -6,13 +6,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-const SUBCOLLECTIONS = [
-  "packingLists",
-  "packItems",
-  "categories",
-  "members",
-  "images",
-];
+const SUBCOLLECTIONS = ["packingLists", "packItems", "categories", "members", "images"];
 
 async function cleanStaleIds() {
   const spacesSnap = await db.collection("spaces").get();
@@ -27,15 +21,11 @@ async function cleanStaleIds() {
         if (!("id" in data)) continue;
         if (data.id === docSnap.id) {
           await docSnap.ref.update({ id: admin.firestore.FieldValue.delete() });
-          console.log(
-            `  [${spaceName}] ${sub}/${docSnap.id}: removed matching id field`,
-          );
+          console.log(`  [${spaceName}] ${sub}/${docSnap.id}: removed matching id field`);
           totalFixed++;
         } else {
           await docSnap.ref.update({ id: admin.firestore.FieldValue.delete() });
-          console.log(
-            `  [${spaceName}] ${sub}/${docSnap.id}: removed STALE id="${data.id}"`,
-          );
+          console.log(`  [${spaceName}] ${sub}/${docSnap.id}: removed STALE id="${data.id}"`);
           totalFixed++;
         }
       }

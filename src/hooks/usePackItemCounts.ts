@@ -25,27 +25,14 @@ const sumCounts = (items: PackItem[]): PackItemCountRecord => {
   }
   return counts;
 };
-const handleSnapshot =
-  (setState: (value: CountState) => void) => (snapshot: QuerySnapshot) => {
-    setState({ counts: sumCounts(mapSnapshot(snapshot)), loading: false });
-  };
-const handleError = (setState: (value: CountState) => void) => () =>
-  setState(createEmptyState());
-const buildQuery = (spaceId: string) =>
-  collection(firestore, SPACES, spaceId, PACK_ITEMS);
-const subscribeToCounts = (
-  spaceId: string,
-  setState: (value: CountState) => void,
-) =>
-  onSnapshot(
-    buildQuery(spaceId),
-    handleSnapshot(setState),
-    handleError(setState),
-  );
-const manageSubscription = (
-  spaceId: string | null | undefined,
-  setState: (value: CountState) => void,
-) => {
+const handleSnapshot = (setState: (value: CountState) => void) => (snapshot: QuerySnapshot) => {
+  setState({ counts: sumCounts(mapSnapshot(snapshot)), loading: false });
+};
+const handleError = (setState: (value: CountState) => void) => () => setState(createEmptyState());
+const buildQuery = (spaceId: string) => collection(firestore, SPACES, spaceId, PACK_ITEMS);
+const subscribeToCounts = (spaceId: string, setState: (value: CountState) => void) =>
+  onSnapshot(buildQuery(spaceId), handleSnapshot(setState), handleError(setState));
+const manageSubscription = (spaceId: string | null | undefined, setState: (value: CountState) => void) => {
   if (!spaceId) {
     setState(createEmptyState());
     return undefined;

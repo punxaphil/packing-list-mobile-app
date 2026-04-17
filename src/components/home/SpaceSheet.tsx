@@ -3,29 +3,16 @@ import { AppLoadingState } from "../shared/AppLoadingState.tsx";
 import { PageSheet, SheetIconButton } from "../shared/PageSheet.tsx";
 import { UserList } from "../space/UserList.tsx";
 import { SpaceSheetAndroid } from "./SpaceSheetAndroid.tsx";
-import {
-  CreateSpaceButton,
-  InviteSection,
-  SpaceActions,
-  SpaceNameRow,
-  SpaceRow,
-} from "./SpaceSheetParts.tsx";
+import { CreateSpaceButton, InviteSection, SpaceActions, SpaceNameRow, SpaceRow } from "./SpaceSheetParts.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { useSpaceSheet } from "./useSpaceSheet.ts";
 
-export const SpaceSheet = ({
-  visible,
-  onClose,
-}: {
-  visible: boolean;
-  onClose: () => void;
-}) => {
+export const SpaceSheet = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const s = useSpaceSheet(onClose);
 
-  const showHelp = () =>
-    Alert.alert(spaceCopy.spaceHelpTitle, spaceCopy.spaceHelp);
+  const showHelp = () => Alert.alert(spaceCopy.spaceHelpTitle, spaceCopy.spaceHelp);
 
   if (Platform.OS !== "ios") {
     return <SpaceSheetAndroid visible={visible} onClose={onClose} sheet={s} />;
@@ -37,23 +24,11 @@ export const SpaceSheet = ({
         visible={visible && !s.creatingSpace && s.subDialog !== "create"}
         title={spaceCopy.spacesTitle}
         onClose={onClose}
-        headerRight={
-          <SheetIconButton
-            icon="help-circle-outline"
-            onPress={showHelp}
-            accessibilityLabel="Help"
-          />
-        }
+        headerRight={<SheetIconButton icon="help-circle-outline" onPress={showHelp} accessibilityLabel="Help" />}
         scrollable={false}
       >
-        <ScrollView
-          style={styles.sheetList}
-          contentContainerStyle={styles.sheetListContent}
-        >
-          <SpaceNameRow
-            name={s.activeSpace?.name ?? ""}
-            onRename={s.handleRename}
-          />
+        <ScrollView style={styles.sheetList} contentContainerStyle={styles.sheetListContent}>
+          <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} />
           {s.activeSpace && (
             <UserList
               emails={s.activeSpace.memberEmails}

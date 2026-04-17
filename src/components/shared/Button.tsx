@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { Animated, Pressable, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { ICON_COLORS, buttonStyles as styles } from "./buttonStyles.ts";
 import { homeColors } from "../home/theme.ts";
+import { ICON_COLORS, buttonStyles as styles } from "./buttonStyles.ts";
 
 type Variant = "default" | "danger" | "primary" | "apple" | "ghost";
 
@@ -43,15 +43,7 @@ const TEXT_STYLES = {
   default: styles.textNeutral,
 };
 
-export const Button = ({
-  label,
-  onPress,
-  variant = "default",
-  icon,
-  centered,
-  disabled,
-  flex,
-}: ButtonProps) => {
+export const Button = ({ label, onPress, variant = "default", icon, centered, disabled, flex }: ButtonProps) => {
   const press = useRef(new Animated.Value(0)).current;
 
   const animate = (toValue: number) => {
@@ -74,15 +66,7 @@ export const Button = ({
 
   const displayLabel = variant === "apple" ? `${APPLE_SYMBOL} ${label}` : label;
   const textEl = (
-    <Text
-      style={[
-        styles.text,
-        TEXT_STYLES[variant],
-        disabled && styles.disabledText,
-      ]}
-    >
-      {displayLabel}
-    </Text>
+    <Text style={[styles.text, TEXT_STYLES[variant], disabled && styles.disabledText]}>{displayLabel}</Text>
   );
 
   return (
@@ -99,20 +83,14 @@ export const Button = ({
           VARIANT_STYLES[variant],
           disabled && styles.disabled,
           {
-            backgroundColor: disabled
-              ? BACKGROUND_COLORS[variant][0]
-              : backgroundColor,
+            backgroundColor: disabled ? BACKGROUND_COLORS[variant][0] : backgroundColor,
             transform: [{ scale }],
           },
         ]}
       >
         {icon ? (
           <View style={styles.row}>
-            <MaterialCommunityIcons
-              name={icon}
-              size={18}
-              color={ICON_COLORS[variant]}
-            />
+            <MaterialCommunityIcons name={icon} size={18} color={ICON_COLORS[variant]} />
             {textEl}
           </View>
         ) : (

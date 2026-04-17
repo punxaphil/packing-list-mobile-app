@@ -16,7 +16,6 @@ export const spaceCopy = {
   invitePrompt: "Invite someone to this space",
   inviteConfirm: "Send",
   inviteSent: "Invitation sent!",
-  spaceHelp:
-    "A Space is a collection of lists. Create multiple groups of lists and share selected groups with others.",
+  spaceHelp: "A Space is a collection of lists. Create multiple groups of lists and share selected groups with others.",
   spaceHelpTitle: "What is a Space?",
 } as const;
