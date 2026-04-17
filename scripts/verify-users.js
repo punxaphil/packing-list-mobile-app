@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const readline = require("readline");
+const readline = require("node:readline");
 
 const serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp({

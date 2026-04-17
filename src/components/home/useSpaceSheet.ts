@@ -5,14 +5,13 @@ import { useSpace } from "~/providers/SpaceContext.ts";
 import { fetchMemberData, type MemberData } from "~/services/spaceDatabase.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import { useSpaceManagement } from "../space/useSpaceManagement.ts";
-import type { SpaceSheetSubDialog } from "./SpaceSheetAndroid.tsx";
 import type { MemberInfo } from "./memberInfo.ts";
+import type { SpaceSheetSubDialog } from "./SpaceSheetAndroid.tsx";
 import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
 import { spaceCopy } from "./spaceCopy.ts";
 
 export function useSpaceSheet(onClose: () => void) {
-  const { spaces, spaceId, activeSpace, switchSpace, createNewSpace, profile } =
-    useSpace();
+  const { spaces, spaceId, activeSpace, switchSpace, createNewSpace, profile } = useSpace();
   const { pendingInvites, acceptInvite } = useInvites();
   const mgmt = useSpaceManagement(onClose);
   const [subDialog, setSubDialog] = useState<SpaceSheetSubDialog>("none");
@@ -40,7 +39,7 @@ export function useSpaceSheet(onClose: () => void) {
       switchSpace(invite.spaceId);
       onClose();
     },
-    [acceptInvite, switchSpace, onClose],
+    [acceptInvite, switchSpace, onClose]
   );
 
   const handleCreate = useCallback(
@@ -56,7 +55,7 @@ export function useSpaceSheet(onClose: () => void) {
         setCreatingSpace(false);
       }
     },
-    [createNewSpace, switchSpace, onClose],
+    [createNewSpace, switchSpace, onClose]
   );
 
   const handleCreateSubmit = useCallback(() => {
@@ -75,7 +74,7 @@ export function useSpaceSheet(onClose: () => void) {
           if (t.trim()) void mgmt.rename(t.trim());
         },
       }),
-    [activeSpace?.name, mgmt],
+    [activeSpace?.name, mgmt]
   );
 
   const handleInvite = useCallback(
@@ -90,15 +89,13 @@ export function useSpaceSheet(onClose: () => void) {
           Alert.alert(spaceCopy.inviteSent);
         },
       }),
-    [mgmt],
+    [mgmt]
   );
 
   const otherSpaces = spaces.filter((s) => s.id !== spaceId);
 
   const imagesByEmail = memberData.imagesByEmail;
-  const ownerEmail = activeSpace
-    ? memberData.emailById[activeSpace.ownerId]
-    : undefined;
+  const ownerEmail = activeSpace ? memberData.emailById[activeSpace.ownerId] : undefined;
 
   const memberInfoBySpaceId = useMemo(() => {
     const result: Record<string, MemberInfo[]> = {};

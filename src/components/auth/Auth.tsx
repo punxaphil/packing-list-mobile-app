@@ -22,8 +22,7 @@ const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
   "auth/weak-password": "Password must be at least 6 characters",
   "auth/invalid-email": "Please enter a valid email address",
   "auth/too-many-requests": "Too many attempts. Please try again later",
-  "auth/account-exists-with-different-credential":
-    "This email is already linked to Apple sign-in. Use that instead",
+  "auth/account-exists-with-different-credential": "This email is already linked to Apple sign-in. Use that instead",
 };
 
 const friendlyAuthError = (e: unknown, fallback: string): string =>
@@ -57,11 +56,7 @@ export function Login() {
     setError("");
     try {
       const auth = getAuth();
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email.trim(),
-        password,
-      );
+      const { user } = await createUserWithEmailAndPassword(auth, email.trim(), password);
       await sendEmailVerification(user);
     } catch (e) {
       setError(friendlyAuthError(e, "Registration failed"));
@@ -72,11 +67,7 @@ export function Login() {
     <SafeAreaView style={authStyles.safeArea}>
       <View style={authStyles.container}>
         <Text style={authStyles.title}>Welcome to Packsy</Text>
-        <Button
-          variant="apple"
-          label="Sign in with Apple"
-          onPress={() => void handleApple()}
-        />
+        <Button variant="apple" label="Sign in with Apple" onPress={() => void handleApple()} />
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {!showEmail && (
           <Pressable onPress={() => setShowEmail(true)}>

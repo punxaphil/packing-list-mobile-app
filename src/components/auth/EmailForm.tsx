@@ -11,14 +11,7 @@ type EmailFormProps = {
   onRegister: () => void;
 };
 
-export function EmailForm({
-  email,
-  setEmail,
-  password,
-  setPassword,
-  onLogin,
-  onRegister,
-}: EmailFormProps) {
+export function EmailForm({ email, setEmail, password, setPassword, onLogin, onRegister }: EmailFormProps) {
   return (
     <View style={styles.section}>
       <TextInput

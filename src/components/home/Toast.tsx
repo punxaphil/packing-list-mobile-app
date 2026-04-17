@@ -1,15 +1,9 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 type ToastContextValue = { show: (message: string) => void };
 const ToastContext = createContext<ToastContextValue | null>(null);
-
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (!context) throw new Error("useToast must be used within ToastProvider");
-  return context.show;
-};
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [message, setMessage] = useState<string | null>(null);
@@ -19,9 +13,17 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     (text: string) => {
       setMessage(text);
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
         Animated.delay(2000),
-        Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
       ]).start(() => setMessage(null));
     },
     [opacity]

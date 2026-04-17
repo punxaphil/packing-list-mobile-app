@@ -14,9 +14,7 @@ export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
   const destructiveIndices = actionItems
     .map((item, index) => (item.style === "destructive" ? index : -1))
     .filter((i) => i >= 0);
-  const disabledIndices = actionItems
-    .map((item, index) => (item.disabled ? index : -1))
-    .filter((i) => i >= 0);
+  const disabledIndices = actionItems.map((item, index) => (item.disabled ? index : -1)).filter((i) => i >= 0);
 
   ActionSheetIOS.showActionSheetWithOptions(
     {
@@ -24,13 +22,12 @@ export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
       options,
       cancelButtonIndex,
       destructiveButtonIndex: destructiveIndices[0] ?? undefined,
-      disabledButtonIndices:
-        disabledIndices.length > 0 ? disabledIndices : undefined,
+      disabledButtonIndices: disabledIndices.length > 0 ? disabledIndices : undefined,
     },
     (buttonIndex) => {
       if (buttonIndex !== cancelButtonIndex) {
         actionItems[buttonIndex]?.onPress?.();
       }
-    },
+    }
   );
 };

@@ -114,7 +114,6 @@ export const homeCopy: HomeCopy = {
   duplicateCopyToList: '"{name}" already exists in that list',
   duplicateCopyToListTitle: "Duplicate Item",
   templateHasCheckedTitle: "Checked items",
-  templateHasCheckedMessage:
-    "Uncheck all items before setting this list as a template.",
+  templateHasCheckedMessage: "Uncheck all items before setting this list as a template.",
   withoutMembers: "Without members",
 } as const;

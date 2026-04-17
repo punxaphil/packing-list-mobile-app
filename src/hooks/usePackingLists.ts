@@ -1,12 +1,5 @@
 import { getAuth } from "firebase/auth";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  QuerySnapshot,
-  query,
-  Unsubscribe,
-} from "firebase/firestore";
+import { collection, onSnapshot, orderBy, QuerySnapshot, query, Unsubscribe } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { firestore } from "~/services/firebase.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -42,10 +35,7 @@ function mapSnapshot(snapshot: QuerySnapshot): NamedEntity[] {
   })) as NamedEntity[];
 }
 
-function createSnapshotHandler(
-  spaceId: string,
-  setState: (value: HookState) => void,
-) {
+function createSnapshotHandler(spaceId: string, setState: (value: HookState) => void) {
   return (snapshot: QuerySnapshot) => {
     const lists = mapSnapshot(snapshot);
     logInfo("Loaded packing lists", { spaceId, count: lists.length });
@@ -53,16 +43,10 @@ function createSnapshotHandler(
   };
 }
 
-function createErrorHandler(
-  spaceId: string,
-  setState: (value: HookState) => void,
-) {
+function createErrorHandler(spaceId: string, setState: (value: HookState) => void) {
   return (error: unknown) => {
     const isSignedOut = !getAuth().currentUser;
-    const code =
-      typeof error === "object" && error !== null && "code" in error
-        ? error.code
-        : undefined;
+    const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
     const isPermissionDenied = code === "permission-denied";
     if (isSignedOut && isPermissionDenied) {
       setState(createEmptyState());
@@ -76,18 +60,15 @@ function createErrorHandler(
 function buildQuery(spaceId: string) {
   return query(
     collection(firestore, SPACES_COLLECTION, spaceId, PACKING_LISTS_COLLECTION),
-    orderBy(ORDER_FIELD, "desc"),
+    orderBy(ORDER_FIELD, "desc")
   );
 }
 
-function subscribeToLists(
-  spaceId: string,
-  setState: (value: HookState) => void,
-) {
+function subscribeToLists(spaceId: string, setState: (value: HookState) => void) {
   return onSnapshot(
     buildQuery(spaceId),
     createSnapshotHandler(spaceId, setState),
-    createErrorHandler(spaceId, setState),
+    createErrorHandler(spaceId, setState)
   );
 }
 
@@ -97,22 +78,14 @@ function unsubscribeMissingUser(setState: (value: HookState) => void) {
   return NOOP_UNSUBSCRIBE;
 }
 
-function createSubscription(
-  spaceId: string,
-  setState: (value: HookState) => void,
-) {
+function createSubscription(spaceId: string, setState: (value: HookState) => void) {
   logInfo("Subscribing to packing lists", { spaceId });
   setState(createInitialState());
   return subscribeToLists(spaceId, setState) ?? NOOP_UNSUBSCRIBE;
 }
 
-function manageSubscription(
-  spaceId: string | null | undefined,
-  setState: (value: HookState) => void,
-) {
-  return spaceId
-    ? createSubscription(spaceId, setState)
-    : unsubscribeMissingUser(setState);
+function manageSubscription(spaceId: string | null | undefined, setState: (value: HookState) => void) {
+  return spaceId ? createSubscription(spaceId, setState) : unsubscribeMissingUser(setState);
 }
 
 function buildResult(state: HookState) {

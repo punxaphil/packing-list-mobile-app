@@ -7,12 +7,7 @@ import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors } from "./theme.ts";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
 
-export type SpaceSheetSubDialog =
-  | "none"
-  | "create"
-  | "rename"
-  | "invite"
-  | "inviteSent";
+export type SpaceSheetSubDialog = "none" | "create" | "rename" | "invite" | "inviteSent";
 
 type Props = {
   visible: boolean;
@@ -34,11 +29,7 @@ export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => {
   }));
   const headerRight = (
     <Pressable onPress={() => s.setSubDialog("create")} hitSlop={8}>
-      <MaterialCommunityIcons
-        name="plus"
-        size={22}
-        color={homeColors.buttonText}
-      />
+      <MaterialCommunityIcons name="plus" size={22} color={homeColors.buttonText} />
     </Pressable>
   );
 

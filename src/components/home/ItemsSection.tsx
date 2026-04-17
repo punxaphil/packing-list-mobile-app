@@ -10,12 +10,7 @@ import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
-import {
-  type AddItemDialogState,
-  ItemsPanel,
-  type ListHandlers,
-  type TextDialogState,
-} from "./ItemsPanel.tsx";
+import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
 import {
   useAssignMembers,
   useCategoryRename,
@@ -46,64 +41,39 @@ const getCategoriesInList = (categories: NamedEntity[], items: PackItem[]) => {
 };
 
 const buildImageMap = (images: Image[], type: string) =>
-  new Map(
-    images
-      .filter((image) => image.type === type)
-      .map((image) => [image.typeId, image.url]),
-  );
+  new Map(images.filter((image) => image.type === type).map((image) => [image.typeId, image.url]));
 
-const attachImagesToEntities = (
-  entities: NamedEntity[],
-  imageMap: Map<string, string>,
-) => entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
+const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, string>) =>
+  entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { writeDb } = useSpace();
   const list = props.selection.selectedList;
-  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(
-    props.itemsState.items,
-    list?.id,
-  );
+  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items, list?.id);
   const categoryImageMap = useMemo(
     () => buildImageMap(props.imagesState.images, "categories"),
-    [props.imagesState.images],
+    [props.imagesState.images]
   );
-  const memberImageMap = useMemo(
-    () => buildImageMap(props.imagesState.images, "members"),
-    [props.imagesState.images],
-  );
+  const memberImageMap = useMemo(() => buildImageMap(props.imagesState.images, "members"), [props.imagesState.images]);
   const categoriesInList = useMemo(
     () =>
-      attachImagesToEntities(
-        getCategoriesInList(props.categoriesState.categories, optimisticItems),
-        categoryImageMap,
-      ),
-    [props.categoriesState.categories, optimisticItems, categoryImageMap],
+      attachImagesToEntities(getCategoriesInList(props.categoriesState.categories, optimisticItems), categoryImageMap),
+    [props.categoriesState.categories, optimisticItems, categoryImageMap]
   );
   const membersWithImages = useMemo(
     () => attachImagesToEntities(props.membersState.members, memberImageMap),
-    [props.membersState.members, memberImageMap],
+    [props.membersState.members, memberImageMap]
   );
-  const filterDialog = useFilterDialog(
-    categoriesInList,
-    membersWithImages,
-    optimisticItems,
-    list?.id,
-  );
+  const filterDialog = useFilterDialog(categoriesInList, membersWithImages, optimisticItems, list?.id);
   const filteredItems = useMemo(
     () =>
       applyFilters(
         optimisticItems,
         filterDialog.selectedCategories,
         filterDialog.selectedMembers,
-        filterDialog.statusFilter,
+        filterDialog.statusFilter
       ),
-    [
-      optimisticItems,
-      filterDialog.selectedCategories,
-      filterDialog.selectedMembers,
-      filterDialog.statusFilter,
-    ],
+    [optimisticItems, filterDialog.selectedCategories, filterDialog.selectedMembers, filterDialog.statusFilter]
   );
   const filteredItemsState = {
     ...props.itemsState,
@@ -115,17 +85,12 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const search = useSearch(filteredItems, categoriesInList);
   const handlers = useItemsSectionHandlers(toggleItem, toggleCategory);
   const renameList = useListRenamer();
-  const addItemDialog = useAddItemDialog(
-    optimisticItems,
-    props.categoriesState.categories,
-    writeDb,
-    list?.id,
-  );
+  const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, writeDb, list?.id);
   const renameDialog = useRenameDialog(list, props.lists, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const listImageUrl = props.imagesState.images.find(
-    (img) => img.type === "packingLists" && img.typeId === list.id,
+    (img) => img.type === "packingLists" && img.typeId === list.id
   )?.url;
   return (
     <>
@@ -167,15 +132,12 @@ export const ItemsSection = (props: ItemsSectionProps) => {
 type ToggleItem = (item: PackItem) => Promise<void>;
 type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
-const useItemsSectionHandlers = (
-  toggleItem: ToggleItem,
-  toggleCategory: ToggleCategory,
-): ListHandlers => ({
+const useItemsSectionHandlers = (toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
   onToggle: useCallback(
     (item: PackItem) => {
       void toggleItem(item);
     },
-    [toggleItem],
+    [toggleItem]
   ),
   onRenameItem: useItemRename(),
   onDeleteItem: useItemDelete(),
@@ -184,7 +146,7 @@ const useItemsSectionHandlers = (
     (items: PackItem[], checked: boolean) => {
       void toggleCategory(items, checked);
     },
-    [toggleCategory],
+    [toggleCategory]
   ),
   onAssignMembers: useAssignMembers(),
   onToggleMemberPacked: useToggleMemberPacked(),
@@ -198,7 +160,7 @@ const useItemsSectionHandlers = (
 const useRenameDialog = (
   list: NamedEntity | null,
   lists: NamedEntity[],
-  rename: (target: NamedEntity, name: string) => void,
+  rename: (target: NamedEntity, name: string) => void
 ): TextDialogState => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState(list?.name ?? "");
@@ -212,21 +174,17 @@ const useRenameDialog = (
   const getError = useCallback(
     (text: string) => {
       const trimmed = text.trim();
-      const isDuplicate =
-        list &&
-        trimmed &&
-        trimmed !== list.name &&
-        hasDuplicateEntityName(trimmed, lists, list.id);
+      const isDuplicate = list && trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
       return isDuplicate ? HOME_COPY.duplicateListName : null;
     },
-    [list, lists],
+    [list, lists]
   );
   const onChange = useCallback(
     (text: string) => {
       setValue(text);
       setError(getError(text));
     },
-    [getError],
+    [getError]
   );
   const submitText = useCallback(
     (text: string) => {
@@ -240,7 +198,7 @@ const useRenameDialog = (
       rename(list, trimmed);
       close();
     },
-    [close, getError, list, rename],
+    [close, getError, list, rename]
   );
   const submit = useCallback(() => {
     submitText(value);
@@ -262,47 +220,31 @@ const useAddItemDialog = (
   items: PackItem[],
   categories: NamedEntity[],
   writeDb: WriteDb,
-  listId?: string | null,
+  listId?: string | null
 ): AddItemDialogState => {
   const [visible, setVisible] = useState(false);
   const [kitPickerVisible, setKitPickerVisible] = useState(false);
-  const [initialCategory, setInitialCategory] = useState<
-    NamedEntity | undefined
-  >();
-  const [lastSelectedCategoryId, setLastSelectedCategoryId] = useState(
-    UNCATEGORIZED.id,
-  );
-  const hasUncategorizedItems = useMemo(
-    () => items.some((i) => !i.category),
-    [items],
-  );
+  const [initialCategory, setInitialCategory] = useState<NamedEntity | undefined>();
+  const [lastSelectedCategoryId, setLastSelectedCategoryId] = useState(UNCATEGORIZED.id);
+  const hasUncategorizedItems = useMemo(() => items.some((i) => !i.category), [items]);
   const firstUsedCategory = useMemo(() => {
     const usedIds = new Set(items.map((i) => i.category).filter(Boolean));
     return categories.find((c) => usedIds.has(c.id));
   }, [items, categories]);
   const resolveCategory = useCallback(
     (category?: NamedEntity) => {
-      const resolved =
-        category ??
-        categories.find((entry) => entry.id === lastSelectedCategoryId);
+      const resolved = category ?? categories.find((entry) => entry.id === lastSelectedCategoryId);
       if (resolved) return resolved;
-      return !hasUncategorizedItems && firstUsedCategory
-        ? firstUsedCategory
-        : UNCATEGORIZED;
+      return !hasUncategorizedItems && firstUsedCategory ? firstUsedCategory : UNCATEGORIZED;
     },
-    [
-      categories,
-      lastSelectedCategoryId,
-      hasUncategorizedItems,
-      firstUsedCategory,
-    ],
+    [categories, lastSelectedCategoryId, hasUncategorizedItems, firstUsedCategory]
   );
   const open = useCallback(
     (category?: NamedEntity) => {
       setInitialCategory(resolveCategory(category));
       setVisible(true);
     },
-    [resolveCategory],
+    [resolveCategory]
   );
   const close = useCallback(() => setVisible(false), []);
   const onBrowseKits = useCallback(() => {
@@ -311,40 +253,22 @@ const useAddItemDialog = (
   }, []);
   const closeKitPicker = useCallback(() => setKitPickerVisible(false), []);
   const submit = useCallback(
-    async (
-      itemName: string,
-      category: NamedEntity | null,
-      newCategoryName: string | null,
-      keepOpen: boolean,
-    ) => {
+    async (itemName: string, category: NamedEntity | null, newCategoryName: string | null, keepOpen: boolean) => {
       if (!listId) return UNCATEGORIZED;
       animateLayout();
       let categoryId = category?.id ?? UNCATEGORIZED.id;
       let nextCategory = category ?? UNCATEGORIZED;
       if (newCategoryName) {
-        const existing = categories.find(
-          (c) => c.name.toLowerCase() === newCategoryName.trim().toLowerCase(),
-        );
-        nextCategory =
-          existing ??
-          (await writeDb.addCategory(
-            newCategoryName,
-            getNextCategoryRank(categories),
-          ));
+        const existing = categories.find((c) => c.name.toLowerCase() === newCategoryName.trim().toLowerCase());
+        nextCategory = existing ?? (await writeDb.addCategory(newCategoryName, getNextCategoryRank(categories)));
         categoryId = nextCategory.id;
       }
       setLastSelectedCategoryId(categoryId);
-      await writeDb.addPackItem(
-        itemName,
-        [],
-        categoryId,
-        listId,
-        getNextItemRank(items),
-      );
+      await writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
       if (!keepOpen) close();
       return nextCategory;
     },
-    [items, categories, writeDb, listId, close],
+    [items, categories, writeDb, listId, close]
   );
   const addKits = useCallback(
     async (kits: PackingKit[]) => {
@@ -362,10 +286,7 @@ const useAddItemDialog = (
           let categoryId = categoryMap.get(catKey);
           if (!categoryId) {
             try {
-              const newCat = await writeDb.addCategory(
-                kitItem.category,
-                currentCategoryRank++,
-              );
+              const newCat = await writeDb.addCategory(kitItem.category, currentCategoryRank++);
               categoryId = newCat.id;
               categoryMap.set(catKey, categoryId);
             } catch (e) {
@@ -374,20 +295,14 @@ const useAddItemDialog = (
             }
           }
           try {
-            await writeDb.addPackItem(
-              kitItem.name,
-              [],
-              categoryId,
-              listId,
-              currentItemRank++,
-            );
+            await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank++);
           } catch (e) {
             if (!(e instanceof DuplicateNameError)) throw e;
           }
         }
       }
     },
-    [items, categories, writeDb, listId],
+    [items, categories, writeDb, listId]
   );
   return {
     visible,

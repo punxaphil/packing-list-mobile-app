@@ -45,20 +45,9 @@ export function VerifyEmail({ recheckUser }: { recheckUser: () => void }) {
         </Text>
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {message ? <Text style={styles.success}>{message}</Text> : null}
-        <Button
-          label="I've verified my email"
-          variant="primary"
-          onPress={() => void handleCheck()}
-        />
-        <Button
-          label="Resend verification email"
-          onPress={() => void handleResend()}
-        />
-        <Button
-          label="Sign out"
-          variant="ghost"
-          onPress={() => void getAuth().signOut()}
-        />
+        <Button label="I've verified my email" variant="primary" onPress={() => void handleCheck()} />
+        <Button label="Resend verification email" onPress={() => void handleResend()} />
+        <Button label="Sign out" variant="ghost" onPress={() => void getAuth().signOut()} />
       </View>
     </SafeAreaView>
   );

@@ -50,11 +50,7 @@ export const PageSheet = ({
       <KeyboardAvoidingView behavior="padding" style={styles.safeArea}>
         <View style={styles.headerWrap}>
           <View style={styles.header}>
-            <SheetIconButton
-              icon="close"
-              onPress={onClose}
-              accessibilityLabel="Cancel"
-            />
+            <SheetIconButton icon="close" onPress={onClose} accessibilityLabel="Cancel" />
             <Text style={styles.title}>{title}</Text>
             {headerRight ? (
               headerRight
@@ -82,10 +78,7 @@ export const PageSheet = ({
         </View>
         {scrollable ? (
           <Pressable style={styles.content} onPress={Keyboard.dismiss}>
-            <ScrollView
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={styles.scrollContent}
-            >
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
               <View style={styles.panel}>{children}</View>
             </ScrollView>
           </Pressable>
@@ -120,14 +113,7 @@ const SheetTextButton = ({
     onPress={onPress}
     style={styles.textButton}
   >
-    <Text
-      style={[
-        styles.textButtonLabel,
-        disabled ? styles.textButtonLabelDisabled : null,
-      ]}
-    >
-      {label}
-    </Text>
+    <Text style={[styles.textButtonLabel, disabled ? styles.textButtonLabelDisabled : null]}>{label}</Text>
   </Pressable>
 );
 
@@ -156,9 +142,7 @@ export const SheetIconButton = ({
 
   const backgroundColor = press.interpolate({
     inputRange: [0, 1],
-    outputRange: primary
-      ? [homeColors.primary, "#BFDBFE"]
-      : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
+    outputRange: primary ? [homeColors.primary, "#BFDBFE"] : ["rgba(255,255,255,0.82)", "rgba(255,255,255,0.98)"],
   });
   const scale = press.interpolate({
     inputRange: [0, 1],
@@ -196,11 +180,7 @@ export const SheetIconButton = ({
         ]}
       >
         <Animated.View style={{ opacity: disabled ? 0.45 : iconOpacity }}>
-          <MaterialCommunityIcons
-            name={icon}
-            size={28}
-            style={[styles.icon, primary ? styles.iconPrimary : null]}
-          />
+          <MaterialCommunityIcons name={icon} size={28} style={[styles.icon, primary ? styles.iconPrimary : null]} />
         </Animated.View>
       </Animated.View>
     </Pressable>
@@ -260,14 +240,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom:
-      homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
   },
   scrollContent: {
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom:
-      homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
   },
   panel: {
     backgroundColor: "rgba(255,255,255,0.52)",
