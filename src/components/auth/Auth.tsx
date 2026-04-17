@@ -2,14 +2,17 @@ import {
   type AuthError,
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signInWithApple } from "~/services/appleAuth.ts";
-import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { homeColors } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
+import { authStyles } from "./authStyles.ts";
+import { EmailForm } from "./EmailForm.tsx";
 
 const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
   "auth/invalid-credential": "Incorrect email or password",
@@ -25,24 +28,6 @@ const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
 
 const friendlyAuthError = (e: unknown, fallback: string): string =>
   FRIENDLY_AUTH_ERRORS[(e as AuthError)?.code] ?? fallback;
-
-export function useCurrentUser() {
-  const [userId, setUserId] = useState("");
-  const [email, setEmail] = useState("");
-  const [loggingIn, setLoggingIn] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = getAuth().onAuthStateChanged((user) => {
-      setUserId(user?.uid ?? "");
-      setEmail(user?.email?.toLowerCase() ?? "");
-      setLoggingIn(false);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return { userId, email, loggingIn };
-}
 
 export function Login() {
   const [showEmail, setShowEmail] = useState(false);
@@ -72,22 +57,27 @@ export function Login() {
     setError("");
     try {
       const auth = getAuth();
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password,
+      );
+      await sendEmailVerification(user);
     } catch (e) {
       setError(friendlyAuthError(e, "Registration failed"));
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome to Packsy</Text>
+    <SafeAreaView style={authStyles.safeArea}>
+      <View style={authStyles.container}>
+        <Text style={authStyles.title}>Welcome to Packsy</Text>
         <Button
           variant="apple"
           label="Sign in with Apple"
           onPress={() => void handleApple()}
         />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {!showEmail && (
           <Pressable onPress={() => setShowEmail(true)}>
             <Text style={styles.emailToggle}>Sign in with email instead</Text>
@@ -105,81 +95,11 @@ export function Login() {
   );
 }
 
-type EmailFormProps = {
-  email: string;
-  setEmail: (v: string) => void;
-  password: string;
-  setPassword: (v: string) => void;
-  onLogin: () => void;
-  onRegister: () => void;
-};
-
-function EmailForm({
-  email,
-  setEmail,
-  password,
-  setPassword,
-  onLogin,
-  onRegister,
-}: EmailFormProps) {
-  return (
-    <View style={styles.emailSection}>
-      <TextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        autoCapitalize="none"
-        secureTextEntry
-        placeholder="Password"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button label="Login" onPress={onLogin} />
-      <Button label="Register" onPress={onRegister} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: homeColors.background },
-  container: {
-    flex: 1,
-    width: "100%",
-    maxWidth: 400,
-    alignSelf: "center",
-    paddingHorizontal: homeSpacing.lg,
-    paddingVertical: 32,
-    gap: homeSpacing.md,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-    color: homeColors.text,
-    marginBottom: homeSpacing.md,
-  },
   emailToggle: {
     color: homeColors.muted,
     fontSize: 14,
     textAlign: "center",
     textDecorationLine: "underline",
   },
-  emailSection: { gap: homeSpacing.sm },
-  input: {
-    width: "100%",
-    borderColor: homeColors.border,
-    borderWidth: 1,
-    borderRadius: homeRadius,
-    paddingVertical: 12,
-    paddingHorizontal: homeSpacing.md,
-  },
-
-  error: { color: homeColors.danger, textAlign: "center", fontSize: 14 },
 });
