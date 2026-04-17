@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState } from "react";
-import { Animated, StyleSheet, Text } from "react-native";
-import { homeColors, homeSpacing } from "./theme.ts";
+import { Animated, Text } from "react-native";
+import { animateToast, createToastStyles } from "./toastUtils.ts";
 
 type ToastContextValue = { show: (message: string) => void };
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -12,19 +12,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const show = useCallback(
     (text: string) => {
       setMessage(text);
-      Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.delay(2000),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start(() => setMessage(null));
+      animateToast(opacity, () => setMessage(null));
     },
     [opacity]
   );
@@ -41,16 +29,4 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 100,
-    left: homeSpacing.lg,
-    right: homeSpacing.lg,
-    backgroundColor: homeColors.text,
-    borderRadius: 8,
-    padding: homeSpacing.md,
-    alignItems: "center",
-  },
-  text: { color: homeColors.surface, fontSize: 14, textAlign: "center" },
-});
+const styles = createToastStyles();

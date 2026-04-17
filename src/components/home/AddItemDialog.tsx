@@ -23,6 +23,7 @@ import { AppCheckbox } from "./AppCheckbox.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
+import { animateToast, createToastStyles } from "./toastUtils.ts";
 
 type AddItemDialogProps = {
   visible: boolean;
@@ -50,6 +51,8 @@ export const AddItemDialog = ({
   onSubmit,
   onBrowseKits,
 }: AddItemDialogProps) => {
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastOpacity = useRef(new Animated.Value(0)).current;
   const state = useDialogState(visible, initialCategory);
   const {
     itemName,
@@ -60,21 +63,25 @@ export const AddItemDialog = ({
     setNewCategoryName,
     keepOpen,
     setKeepOpen,
-    addedMessage,
-    setAddedMessage,
     error,
     setError,
   } = state;
   const inputRef = useRef<TextInput>(null);
-  const addedAnim = useRef(new Animated.Value(0)).current;
   const submittingRef = useRef(false);
-  const [visibleAddedMessage, setVisibleAddedMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const isIosSheet = Platform.OS === "ios";
   const isSubmitDisabled = itemName.trim().length === 0;
   const hasNewCategory = newCategoryName.trim().length > 0;
   const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
   const toggleKeepOpen = useCallback(() => setKeepOpen((value) => !value), [setKeepOpen]);
+  const showToast = useCallback(
+    (message: string) => {
+      setToastMessage(message);
+      toastOpacity.setValue(0);
+      animateToast(toastOpacity, () => setToastMessage(null));
+    },
+    [toastOpacity]
+  );
   const submit = useSubmitHandler(
     itemName,
     selectedCategory,
@@ -87,7 +94,7 @@ export const AddItemDialog = ({
     setNewCategoryName,
     setError,
     keepOpen,
-    setAddedMessage,
+    showToast,
     inputRef,
     onSubmit
   );
@@ -106,68 +113,20 @@ export const AddItemDialog = ({
     isIosSheet ? STYLES.sheetInput : homeStyles.modalInput,
     error ? homeStyles.modalInputError : null,
   ];
-  useEffect(() => {
-    if (addedMessage) {
-      setVisibleAddedMessage(addedMessage);
-      addedAnim.setValue(0);
-      Animated.spring(addedAnim, {
-        toValue: 1,
-        tension: 120,
-        friction: 12,
-        useNativeDriver: true,
-      }).start();
-      return;
-    }
-    if (!visibleAddedMessage) return;
-    Animated.timing(addedAnim, {
-      toValue: 0,
-      duration: 160,
-      useNativeDriver: true,
-    }).start(() => setVisibleAddedMessage(null));
-  }, [addedAnim, addedMessage, visibleAddedMessage]);
   const content = (
     <>
-      <View style={STYLES.inputWrap}>
-        <TextInput
-          ref={inputRef}
-          value={itemName}
-          onChangeText={(text) => {
-            setItemName(text);
-            setAddedMessage(null);
-            setError(null);
-          }}
-          placeholder={HOME_COPY.addItemPlaceholder}
-          style={inputStyle}
-          editable={!submitting}
-          autoFocus
-        />
-        {visibleAddedMessage && (
-          <Animated.View
-            style={[
-              STYLES.addedMessageWrap,
-              {
-                opacity: addedAnim,
-                transform: [
-                  {
-                    translateY: addedAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [-6, 0],
-                    }),
-                  },
-                  {
-                    scale: addedAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.96, 1],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <Text style={STYLES.addedMessage}>{visibleAddedMessage}</Text>
-          </Animated.View>
-        )}
-      </View>
+      <TextInput
+        ref={inputRef}
+        value={itemName}
+        onChangeText={(text) => {
+          setItemName(text);
+          setError(null);
+        }}
+        placeholder={HOME_COPY.addItemPlaceholder}
+        style={inputStyle}
+        editable={!submitting}
+        autoFocus
+      />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
       <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.existingCategory}</Text>
       <CategoryDropdown
@@ -218,6 +177,11 @@ export const AddItemDialog = ({
         confirmDisabled={isSubmitDisabled || submitting}
       >
         {content}
+        {toastMessage && (
+          <Animated.View style={[TOAST_STYLES.container, { opacity: toastOpacity }]}>
+            <Text style={TOAST_STYLES.text}>{toastMessage}</Text>
+          </Animated.View>
+        )}
       </PageSheet>
     );
   }
@@ -237,6 +201,11 @@ export const AddItemDialog = ({
       }
     >
       {content}
+      {toastMessage && (
+        <Animated.View style={[TOAST_STYLES.container, { opacity: toastOpacity }]}>
+          <Text style={TOAST_STYLES.text}>{toastMessage}</Text>
+        </Animated.View>
+      )}
     </DialogShell>
   );
 };
@@ -246,14 +215,12 @@ const useDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [keepOpen, setKeepOpen] = useState(false);
-  const [addedMessage, setAddedMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (visible) {
       setItemName("");
       setSelectedCategory(initialCategory ?? UNCATEGORIZED);
       setNewCategoryName("");
-      setAddedMessage(null);
       setError(null);
     }
   }, [visible, initialCategory]);
@@ -266,8 +233,6 @@ const useDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
     setNewCategoryName,
     keepOpen,
     setKeepOpen,
-    addedMessage,
-    setAddedMessage,
     error,
     setError,
   };
@@ -285,7 +250,7 @@ const useSubmitHandler = (
   setNewCategoryName: (value: string) => void,
   setError: (error: string | null) => void,
   keepOpen: boolean,
-  setAddedMessage: (message: string | null) => void,
+  showToast: (message: string) => void,
   inputRef: React.RefObject<TextInput | null>,
   onSubmit: AddItemDialogProps["onSubmit"]
 ) =>
@@ -316,7 +281,7 @@ const useSubmitHandler = (
     setSelectedCategory(nextCategory);
     setNewCategoryName("");
     setError(null);
-    setAddedMessage(COPY.added.replace("{name}", trimmedName));
+    showToast(COPY.added.replace("{name}", trimmedName));
     inputRef.current?.focus();
   }, [
     itemName,
@@ -330,7 +295,7 @@ const useSubmitHandler = (
     setNewCategoryName,
     setError,
     keepOpen,
-    setAddedMessage,
+    showToast,
     inputRef,
     onSubmit,
   ]);
@@ -433,26 +398,6 @@ const COPY = {
   browseKits: "Browse Packing Kits",
 };
 const STYLES = {
-  inputWrap: {
-    position: "relative" as const,
-  },
-  addedMessageWrap: {
-    position: "absolute" as const,
-    right: 12,
-    top: 10,
-    zIndex: 1,
-  },
-  addedMessage: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: homeColors.primaryLight,
-    color: homeColors.muted,
-    fontSize: 13,
-    fontWeight: "600" as const,
-    textAlign: "center" as const,
-    overflow: "hidden" as const,
-  },
   dropdownContainer: { marginBottom: 12, zIndex: 10 },
   sheetLabel: {
     fontSize: 14,
@@ -539,3 +484,5 @@ const STYLES = {
   },
   keepOpenText: { fontSize: 15, color: homeColors.text },
 };
+
+const TOAST_STYLES = createToastStyles();
