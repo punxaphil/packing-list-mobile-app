@@ -196,8 +196,8 @@ export const homeStyles = StyleSheet.create({
     left: CHECKBOX_SIZE * 0.2,
   },
   categoryImage: { width: 24, height: 24, borderRadius: 4 },
+  categoryTitleWrapper: { flex: 1 },
   categoryTitle: {
-    flex: 1,
     fontSize: 18,
     lineHeight: 20,
     fontWeight: "600",
