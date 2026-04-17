@@ -400,7 +400,7 @@ const CategoryHeader = ({
         )}
       </View>
       {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
-      <Pressable onPress={isUncategorized ? undefined : onRename}>
+      <Pressable onPress={isUncategorized ? undefined : onRename} style={homeStyles.categoryTitleWrapper}>
         <Text style={homeStyles.categoryTitle} numberOfLines={1}>
           {section.title}
         </Text>

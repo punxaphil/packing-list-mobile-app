@@ -23,7 +23,7 @@ import { AppCheckbox } from "./AppCheckbox.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
-import { animateToast, createToastStyles } from "./toastUtils.ts";
+import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
 
 type AddItemDialogProps = {
   visible: boolean;
@@ -484,5 +484,3 @@ const STYLES = {
   },
   keepOpenText: { fontSize: 15, color: homeColors.text },
 };
-
-const TOAST_STYLES = createToastStyles();
