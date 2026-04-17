@@ -159,7 +159,7 @@ export const AddItemDialog = ({
         accessibilityState={{ checked: keepOpen }}
       >
         <View pointerEvents="none">
-          <AppCheckbox checked={keepOpen} onToggle={toggleKeepOpen} size={16} />
+          <AppCheckbox checked={keepOpen} onToggle={toggleKeepOpen} size={24} />
         </View>
         <Text style={STYLES.keepOpenText}>{COPY.keepOpen}</Text>
       </Pressable>
