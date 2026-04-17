@@ -1,12 +1,23 @@
 import { useEffect, useRef } from "react";
-import { Login, useCurrentUser } from "~/components/auth/Auth";
-import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
+import { Login } from "~/components/auth/Auth";
+import { VerifyEmail } from "~/components/auth/VerifyEmail";
+import {
+  AppLoadingState,
+  useDelayedLoading,
+} from "~/components/shared/AppLoadingState.tsx";
+import { useCurrentUser } from "~/hooks/useCurrentUser.ts";
 import { useSpaceBootstrap } from "~/hooks/useSpaces.ts";
 import { setAppState } from "./appState";
 import { showMainTabs } from "./navigation";
 import { getSelectedId } from "./selectionState";
 
-function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }) {
+function BootstrapAndLaunch({
+  userId,
+  email,
+}: {
+  userId: string;
+  email: string;
+}) {
   const ready = useSpaceBootstrap(userId, email);
   const prevHasSelection = useRef<boolean | null>(null);
   const showLoader = useDelayedLoading(!ready);
@@ -25,10 +36,12 @@ function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }
 }
 
 export function AppRoot() {
-  const { userId, email, loggingIn } = useCurrentUser();
+  const { userId, email, emailVerified, loggingIn, recheckUser } =
+    useCurrentUser();
 
   if (loggingIn) return <AppLoadingState />;
   if (!userId) return <Login />;
+  if (!emailVerified) return <VerifyEmail recheckUser={recheckUser} />;
 
   return <BootstrapAndLaunch userId={userId} email={email} />;
 }
