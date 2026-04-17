@@ -8,12 +8,14 @@ import {
   Text,
   View,
 } from "react-native";
+import { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { EditableText } from "../home/EditableText.tsx";
+import { HOME_COPY } from "../home/styles.ts";
+import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { showActionSheet } from "../home/showActionSheet.ts";
-import { useToast } from "../home/Toast.tsx";
+import { showNativeTextPrompt } from "../home/showNativeTextPrompt.ts";
 import { homeColors } from "../home/theme.ts";
 import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
@@ -21,7 +23,6 @@ import { hasDuplicateEntityName } from "./entityValidation.ts";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
-const COPY = { duplicateName: "{type} with this name already exists" };
 
 export type EntityActions = {
   onAdd: (name: string) => Promise<void>;
@@ -54,6 +55,8 @@ const formatItemCount = (count: number) => {
 };
 
 export const EntityCard = (props: EntityCardProps) => {
+  const [renameVisible, setRenameVisible] = useState(false);
+  const [renameValue, setRenameValue] = useState(props.entity.name);
   const { wrap } = useDraggableRow(
     {
       onStart: props.onDragStart,
@@ -62,15 +65,45 @@ export const EntityCard = (props: EntityCardProps) => {
     },
     { applyTranslation: false }
   );
-  const showToast = useToast();
   const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
   const handleRename = (name: string) => props.actions.onRename(props.entity, name);
-  const validateName = (name: string) => !hasDuplicateEntityName(name, props.entities, props.entity.id);
-  const onDuplicateName = () => showToast(COPY.duplicateName.replace("{type}", props.copy.type));
+  const getRenameError = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === props.entity.name) return null;
+    return hasDuplicateEntityName(trimmed, props.entities, props.entity.id)
+      ? `${props.copy.type} with this name already exists`
+      : null;
+  };
+  const submitRename = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === props.entity.name) return;
+    void handleRename(trimmed);
+  };
+  const openRename = () => {
+    setRenameValue(props.entity.name);
+    if (
+      showNativeTextPrompt({
+        title: props.copy.renamePrompt,
+        confirmLabel: props.copy.renameConfirm,
+        cancelLabel: HOME_COPY.cancel,
+        value: props.entity.name,
+        getError: getRenameError,
+        onSubmit: submitRename,
+      })
+    ) {
+      return;
+    }
+    setRenameVisible(true);
+  };
+  const closeRename = () => {
+    setRenameVisible(false);
+    setRenameValue(props.entity.name);
+  };
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const showHighlight = !!props.highlightOpacity;
   const openMenu = () =>
     showActionSheet(props.entity.name, [
+      { text: HOME_COPY.rename, onPress: openRename },
       {
         text: "Delete",
         style: "destructive",
@@ -95,18 +128,28 @@ export const EntityCard = (props: EntityCardProps) => {
             copy={props.copy}
           />
           <View style={entityStyles.cardBody}>
-            <EditableText
-              value={props.entity.name}
-              onSubmit={handleRename}
-              validate={validateName}
-              onValidationFail={onDuplicateName}
-              textStyle={entityStyles.cardName}
-            />
+            <Pressable onPress={openRename}>
+              <Text style={entityStyles.cardName}>{props.entity.name}</Text>
+            </Pressable>
             <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
           </View>
           <MenuButton onPress={openMenu} />
         </View>
       </Pressable>
+      <TextPromptDialog
+        visible={renameVisible}
+        title={props.copy.renamePrompt}
+        confirmLabel={props.copy.renameConfirm}
+        value={renameValue}
+        error={getRenameError(renameValue)}
+        disabled={!!getRenameError(renameValue)}
+        onChange={setRenameValue}
+        onCancel={closeRename}
+        onSubmit={() => {
+          submitRename(renameValue);
+          closeRename();
+        }}
+      />
     </View>
   );
 };

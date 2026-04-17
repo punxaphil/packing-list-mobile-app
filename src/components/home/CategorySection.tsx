@@ -462,9 +462,11 @@ const CategoryHeader = ({
       {imageUrl && (
         <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />
       )}
-      <Text style={homeStyles.categoryTitle} numberOfLines={1}>
-        {section.title}
-      </Text>
+      <Pressable onPress={isUncategorized ? undefined : onRename}>
+        <Text style={homeStyles.categoryTitle} numberOfLines={1}>
+          {section.title}
+        </Text>
+      </Pressable>
       <Pressable
         style={homeStyles.addButton}
         onPress={openMenu}
@@ -695,15 +697,17 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         )}
         <View style={homeStyles.itemContent}>
           <View>
-            <Text
-              style={[
-                homeStyles.detailLabel,
-                checked && homeStyles.detailLabelChecked,
-              ]}
-              numberOfLines={wrapItemText ? undefined : 1}
-            >
-              {props.item.name}
-            </Text>
+            <Pressable onPress={props.onOpenRename}>
+              <Text
+                style={[
+                  homeStyles.detailLabel,
+                  checked && homeStyles.detailLabelChecked,
+                ]}
+                numberOfLines={wrapItemText ? undefined : 1}
+              >
+                {props.item.name}
+              </Text>
+            </Pressable>
           </View>
           <MemberInitials
             item={props.item}
