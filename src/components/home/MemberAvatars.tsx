@@ -1,4 +1,5 @@
 import { Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { MemberInfo } from "./memberInfo.ts";
 import { homeColors } from "./theme.ts";
 
@@ -24,15 +25,20 @@ export const MemberAvatars = ({ members }: { members: MemberInfo[] }) => {
   );
 };
 
-const Avatar = ({ email, imageUrl }: { email: string; imageUrl?: string }) => (
-  <View style={avatarStyles.badge}>
-    {imageUrl ? (
-      <RNImage source={{ uri: imageUrl }} style={avatarStyles.image} />
-    ) : (
-      <Text style={avatarStyles.initial}>{email[0]?.toUpperCase() ?? "?"}</Text>
-    )}
-  </View>
-);
+const Avatar = ({ email, imageUrl }: { email: string; imageUrl?: string }) => {
+  const emoji = getEmojiValue(imageUrl);
+  return (
+    <View style={avatarStyles.badge}>
+      {emoji ? (
+        <Text style={avatarStyles.emoji}>{emoji}</Text>
+      ) : imageUrl ? (
+        <RNImage source={{ uri: imageUrl }} style={avatarStyles.image} />
+      ) : (
+        <Text style={avatarStyles.initial}>{email[0]?.toUpperCase() ?? "?"}</Text>
+      )}
+    </View>
+  );
+};
 
 const avatarStyles = StyleSheet.create({
   container: {
@@ -58,6 +64,10 @@ const avatarStyles = StyleSheet.create({
     color: homeColors.primaryForeground,
     fontSize: 11,
     fontWeight: "700",
+  },
+  emoji: {
+    fontSize: 15,
+    lineHeight: 18,
   },
   overflowBadge: { backgroundColor: homeColors.muted },
   overflowText: {

@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { switchToMembersTab } from "~/navigation/navigation.ts";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -164,7 +165,11 @@ const MemberRow = ({ member, imageUrl, checked, onToggle, iosSheet = false, isLa
     <AppCheckbox checked={checked} onToggle={onToggle} size={16} />
     <Text style={styles.memberName}>{member.name}</Text>
     <View style={styles.rowSpacer} />
-    {imageUrl ? <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} /> : null}
+    {getEmojiValue(imageUrl) ? (
+      <Text style={styles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
+    ) : imageUrl ? (
+      <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
+    ) : null}
   </Pressable>
 );
 
@@ -190,6 +195,7 @@ const styles = StyleSheet.create({
   memberName: { fontSize: 16, color: homeColors.text },
   rowSpacer: { flex: 1 },
   avatarImage: { width: 28, height: 28, borderRadius: 6 },
+  avatarEmoji: { fontSize: 22, lineHeight: 26 },
   empty: {
     fontSize: 14,
     color: homeColors.muted,

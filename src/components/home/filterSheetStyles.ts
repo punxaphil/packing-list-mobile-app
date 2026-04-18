@@ -77,6 +77,7 @@ export const filterSheetStyles = StyleSheet.create({
   },
   rowText: { flex: 1, fontSize: 16, color: homeColors.text },
   rowAvatarImage: { width: 24, height: 24, borderRadius: 6 },
+  rowAvatarEmoji: { fontSize: 18, lineHeight: 22 },
   empty: {
     fontSize: 14,
     color: homeColors.muted,

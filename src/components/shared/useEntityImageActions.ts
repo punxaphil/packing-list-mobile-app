@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { pickAndResizeImage } from "~/services/imageUtils.ts";
+import { pickMediaValue } from "~/services/imageUtils.ts";
 import { Image } from "~/types/Image.ts";
 
 type ImageDbOperations = {
@@ -18,7 +18,7 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
     async (entityId: string, existing?: Image) => {
       setLoadingEntityId(entityId);
       try {
-        const url = await pickAndResizeImage();
+        const url = await pickMediaValue();
         if (!url) return;
         if (existing) await db.update(existing.id, url);
         else await db.add(imageType, entityId, url);

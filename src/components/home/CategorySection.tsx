@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getPackItemChecked } from "~/services/packItemState.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
@@ -371,6 +372,7 @@ const CategoryHeader = ({
   const displayChecked = pendingToggle ?? allChecked;
 
   const isUncategorized = section.category.id === "";
+  const emoji = getEmojiValue(imageUrl);
 
   const openMenu = () =>
     showActionSheet(section.title, [
@@ -399,7 +401,11 @@ const CategoryHeader = ({
           <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
         )}
       </View>
-      {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />}
+      {emoji ? (
+        <Text style={homeStyles.categoryImage}>{emoji}</Text>
+      ) : (
+        imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />
+      )}
       <Pressable onPress={isUncategorized ? undefined : onRename} style={homeStyles.categoryTitleWrapper}>
         <Text style={homeStyles.categoryTitle} numberOfLines={1}>
           {section.title}

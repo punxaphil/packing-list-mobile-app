@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityIndicator, Alert, Pressable, Image as RNImage, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { Image } from "~/types/Image.ts";
 import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
@@ -239,6 +240,7 @@ type ListImageProps = {
 
 const ListImage = ({ imageUrl, loading, hidePlaceholder, onPress }: ListImageProps) => {
   if (!imageUrl && hidePlaceholder) return null;
+  const emoji = getEmojiValue(imageUrl);
   return (
     <Pressable
       style={[homeStyles.listImageContainer, !imageUrl && homeStyles.listImagePlaceholder]}
@@ -249,6 +251,8 @@ const ListImage = ({ imageUrl, loading, hidePlaceholder, onPress }: ListImagePro
     >
       {loading ? (
         <ActivityIndicator size="small" color={homeColors.surface} />
+      ) : emoji ? (
+        <Text style={{ fontSize: 18 }}>{emoji}</Text>
       ) : imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={homeStyles.listImage} />
       ) : (
