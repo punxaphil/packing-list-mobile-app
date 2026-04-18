@@ -1,7 +1,9 @@
+import { type FirebaseError } from "firebase/app";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { deleteMyAccount } from "~/services/accountDeletion.ts";
 import { pickAndResizeImage } from "~/services/imageUtils.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
@@ -20,6 +22,13 @@ const COPY = {
   title: "Profile",
   imageTitle: "Profile image",
   signOut: "Sign Out",
+  deleteAccount: "Delete Account",
+  deleteAccountTitle: "Delete account",
+  deleteAccountBody: "This permanently deletes your account and profile data. This action cannot be undone.",
+  deleteAccountConfirm: "Delete",
+  deleteAccountCancel: "Cancel",
+  deleteAccountErrorTitle: "Could not delete account",
+  deleteAccountErrorFallback: "Try signing in again, then retry deleting your account.",
   changePhoto: "Change Photo",
   addPhoto: "Add Photo",
   removePhoto: "Remove",
@@ -49,13 +58,37 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
   );
 };
 
-const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
-  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" centered />
+const DELETE_ACCOUNT_ERRORS: Record<string, string> = {
+  "functions/failed-precondition": "For security reasons, sign in again before deleting your account.",
+  "functions/unauthenticated": "Sign in again before deleting your account.",
+};
+
+const SignOutButton = ({
+  email,
+  onSignOut,
+  disabled,
+}: {
+  email: string;
+  onSignOut: () => void;
+  disabled?: boolean;
+}) => (
+  <Button
+    label={COPY.signOut}
+    onPress={() => confirmSignOut(email, onSignOut)}
+    variant="danger"
+    centered
+    disabled={disabled}
+  />
+);
+
+const DeleteAccountButton = ({ onDelete, disabled }: { onDelete: () => void; disabled?: boolean }) => (
+  <Button label={COPY.deleteAccount} onPress={onDelete} variant="danger" centered disabled={disabled} />
 );
 
 export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
   const { profile } = useSpace();
   const [viewerVisible, setViewerVisible] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const imageUrl = profile?.imageUrl;
   const handlers = useImageHandlers(profile?.id);
 
@@ -78,6 +111,31 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
     if (await handlers.remove()) closeViewer();
   };
 
+  const deleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      await deleteMyAccount();
+      onSignOut();
+    } catch (e) {
+      const code = (e as FirebaseError)?.code;
+      const message = DELETE_ACCOUNT_ERRORS[code] ?? COPY.deleteAccountErrorFallback;
+      Alert.alert(COPY.deleteAccountErrorTitle, message);
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(COPY.deleteAccountTitle, COPY.deleteAccountBody, [
+      { text: COPY.deleteAccountCancel, style: "cancel" },
+      {
+        text: COPY.deleteAccountConfirm,
+        style: "destructive",
+        onPress: () => void deleteAccount(),
+      },
+    ]);
+  };
+
   return (
     <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
       {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
@@ -85,7 +143,8 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
         <Text style={styles.email}>{email}</Text>
         <PreferencesSection />
-        <SignOutButton email={email} onSignOut={onSignOut} />
+        <SignOutButton email={email} onSignOut={onSignOut} disabled={deletingAccount} />
+        <DeleteAccountButton onDelete={confirmDeleteAccount} disabled={deletingAccount} />
       </View>
       <ImageViewerModal
         visible={viewerVisible}

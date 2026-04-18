@@ -1,86 +1,80 @@
-# Packing List Mobile App
+# Packsy
 
-A minimal Expo-powered React Native starter written in TypeScript that renders a friendly “Hello, world!” message. Use this repository as a jumping-off point for building a more complete packing list experience.
+Packsy is a React Native packing-list app with Firebase Auth + Firestore and a TypeScript Firebase Cloud Function for account deletion.
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- Node.js 20 (`nvm use` reads `.nvmrc`)
+- npm
+- Xcode (iOS) and/or Android Studio (Android)
+- Firebase CLI (`npm i -g firebase-tools`) for function deploys
 
-- [Node.js 18+](https://nodejs.org/)
-- [npm](https://www.npmjs.com/) (bundled with Node.js)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/) (optional but recommended)
-- iOS Simulator (Xcode) or Android Emulator (Android Studio) for local device testing, or the Expo Go app on a physical device
+## Setup
 
-### Installation
+1. Install app dependencies:
 
-1. Install dependencies:
+  ```sh
+  npm install
+  ```
 
-   ```shell
-   npm install
-   ```
+2. Install function dependencies:
 
-2. (Optional) Install Expo CLI globally if you plan to use the `expo` command:
+  ```sh
+  npm --prefix functions install
+  ```
 
-   ```shell
-   npm install --global expo-cli
-   ```
+## Run The App
 
-### Running the App
+1. Start Metro:
 
-- Launch the Expo development server:
-
-  ```shell
+  ```sh
   npm run start
   ```
 
-- Open the project on an Android emulator/device:
+2. Run iOS simulator:
 
-  ```shell
+  ```sh
+  npm run ios:simulator
+  ```
+
+3. Run Android:
+
+  ```sh
   npm run android
   ```
 
-- Open the project on an iOS simulator/device:
+## Quality Checks
 
-  ```shell
-  npm run ios
-  ```
+Run full checks before committing:
 
-- Open the project in a web browser:
-
-  ```shell
-  npm run web
-  ```
-
-When the development server starts, follow the on-screen instructions to open the project in Expo Go or your preferred simulator.
-
-## Project Structure
-
-```text
-src/                   // Application source files
-src/App.tsx            // Root component with the hello world view
-index.ts               // Registers the root component with Expo
-app.json               // Expo project configuration
-babel.config.js        // Babel configuration using the Expo preset
-package.json           // Project metadata, scripts, and dependencies
-tsconfig.json          // TypeScript compiler configuration
+```sh
+npm run prebuild
 ```
 
-## Available Scripts
+## Deploy Cloud Function
 
-- `npm run start` – Start the Expo development server.
-- `npm run android` – Run the project on an Android device or emulator.
-- `npm run ios` – Run the project on an iOS simulator or device.
-- `npm run web` – Launch the project in a browser (Expo web target).
+The account deletion function is in `functions/src/index.ts` and deploys as `deleteMyAccount`.
 
-## Tech Stack
+1. Build functions locally:
 
-- [React Native](https://reactnative.dev/) 0.81
-- [Expo](https://expo.dev/) SDK 54
-- [React](https://react.dev/) 19
-- [TypeScript](https://www.typescriptlang.org/) 5.9
+  ```sh
+  npm --prefix functions run build
+  ```
 
-## Learn More
+2. Deploy function:
 
-- [Expo Documentation](https://docs.expo.dev/)
-- [React Native Documentation](https://reactnative.dev/docs/getting-started)
-- [Expo Snack Playground](https://snack.expo.dev/) for quick prototyping
+  ```sh
+  firebase deploy --only functions:deleteMyAccount
+  ```
+
+Notes:
+
+- `firebase.json` is configured with a functions predeploy build step.
+- Default Firebase project is set in `.firebaserc`.
+
+## Useful Commands
+
+- `npm run prebuild` - typecheck + lint + knip + unit tests
+- `npm run lint:fix` - auto-fix lint/format issues
+- `npm run ios:simulator` - run iOS simulator
+- `npm run test:unit` - run unit tests
