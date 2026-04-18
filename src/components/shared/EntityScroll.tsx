@@ -25,6 +25,8 @@ type EntityScrollProps = {
   images: Image[];
   onImagePress: (entityId: string, image?: Image) => void;
   imageLoading?: string | null;
+  hideImagePlaceholder?: boolean;
+  showImageMenuAction?: boolean;
 };
 
 export const EntityScroll = (props: EntityScrollProps) => {
@@ -41,6 +43,8 @@ export const EntityScroll = (props: EntityScrollProps) => {
     images,
     onImagePress,
     imageLoading,
+    hideImagePlaceholder,
+    showImageMenuAction,
   } = props;
   const ids = entities.map((e) => e.id);
   const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
@@ -80,6 +84,8 @@ export const EntityScroll = (props: EntityScrollProps) => {
               itemCount={itemCounts[entity.id] ?? 0}
               image={image}
               imageLoading={imageLoading === entity.id}
+              hideImagePlaceholder={hideImagePlaceholder}
+              showImageMenuAction={showImageMenuAction}
               onImagePress={() => onImagePress(entity.id, image)}
               onLayout={(layout: LayoutRectangle) => drag.recordLayout(entity.id, layout)}
               onDragStart={dragEnabled ? () => drag.start(entity.id, "") : undefined}

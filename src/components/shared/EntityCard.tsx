@@ -42,6 +42,8 @@ type EntityCardProps = {
   itemCount: number;
   image?: Image;
   imageLoading?: boolean;
+  hideImagePlaceholder?: boolean;
+  showImageMenuAction?: boolean;
   onImagePress: () => void;
   onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
@@ -102,14 +104,10 @@ export const EntityCard = (props: EntityCardProps) => {
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const showHighlight = !!props.highlightOpacity;
   const openMenu = () =>
-    showActionSheet(props.entity.name, [
-      { text: HOME_COPY.rename, onPress: openRename },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: () => void props.actions.onDelete(props.entity),
-      },
-    ]);
+    showActionSheet(
+      props.entity.name,
+      buildMenuItems(props, openRename, () => void props.actions.onDelete(props.entity), !!props.image)
+    );
   return (
     <View onLayout={handleLayout}>
       <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
@@ -124,6 +122,7 @@ export const EntityCard = (props: EntityCardProps) => {
           <EntityImage
             imageUrl={props.image?.url}
             loading={props.imageLoading}
+            hidePlaceholder={props.hideImagePlaceholder}
             onPress={props.onImagePress}
             copy={props.copy}
           />
@@ -157,27 +156,47 @@ export const EntityCard = (props: EntityCardProps) => {
 type EntityImageProps = {
   imageUrl?: string;
   loading?: boolean;
+  hidePlaceholder?: boolean;
   onPress: () => void;
   copy: EntityCopy;
 };
 
-const EntityImage = ({ imageUrl, loading, onPress, copy }: EntityImageProps) => (
-  <Pressable
-    style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
-    onPress={onPress}
-    disabled={loading}
-    accessibilityRole="button"
-    accessibilityLabel={copy.imageTitle}
-  >
-    {loading ? (
-      <ActivityIndicator size="small" color={homeColors.surface} />
-    ) : imageUrl ? (
-      <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
-    ) : (
-      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
-    )}
-  </Pressable>
-);
+const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: EntityImageProps) => {
+  if (!imageUrl && hidePlaceholder) return null;
+  return (
+    <Pressable
+      style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
+      onPress={onPress}
+      disabled={loading}
+      accessibilityRole="button"
+      accessibilityLabel={copy.imageTitle}
+    >
+      {loading ? (
+        <ActivityIndicator size="small" color={homeColors.surface} />
+      ) : imageUrl ? (
+        <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
+      ) : (
+        <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
+      )}
+    </Pressable>
+  );
+};
+
+const buildMenuItems = (
+  props: Pick<EntityCardProps, "showImageMenuAction" | "onImagePress">,
+  openRename: () => void,
+  onDelete: () => void,
+  hasImage: boolean
+) => {
+  const items: { text: string; onPress: () => void; style?: "destructive" }[] = [
+    { text: HOME_COPY.rename, onPress: openRename },
+  ];
+  if (props.showImageMenuAction) {
+    items.push({ text: hasImage ? "Update image" : "Add image", onPress: props.onImagePress });
+  }
+  items.push({ text: "Delete", style: "destructive" as const, onPress: onDelete });
+  return items;
+};
 
 const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   <View style={entityStyles.dragHandle}>

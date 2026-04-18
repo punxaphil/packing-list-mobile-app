@@ -19,6 +19,7 @@ type HeaderProps = {
   profileImageUrl?: string;
   leftImageUrl?: string;
   leftImageLoading?: boolean;
+  hideLeftImagePlaceholder?: boolean;
   onBack?: () => void;
   onPressLeftImage?: () => void;
   onPressTitle?: () => void;
@@ -30,11 +31,13 @@ const BackButton = ({
   onBack,
   leftImageUrl,
   leftImageLoading,
+  hideLeftImagePlaceholder,
   onPressLeftImage,
 }: {
   onBack?: () => void;
   leftImageUrl?: string;
   leftImageLoading?: boolean;
+  hideLeftImagePlaceholder?: boolean;
   onPressLeftImage?: () => void;
 }) => (
   <View style={headerLocalStyles.sideSlot}>
@@ -42,7 +45,7 @@ const BackButton = ({
       <Pressable style={headerLocalStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
         <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
       </Pressable>
-    ) : onPressLeftImage ? (
+    ) : onPressLeftImage && (leftImageUrl || !hideLeftImagePlaceholder) ? (
       <Pressable
         style={[headerLocalStyles.leftImageButton, !leftImageUrl && headerLocalStyles.leftImagePlaceholder]}
         onPress={onPressLeftImage}
@@ -99,6 +102,7 @@ export const HomeHeader = ({
   profileImageUrl,
   leftImageUrl,
   leftImageLoading,
+  hideLeftImagePlaceholder,
   onBack,
   onPressLeftImage,
   onPressTitle,
@@ -124,6 +128,7 @@ export const HomeHeader = ({
           onBack={onBack}
           leftImageUrl={leftImageUrl}
           leftImageLoading={leftImageLoading}
+          hideLeftImagePlaceholder={hideLeftImagePlaceholder}
           onPressLeftImage={onPressLeftImage}
         />
         <View style={headerLocalStyles.titleStack}>

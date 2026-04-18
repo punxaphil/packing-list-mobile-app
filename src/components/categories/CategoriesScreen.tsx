@@ -52,6 +52,7 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
   const colors = buildEntityColors(sorted);
   const categoryImages = images.filter((img) => img.type === "categories");
   const imageActions = useEntityImageActions("categories", imageDb);
+  const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
 
   return (
     <View style={entityStyles.container}>
@@ -80,6 +81,8 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
           images={categoryImages}
           onImagePress={imageActions.handleImagePress}
           imageLoading={imageActions.loadingEntityId}
+          hideImagePlaceholder={hideImagePlaceholder}
+          showImageMenuAction
         />
         <TextPromptDialog
           visible={creation.visible}

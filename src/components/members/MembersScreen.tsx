@@ -50,6 +50,7 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   const colors = buildEntityColors(sorted);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
+  const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
 
   return (
     <View style={entityStyles.container}>
@@ -78,6 +79,8 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
           images={memberImages}
           onImagePress={imageActions.handleImagePress}
           imageLoading={imageActions.loadingEntityId}
+          hideImagePlaceholder={hideImagePlaceholder}
+          showImageMenuAction
         />
         <TextPromptDialog
           visible={creation.visible}
