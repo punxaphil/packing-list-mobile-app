@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "./Button.tsx";
 import { PageSheet } from "./PageSheet.tsx";
@@ -48,14 +49,15 @@ export const ImageViewerModal = ({
     width: number;
     height: number;
   } | null>(null);
+  const emoji = getEmojiValue(imageUrl);
 
   useEffect(() => {
-    if (visible && imageUrl) {
+    if (visible && imageUrl && !emoji) {
       RNImage.getSize(imageUrl, (w, h) => setImageSize({ width: w, height: h }));
       return;
     }
     setImageSize(null);
-  }, [visible, imageUrl]);
+  }, [visible, imageUrl, emoji]);
 
   const displaySize = imageSize ? calculateDisplaySize(imageSize, Platform.OS === "ios") : null;
 
@@ -71,7 +73,9 @@ export const ImageViewerModal = ({
             </View>
           ) : null}
           <View style={[styles.sheetImageContainer, displaySize && buildImageFrameStyle(displaySize)]}>
-            {displaySize && imageUrl ? (
+            {emoji ? (
+              <Text style={styles.emojiPreview}>{emoji}</Text>
+            ) : displaySize && imageUrl ? (
               <RNImage
                 source={{ uri: imageUrl }}
                 style={{ width: displaySize.width, height: displaySize.height }}
@@ -96,7 +100,9 @@ export const ImageViewerModal = ({
       <Pressable style={styles.backdrop} onPress={onClose}>
         <CloseButton onPress={onClose} />
         <View style={styles.imageContainer}>
-          {displaySize && imageUrl ? (
+          {emoji ? (
+            <Text style={styles.emojiPreviewDark}>{emoji}</Text>
+          ) : displaySize && imageUrl ? (
             <RNImage
               source={{ uri: imageUrl }}
               style={{ width: displaySize.width, height: displaySize.height }}
@@ -205,6 +211,14 @@ const styles = StyleSheet.create({
     fontSize: 64,
     fontWeight: "700",
     color: homeColors.primaryForeground,
+  },
+  emojiPreview: {
+    fontSize: 110,
+    lineHeight: 120,
+  },
+  emojiPreviewDark: {
+    fontSize: 140,
+    lineHeight: 150,
   },
   placeholderTextDark: { color: homeColors.surface },
   actions: {

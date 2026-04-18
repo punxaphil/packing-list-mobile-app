@@ -4,7 +4,8 @@ import { ActivityIndicator, Alert, Pressable, Image as RNImage, StyleSheet, Text
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { deleteMyAccount } from "~/services/accountDeletion.ts";
-import { pickAndResizeImage } from "~/services/imageUtils.ts";
+import { pickMediaValue } from "~/services/imageUtils.ts";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
@@ -40,9 +41,14 @@ type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
 const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: boolean }) => {
   const initial = email.trim()[0]?.toUpperCase() ?? "?";
+  const emoji = getEmojiValue(imageUrl);
   return (
     <Pressable onPress={onPress} disabled={loading} style={styles.avatarButton}>
-      {imageUrl ? (
+      {emoji ? (
+        <View style={styles.avatar}>
+          <Text style={styles.avatarEmoji}>{emoji}</Text>
+        </View>
+      ) : imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
       ) : (
         <View style={styles.avatar}>
@@ -177,7 +183,7 @@ const useImageHandlers = (userId: string | undefined) => {
   const pick = async () => {
     if (!userId) return;
     return runWithLoading(async () => {
-      const url = await pickAndResizeImage();
+      const url = await pickMediaValue();
       if (!url) return false;
       await updateProfileImageUrl(userId, url);
       return true;
@@ -239,6 +245,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarImage: { width: 100, height: 100, borderRadius: 50 },
+  avatarEmoji: {
+    fontSize: 52,
+    lineHeight: 60,
+  },
   avatarLoading: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 50,

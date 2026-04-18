@@ -6,6 +6,7 @@ import { PageSheet } from "~/components/shared/PageSheet.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { SpaceSheet } from "./SpaceSheet.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -55,6 +56,8 @@ const BackButton = ({
       >
         {leftImageLoading ? (
           <ActivityIndicator size="small" color={homeColors.muted} />
+        ) : getEmojiValue(leftImageUrl) ? (
+          <Text style={headerLocalStyles.avatarEmoji}>{getEmojiValue(leftImageUrl)}</Text>
         ) : leftImageUrl ? (
           <RNImage source={{ uri: leftImageUrl }} style={headerLocalStyles.avatarImage} />
         ) : (
@@ -68,7 +71,9 @@ const BackButton = ({
 const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
   <View style={headerLocalStyles.avatarSlot}>
     <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
-      {imageUrl ? (
+      {getEmojiValue(imageUrl) ? (
+        <Text style={headerLocalStyles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
+      ) : imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={headerLocalStyles.avatarImage} />
       ) : (
         <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
@@ -246,6 +251,10 @@ const headerLocalStyles = StyleSheet.create({
     width: AVATAR_SIZE,
     height: AVATAR_SIZE,
     borderRadius: homeSpacing.lg,
+  },
+  avatarEmoji: {
+    fontSize: 24,
+    lineHeight: 28,
   },
   spaceTitlePressable: {
     alignSelf: "stretch",

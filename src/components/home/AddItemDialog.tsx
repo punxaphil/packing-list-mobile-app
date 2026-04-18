@@ -11,6 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
@@ -341,13 +342,18 @@ const CategoryDropdown = ({
     setOpen(false);
   };
   const selectedImageUrl = getCategoryImageUrl(categoryImages, selected.id);
+  const selectedEmoji = getEmojiValue(selectedImageUrl);
   return (
     <View style={[STYLES.dropdownContainer, disabled ? STYLES.pickerDisabled : null]}>
       <Pressable style={iosSheet ? STYLES.sheetDropdownButton : STYLES.dropdownButton} onPress={toggle}>
         <View style={STYLES.dropdownValue}>
           <Text style={STYLES.dropdownText}>{selected.name}</Text>
           <View style={STYLES.dropdownMedia}>
-            {selectedImageUrl ? <RNImage source={{ uri: selectedImageUrl }} style={STYLES.dropdownImage} /> : null}
+            {selectedEmoji ? (
+              <Text style={STYLES.dropdownEmoji}>{selectedEmoji}</Text>
+            ) : selectedImageUrl ? (
+              <RNImage source={{ uri: selectedImageUrl }} style={STYLES.dropdownImage} />
+            ) : null}
           </View>
         </View>
         <Text style={STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
@@ -371,7 +377,11 @@ const CategoryDropdown = ({
                     {c.name}
                   </Text>
                   <View style={STYLES.dropdownMedia}>
-                    {getCategoryImageUrl(categoryImages, c.id) ? (
+                    {getEmojiValue(getCategoryImageUrl(categoryImages, c.id)) ? (
+                      <Text style={STYLES.dropdownEmoji}>
+                        {getEmojiValue(getCategoryImageUrl(categoryImages, c.id))}
+                      </Text>
+                    ) : getCategoryImageUrl(categoryImages, c.id) ? (
                       <RNImage
                         source={{
                           uri: getCategoryImageUrl(categoryImages, c.id),
@@ -451,6 +461,7 @@ const STYLES = {
     justifyContent: "center" as const,
   },
   dropdownImage: { width: 24, height: 24, borderRadius: 6 },
+  dropdownEmoji: { fontSize: 18, lineHeight: 22 },
   dropdownArrow: { fontSize: 12, color: homeColors.muted, marginLeft: 12 },
   dropdownList: {
     position: "absolute" as const,

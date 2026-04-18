@@ -1,4 +1,5 @@
 import { Alert, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
@@ -60,7 +61,9 @@ type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemov
 const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps) => (
   <View style={styles.row}>
     <View style={styles.avatar}>
-      {imageUrl ? (
+      {getEmojiValue(imageUrl) ? (
+        <Text style={styles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
+      ) : imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
       ) : (
         <Text style={styles.avatarText}>{email[0]?.toUpperCase() ?? "?"}</Text>
@@ -98,6 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarText: { color: homeColors.primaryForeground, fontSize: 14, fontWeight: "700" },
+  avatarEmoji: { fontSize: 18, lineHeight: 22 },
   avatarImage: { width: 32, height: 32, borderRadius: 16 },
   email: { flex: 1, fontSize: 14, color: homeColors.text },
   removeText: { fontSize: 14, fontWeight: "600", color: homeColors.danger },

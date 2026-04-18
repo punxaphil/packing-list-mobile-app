@@ -1,5 +1,6 @@
 import { type RefObject } from "react";
 import { Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
@@ -98,6 +99,10 @@ const FilterRow = ({ item, selected, onToggle, isLast = false }: FilterRowProps)
   <Pressable style={[styles.row, isLast ? styles.rowLast : null]} onPress={onToggle}>
     <AppCheckbox checked={selected} onToggle={onToggle} size={16} />
     <Text style={styles.rowText}>{item.name}</Text>
-    {item.image ? <RNImage source={{ uri: item.image }} style={styles.rowAvatarImage} /> : null}
+    {getEmojiValue(item.image) ? (
+      <Text style={styles.rowAvatarEmoji}>{getEmojiValue(item.image)}</Text>
+    ) : item.image ? (
+      <RNImage source={{ uri: item.image }} style={styles.rowAvatarImage} />
+    ) : null}
   </Pressable>
 );

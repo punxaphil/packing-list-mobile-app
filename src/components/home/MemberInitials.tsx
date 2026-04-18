@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LayoutChangeEvent, Pressable, Image as RNImage, Text, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { isAnimatingLayout } from "./layoutAnimation.ts";
@@ -104,7 +105,11 @@ type MemberBadgeProps = {
 
 const MemberBadge = ({ imageUrl, label, checked, checkedColor, onPress }: MemberBadgeProps) => (
   <Pressable onPress={onPress} style={[homeStyles.memberBadge, checked && { backgroundColor: checkedColor }]}>
-    {imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.memberBadgeImage} />}
+    {getEmojiValue(imageUrl) ? (
+      <Text>{getEmojiValue(imageUrl)}</Text>
+    ) : (
+      imageUrl && <RNImage source={{ uri: imageUrl }} style={homeStyles.memberBadgeImage} />
+    )}
     <Text style={[homeStyles.memberBadgeText, checked && homeStyles.memberBadgeTextChecked]} numberOfLines={1}>
       {label}
     </Text>

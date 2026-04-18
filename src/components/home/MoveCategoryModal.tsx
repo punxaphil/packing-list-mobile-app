@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Platform, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -119,7 +120,11 @@ const CategoryOption = ({ category, imageUrl, onSelect, iosSheet = false, isLast
     <View style={STYLES.optionRow}>
       <Text style={[STYLES.optionText, iosSheet ? STYLES.sheetOptionText : null]}>{category.name}</Text>
       <View style={STYLES.optionRowSpacer} />
-      {imageUrl ? <RNImage source={{ uri: imageUrl }} style={STYLES.optionImage} /> : null}
+      {getEmojiValue(imageUrl) ? (
+        <Text style={STYLES.optionEmoji}>{getEmojiValue(imageUrl)}</Text>
+      ) : imageUrl ? (
+        <RNImage source={{ uri: imageUrl }} style={STYLES.optionImage} />
+      ) : null}
     </View>
   </Pressable>
 );
@@ -160,6 +165,10 @@ const STYLES = {
     width: 28,
     height: 28,
     borderRadius: 6,
+  },
+  optionEmoji: {
+    fontSize: 22,
+    lineHeight: 26,
   },
   optionPressed: { opacity: 0.6 },
   sheetOptionPressed: {

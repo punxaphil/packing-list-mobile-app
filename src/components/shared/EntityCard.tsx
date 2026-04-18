@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
@@ -163,6 +164,7 @@ type EntityImageProps = {
 
 const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: EntityImageProps) => {
   if (!imageUrl && hidePlaceholder) return null;
+  const emoji = getEmojiValue(imageUrl);
   return (
     <Pressable
       style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
@@ -173,6 +175,8 @@ const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: Enti
     >
       {loading ? (
         <ActivityIndicator size="small" color={homeColors.surface} />
+      ) : emoji ? (
+        <Text style={{ fontSize: 18 }}>{emoji}</Text>
       ) : imageUrl ? (
         <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
       ) : (
