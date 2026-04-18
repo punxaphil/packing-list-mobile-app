@@ -26,6 +26,8 @@ type ListCardProps = {
   onMoveToSpace: (listId: string, targetSpaceId: string) => void;
   image?: Image;
   imageLoading?: boolean;
+  hideImagePlaceholder?: boolean;
+  showImageMenuAction?: boolean;
   onImagePress: (listId: string, image?: Image) => void;
   hidden?: boolean;
   onDragStart?: () => void;
@@ -94,6 +96,9 @@ export const ListCard = (props: ListCardProps) => {
         openDeleteConfirm,
         openUncheckConfirm,
         rename.open,
+        props.showImageMenuAction,
+        () => props.onImagePress(props.list.id, props.image),
+        !!props.image,
         canMove ? openMovePicker : undefined
       )
     );
@@ -112,6 +117,7 @@ export const ListCard = (props: ListCardProps) => {
           <ListImage
             imageUrl={props.image?.url}
             loading={props.imageLoading}
+            hidePlaceholder={props.hideImagePlaceholder}
             onPress={() => props.onImagePress(props.list.id, props.image)}
           />
           <View style={homeStyles.listCardBody}>
@@ -227,26 +233,30 @@ const ArchivedBadge = () => (
 type ListImageProps = {
   imageUrl?: string;
   loading?: boolean;
+  hidePlaceholder?: boolean;
   onPress: () => void;
 };
 
-const ListImage = ({ imageUrl, loading, onPress }: ListImageProps) => (
-  <Pressable
-    style={[homeStyles.listImageContainer, !imageUrl && homeStyles.listImagePlaceholder]}
-    onPress={onPress}
-    disabled={loading}
-    accessibilityRole="button"
-    accessibilityLabel="List image"
-  >
-    {loading ? (
-      <ActivityIndicator size="small" color={homeColors.surface} />
-    ) : imageUrl ? (
-      <RNImage source={{ uri: imageUrl }} style={homeStyles.listImage} />
-    ) : (
-      <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
-    )}
-  </Pressable>
-);
+const ListImage = ({ imageUrl, loading, hidePlaceholder, onPress }: ListImageProps) => {
+  if (!imageUrl && hidePlaceholder) return null;
+  return (
+    <Pressable
+      style={[homeStyles.listImageContainer, !imageUrl && homeStyles.listImagePlaceholder]}
+      onPress={onPress}
+      disabled={loading}
+      accessibilityRole="button"
+      accessibilityLabel="List image"
+    >
+      {loading ? (
+        <ActivityIndicator size="small" color={homeColors.surface} />
+      ) : imageUrl ? (
+        <RNImage source={{ uri: imageUrl }} style={homeStyles.listImage} />
+      ) : (
+        <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
+      )}
+    </Pressable>
+  );
+};
 
 const ListMenuButton = ({ onPress }: { onPress: () => void }) => (
   <Pressable
@@ -303,10 +313,16 @@ const buildMenuItems = (
   showDeleteConfirm: () => void,
   showUncheckConfirm: () => void,
   showRename: () => void,
+  showImageMenuAction: boolean | undefined,
+  handleImageAction: () => void,
+  hasImage: boolean,
   showMoveToSpace?: () => void
 ) => {
   const items = [];
   items.push({ text: "Rename", onPress: showRename });
+  if (showImageMenuAction) {
+    items.push({ text: hasImage ? "Update image" : "Add image", onPress: handleImageAction });
+  }
   if (isArchived) {
     items.push({
       text: "Restore",

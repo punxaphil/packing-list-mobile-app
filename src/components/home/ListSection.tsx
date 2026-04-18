@@ -90,6 +90,7 @@ export const ListSection = (props: ListSectionProps) => {
         onMoveToSpace={handleMoveToSpace}
         images={listImages}
         imageLoadingId={imgActions.loadingEntityId}
+        hideImagePlaceholder={profile?.hideImagePlaceholder ?? false}
         onImagePress={imgActions.handleImagePress}
         drag={drag}
         onDrop={ordering.drop}
@@ -165,6 +166,7 @@ type ScrollProps = {
   onMoveToSpace: (listId: string, targetSpaceId: string) => void;
   images: Image[];
   imageLoadingId: string | null;
+  hideImagePlaceholder: boolean;
   onImagePress: (entityId: string, image?: Image) => void;
   drag: ReturnType<typeof useDragState>;
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
@@ -182,6 +184,7 @@ const ListScroll = ({
   onMoveToSpace,
   images,
   imageLoadingId,
+  hideImagePlaceholder,
   onImagePress,
   drag,
   onDrop,
@@ -215,6 +218,8 @@ const ListScroll = ({
               onMoveToSpace={onMoveToSpace}
               image={images.find((img) => img.typeId === list.id)}
               imageLoading={imageLoadingId === list.id}
+              hideImagePlaceholder={hideImagePlaceholder}
+              showImageMenuAction
               onImagePress={onImagePress}
               hidden={drag.snapshot?.id === list.id}
               onDragStart={() => drag.start(list.id, "")}

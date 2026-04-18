@@ -107,6 +107,7 @@ const HeaderRow = ({
       profileImageUrl={profile?.imageUrl}
       leftImageUrl={listImageUrl}
       leftImageLoading={listImageLoading}
+      hideLeftImagePlaceholder={profile?.hideImagePlaceholder ?? false}
       onPressLeftImage={onListImagePress}
       onPressTitle={renameDialog.open}
       onProfile={onProfile}
