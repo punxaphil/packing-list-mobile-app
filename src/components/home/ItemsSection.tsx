@@ -8,6 +8,8 @@ import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
+import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
+import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
@@ -48,6 +50,12 @@ const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, s
 
 export const ItemsSection = (props: ItemsSectionProps) => {
   const { writeDb } = useSpace();
+  const imageDb = {
+    add: writeDb.addImage,
+    update: writeDb.updateImage,
+    delete: writeDb.deleteImage,
+  };
+  const imageActions = useEntityImageActions("packingLists", imageDb);
   const list = props.selection.selectedList;
   const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items, list?.id);
   const categoryImageMap = useMemo(
@@ -89,9 +97,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const renameDialog = useRenameDialog(list, props.lists, renameList);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
-  const listImageUrl = props.imagesState.images.find(
-    (img) => img.type === "packingLists" && img.typeId === list.id
-  )?.url;
+  const listImage = props.imagesState.images.find((img) => img.type === "packingLists" && img.typeId === list.id);
   return (
     <>
       <ItemsPanel
@@ -99,7 +105,9 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         {...handlers}
         list={list}
         displayName={displayName}
-        listImageUrl={listImageUrl}
+        listImageUrl={listImage?.url}
+        listImageLoading={imageActions.loadingEntityId === list.id}
+        onListImagePress={() => imageActions.handleImagePress(list.id, listImage)}
         renameDialog={renameDialog}
         addItemDialog={addItemDialog}
         filterDialog={filterDialog}
@@ -125,6 +133,17 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         onClose={addItemDialog.closeKitPicker}
         onAdd={addItemDialog.addKits}
       />
+      {imageActions.viewerState && (
+        <ImageViewerModal
+          visible={true}
+          imageUrl={imageActions.viewerState.image.url}
+          loading={imageActions.modalLoading}
+          connectedLabel={displayName}
+          onClose={imageActions.closeViewer}
+          onReplace={imageActions.handleReplace}
+          onRemove={imageActions.handleRemove}
+        />
+      )}
     </>
   );
 };

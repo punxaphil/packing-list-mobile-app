@@ -64,6 +64,8 @@ type ItemsPanelProps = ItemsSectionProps &
     list: NamedEntity;
     displayName: string;
     listImageUrl?: string;
+    listImageLoading?: boolean;
+    onListImagePress: () => void;
     renameDialog: TextDialogState;
     addItemDialog: AddItemDialogState;
     filterDialog: FilterDialogState;
@@ -88,7 +90,15 @@ const PanelCard = (props: ItemsPanelProps) => (
   </View>
 );
 
-const HeaderRow = ({ displayName, email, listImageUrl, renameDialog, onProfile }: ItemsPanelProps) => {
+const HeaderRow = ({
+  displayName,
+  email,
+  listImageUrl,
+  listImageLoading,
+  onListImagePress,
+  renameDialog,
+  onProfile,
+}: ItemsPanelProps) => {
   const { profile } = useSpace();
   return (
     <HomeHeader
@@ -96,6 +106,8 @@ const HeaderRow = ({ displayName, email, listImageUrl, renameDialog, onProfile }
       email={email}
       profileImageUrl={profile?.imageUrl}
       leftImageUrl={listImageUrl}
+      leftImageLoading={listImageLoading}
+      onPressLeftImage={onListImagePress}
       onPressTitle={renameDialog.open}
       onProfile={onProfile}
     />
