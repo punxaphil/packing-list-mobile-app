@@ -282,7 +282,9 @@ const useSubmitHandler = (
     setNewCategoryName("");
     setError(null);
     showToast(COPY.added.replace("{name}", trimmedName));
-    inputRef.current?.focus();
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
   }, [
     itemName,
     selectedCategory,
