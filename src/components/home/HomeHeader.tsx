@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
 import { PageSheet } from "~/components/shared/PageSheet.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
@@ -17,20 +18,46 @@ type HeaderProps = {
   email: string;
   profileImageUrl?: string;
   leftImageUrl?: string;
+  leftImageLoading?: boolean;
   onBack?: () => void;
+  onPressLeftImage?: () => void;
   onPressTitle?: () => void;
   onProfile?: () => void;
   useSpaceAsTitle?: boolean;
 };
 
-const BackButton = ({ onBack, leftImageUrl }: { onBack?: () => void; leftImageUrl?: string }) => (
+const BackButton = ({
+  onBack,
+  leftImageUrl,
+  leftImageLoading,
+  onPressLeftImage,
+}: {
+  onBack?: () => void;
+  leftImageUrl?: string;
+  leftImageLoading?: boolean;
+  onPressLeftImage?: () => void;
+}) => (
   <View style={headerLocalStyles.sideSlot}>
     {onBack ? (
       <Pressable style={headerLocalStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
         <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
       </Pressable>
-    ) : leftImageUrl ? (
-      <RNImage source={{ uri: leftImageUrl }} style={headerLocalStyles.avatarImage} />
+    ) : onPressLeftImage ? (
+      <Pressable
+        style={[headerLocalStyles.leftImageButton, !leftImageUrl && headerLocalStyles.leftImagePlaceholder]}
+        onPress={onPressLeftImage}
+        disabled={leftImageLoading}
+        accessibilityRole="button"
+        accessibilityLabel="List image"
+      >
+        {leftImageLoading ? (
+          <ActivityIndicator size="small" color={homeColors.muted} />
+        ) : leftImageUrl ? (
+          <RNImage source={{ uri: leftImageUrl }} style={headerLocalStyles.avatarImage} />
+        ) : (
+          <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.muted} />
+        )}
+      </Pressable>
     ) : null}
   </View>
 );
@@ -71,7 +98,9 @@ export const HomeHeader = ({
   email,
   profileImageUrl,
   leftImageUrl,
+  leftImageLoading,
   onBack,
+  onPressLeftImage,
   onPressTitle,
   onProfile,
   useSpaceAsTitle,
@@ -91,7 +120,12 @@ export const HomeHeader = ({
   return (
     <View style={headerLocalStyles.wrapper}>
       <View style={headerLocalStyles.header}>
-        <BackButton onBack={onBack} leftImageUrl={leftImageUrl} />
+        <BackButton
+          onBack={onBack}
+          leftImageUrl={leftImageUrl}
+          leftImageLoading={leftImageLoading}
+          onPressLeftImage={onPressLeftImage}
+        />
         <View style={headerLocalStyles.titleStack}>
           {useSpaceAsTitle ? (
             <SpaceTitle onPress={() => setSpaceSheetVisible(true)} />
@@ -171,6 +205,17 @@ const headerLocalStyles = StyleSheet.create({
     paddingVertical: homeSpacing.xs,
     paddingHorizontal: homeSpacing.sm,
     justifyContent: "center",
+  },
+  leftImageButton: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: homeSpacing.lg,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  leftImagePlaceholder: {
+    backgroundColor: homeColors.border,
   },
   avatarSlot: {
     width: AVATAR_SIZE,
