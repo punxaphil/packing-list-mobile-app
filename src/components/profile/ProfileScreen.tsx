@@ -17,6 +17,7 @@ import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
+import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
 
 type ProfileScreenProps = {
@@ -115,6 +116,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         <Text style={styles.email}>{email}</Text>
         <PreferencesSection />
         <SignOutButton email={email} onSignOut={onSignOut} />
+        <DeleteAccountButton onSignOut={onSignOut} />
       </View>
       <ImageViewerModal
         visible={viewerVisible}

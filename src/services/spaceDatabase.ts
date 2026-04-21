@@ -339,6 +339,14 @@ export async function updateProfileHideImagePlaceholder(userId: string, hideImag
   });
 }
 
+export async function markAccountForDeletion(userId: string) {
+  await updateDoc(doc(firestore, USERS, userId), { pendingDeletion: true });
+}
+
+export async function reactivateAccount(userId: string) {
+  await updateDoc(doc(firestore, USERS, userId), { pendingDeletion: deleteField() });
+}
+
 export function subscribeToUserProfile(userId: string, onUpdate: (profile: UserProfile | undefined) => void) {
   return onSnapshot(doc(firestore, USERS, userId), (snap) => {
     onUpdate(snap.exists() ? ({ id: snap.id, ...snap.data() } as UserProfile) : undefined);
