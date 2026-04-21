@@ -29,6 +29,7 @@ export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
         placeholderTextColor={homeColors.muted}
         multiline
         textAlignVertical="top"
+        autoFocus
       />
       <View style={styles.toggleRow}>
         <Text style={styles.toggleLabel}>{COPY.showNotesInItemsView}</Text>
