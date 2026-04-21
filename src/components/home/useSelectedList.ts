@@ -30,7 +30,9 @@ export function useSelectedList(
   }, []);
 
   const clear = useCallback(() => {
+    if (!getSelectedId()) return;
     clearSelectedId();
+    showMainTabs(false);
   }, []);
 
   const selectedList = safeLists.find((l) => l.id === selectedId) ?? null;
