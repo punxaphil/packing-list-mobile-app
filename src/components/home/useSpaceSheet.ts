@@ -100,7 +100,13 @@ export function useSpaceSheet(onClose: () => void) {
   const memberInfoBySpaceId = useMemo(() => {
     const result: Record<string, MemberInfo[]> = {};
     for (const space of spaces) {
-      result[space.id] = space.memberEmails.map((email) => ({
+      const spaceOwnerEmail = memberData.emailById[space.ownerId]?.toLowerCase();
+      const sorted = [...space.memberEmails].sort((a, b) => {
+        if (a.toLowerCase() === spaceOwnerEmail) return -1;
+        if (b.toLowerCase() === spaceOwnerEmail) return 1;
+        return 0;
+      });
+      result[space.id] = sorted.map((email) => ({
         email,
         imageUrl: memberData.imagesByEmail[email],
       }));
