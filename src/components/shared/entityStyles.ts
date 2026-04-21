@@ -125,8 +125,6 @@ export type EntityCopy = {
   deleteAction: string;
   moveItems: string;
   imageTitle: string;
-  imageReplace: string;
-  imageRemove: string;
 };
 
 export const CATEGORY_COPY: EntityCopy = {
@@ -148,8 +146,6 @@ export const CATEGORY_COPY: EntityCopy = {
   deleteAction: "Delete",
   moveItems: "Move Items",
   imageTitle: "Category Image",
-  imageReplace: "Replace Image",
-  imageRemove: "Remove Image",
 };
 
 export const MEMBER_COPY: EntityCopy = {
@@ -171,6 +167,4 @@ export const MEMBER_COPY: EntityCopy = {
   deleteAction: "Delete",
   moveItems: "Move Items",
   imageTitle: "Member image",
-  imageReplace: "Replace Image",
-  imageRemove: "Remove Image",
 };

@@ -1,9 +1,18 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import {
+  ActionSheetIOS,
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Image as RNImage,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { pickMediaValue } from "~/services/imageUtils.ts";
-import { getEmojiValue } from "~/services/mediaValue.ts";
+import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils.ts";
+import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
@@ -27,6 +36,10 @@ const COPY = {
 };
 
 const PICKER_OPEN_DELAY_MS = 250;
+const MODAL_TRANSITION_DELAY_MS = 280;
+const PHOTO_OPTION = "Choose Photo";
+const EMOJI_OPTION = "Choose Emoji";
+const CANCEL_OPTION = "Cancel";
 
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
@@ -62,26 +75,36 @@ const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => v
 export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
   const { profile } = useSpace();
   const [viewerVisible, setViewerVisible] = useState(false);
+  const [viewerText, setViewerText] = useState("");
   const imageUrl = profile?.imageUrl;
   const handlers = useImageHandlers(profile?.id);
 
   const handleAvatarPress = () => {
     if (imageUrl) {
+      setViewerText(getEmojiValue(imageUrl) ?? "");
       setViewerVisible(true);
       return;
     }
     void handlers.pick();
   };
 
-  const closeViewer = () => setViewerVisible(false);
+  const closeViewer = () => {
+    setViewerVisible(false);
+    setViewerText("");
+  };
 
   const replaceImage = async () => {
+    closeViewer();
     await new Promise((resolve) => setTimeout(resolve, PICKER_OPEN_DELAY_MS));
-    if (await handlers.pick()) closeViewer();
+    await handlers.pick();
   };
 
   const removeImage = async () => {
     if (await handlers.remove()) closeViewer();
+  };
+
+  const applyViewerText = async () => {
+    if (await handlers.saveText(viewerText)) closeViewer();
   };
 
   return (
@@ -99,10 +122,13 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         placeholderLabel={email.trim()[0]?.toUpperCase() ?? "?"}
         title={COPY.imageTitle}
         connectedLabel={email}
-        replaceLabel={imageUrl ? COPY.changePhoto : COPY.addPhoto}
-        removeLabel={COPY.removePhoto}
         showRemove={Boolean(imageUrl)}
         loading={handlers.loading}
+        textValue={viewerText}
+        textPlaceholder="Emoji or text"
+        textSubmitDisabled={!viewerText.trim()}
+        onTextChange={setViewerText}
+        onTextSubmit={() => void applyViewerText()}
         onClose={closeViewer}
         onReplace={replaceImage}
         onRemove={removeImage}
@@ -121,23 +147,59 @@ const useImageHandlers = (userId: string | undefined) => {
       setLoading(false);
     }
   };
-  const pick = async () => {
-    if (!userId) return;
-    return runWithLoading(async () => {
-      const url = await pickMediaValue();
+  const saveImage = async (value: string | null) => {
+    if (!userId) return false;
+    await updateProfileImageUrl(userId, value);
+    return true;
+  };
+  const pickPhoto = () =>
+    runWithLoading(async () => {
+      const url = await pickAndResizeImage();
       if (!url) return false;
-      await updateProfileImageUrl(userId, url);
-      return true;
+      return saveImage(url);
+    });
+  const pickEmojiText = () =>
+    runWithLoading(async () => {
+      const value = await promptForEmojiValue();
+      if (!value) return false;
+      return saveImage(value);
+    });
+  const pick = async () => {
+    if (!userId) return false;
+    if (Platform.OS !== "ios") return pickPhoto();
+    return new Promise<boolean>((resolve) => {
+      const options = [PHOTO_OPTION, EMOJI_OPTION, CANCEL_OPTION];
+      ActionSheetIOS.showActionSheetWithOptions({ options, cancelButtonIndex: options.length - 1 }, (index) => {
+        if (index === 0) {
+          void pickPhoto().then(resolve);
+          return;
+        }
+        if (index === 1) {
+          setTimeout(() => void pickEmojiText().then(resolve), MODAL_TRANSITION_DELAY_MS);
+          return;
+        }
+        resolve(false);
+      });
     });
   };
   const remove = async () => {
-    if (!userId) return;
+    if (!userId) return false;
     return runWithLoading(async () => {
-      await updateProfileImageUrl(userId, null);
-      return true;
+      return saveImage(null);
     });
   };
-  return { pick, remove, loading };
+  const saveText = (value: string) =>
+    runWithLoading(async () => {
+      const trimmed = value.trim();
+      if (!trimmed) return false;
+      return saveImage(toEmojiValue(trimmed));
+    });
+  return {
+    pick,
+    remove,
+    saveText,
+    loading,
+  };
 };
 
 const Header = ({ onBack }: { onBack: () => void }) => (

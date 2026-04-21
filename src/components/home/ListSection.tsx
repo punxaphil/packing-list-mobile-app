@@ -114,6 +114,11 @@ export const ListSection = (props: ListSectionProps) => {
           visible={true}
           imageUrl={imgActions.viewerState.image.url}
           loading={imgActions.modalLoading}
+          textValue={imgActions.textValue}
+          textPlaceholder="Emoji or text"
+          textSubmitDisabled={!imgActions.textValue.trim()}
+          onTextChange={imgActions.setTextValue}
+          onTextSubmit={() => void imgActions.submitText()}
           onClose={imgActions.closeViewer}
           onReplace={imgActions.handleReplace}
           onRemove={imgActions.handleRemove}
