@@ -27,11 +27,11 @@ function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }
 }
 
 export function AppRoot() {
-  const { userId, email, emailVerified, loggingIn, recheckUser } = useCurrentUser();
+  const { userId, email, verificationRequired, loggingIn, recheckUser } = useCurrentUser();
 
   if (loggingIn) return <AppLoadingState />;
   if (!userId) return <Login />;
-  if (!emailVerified) return <VerifyEmail recheckUser={recheckUser} />;
+  if (verificationRequired) return <VerifyEmail recheckUser={recheckUser} />;
 
   return <BootstrapAndLaunch userId={userId} email={email} />;
 }
