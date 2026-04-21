@@ -139,6 +139,11 @@ export const ItemsSection = (props: ItemsSectionProps) => {
           imageUrl={imageActions.viewerState.image.url}
           loading={imageActions.modalLoading}
           connectedLabel={displayName}
+          textValue={imageActions.textValue}
+          textPlaceholder="Emoji or text"
+          textSubmitDisabled={!imageActions.textValue.trim()}
+          onTextChange={imageActions.setTextValue}
+          onTextSubmit={() => void imageActions.submitText()}
           onClose={imageActions.closeViewer}
           onReplace={imageActions.handleReplace}
           onRemove={imageActions.handleRemove}

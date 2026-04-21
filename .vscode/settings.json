@@ -2,10 +2,10 @@
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": true,
-    "source.organizeImports.biome": true,
-    "source.fixAll": false,
-    "source.organizeImports": false
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll": "never",
+    "source.organizeImports": "never"
   },
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"

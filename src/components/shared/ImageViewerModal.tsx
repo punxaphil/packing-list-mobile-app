@@ -8,6 +8,7 @@ import {
   Image as RNImage,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -16,16 +17,25 @@ import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "./Button.tsx";
 import { PageSheet } from "./PageSheet.tsx";
 
+const COPY = {
+  pickImage: "Pick Image",
+  removeImage: "Remove Image",
+  useText: "Use Text",
+};
+
 type ImageViewerModalProps = {
   visible: boolean;
   imageUrl?: string;
   placeholderLabel?: string;
   title?: string;
   connectedLabel?: string;
-  replaceLabel?: string;
-  removeLabel?: string;
   showRemove?: boolean;
   loading?: boolean;
+  textValue?: string;
+  textPlaceholder?: string;
+  textSubmitDisabled?: boolean;
+  onTextChange?: (value: string) => void;
+  onTextSubmit?: () => void;
   onClose: () => void;
   onReplace: () => void;
   onRemove: () => void;
@@ -37,10 +47,13 @@ export const ImageViewerModal = ({
   placeholderLabel = "?",
   title = "Image",
   connectedLabel,
-  replaceLabel = "Replace",
-  removeLabel = "Remove",
   showRemove = true,
   loading = false,
+  textValue,
+  textPlaceholder = "Emoji or text",
+  textSubmitDisabled = false,
+  onTextChange,
+  onTextSubmit,
   onClose,
   onReplace,
   onRemove,
@@ -86,9 +99,25 @@ export const ImageViewerModal = ({
             )}
             {loading && <ImageLoadingOverlay />}
           </View>
+          {onTextChange && onTextSubmit ? (
+            <View style={styles.textRow}>
+              <TextInput
+                value={textValue}
+                onChangeText={onTextChange}
+                placeholder={textPlaceholder}
+                style={styles.textInput}
+                editable={!loading}
+                returnKeyType="done"
+                onSubmitEditing={onTextSubmit}
+              />
+              <Button label={COPY.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
+            </View>
+          ) : null}
           <View style={styles.sheetActions}>
-            <Button flex label={replaceLabel} onPress={onReplace} disabled={loading} />
-            {showRemove && <Button variant="danger" flex label={removeLabel} onPress={onRemove} disabled={loading} />}
+            <Button flex label={COPY.pickImage} onPress={onReplace} disabled={loading} />
+            {showRemove && (
+              <Button variant="danger" flex label={COPY.removeImage} onPress={onRemove} disabled={loading} />
+            )}
           </View>
         </View>
       </PageSheet>
@@ -114,8 +143,25 @@ export const ImageViewerModal = ({
           {loading && <ImageLoadingOverlay />}
         </View>
         <Pressable style={styles.actions} onPress={(e) => e.stopPropagation()}>
-          <Button flex label={replaceLabel} onPress={onReplace} disabled={loading} />
-          {showRemove && <Button variant="danger" flex label={removeLabel} onPress={onRemove} disabled={loading} />}
+          {onTextChange && onTextSubmit ? (
+            <View style={styles.textRowDark}>
+              <TextInput
+                value={textValue}
+                onChangeText={onTextChange}
+                placeholder={textPlaceholder}
+                placeholderTextColor="rgba(255,255,255,0.72)"
+                style={styles.textInputDark}
+                editable={!loading}
+                returnKeyType="done"
+                onSubmitEditing={onTextSubmit}
+              />
+              <Button label={COPY.useText} onPress={onTextSubmit} disabled={loading || textSubmitDisabled} />
+            </View>
+          ) : null}
+          <Button flex label={COPY.pickImage} onPress={onReplace} disabled={loading} />
+          {showRemove && (
+            <Button variant="danger" flex label={COPY.removeImage} onPress={onRemove} disabled={loading} />
+          )}
         </Pressable>
       </Pressable>
     </Modal>
@@ -221,8 +267,42 @@ const styles = StyleSheet.create({
     lineHeight: 150,
   },
   placeholderTextDark: { color: homeColors.surface },
+  textRow: {
+    flexDirection: "row",
+    width: "100%",
+    gap: homeSpacing.sm,
+    alignItems: "center",
+  },
+  textInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: homeColors.border,
+    borderRadius: 16,
+    paddingHorizontal: homeSpacing.md,
+    paddingVertical: homeSpacing.sm,
+    color: homeColors.text,
+    backgroundColor: "rgba(255,255,255,0.9)",
+  },
+  textRowDark: {
+    flexDirection: "row",
+    width: "100%",
+    gap: homeSpacing.sm,
+    alignItems: "center",
+    marginBottom: homeSpacing.sm,
+  },
+  textInputDark: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.5)",
+    borderRadius: 16,
+    paddingHorizontal: homeSpacing.md,
+    paddingVertical: homeSpacing.sm,
+    color: homeColors.surface,
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
   actions: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: homeSpacing.md,
     paddingBottom: 50,
     paddingHorizontal: homeSpacing.lg,

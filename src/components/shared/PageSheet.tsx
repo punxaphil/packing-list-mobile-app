@@ -1,16 +1,5 @@
 import { type PropsWithChildren, useRef } from "react";
-import {
-  Animated,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Animated, Keyboard, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeSpacing } from "../home/theme.ts";
@@ -47,49 +36,51 @@ export const PageSheet = ({
     onRequestClose={onClose}
   >
     <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
-      <KeyboardAvoidingView behavior="padding" style={styles.safeArea}>
-        <View style={styles.headerWrap}>
-          <View style={styles.header}>
-            <SheetIconButton icon="close" onPress={onClose} accessibilityLabel="Cancel" />
-            <Text style={styles.title}>{title}</Text>
-            {headerRight ? (
-              headerRight
-            ) : confirmLabel && onConfirm ? (
-              confirmVariant === "text" ? (
-                <SheetTextButton
-                  label={confirmLabel}
-                  onPress={onConfirm}
-                  disabled={confirmDisabled}
-                  accessibilityLabel={confirmLabel}
-                />
-              ) : (
-                <SheetIconButton
-                  icon="check"
-                  onPress={onConfirm}
-                  primary
-                  disabled={confirmDisabled}
-                  accessibilityLabel={confirmLabel}
-                />
-              )
+      <View style={styles.headerWrap}>
+        <View style={styles.header}>
+          <SheetIconButton icon="close" onPress={onClose} accessibilityLabel="Cancel" />
+          <Text style={styles.title}>{title}</Text>
+          {headerRight ? (
+            headerRight
+          ) : confirmLabel && onConfirm ? (
+            confirmVariant === "text" ? (
+              <SheetTextButton
+                label={confirmLabel}
+                onPress={onConfirm}
+                disabled={confirmDisabled}
+                accessibilityLabel={confirmLabel}
+              />
             ) : (
-              <View style={styles.iconSpacer} />
-            )}
-          </View>
+              <SheetIconButton
+                icon="check"
+                onPress={onConfirm}
+                primary
+                disabled={confirmDisabled}
+                accessibilityLabel={confirmLabel}
+              />
+            )
+          ) : (
+            <View style={styles.iconSpacer} />
+          )}
         </View>
-        {scrollable ? (
-          <Pressable style={styles.content} onPress={Keyboard.dismiss}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
-              <View style={styles.panel}>{children}</View>
-            </ScrollView>
-          </Pressable>
-        ) : (
-          <Pressable style={styles.content} onPress={Keyboard.dismiss}>
-            <View style={styles.contentInner}>
-              <View style={[styles.panel, styles.panelFill]}>{children}</View>
-            </View>
-          </Pressable>
-        )}
-      </KeyboardAvoidingView>
+      </View>
+      {scrollable ? (
+        <Pressable style={styles.content} onPress={Keyboard.dismiss}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
+            contentContainerStyle={styles.scrollContent}
+          >
+            <View style={styles.panel}>{children}</View>
+          </ScrollView>
+        </Pressable>
+      ) : (
+        <Pressable style={styles.content} onPress={Keyboard.dismiss}>
+          <View style={styles.contentInner}>
+            <View style={[styles.panel, styles.panelFill]}>{children}</View>
+          </View>
+        </Pressable>
+      )}
     </SafeAreaView>
   </Modal>
 );

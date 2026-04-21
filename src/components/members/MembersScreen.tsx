@@ -101,9 +101,12 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
             imageUrl={imageActions.viewerState.image.url}
             title={MEMBER_COPY.imageTitle}
             connectedLabel={members.find((member) => member.id === imageActions.viewerState?.entityId)?.name}
-            replaceLabel={MEMBER_COPY.imageReplace}
-            removeLabel={MEMBER_COPY.imageRemove}
             loading={imageActions.modalLoading}
+            textValue={imageActions.textValue}
+            textPlaceholder="Emoji or text"
+            textSubmitDisabled={!imageActions.textValue.trim()}
+            onTextChange={imageActions.setTextValue}
+            onTextSubmit={() => void imageActions.submitText()}
             onClose={imageActions.closeViewer}
             onReplace={imageActions.handleReplace}
             onRemove={imageActions.handleRemove}

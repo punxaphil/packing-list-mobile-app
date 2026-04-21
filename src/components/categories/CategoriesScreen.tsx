@@ -111,9 +111,12 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
             imageUrl={imageActions.viewerState.image.url}
             title={CATEGORY_COPY.imageTitle}
             connectedLabel={categories.find((category) => category.id === imageActions.viewerState?.entityId)?.name}
-            replaceLabel={CATEGORY_COPY.imageReplace}
-            removeLabel={CATEGORY_COPY.imageRemove}
             loading={imageActions.modalLoading}
+            textValue={imageActions.textValue}
+            textPlaceholder="Emoji or text"
+            textSubmitDisabled={!imageActions.textValue.trim()}
+            onTextChange={imageActions.setTextValue}
+            onTextSubmit={() => void imageActions.submitText()}
             onClose={imageActions.closeViewer}
             onReplace={imageActions.handleReplace}
             onRemove={imageActions.handleRemove}
