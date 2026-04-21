@@ -346,6 +346,9 @@ export function createWriteDb(spaceId: string) {
       sortEntities(allPackItems);
       return allPackItems;
     },
+    updatePackingListNotes: async (id: string, notes: string, showNotes: boolean) => {
+      await update(spaceId, PACKING_LISTS_KEY, id, { notes, showNotes });
+    },
   };
   return db;
 }

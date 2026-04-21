@@ -7,4 +7,6 @@ export interface NamedEntity {
   isTemplate?: boolean;
   pinned?: boolean;
   archived?: boolean;
+  notes?: string;
+  showNotes?: boolean;
 }

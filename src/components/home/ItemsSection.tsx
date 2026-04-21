@@ -28,6 +28,7 @@ import {
 } from "./itemHandlers.ts";
 import { getNextCategoryRank, getNextItemRank } from "./itemsSectionHelpers.ts";
 import { KitPickerModal } from "./KitPickerModal.tsx";
+import { ListNotesSheet, type ListNotesState } from "./ListNotesSheet.tsx";
 import { animateLayout } from "./layoutAnimation.ts";
 import { HOME_COPY } from "./styles.ts";
 import { ItemsSectionProps } from "./types.ts";
@@ -95,6 +96,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, writeDb, list?.id);
   const renameDialog = useRenameDialog(list, props.lists, renameList);
+  const notesSheet = useListNotes(list, writeDb);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const listImage = props.imagesState.images.find((img) => img.type === "packingLists" && img.typeId === list.id);
@@ -112,6 +114,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         addItemDialog={addItemDialog}
         filterDialog={filterDialog}
         search={search}
+        notesSheet={notesSheet}
       />
       <FilterSheet
         visible={filterDialog.visible}
@@ -133,6 +136,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         onClose={addItemDialog.closeKitPicker}
         onAdd={addItemDialog.addKits}
       />
+      <ListNotesSheet state={notesSheet} />
       {imageActions.viewerState && (
         <ImageViewerModal
           visible={true}
@@ -339,4 +343,33 @@ const useAddItemDialog = (
     closeKitPicker,
     addKits,
   };
+};
+
+const useListNotes = (list: NamedEntity | null, writeDb: WriteDb): ListNotesState => {
+  const [visible, setVisible] = useState(false);
+  const [notes, setNotes] = useState("");
+  const [showNotes, setShowNotesLocal] = useState(false);
+
+  const open = useCallback(() => {
+    setNotes(list?.notes ?? "");
+    setShowNotesLocal(list?.showNotes ?? false);
+    setVisible(true);
+  }, [list?.notes, list?.showNotes]);
+
+  const close = useCallback(() => {
+    setVisible(false);
+    if (!list) return;
+    void writeDb.updatePackingListNotes(list.id, notes, showNotes);
+  }, [list, notes, showNotes, writeDb]);
+
+  const setShowNotes = useCallback(
+    (v: boolean) => {
+      setShowNotesLocal(v);
+      if (!list) return;
+      void writeDb.updatePackingListNotes(list.id, notes, v);
+    },
+    [list, notes, writeDb]
+  );
+
+  return { visible, notes, showNotes, open, close, setNotes, setShowNotes };
 };
