@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -8,9 +8,11 @@ import { PackItem } from "~/types/PackItem.ts";
 import { AddItemDialog } from "./AddItemDialog.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ItemsList } from "./ItemsList.tsx";
+import type { ListNotesState } from "./ListNotesSheet.tsx";
 import { QuickAddRow } from "./QuickAddRow.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
+import { homeColors, homeSpacing } from "./theme.ts";
 import { ItemsSectionProps } from "./types.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
 import type { SearchState } from "./useSearch.ts";
@@ -70,6 +72,7 @@ type ItemsPanelProps = ItemsSectionProps &
     addItemDialog: AddItemDialogState;
     filterDialog: FilterDialogState;
     search: SearchState;
+    notesSheet: ListNotesState;
   };
 
 export const ItemsPanel = (props: ItemsPanelProps) => (
@@ -82,13 +85,43 @@ const PanelCard = (props: ItemsPanelProps) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
     <KeyboardAvoidingView style={homeStyles.panelBody} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <QuickAddRow addDialog={props.addItemDialog} filterDialog={props.filterDialog} search={props.search} />
+      <QuickAddRow
+        addDialog={props.addItemDialog}
+        filterDialog={props.filterDialog}
+        search={props.search}
+        onNotes={props.notesSheet.open}
+        hasNotes={!!props.list.notes}
+      />
+      {props.list.showNotes && props.list.notes ? (
+        <NotesBanner notes={props.list.notes} onPress={props.notesSheet.open} />
+      ) : null}
       <ItemsListView {...props} />
     </KeyboardAvoidingView>
     <RenameDialog dialog={props.renameDialog} />
     <AddItemDialogView {...props} />
   </View>
 );
+
+const NotesBanner = ({ notes, onPress }: { notes: string; onPress: () => void }) => (
+  <Pressable style={notesBannerStyles.banner} onPress={onPress}>
+    <Text style={notesBannerStyles.text}>{notes}</Text>
+  </Pressable>
+);
+
+const notesBannerStyles = StyleSheet.create({
+  banner: {
+    marginHorizontal: homeSpacing.xs,
+    marginBottom: homeSpacing.xs,
+    padding: homeSpacing.xs,
+    backgroundColor: homeColors.primaryLight,
+    borderRadius: 8,
+  },
+  text: {
+    fontSize: 14,
+    color: homeColors.primaryForeground,
+    lineHeight: 20,
+  },
+});
 
 const HeaderRow = ({
   displayName,
