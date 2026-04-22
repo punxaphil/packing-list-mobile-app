@@ -3,7 +3,6 @@ import { addSpaceListener, getActiveSpaceId, initSpaceState, setActiveSpaceId } 
 import { createSpace, getUserProfile, setUserProfile, subscribeToUserProfile } from "~/services/spaceDatabase.ts";
 import type { Space } from "~/types/Space.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
-import { showPendingDeletionAlert } from "./usePendingDeletionAlert.ts";
 
 const subscribe = (cb: () => void) => addSpaceListener(cb);
 const getSnapshot = () => getActiveSpaceId();
@@ -35,6 +34,7 @@ export function useSpaceBootstrap(userId: string, email: string) {
       const stored = await initSpaceState();
       const profile = await getUserProfile(userId);
       if (profile?.pendingDeletion) {
+        const { showPendingDeletionAlert } = await import("./usePendingDeletionAlert.ts");
         showPendingDeletionAlert(userId, stored, profile, setReady, setActiveSpaceId);
         return;
       }
