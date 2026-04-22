@@ -27,6 +27,32 @@ const CATEGORY_KEY = "filteredCategories";
 const MEMBER_KEY = "filteredMembers";
 const STATUS_KEY = "filteredStatus";
 
+const getStorageKey = (baseKey: string, listId: string) => `${baseKey}:${listId}`;
+
+const parseStringArray = (raw: string | null) => {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : [];
+  } catch {
+    return [];
+  }
+};
+
+const parseStatus = (raw: string | null): StatusFilter => {
+  if (raw === "packed" || raw === "unpacked") return raw;
+  return "all";
+};
+
+const persistCategories = (listId: string, values: string[]) =>
+  AsyncStorage.setItem(getStorageKey(CATEGORY_KEY, listId), JSON.stringify(values));
+
+const persistMembers = (listId: string, values: string[]) =>
+  AsyncStorage.setItem(getStorageKey(MEMBER_KEY, listId), JSON.stringify(values));
+
+const persistStatus = (listId: string, status: StatusFilter) =>
+  AsyncStorage.setItem(getStorageKey(STATUS_KEY, listId), status);
+
 const WITHOUT_MEMBERS: NamedEntity = { id: WITHOUT_MEMBERS_ID, name: homeCopy.withoutMembers, rank: Infinity };
 
 const getMembersInList = (members: NamedEntity[], items: PackItem[]) => {
@@ -51,57 +77,81 @@ export const useFilterDialog = (
   const membersInList = getMembersInList(members, items);
 
   useEffect(() => {
-    if (listId === undefined) return;
-    setSelectedCategories([]);
-    setSelectedMembers([]);
-    setStatusFilter("all");
-    AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify([]));
-    AsyncStorage.setItem(MEMBER_KEY, JSON.stringify([]));
-    AsyncStorage.setItem(STATUS_KEY, "all");
+    if (!listId) {
+      setSelectedCategories([]);
+      setSelectedMembers([]);
+      setStatusFilter("all");
+      return;
+    }
+    let active = true;
+    void (async () => {
+      const [rawCategories, rawMembers, rawStatus] = await Promise.all([
+        AsyncStorage.getItem(getStorageKey(CATEGORY_KEY, listId)),
+        AsyncStorage.getItem(getStorageKey(MEMBER_KEY, listId)),
+        AsyncStorage.getItem(getStorageKey(STATUS_KEY, listId)),
+      ]);
+      if (!active) return;
+      setSelectedCategories(parseStringArray(rawCategories));
+      setSelectedMembers(parseStringArray(rawMembers));
+      setStatusFilter(parseStatus(rawStatus));
+    })();
+    return () => {
+      active = false;
+    };
   }, [listId]);
 
   const open = useCallback(() => setVisible(true), []);
   const close = useCallback(() => setVisible(false), []);
 
-  const onToggleCategory = useCallback((categoryId: string) => {
-    startTransition(() => {
-      setSelectedCategories((current) => {
-        const updated = current.includes(categoryId)
-          ? current.filter((id) => id !== categoryId)
-          : [...current, categoryId];
-        AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify(updated));
-        return updated;
+  const onToggleCategory = useCallback(
+    (categoryId: string) => {
+      startTransition(() => {
+        setSelectedCategories((current) => {
+          const updated = current.includes(categoryId)
+            ? current.filter((id) => id !== categoryId)
+            : [...current, categoryId];
+          if (listId) void persistCategories(listId, updated);
+          return updated;
+        });
       });
-    });
-  }, []);
+    },
+    [listId]
+  );
 
-  const onToggleMember = useCallback((memberId: string) => {
-    startTransition(() => {
-      setSelectedMembers((current) => {
-        const updated = current.includes(memberId) ? current.filter((id) => id !== memberId) : [...current, memberId];
-        AsyncStorage.setItem(MEMBER_KEY, JSON.stringify(updated));
-        return updated;
+  const onToggleMember = useCallback(
+    (memberId: string) => {
+      startTransition(() => {
+        setSelectedMembers((current) => {
+          const updated = current.includes(memberId) ? current.filter((id) => id !== memberId) : [...current, memberId];
+          if (listId) void persistMembers(listId, updated);
+          return updated;
+        });
       });
-    });
-  }, []);
+    },
+    [listId]
+  );
 
-  const onSetStatus = useCallback((status: StatusFilter) => {
-    startTransition(() => {
-      setStatusFilter(status);
-      AsyncStorage.setItem(STATUS_KEY, status);
-    });
-  }, []);
+  const onSetStatus = useCallback(
+    (status: StatusFilter) => {
+      startTransition(() => {
+        setStatusFilter(status);
+        if (listId) void persistStatus(listId, status);
+      });
+    },
+    [listId]
+  );
 
   const onClear = useCallback(() => {
     startTransition(() => {
       setSelectedCategories([]);
       setSelectedMembers([]);
       setStatusFilter("all");
-      AsyncStorage.setItem(CATEGORY_KEY, JSON.stringify([]));
-      AsyncStorage.setItem(MEMBER_KEY, JSON.stringify([]));
-      AsyncStorage.setItem(STATUS_KEY, "all");
+      if (!listId) return;
+      void persistCategories(listId, []);
+      void persistMembers(listId, []);
+      void persistStatus(listId, "all");
     });
-  }, []);
+  }, [listId]);
 
   const hasActiveFilter = selectedCategories.length > 0 || selectedMembers.length > 0 || statusFilter !== "all";
   return {
