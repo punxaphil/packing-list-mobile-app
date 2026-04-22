@@ -4,6 +4,7 @@ import { SPACE_MGMT_COPY } from "~/components/space/spaceMgmtCopy.ts";
 import { useActiveSpaceId, useSpaceActions, useUserProfile } from "~/hooks/useSpaces.ts";
 import { createWriteDb } from "~/services/database.ts";
 import { ensureUserMemberId, subscribeToSpaces } from "~/services/spaceDatabase.ts";
+import { subscribeToSpaceUserProfiles, syncUserMember } from "~/services/userMemberSync.ts";
 import type { Space } from "~/types/Space.ts";
 import { SpaceContext } from "./SpaceContext.ts";
 
@@ -58,6 +59,19 @@ export function SpaceProvider({ userId, email, children }: Props) {
     if (!spaceId || !email) return;
     void ensureUserMemberId(spaceId, userId, email.trim().toLowerCase());
   }, [spaceId, userId, email]);
+
+  useEffect(() => {
+    if (!spaceId || !profile || !activeSpace?.members.includes(userId)) return;
+    void syncUserMember(spaceId, profile);
+  }, [spaceId, profile, activeSpace?.members, userId]);
+
+  useEffect(() => {
+    const otherUserIds = activeSpace?.members.filter((id) => id !== userId) ?? [];
+    if (!spaceId || !otherUserIds.length) return;
+    return subscribeToSpaceUserProfiles(otherUserIds, (profiles) => {
+      for (const p of profiles.values()) void syncUserMember(spaceId, p);
+    });
+  }, [spaceId, activeSpace?.members, userId]);
 
   useEffect(() => {
     if (spaceId || !spaces.length) return;

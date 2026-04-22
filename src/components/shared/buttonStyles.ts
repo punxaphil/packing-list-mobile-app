@@ -23,7 +23,7 @@ export const buttonStyles = StyleSheet.create({
   text: { fontSize: 16, fontWeight: "600", textAlign: "center" },
   textNeutral: { color: homeColors.text },
   textDanger: { color: homeColors.danger },
-  textPrimary: { color: homeColors.primaryForeground },
+  textPrimary: { color: homeColors.buttonText },
   textApple: { color: "#fff", fontSize: 18 },
   textGhost: { color: homeColors.muted, fontSize: 14 },
 });

@@ -4,6 +4,7 @@ import {
   getAuth,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -32,6 +33,8 @@ export function Login() {
   const [showEmail, setShowEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
 
   const handleApple = async () => {
@@ -57,6 +60,11 @@ export function Login() {
     try {
       const auth = getAuth();
       const { user } = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const trimmedFirst = firstName.trim();
+      const trimmedLast = lastName.trim();
+      if (trimmedFirst || trimmedLast) {
+        await updateProfile(user, { displayName: [trimmedFirst, trimmedLast].filter(Boolean).join("|") });
+      }
       await sendEmailVerification(user);
     } catch (e) {
       setError(friendlyAuthError(e, "Registration failed"));
@@ -78,7 +86,7 @@ export function Login() {
           <EmailForm
             onLogin={handleLogin}
             onRegister={handleRegister}
-            {...{ email, setEmail, password, setPassword }}
+            {...{ email, setEmail, password, setPassword, firstName, setFirstName, lastName, setLastName }}
           />
         )}
       </View>

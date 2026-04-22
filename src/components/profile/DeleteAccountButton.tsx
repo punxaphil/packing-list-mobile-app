@@ -52,5 +52,5 @@ export function DeleteAccountButton({ onSignOut }: { onSignOut: () => void }) {
     ]);
   };
 
-  return <Button label={COPY.label} onPress={handlePress} variant="danger" centered disabled={deleting} />;
+  return <Button label={COPY.label} onPress={handlePress} variant="danger" disabled={deleting} flex />;
 }

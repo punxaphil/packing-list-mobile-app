@@ -3,13 +3,8 @@ import { Alert } from "react-native";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserId } from "~/services/firebase.ts";
-import {
-  deleteSpace,
-  leaveSpace,
-  removeMemberFromSpace,
-  removeSpaceFromProfile,
-  updateSpaceName,
-} from "~/services/spaceDatabase.ts";
+import { deleteSpace, removeSpaceFromProfile, updateSpaceName } from "~/services/spaceDatabase.ts";
+import { finalizeUserRemoval, unassignUserFromPackItems } from "~/services/userMemberSync.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
 export function useSpaceManagement(onBack: () => void) {
@@ -37,8 +32,9 @@ export function useSpaceManagement(onBack: () => void) {
     async (email: string) => {
       if (!activeSpace) return;
       const userId = findUserIdByEmail(activeSpace.members, activeSpace.memberEmails, email);
-      await removeMemberFromSpace(spaceId, userId ?? "", email);
-      if (userId) await removeSpaceFromProfile(userId, spaceId);
+      if (!userId) return;
+      await unassignUserFromPackItems(spaceId, userId);
+      await finalizeUserRemoval(spaceId, userId, email);
     },
     [activeSpace, spaceId]
   );
@@ -52,8 +48,8 @@ export function useSpaceManagement(onBack: () => void) {
   const leave = useCallback(async () => {
     const userId = getUserId();
     suppressRemovalAlert.current = true;
-    await leaveSpace(spaceId, userId, currentEmail);
-    await removeSpaceFromProfile(userId, spaceId);
+    await unassignUserFromPackItems(spaceId, userId);
+    await finalizeUserRemoval(spaceId, userId, currentEmail);
     switchToFallbackSpace();
     onBack();
   }, [spaceId, currentEmail, onBack, switchToFallbackSpace, suppressRemovalAlert]);

@@ -1,8 +1,11 @@
+import { getAuth } from "firebase/auth";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { addSpaceListener, getActiveSpaceId, initSpaceState, setActiveSpaceId } from "~/navigation/spaceState.ts";
 import { createSpace, getUserProfile, setUserProfile, subscribeToUserProfile } from "~/services/spaceDatabase.ts";
 import type { Space } from "~/types/Space.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
+
+const DISPLAY_NAME_SEPARATOR = "|";
 
 const subscribe = (cb: () => void) => addSpaceListener(cb);
 const getSnapshot = () => getActiveSpaceId();
@@ -16,12 +19,21 @@ export function resolveValidSpaceId(stored: string, profile: UserProfile): strin
   return profile.personalSpaceId;
 }
 
+function parseDisplayName(displayName: string | null | undefined): { firstName: string; lastName: string } {
+  if (!displayName) return { firstName: "", lastName: "" };
+  const [firstName = "", lastName = ""] = displayName.split(DISPLAY_NAME_SEPARATOR);
+  return { firstName: firstName.trim(), lastName: lastName.trim() };
+}
+
 async function bootstrapNewUser(userId: string, email: string): Promise<string> {
   const space = await createSpace("Personal", email);
+  const { firstName, lastName } = parseDisplayName(getAuth().currentUser?.displayName);
   await setUserProfile(userId, {
     email,
     personalSpaceId: space.id,
     spaceIds: [space.id],
+    ...(firstName ? { firstName } : {}),
+    ...(lastName ? { lastName } : {}),
   });
   return space.id;
 }

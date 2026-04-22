@@ -78,30 +78,6 @@ export async function addMemberIdToSpace(spaceId: string, userId: string) {
   });
 }
 
-export async function removeMemberFromSpace(spaceId: string, userId: string, email: string) {
-  await updateDoc(doc(firestore, SPACES, spaceId), {
-    members: arrayRemove(userId),
-    memberEmails: arrayRemove(email),
-  });
-}
-
-export async function leaveSpace(spaceId: string, userId: string, email: string) {
-  const snap = await getDoc(doc(firestore, SPACES, spaceId));
-  if (!snap.exists()) return;
-  const space = snap.data() as Space;
-  const normalizedEmail = email.trim().toLowerCase();
-  const emailsToRemove = (space.memberEmails ?? []).filter((value) => value.trim().toLowerCase() === normalizedEmail);
-  const updates: Record<string, unknown> = {};
-  if ((space.members ?? []).includes(userId)) {
-    updates.members = arrayRemove(userId);
-  }
-  if (emailsToRemove.length > 0) {
-    updates.memberEmails = arrayRemove(...emailsToRemove);
-  }
-  if (Object.keys(updates).length === 0) return;
-  await updateDoc(doc(firestore, SPACES, spaceId), updates);
-}
-
 export async function deleteSpace(spaceId: string) {
   await deleteDoc(doc(firestore, SPACES, spaceId));
 }
@@ -324,6 +300,13 @@ export async function removeSpaceFromProfile(userId: string, spaceId: string) {
 export async function updateProfileImageUrl(userId: string, imageUrl: string | null) {
   await updateDoc(doc(firestore, USERS, userId), {
     imageUrl: imageUrl ?? deleteField(),
+  });
+}
+
+export async function updateProfileName(userId: string, firstName: string, lastName: string) {
+  await updateDoc(doc(firestore, USERS, userId), {
+    firstName: firstName || deleteField(),
+    lastName: lastName || deleteField(),
   });
 }
 

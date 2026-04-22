@@ -65,15 +65,17 @@ export const PageSheet = ({
         </View>
       </View>
       {scrollable ? (
-        <Pressable style={styles.content} onPress={Keyboard.dismiss}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            automaticallyAdjustKeyboardInsets
-            contentContainerStyle={styles.scrollContent}
-          >
+        <ScrollView
+          style={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+          automaticallyAdjustKeyboardInsets
+          contentContainerStyle={styles.scrollContent}
+        >
+          <Pressable onPress={Keyboard.dismiss}>
             <View style={styles.panel}>{children}</View>
-          </ScrollView>
-        </Pressable>
+          </Pressable>
+        </ScrollView>
       ) : (
         <Pressable style={styles.content} onPress={Keyboard.dismiss}>
           <View style={styles.contentInner}>

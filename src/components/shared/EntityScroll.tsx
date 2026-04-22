@@ -21,6 +21,7 @@ type EntityScrollProps = {
   onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
   computeDropIndex: (ids: string[], snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => number | null;
   dragEnabled?: boolean;
+  readOnlyIds?: Set<string>;
   itemCounts: Record<string, number>;
   images: Image[];
   onImagePress: (entityId: string, image?: Image) => void;
@@ -39,6 +40,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
     onDrop,
     computeDropIndex,
     dragEnabled = true,
+    readOnlyIds,
     itemCounts,
     images,
     onImagePress,
@@ -70,6 +72,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
       <View style={[entityStyles.list, entityStyles.relative]}>
         {entities.map((entity) => {
           const image = images.find((img) => img.typeId === entity.id);
+          const isReadOnly = readOnlyIds?.has(entity.id) ?? false;
           return (
             <EntityCard
               key={entity.id}
@@ -81,11 +84,12 @@ export const EntityScroll = (props: EntityScrollProps) => {
               hidden={drag.snapshot?.id === entity.id}
               highlightOpacity={highlightId === entity.id ? highlightOpacity : undefined}
               dragEnabled={dragEnabled}
+              readOnly={isReadOnly}
               itemCount={itemCounts[entity.id] ?? 0}
               image={image}
               imageLoading={imageLoading === entity.id}
               hideImagePlaceholder={hideImagePlaceholder}
-              showImageMenuAction={showImageMenuAction}
+              showImageMenuAction={showImageMenuAction && !isReadOnly}
               onImagePress={() => onImagePress(entity.id, image)}
               onLayout={(layout: LayoutRectangle) => drag.recordLayout(entity.id, layout)}
               onDragStart={dragEnabled ? () => drag.start(entity.id, "") : undefined}

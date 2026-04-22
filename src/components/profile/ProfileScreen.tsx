@@ -18,6 +18,7 @@ import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
+import { NameEditor } from "./NameEditor.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
 
 type ProfileScreenProps = {
@@ -70,7 +71,7 @@ const Avatar = ({ email, imageUrl, onPress, loading }: AvatarProps & { loading: 
 };
 
 const SignOutButton = ({ email, onSignOut }: { email: string; onSignOut: () => void }) => (
-  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" centered />
+  <Button label={COPY.signOut} onPress={() => confirmSignOut(email, onSignOut)} variant="danger" flex />
 );
 
 export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = false }: ProfileScreenProps) => {
@@ -114,9 +115,12 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
       <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
         <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
         <Text style={styles.email}>{email}</Text>
+        <NameEditor />
         <PreferencesSection />
-        <SignOutButton email={email} onSignOut={onSignOut} />
-        <DeleteAccountButton onSignOut={onSignOut} />
+        <View style={styles.actionsRow}>
+          <SignOutButton email={email} onSignOut={onSignOut} />
+          <DeleteAccountButton onSignOut={onSignOut} />
+        </View>
       </View>
       <ImageViewerModal
         visible={viewerVisible}
@@ -221,7 +225,7 @@ const { colors, spacing } = {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
-  sheetContainer: { backgroundColor: "transparent" },
+  sheetContainer: { flex: 0, backgroundColor: "transparent" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -239,7 +243,13 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg * 2,
     gap: spacing.lg,
   },
-  sheetContent: { paddingTop: spacing.md, paddingBottom: spacing.md },
+  actionsRow: {
+    width: "100%",
+    paddingHorizontal: spacing.lg,
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  sheetContent: { flex: 0, paddingTop: spacing.md, paddingBottom: spacing.md },
   avatarButton: { borderRadius: 50 },
   avatar: {
     width: 100,
