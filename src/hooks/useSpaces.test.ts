@@ -8,6 +8,10 @@ vi.mock("~/navigation/spaceState.ts", () => ({
   setActiveSpaceId: vi.fn(),
 }));
 
+vi.mock("firebase/auth", () => ({
+  getAuth: vi.fn(() => ({ currentUser: null })),
+}));
+
 vi.mock("~/services/spaceDatabase.ts", () => ({
   createSpace: vi.fn(),
   getUserProfile: vi.fn(),

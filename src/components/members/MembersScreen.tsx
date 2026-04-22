@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
@@ -53,6 +53,7 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
+  const readOnlyIds = useMemo(() => new Set(members.filter((m) => m.userId).map((m) => m.id)), [members]);
 
   return (
     <View style={entityStyles.container}>
@@ -77,6 +78,7 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
           onDrop={ordering.drop}
           computeDropIndex={computeEntityDropIndex}
           dragEnabled={!sortByAlpha}
+          readOnlyIds={readOnlyIds}
           itemCounts={itemCounts}
           images={memberImages}
           onImagePress={imageActions.handleImagePress}

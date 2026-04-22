@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   LayoutChangeEvent,
   LayoutRectangle,
@@ -24,6 +25,8 @@ import { hasDuplicateEntityName } from "./entityValidation.ts";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
+const USER_MEMBER_ALERT_TITLE = "User Member";
+const USER_MEMBER_ALERT_MESSAGE = "This member is linked to a real user. Manage name and image in profile settings.";
 
 export type EntityActions = {
   onAdd: (name: string) => Promise<void>;
@@ -40,6 +43,7 @@ type EntityCardProps = {
   hidden?: boolean;
   highlightOpacity?: Animated.Value;
   dragEnabled?: boolean;
+  readOnly?: boolean;
   itemCount: number;
   image?: Image;
   imageLoading?: boolean;
@@ -102,13 +106,16 @@ export const EntityCard = (props: EntityCardProps) => {
     setRenameVisible(false);
     setRenameValue(props.entity.name);
   };
+  const isReadOnly = props.readOnly ?? false;
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const showHighlight = !!props.highlightOpacity;
   const openMenu = () =>
-    showActionSheet(
-      props.entity.name,
-      buildMenuItems(props, openRename, () => void props.actions.onDelete(props.entity), !!props.image)
-    );
+    isReadOnly
+      ? Alert.alert(USER_MEMBER_ALERT_TITLE, USER_MEMBER_ALERT_MESSAGE)
+      : showActionSheet(
+          props.entity.name,
+          buildMenuItems(props, openRename, () => void props.actions.onDelete(props.entity), !!props.image)
+        );
   return (
     <View onLayout={handleLayout}>
       <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
@@ -124,16 +131,20 @@ export const EntityCard = (props: EntityCardProps) => {
             imageUrl={props.image?.url}
             loading={props.imageLoading}
             hidePlaceholder={props.hideImagePlaceholder}
-            onPress={props.onImagePress}
+            onPress={isReadOnly ? () => {} : props.onImagePress}
             copy={props.copy}
           />
           <View style={entityStyles.cardBody}>
-            <Pressable onPress={openRename}>
+            {isReadOnly ? (
               <Text style={entityStyles.cardName}>{props.entity.name}</Text>
-            </Pressable>
+            ) : (
+              <Pressable onPress={openRename}>
+                <Text style={entityStyles.cardName}>{props.entity.name}</Text>
+              </Pressable>
+            )}
             <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
           </View>
-          <MenuButton onPress={openMenu} />
+          <MenuButton onPress={openMenu} disabled={isReadOnly} />
         </View>
       </Pressable>
       <TextPromptDialog
@@ -208,9 +219,9 @@ const DragHandle = ({ disabled }: { disabled?: boolean }) => (
   </View>
 );
 
-const MenuButton = ({ onPress }: { onPress: () => void }) => (
+const MenuButton = ({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) => (
   <Pressable style={entityStyles.menuButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="Menu">
-    <Text style={entityStyles.menuIcon}>{MENU_ICON}</Text>
+    <Text style={[entityStyles.menuIcon, disabled && entityStyles.dragHandleDisabled]}>{MENU_ICON}</Text>
   </Pressable>
 );
 

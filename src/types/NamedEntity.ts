@@ -9,4 +9,5 @@ export interface NamedEntity {
   archived?: boolean;
   notes?: string;
   showNotes?: boolean;
+  userId?: string;
 }
