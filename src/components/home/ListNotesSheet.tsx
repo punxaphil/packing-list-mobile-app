@@ -21,6 +21,10 @@ export type ListNotesState = {
 export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
   <PageSheet visible={state.visible} title={COPY.title} onClose={state.close} scrollable={false}>
     <View style={styles.content}>
+      <View style={styles.toggleRow}>
+        <Text style={styles.toggleLabel}>{COPY.showNotesInItemsView}</Text>
+        <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
+      </View>
       <TextInput
         style={styles.textarea}
         value={state.notes}
@@ -31,10 +35,6 @@ export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
         textAlignVertical="top"
         autoFocus
       />
-      <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>{COPY.showNotesInItemsView}</Text>
-        <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
-      </View>
     </View>
   </PageSheet>
 );
