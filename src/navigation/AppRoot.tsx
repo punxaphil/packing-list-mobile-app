@@ -5,7 +5,7 @@ import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadi
 import { useCurrentUser } from "~/hooks/useCurrentUser.ts";
 import { useSpaceBootstrap } from "~/hooks/useSpaces.ts";
 import { setAppState } from "./appState";
-import { showMainTabs } from "./navigation";
+import { ITEMS_TAB, LISTS_TAB, showMainTabs } from "./navigation";
 import { getSelectedId } from "./selectionState";
 
 function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }) {
@@ -19,7 +19,7 @@ function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }
     const hasSelection = getSelectedId() !== "";
     if (prevHasSelection.current !== hasSelection) {
       prevHasSelection.current = hasSelection;
-      showMainTabs(hasSelection);
+      showMainTabs(hasSelection ? ITEMS_TAB : LISTS_TAB);
     }
   }, [ready, userId, email]);
 

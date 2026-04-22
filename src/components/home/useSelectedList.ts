@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { showMainTabs } from "~/navigation/navigation.ts";
+import { switchToListsTab } from "~/navigation/navigation.ts";
 import { clearSelectedId, getSelectedId, setSelectedId, subscribeToSelection } from "~/navigation/selectionState";
 import { PackingListSummary, SelectionState } from "./types.ts";
 
@@ -20,8 +20,9 @@ export function useSelectedList(
     if (selectedId === "") return;
     const valid = safeLists.some((l) => l.id === selectedId);
     if (!valid) {
+      if (getSelectedId() !== selectedId) return;
       clearSelectedId();
-      showMainTabs(false);
+      switchToListsTab();
     }
   }, [listsLoading, safeLists, selectedId]);
 
@@ -32,7 +33,7 @@ export function useSelectedList(
   const clear = useCallback(() => {
     if (!getSelectedId()) return;
     clearSelectedId();
-    showMainTabs(false);
+    switchToListsTab();
   }, []);
 
   const selectedList = safeLists.find((l) => l.id === selectedId) ?? null;
