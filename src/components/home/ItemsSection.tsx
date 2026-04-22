@@ -26,7 +26,7 @@ import {
   useToggleAllMembers,
   useToggleMemberPacked,
 } from "./itemHandlers.ts";
-import { getNextCategoryRank, getNextItemRank } from "./itemsSectionHelpers.ts";
+import { getNextCategoryRank, getNextItemRank, getTopItemRank } from "./itemsSectionHelpers.ts";
 import { KitPickerModal } from "./KitPickerModal.tsx";
 import { ListNotesSheet, type ListNotesState } from "./ListNotesSheet.tsx";
 import { animateLayout } from "./layoutAnimation.ts";
@@ -50,7 +50,7 @@ const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, s
   entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
 export const ItemsSection = (props: ItemsSectionProps) => {
-  const { writeDb } = useSpace();
+  const { profile, writeDb } = useSpace();
   const imageDb = {
     add: writeDb.addImage,
     update: writeDb.updateImage,
@@ -94,7 +94,13 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const search = useSearch(filteredItems, categoriesInList);
   const handlers = useItemsSectionHandlers(toggleItem, toggleCategory);
   const renameList = useListRenamer();
-  const addItemDialog = useAddItemDialog(optimisticItems, props.categoriesState.categories, writeDb, list?.id);
+  const addItemDialog = useAddItemDialog(
+    optimisticItems,
+    props.categoriesState.categories,
+    writeDb,
+    profile?.addNewItemsOnTop ?? false,
+    list?.id
+  );
   const renameDialog = useRenameDialog(list, props.lists, renameList);
   const notesSheet = useListNotes(list, writeDb);
   if (!list) return null;
@@ -248,6 +254,7 @@ const useAddItemDialog = (
   items: PackItem[],
   categories: NamedEntity[],
   writeDb: WriteDb,
+  addNewItemsOnTop: boolean,
   listId?: string | null
 ): AddItemDialogState => {
   const [visible, setVisible] = useState(false);
@@ -292,11 +299,12 @@ const useAddItemDialog = (
         categoryId = nextCategory.id;
       }
       setLastSelectedCategoryId(categoryId);
-      await writeDb.addPackItem(itemName, [], categoryId, listId, getNextItemRank(items));
+      const nextItemRank = addNewItemsOnTop ? getTopItemRank(items) : getNextItemRank(items);
+      await writeDb.addPackItem(itemName, [], categoryId, listId, nextItemRank);
       if (!keepOpen) close();
       return nextCategory;
     },
-    [items, categories, writeDb, listId, close]
+    [items, categories, writeDb, addNewItemsOnTop, listId, close]
   );
   const addKits = useCallback(
     async (kits: PackingKit[]) => {
@@ -306,8 +314,9 @@ const useAddItemDialog = (
       for (const cat of categories) {
         categoryMap.set(cat.name.toLowerCase(), cat.id);
       }
+      const totalKitItems = kits.reduce((count, kit) => count + kit.items.length, 0);
       let currentCategoryRank = getNextCategoryRank(categories);
-      let currentItemRank = getNextItemRank(items);
+      let currentItemRank = addNewItemsOnTop ? getTopItemRank(items, totalKitItems) : getNextItemRank(items);
       for (const kit of kits) {
         for (const kitItem of kit.items) {
           const catKey = kitItem.category.toLowerCase();
@@ -323,14 +332,15 @@ const useAddItemDialog = (
             }
           }
           try {
-            await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank++);
+            await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank);
+            currentItemRank -= 1;
           } catch (e) {
             if (!(e instanceof DuplicateNameError)) throw e;
           }
         }
       }
     },
-    [items, categories, writeDb, listId]
+    [items, categories, writeDb, addNewItemsOnTop, listId]
   );
   return {
     visible,

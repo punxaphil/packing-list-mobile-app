@@ -339,6 +339,12 @@ export async function updateProfileHideImagePlaceholder(userId: string, hideImag
   });
 }
 
+export async function updateProfileAddNewItemsOnTop(userId: string, addNewItemsOnTop: boolean) {
+  await updateDoc(doc(firestore, USERS, userId), {
+    addNewItemsOnTop: addNewItemsOnTop || deleteField(),
+  });
+}
+
 export async function markAccountForDeletion(userId: string) {
   await updateDoc(doc(firestore, USERS, userId), { pendingDeletion: true });
 }
