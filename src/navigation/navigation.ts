@@ -2,6 +2,11 @@ import { Platform } from "react-native";
 import { Navigation } from "react-native-navigation";
 import { SCREEN_IDS } from "./screenIds";
 
+export const ITEMS_TAB = 0;
+export const LISTS_TAB = 1;
+const MEMBERS_TAB = 3;
+const BOTTOM_TABS_ID = "BOTTOM_TABS";
+
 export function showLoginRoot() {
   Navigation.setRoot({
     root: {
@@ -12,64 +17,57 @@ export function showLoginRoot() {
   });
 }
 
-export function showMainTabs(showItems: boolean, currentTabIndex = 0) {
-  const tabs = [];
-
-  if (showItems) {
-    tabs.push({
-      stack: {
-        children: [{ component: { name: SCREEN_IDS.ITEMS } }],
-        options: {
-          bottomTab: {
-            text: "Items",
-            ...(Platform.OS === "ios" ? { sfSymbol: "checkmark.square" } : {}),
-          },
-        },
-      },
-    });
-  }
-
-  tabs.push(
-    {
-      stack: {
-        children: [{ component: { name: SCREEN_IDS.LISTS } }],
-        options: {
-          bottomTab: {
-            text: "Lists",
-            ...(Platform.OS === "ios" ? { sfSymbol: "list.bullet" } : {}),
-          },
-        },
-      },
-    },
-    {
-      stack: {
-        children: [{ component: { name: SCREEN_IDS.CATEGORIES } }],
-        options: {
-          bottomTab: {
-            text: "Categories",
-            ...(Platform.OS === "ios" ? { sfSymbol: "square.grid.2x2" } : {}),
-          },
-        },
-      },
-    },
-    {
-      stack: {
-        children: [{ component: { name: SCREEN_IDS.MEMBERS } }],
-        options: {
-          bottomTab: {
-            text: "Members",
-            ...(Platform.OS === "ios" ? { sfSymbol: "heart" } : {}),
-          },
-        },
-      },
-    }
-  );
-
+export function showMainTabs(currentTabIndex = LISTS_TAB) {
   Navigation.setRoot({
     root: {
       bottomTabs: {
-        id: "BOTTOM_TABS",
-        children: tabs,
+        id: BOTTOM_TABS_ID,
+        children: [
+          {
+            stack: {
+              children: [{ component: { name: SCREEN_IDS.ITEMS } }],
+              options: {
+                bottomTab: {
+                  text: "Items",
+                  ...(Platform.OS === "ios" ? { sfSymbol: "checkmark.square" } : {}),
+                },
+              },
+            },
+          },
+          {
+            stack: {
+              children: [{ component: { name: SCREEN_IDS.LISTS } }],
+              options: {
+                bottomTab: {
+                  text: "Lists",
+                  ...(Platform.OS === "ios" ? { sfSymbol: "list.bullet" } : {}),
+                },
+              },
+            },
+          },
+          {
+            stack: {
+              children: [{ component: { name: SCREEN_IDS.CATEGORIES } }],
+              options: {
+                bottomTab: {
+                  text: "Categories",
+                  ...(Platform.OS === "ios" ? { sfSymbol: "square.grid.2x2" } : {}),
+                },
+              },
+            },
+          },
+          {
+            stack: {
+              children: [{ component: { name: SCREEN_IDS.MEMBERS } }],
+              options: {
+                bottomTab: {
+                  text: "Members",
+                  ...(Platform.OS === "ios" ? { sfSymbol: "heart" } : {}),
+                },
+              },
+            },
+          },
+        ],
         options: {
           bottomTabs: {
             currentTabIndex,
@@ -77,6 +75,12 @@ export function showMainTabs(showItems: boolean, currentTabIndex = 0) {
         },
       },
     },
+  });
+}
+
+function switchToTab(tabIndex: number) {
+  Navigation.mergeOptions(BOTTOM_TABS_ID, {
+    bottomTabs: { currentTabIndex: tabIndex },
   });
 }
 
@@ -96,9 +100,13 @@ export function popScreen(componentId: string) {
 }
 
 export function switchToItemsTab() {
-  showMainTabs(true);
+  switchToTab(ITEMS_TAB);
+}
+
+export function switchToListsTab() {
+  switchToTab(LISTS_TAB);
 }
 
 export function switchToMembersTab() {
-  showMainTabs(true, 3);
+  switchToTab(MEMBERS_TAB);
 }

@@ -69,9 +69,10 @@ const useAddList = (
 const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
   useCallback(
     async (list: PackingListSummary) => {
+      const wasSelected = selection.selectedId === list.id;
       animateLayout();
       await writeDb.deletePackingList(list.id);
-      if (selection.selectedId === list.id) selection.clear();
+      if (wasSelected) selection.clear();
     },
     [selection, writeDb]
   );

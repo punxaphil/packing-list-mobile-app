@@ -1,7 +1,7 @@
-import { View } from "react-native";
 import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
+import { NoSelectionPanel } from "~/components/home/NoSelectionPanel.tsx";
 import { homeStyles } from "~/components/home/styles";
 import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { useCategories } from "~/hooks/useCategories";
@@ -10,7 +10,7 @@ import { useMembers } from "~/hooks/useMembers";
 import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile } from "./navigation";
+import { pushProfile, switchToListsTab } from "./navigation";
 
 function ItemsContent({ componentId }: { componentId: string }) {
   const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
@@ -24,10 +24,10 @@ function ItemsContent({ componentId }: { componentId: string }) {
   if (showLoader) return <AppLoadingState />;
   if (loading) return null;
 
-  if (!hasLists) {
+  if (!hasLists || !selection.hasSelection) {
     return (
       <SafeAreaView edges={["top"]} style={homeStyles.home}>
-        <View style={homeStyles.loading} />
+        <NoSelectionPanel email={email} onProfile={() => pushProfile(componentId)} onShowLists={switchToListsTab} />
       </SafeAreaView>
     );
   }
