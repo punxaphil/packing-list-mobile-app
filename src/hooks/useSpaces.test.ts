@@ -15,6 +15,10 @@ vi.mock("~/services/spaceDatabase.ts", () => ({
   subscribeToUserProfile: vi.fn(),
 }));
 
+vi.mock("./usePendingDeletionAlert.ts", () => ({
+  showPendingDeletionAlert: vi.fn(),
+}));
+
 import { resolveValidSpaceId } from "./useSpaces.ts";
 
 const createProfile = (personalSpaceId: string, spaceIds: string[]): UserProfile => ({
