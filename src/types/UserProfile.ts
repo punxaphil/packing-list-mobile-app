@@ -6,5 +6,6 @@ export interface UserProfile {
   imageUrl?: string;
   hideImagePlaceholder?: boolean;
   wrapItemText?: boolean;
+  addNewItemsOnTop?: boolean;
   pendingDeletion?: boolean;
 }

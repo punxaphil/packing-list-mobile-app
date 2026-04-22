@@ -67,6 +67,11 @@ export const getNextItemRank = (items: Pick<PackItem, "rank">[]) => {
   return ranks.length ? Math.min(...ranks) - 1 : 0;
 };
 
+export const getTopItemRank = (items: Pick<PackItem, "rank">[], itemCount = 1) => {
+  const ranks = items.map((item) => item.rank).filter((rank) => Number.isFinite(rank));
+  return ranks.length ? Math.max(...ranks) + itemCount : 0;
+};
+
 export const getNextCategoryRank = (categories: Pick<NamedEntity, "rank">[]) => {
   const ranks = categories.map((c) => c.rank ?? 0).filter((rank) => Number.isFinite(rank));
   return ranks.length ? Math.min(...ranks) - 1 : 0;
