@@ -56,6 +56,10 @@ type HomeCopy = {
   duplicateCopyToListTitle: string;
   templateHasCheckedTitle: string;
   templateHasCheckedMessage: string;
+  deleteCategoryQuestionTitle: string;
+  deleteCategoryQuestionMessage: string;
+  keepCategory: string;
+  deleteCategoryAction: string;
   withoutMembers: string;
 };
 
@@ -115,5 +119,9 @@ export const homeCopy: HomeCopy = {
   duplicateCopyToListTitle: "Duplicate Item",
   templateHasCheckedTitle: "Checked items",
   templateHasCheckedMessage: "Uncheck all items before setting this list as a template.",
+  deleteCategoryQuestionTitle: "Delete category?",
+  deleteCategoryQuestionMessage: '"{name}" will be empty after removing this item. Delete the category too?',
+  keepCategory: "Keep category",
+  deleteCategoryAction: "Delete category",
   withoutMembers: "Without members",
 } as const;

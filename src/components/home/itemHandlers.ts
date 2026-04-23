@@ -1,11 +1,13 @@
 import { useCallback } from "react";
-import { NativeModules, Platform } from "react-native";
+import { Alert, NativeModules, Platform } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import type { WriteDb } from "~/services/database.ts";
 import { getPackItemChecked, withPackItemMembers } from "~/services/packItemState.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
+import { HOME_COPY } from "./styles.ts";
 
 const getDeviceLocale = (): string => {
   if (Platform.OS === "ios") {
@@ -33,13 +35,41 @@ export const useItemRename = () => {
 export const useItemDelete = () => {
   const { writeDb } = useSpace();
   return useCallback(
-    (id: string) => {
+    async (items: PackItem[], categories: NamedEntity[], lists: NamedEntity[], id: string) => {
+      const item = items.find((entry) => entry.id === id);
+      if (!item) return;
+      const deleteCategory = await shouldDeleteCategory(writeDb, items, categories, item);
       animateLayout();
-      void writeDb.deletePackItem(id);
+      await writeDb.deletePackItem(id);
+      if (deleteCategory) await writeDb.deleteCategory(item.category, lists);
     },
     [writeDb]
   );
 };
+
+const shouldDeleteCategory = async (writeDb: WriteDb, items: PackItem[], categories: NamedEntity[], item: PackItem) => {
+  if (!item.category) return false;
+  if (items.some((entry) => entry.category === item.category && entry.id !== item.id)) return false;
+  const category = categories.find((entry) => entry.id === item.category);
+  if (!category) return false;
+  const packItems = await writeDb.getPackItemsForAllPackingLists();
+  const usedInOtherLists = packItems.some((entry) => entry.category === item.category && entry.id !== item.id);
+  if (usedInOtherLists) return false;
+  return confirmDeleteCategory(category.name);
+};
+
+const confirmDeleteCategory = (name: string) =>
+  new Promise<boolean>((resolve) => {
+    Alert.alert(
+      HOME_COPY.deleteCategoryQuestionTitle,
+      HOME_COPY.deleteCategoryQuestionMessage.replace("{name}", name),
+      [
+        { text: HOME_COPY.keepCategory, style: "cancel", onPress: () => resolve(false) },
+        { text: HOME_COPY.deleteCategoryAction, style: "destructive", onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) }
+    );
+  });
 
 export const useCategoryRename = () => {
   const { writeDb } = useSpace();
