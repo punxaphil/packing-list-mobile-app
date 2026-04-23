@@ -71,7 +71,7 @@ final class PackingListReminderModule: RCTEventEmitter {
       }
       let dueDate = Date(timeIntervalSince1970: timestamp / 1000)
       guard dueDate.timeIntervalSinceNow > 0 else {
-        self.cancelReminder(identifier: listId)
+        self.cancelReminder(listId: listId, spaceId: spaceId)
         resolve(nil)
         return
       }
