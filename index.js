@@ -4,6 +4,8 @@ import "./src/services/database";
 Navigation.events().registerAppLaunchedListener(async () => {
   const { initSelection } = await import("./src/navigation/selectionState");
   await initSelection();
+  const { registerPackingListReminderHandler } = await import("./src/services/packingListReminder");
+  registerPackingListReminderHandler();
 
   const { registerScreens } = await import("./src/navigation/screens");
   const { setDefaultOptions } = await import("./src/navigation/options");

@@ -11,11 +11,12 @@ type Props = {
   addDialog: AddItemDialogState;
   filterDialog: FilterDialogState;
   search: SearchState;
+  hasDueAt: boolean;
   onNotes: () => void;
   hasNotes: boolean;
 };
 
-export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes }: Props) => {
+export const QuickAddRow = ({ addDialog, filterDialog, search, hasDueAt, onNotes, hasNotes }: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localText, setLocalText] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,6 +76,7 @@ export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes
     <DefaultRow
       addDialog={addDialog}
       filterDialog={filterDialog}
+      hasDueAt={hasDueAt}
       onSearch={onToggleSearch}
       onNotes={onNotes}
       hasNotes={hasNotes}
@@ -156,12 +158,13 @@ const NavButtons = ({ onPrev, onNext }: { onPrev: () => void; onNext: () => void
 type DefaultRowProps = {
   addDialog: AddItemDialogState;
   filterDialog: FilterDialogState;
+  hasDueAt: boolean;
   onSearch: () => void;
   onNotes: () => void;
   hasNotes: boolean;
 };
 
-const DefaultRow = ({ addDialog, filterDialog, onSearch, onNotes, hasNotes }: DefaultRowProps) => (
+const DefaultRow = ({ addDialog, filterDialog, hasDueAt, onSearch, onNotes, hasNotes }: DefaultRowProps) => (
   <View style={styles.row}>
     <Pressable
       style={homeStyles.quickAdd}
@@ -173,6 +176,9 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch, onNotes, hasNotes }: De
       <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
     </Pressable>
     <View style={styles.iconRow}>
+      <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8}>
+        <MaterialCommunityIcons name="alarm" size={20} color={hasDueAt ? homeColors.primaryStrong : homeColors.muted} />
+      </Pressable>
       <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8}>
         <MaterialCommunityIcons
           name="information-outline"

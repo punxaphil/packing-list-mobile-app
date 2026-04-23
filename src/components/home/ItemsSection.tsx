@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
+import {
+  buildPackingListReminderContent,
+  pickPackingListDueAt,
+  syncPackingListReminder,
+} from "~/services/packingListReminder.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
@@ -49,8 +55,13 @@ const buildImageMap = (images: Image[], type: string) =>
 const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, string>) =>
   entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
+const INFO_COPY = {
+  reminderErrorMessage: "Enable iPhone notifications for Packsy to receive due date reminders.",
+  reminderErrorTitle: "Reminder unavailable",
+};
+
 export const ItemsSection = (props: ItemsSectionProps) => {
-  const { profile, writeDb } = useSpace();
+  const { profile, spaceId, writeDb } = useSpace();
   const imageDb = {
     add: writeDb.addImage,
     update: writeDb.updateImage,
@@ -108,7 +119,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
     list?.id
   );
   const renameDialog = useRenameDialog(list, props.lists, renameList);
-  const notesSheet = useListNotes(list, writeDb);
+  const notesSheet = useListNotes(list, spaceId, writeDb);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const listImage = props.imagesState.images.find((img) => img.type === "packingLists" && img.typeId === list.id);
@@ -385,31 +396,44 @@ const useAddItemDialog = (
   };
 };
 
-const useListNotes = (list: NamedEntity | null, writeDb: WriteDb): ListNotesState => {
+const useListNotes = (list: NamedEntity | null, spaceId: string, writeDb: WriteDb): ListNotesState => {
+  const [dueAt, setDueAt] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
   const [notes, setNotes] = useState("");
   const [showNotes, setShowNotesLocal] = useState(false);
 
   const open = useCallback(() => {
+    setDueAt(list?.dueAt ?? null);
     setNotes(list?.notes ?? "");
     setShowNotesLocal(list?.showNotes ?? false);
     setVisible(true);
-  }, [list?.notes, list?.showNotes]);
+  }, [list?.dueAt, list?.notes, list?.showNotes]);
+
+  const persist = useCallback(async () => {
+    if (!list) return;
+    await writeDb.updatePackingListInfo(list.id, notes, showNotes, dueAt);
+    try {
+      const reminder = buildPackingListReminderContent(list.name);
+      await syncPackingListReminder({ ...reminder, dueAt, id: list.id, spaceId });
+    } catch (error) {
+      console.error(error);
+      Alert.alert(INFO_COPY.reminderErrorTitle, INFO_COPY.reminderErrorMessage);
+    }
+  }, [dueAt, list, notes, showNotes, spaceId, writeDb]);
 
   const close = useCallback(() => {
     setVisible(false);
-    if (!list) return;
-    void writeDb.updatePackingListNotes(list.id, notes, showNotes);
-  }, [list, notes, showNotes, writeDb]);
+    void persist();
+  }, [persist]);
 
-  const setShowNotes = useCallback(
-    (v: boolean) => {
-      setShowNotesLocal(v);
-      if (!list) return;
-      void writeDb.updatePackingListNotes(list.id, notes, v);
-    },
-    [list, notes, writeDb]
-  );
+  const pickDueAt = useCallback(async () => {
+    const nextDueAt = await pickPackingListDueAt(dueAt);
+    if (nextDueAt !== undefined) setDueAt(nextDueAt);
+  }, [dueAt]);
 
-  return { visible, notes, showNotes, open, close, setNotes, setShowNotes };
+  const clearDueAt = useCallback(() => setDueAt(null), []);
+
+  const setShowNotes = useCallback((v: boolean) => setShowNotesLocal(v), []);
+
+  return { visible, dueAt, notes, showNotes, open, close, clearDueAt, pickDueAt, setNotes, setShowNotes };
 };

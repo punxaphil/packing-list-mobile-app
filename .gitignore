@@ -61,6 +61,10 @@ ios/build/
 ios/DerivedData/
 ios/Pods/
 ios/*.xcworkspace
+ios/.xcode.env
+ios/.xcode.env.local
+ios/ExportOptions.plist
+ios/GoogleService-Info.plist
 *.xcodeproj/project.xcworkspace/
 *.xcuserstate
 *.xcuserdata/
@@ -68,7 +72,6 @@ ios/*.xcworkspace
 hermes-engine/
 
 # CocoaPods
-Podfile.lock
 vendor/bundle/
 
 # Xcode user data
@@ -87,6 +90,5 @@ Thumbs.db
 .env
 .env.*
 /plan.md
-ios/
 android/
 scripts/serviceAccountKey.json

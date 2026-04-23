@@ -90,6 +90,7 @@ const PanelCard = (props: ItemsPanelProps) => (
         filterDialog={props.filterDialog}
         search={props.search}
         onNotes={props.notesSheet.open}
+        hasDueAt={!!props.list.dueAt}
         hasNotes={!!props.list.notes}
       />
       {props.list.showNotes && props.list.notes ? (

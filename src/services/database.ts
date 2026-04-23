@@ -3,6 +3,7 @@ import {
   collection,
   DocumentData,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -346,8 +347,12 @@ export function createWriteDb(spaceId: string) {
       sortEntities(allPackItems);
       return allPackItems;
     },
-    updatePackingListNotes: async (id: string, notes: string, showNotes: boolean) => {
-      await update(spaceId, PACKING_LISTS_KEY, id, { notes, showNotes });
+    updatePackingListInfo: async (id: string, notes: string, showNotes: boolean, dueAt: number | null) => {
+      await update(spaceId, PACKING_LISTS_KEY, id, {
+        notes,
+        showNotes,
+        dueAt: dueAt == null ? deleteField() : dueAt,
+      });
     },
   };
   return db;
