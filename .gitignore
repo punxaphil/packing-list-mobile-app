@@ -49,6 +49,7 @@ fastlane/test_output
 # React Native Android build artifacts
 android/.gradle/
 android/app/build/
+android/app/debug.keystore
 android/build/
 android/local.properties
 android/keystores/
@@ -90,5 +91,5 @@ Thumbs.db
 .env
 .env.*
 /plan.md
-android/
+drivers/
 scripts/serviceAccountKey.json
