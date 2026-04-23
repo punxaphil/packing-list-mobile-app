@@ -92,7 +92,13 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   };
   const filteredProps = { ...props, itemsState: filteredItemsState };
   const search = useSearch(filteredItems, categoriesInList);
-  const handlers = useItemsSectionHandlers(toggleItem, toggleCategory);
+  const handlers = useItemsSectionHandlers(
+    toggleItem,
+    toggleCategory,
+    optimisticItems,
+    props.categoriesState.categories,
+    props.lists
+  );
   const renameList = useListRenamer();
   const addItemDialog = useAddItemDialog(
     optimisticItems,
@@ -166,30 +172,54 @@ export const ItemsSection = (props: ItemsSectionProps) => {
 type ToggleItem = (item: PackItem) => Promise<void>;
 type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
-const useItemsSectionHandlers = (toggleItem: ToggleItem, toggleCategory: ToggleCategory): ListHandlers => ({
-  onToggle: useCallback(
-    (item: PackItem) => {
-      void toggleItem(item);
-    },
-    [toggleItem]
-  ),
-  onRenameItem: useItemRename(),
-  onDeleteItem: useItemDelete(),
-  onRenameCategory: useCategoryRename(),
-  onToggleCategory: useCallback(
-    (items: PackItem[], checked: boolean) => {
-      void toggleCategory(items, checked);
-    },
-    [toggleCategory]
-  ),
-  onAssignMembers: useAssignMembers(),
-  onToggleMemberPacked: useToggleMemberPacked(),
-  onToggleAllMembers: useToggleAllMembers(),
-  onMoveCategory: useMoveCategory(),
-  onMoveItemsToCategory: useMoveItemsToCategory(),
-  onCopyToList: useCopyToList(),
-  onSortCategoryAlpha: useSortCategoryAlpha(),
-});
+const useItemsSectionHandlers = (
+  toggleItem: ToggleItem,
+  toggleCategory: ToggleCategory,
+  items: PackItem[],
+  categories: NamedEntity[],
+  lists: NamedEntity[]
+): ListHandlers => {
+  const renameItem = useItemRename();
+  const deleteItem = useItemDelete();
+  const renameCategory = useCategoryRename();
+  const assignMembers = useAssignMembers();
+  const toggleMemberPacked = useToggleMemberPacked();
+  const toggleAllMembers = useToggleAllMembers();
+  const moveCategory = useMoveCategory();
+  const moveItemsToCategory = useMoveItemsToCategory();
+  const copyToList = useCopyToList();
+  const sortCategoryAlpha = useSortCategoryAlpha();
+
+  return {
+    onToggle: useCallback(
+      (item: PackItem) => {
+        void toggleItem(item);
+      },
+      [toggleItem]
+    ),
+    onRenameItem: renameItem,
+    onDeleteItem: useCallback(
+      (id: string) => {
+        void deleteItem(items, categories, lists, id);
+      },
+      [categories, deleteItem, items, lists]
+    ),
+    onRenameCategory: renameCategory,
+    onToggleCategory: useCallback(
+      (items: PackItem[], checked: boolean) => {
+        void toggleCategory(items, checked);
+      },
+      [toggleCategory]
+    ),
+    onAssignMembers: assignMembers,
+    onToggleMemberPacked: toggleMemberPacked,
+    onToggleAllMembers: toggleAllMembers,
+    onMoveCategory: moveCategory,
+    onMoveItemsToCategory: moveItemsToCategory,
+    onCopyToList: copyToList,
+    onSortCategoryAlpha: sortCategoryAlpha,
+  };
+};
 
 const useRenameDialog = (
   list: NamedEntity | null,
