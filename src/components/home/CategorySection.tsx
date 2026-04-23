@@ -25,7 +25,7 @@ import { AssignMembersModal } from "./AssignMembersModal.tsx";
 import { CategoryRenameDialogs, getRenameCategoryError, getRenameItemError } from "./CategoryRenameDialogs.tsx";
 import { CopyToListModal } from "./CopyToListModal.tsx";
 import { computeDropIndex } from "./itemOrdering.ts";
-import { SectionGroup } from "./itemsSectionHelpers.ts";
+import { getNextCategoryRank, SectionGroup } from "./itemsSectionHelpers.ts";
 import { getItemCheckboxColor } from "./listColors.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
@@ -104,6 +104,7 @@ type CategoryItemRowProps = {
 };
 
 const CategorySectionImpl = (props: CategorySectionProps) => {
+  const { writeDb } = useSpace();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
   const [moveCategoryVisible, setMoveCategoryVisible] = useState(false);
@@ -151,8 +152,16 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     if (!renameCategoryErrorText) props.onRenameCategory(props.section.category, renameCategoryText.trim());
     setRenameCategoryVisible(false);
   };
-  const handleMoveCategory = (category: NamedEntity) => {
-    if (moveItem) props.onMoveCategory(moveItem, category.id);
+  const resolveMoveCategory = async (category: NamedEntity | null, newCategoryName: string | null) => {
+    const trimmedName = newCategoryName?.trim();
+    if (!trimmedName) return category ?? props.section.category;
+    const existing = props.categories.find((entry) => entry.name.toLowerCase() === trimmedName.toLowerCase());
+    return existing ?? writeDb.addCategory(trimmedName, getNextCategoryRank(props.categories));
+  };
+  const handleMoveCategory = async (category: NamedEntity | null, newCategoryName: string | null) => {
+    if (!moveItem) return;
+    const nextCategory = await resolveMoveCategory(category, newCategoryName);
+    props.onMoveCategory(moveItem, nextCategory.id);
   };
   const handleCopyToList = async (list: PackingListSummary) => {
     if (!copyItem) return;
@@ -201,8 +210,9 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     );
   }, [confirmDelete, props.section.items, props.section.title, props.onDeleteItem]);
 
-  const handleMoveSection = async (category: NamedEntity) => {
-    await props.onMoveItemsToCategory(props.section.items, category.id);
+  const handleMoveSection = async (category: NamedEntity | null, newCategoryName: string | null) => {
+    const nextCategory = await resolveMoveCategory(category, newCategoryName);
+    await props.onMoveItemsToCategory(props.section.items, nextCategory.id);
   };
 
   const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
@@ -246,21 +256,19 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       />
       <MoveCategoryModal
         visible={!!moveItem}
-        itemName={moveItem?.name ?? ""}
         categories={props.categories}
         categoryImages={props.categoryImages}
         currentCategoryId={moveItem?.category ?? ""}
         onClose={() => setMoveItem(null)}
-        onSelect={handleMoveCategory}
+        onSubmit={handleMoveCategory}
       />
       <MoveCategoryModal
         visible={moveCategoryVisible}
-        itemName={props.section.title}
         categories={props.categories}
         categoryImages={props.categoryImages}
         currentCategoryId={props.section.category.id}
         onClose={() => setMoveCategoryVisible(false)}
-        onSelect={handleMoveSection}
+        onSubmit={handleMoveSection}
       />
       <CopyToListModal
         visible={!!copyItem}
