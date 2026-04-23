@@ -11,7 +11,7 @@ export function CategoriesScreen({ componentId }: NavigationComponentProps) {
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <CategoriesScreenComponent email={email} onProfile={() => pushProfile(componentId)} />
+        <CategoriesScreenComponent componentId={componentId} email={email} onProfile={() => pushProfile(componentId)} />
       </AppProvider>
     </SafeAreaView>
   );

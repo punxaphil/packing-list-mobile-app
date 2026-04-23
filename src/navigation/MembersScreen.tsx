@@ -11,7 +11,7 @@ export function MembersScreen({ componentId }: NavigationComponentProps) {
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <MembersScreenComponent email={email} onProfile={() => pushProfile(componentId)} />
+        <MembersScreenComponent componentId={componentId} email={email} onProfile={() => pushProfile(componentId)} />
       </AppProvider>
     </SafeAreaView>
   );
