@@ -17,13 +17,15 @@ import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
+import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 
 type MembersScreenProps = {
+  componentId: string;
   email: string;
   onProfile: () => void;
 };
 
-export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
+export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { members } = useMembers(spaceId);
   const { images } = useImages(spaceId);
@@ -47,7 +49,7 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
-  const colors = buildEntityColors(sorted);
+  const colors = useRevisitOrderedColors(componentId, sorted, buildEntityColors);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
