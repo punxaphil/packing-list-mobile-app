@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { getPackItemChecked, withPackItemMembers } from "./packItemState.ts";
+import { getPackItemChecked, normalizePackItem, withPackItemMembers } from "./packItemState.ts";
 
 const createMember = (id: string, checked: boolean): MemberPackItem => ({
   id,
@@ -49,5 +49,13 @@ describe("packItemState", () => {
 
     expect(nextItem.members).toEqual([createMember("member-2", false)]);
     expect(getPackItemChecked(nextItem)).toBe(false);
+  });
+
+  it("normalizes legacy string member ids", () => {
+    const item = { ...createItem(true), members: ["member-1", "member-2"] as unknown as MemberPackItem[] };
+    const nextItem = normalizePackItem(item);
+
+    expect(nextItem.members).toEqual([createMember("member-1", true), createMember("member-2", true)]);
+    expect(getPackItemChecked(nextItem)).toBe(true);
   });
 });

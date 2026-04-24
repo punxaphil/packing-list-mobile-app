@@ -19,6 +19,7 @@ import type { Space } from "~/types/Space.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
 import { firestore, getUserId } from "./firebase.ts";
+import { normalizePackItemMembers } from "./packItemState.ts";
 
 const SPACES = "spaces";
 const USERS = "users";
@@ -100,14 +101,16 @@ export async function moveListToSpace(sourceSpaceId: string, targetSpaceId: stri
   const itemsSnap = await getDocs(
     query(collection(firestore, SPACES, sourceSpaceId, "packItems"), where("packingList", "==", listId))
   );
-  const items: { id: string; category?: string; members?: { id: string }[] }[] = itemsSnap.docs.map((itemDoc) => ({
-    ...(itemDoc.data() as { category?: string; members?: { id: string }[] }),
-    id: itemDoc.id,
-  }));
+  const items: { id: string; category?: string; checked?: boolean; members?: unknown[] }[] = itemsSnap.docs.map(
+    (itemDoc) => ({
+      ...(itemDoc.data() as { category?: string; checked?: boolean; members?: unknown[] }),
+      id: itemDoc.id,
+    })
+  );
   const categoryIds = [...new Set(items.map((item) => (item.category as string) ?? "").filter(Boolean))];
   const memberIds = [
     ...new Set(
-      items.flatMap((item) => ((item.members as { id: string }[] | undefined) ?? []).map((member) => member.id))
+      items.flatMap((item) => normalizePackItemMembers(item.members, !!item.checked).map((member) => member.id))
     ),
   ];
 
@@ -188,17 +191,23 @@ export async function moveListToSpace(sourceSpaceId: string, targetSpaceId: stri
   for (const itemDoc of itemsSnap.docs) {
     const itemData = itemDoc.data();
     const mappedCategory = (itemData.category as string) ? (categoryIdMap.get(itemData.category as string) ?? "") : "";
-    const mappedMembers = ((itemData.members as { id: string; checked: boolean }[] | undefined) ?? [])
+    const sourceMembers = normalizePackItemMembers(itemData.members as unknown[] | undefined, !!itemData.checked);
+    const mappedMembers = sourceMembers
       .map((member) => {
         const mappedId = memberIdMap.get(member.id);
         return mappedId ? { ...member, id: mappedId } : null;
       })
       .filter((member): member is { id: string; checked: boolean } => member !== null);
+    const mappedChecked =
+      sourceMembers.length === 0
+        ? !!itemData.checked
+        : mappedMembers.length > 0 && mappedMembers.every((member) => member.checked);
     const sourceItemRef = doc(firestore, SPACES, sourceSpaceId, "packItems", itemDoc.id);
     const targetItemRef = doc(firestore, SPACES, targetSpaceId, "packItems", itemDoc.id);
     batch.set(targetItemRef, {
       ...itemData,
       category: mappedCategory,
+      checked: mappedChecked,
       members: mappedMembers,
       packingList: targetListId,
     });

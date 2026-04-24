@@ -1,6 +1,7 @@
 import { collection, onSnapshot, QuerySnapshot, query, Unsubscribe, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { firestore } from "~/services/firebase.ts";
+import { normalizePackItem } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
 
 type HookState = {
@@ -29,10 +30,15 @@ const sortItems = (items: PackItem[]) => [...items].sort((first, second) => seco
 
 const mapSnapshot = (snapshot: QuerySnapshot): PackItem[] =>
   sortItems(
-    snapshot.docs.map((item) => ({
-      ...item.data(),
-      id: item.id,
-    })) as PackItem[]
+    snapshot.docs
+      .map(
+        (item) =>
+          ({
+            ...item.data(),
+            id: item.id,
+          }) as PackItem
+      )
+      .map(normalizePackItem)
   );
 
 const buildQuery = (spaceId: string, packingListId: string) =>

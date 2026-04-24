@@ -13,7 +13,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { firestore } from "~/services/firebase.ts";
-import { withPackItemMembers } from "~/services/packItemState.ts";
+import { normalizePackItem, withPackItemMembers } from "~/services/packItemState.ts";
 import type { NamedEntity } from "~/types/NamedEntity.ts";
 import type { PackItem } from "~/types/PackItem.ts";
 import type { Space } from "~/types/Space.ts";
@@ -86,7 +86,7 @@ export async function unassignUserFromPackItems(spaceId: string, userId: string)
   let batch = writeBatch(firestore);
   let writes = 0;
   for (const itemDoc of packItemSnap.docs) {
-    const item = itemDoc.data() as PackItem;
+    const item = normalizePackItem(itemDoc.data() as PackItem);
     const members = (item.members ?? []).filter((member) => !memberIds.includes(member.id));
     if (members.length === (item.members ?? []).length) continue;
     const nextItem = withPackItemMembers(item, members);
