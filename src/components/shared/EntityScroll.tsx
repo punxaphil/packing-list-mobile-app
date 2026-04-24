@@ -4,7 +4,7 @@ import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DragOffset } from "../home/useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "../home/useDragState.ts";
-import { EntityActions, EntityCard, EntityCardPreview } from "./EntityCard.tsx";
+import { EntityActions, EntityCard, EntityCardPreview, EntityMenuAction } from "./EntityCard.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
 import { FadeScrollView, FadeScrollViewRef } from "./FadeScrollView.tsx";
 import { useFlashHighlight } from "./useFlashHighlight.ts";
@@ -28,6 +28,7 @@ type EntityScrollProps = {
   imageLoading?: string | null;
   hideImagePlaceholder?: boolean;
   showImageMenuAction?: boolean;
+  getMenuItems?: (entity: NamedEntity) => EntityMenuAction[];
 };
 
 export const EntityScroll = (props: EntityScrollProps) => {
@@ -47,6 +48,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
     imageLoading,
     hideImagePlaceholder,
     showImageMenuAction,
+    getMenuItems,
   } = props;
   const ids = entities.map((e) => e.id);
   const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
@@ -90,6 +92,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
               imageLoading={imageLoading === entity.id}
               hideImagePlaceholder={hideImagePlaceholder}
               showImageMenuAction={showImageMenuAction && !isReadOnly}
+              menuItems={getMenuItems?.(entity) ?? []}
               onImagePress={() => onImagePress(entity.id, image)}
               onLayout={(layout: LayoutRectangle) => drag.recordLayout(entity.id, layout)}
               onDragStart={dragEnabled ? () => drag.start(entity.id, "") : undefined}

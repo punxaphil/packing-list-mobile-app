@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, Switch, Text, View } from "react-native";
+import { Alert, Pressable, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
@@ -18,6 +18,7 @@ import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
+import { MoveMemberItemsDialog } from "./MoveMemberItemsDialog.tsx";
 
 type MembersScreenProps = {
   componentId: string;
@@ -43,17 +44,34 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
     delete: writeDb.deleteImage,
   };
 
-  const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb);
+  const [sortByAlpha, setSortByAlpha] = useState(false);
+  const [moveSource, setMoveSource] = useState<NamedEntity | null>(null);
+
+  const openMoveItems = (member: NamedEntity) => {
+    if (members.length < 2) {
+      Alert.alert("Move Items", "Add another member first.");
+      return;
+    }
+    setMoveSource(member);
+  };
+
+  const moveItems = async (target: NamedEntity) => {
+    if (!moveSource) return;
+    await writeDb.moveMemberAssignments(moveSource.id, target.id);
+    setMoveSource(null);
+  };
+
+  const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb, openMoveItems);
   const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
   const drag = useDragState();
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
-  const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
   const colors = useRevisitOrderedColors(componentId, sorted, buildEntityColors);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
   const readOnlyIds = useMemo(() => new Set(members.filter((m) => m.userId).map((m) => m.id)), [members]);
+  const moveTargets = moveSource ? sorted.filter((member) => member.id !== moveSource.id) : [];
 
   return (
     <View style={entityStyles.container}>
@@ -85,6 +103,9 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
           imageLoading={imageActions.loadingEntityId}
           hideImagePlaceholder={hideImagePlaceholder}
           showImageMenuAction
+          getMenuItems={(member) => [
+            { text: MEMBER_COPY.moveItems, onPress: () => openMoveItems(member), disabled: members.length < 2 },
+          ]}
         />
         <TextPromptDialog
           visible={creation.visible}
@@ -116,6 +137,14 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
             onRemove={imageActions.handleRemove}
           />
         )}
+        <MoveMemberItemsDialog
+          visible={!!moveSource}
+          source={moveSource}
+          targets={moveTargets}
+          memberImages={memberImages}
+          onClose={() => setMoveSource(null)}
+          onSubmit={moveItems}
+        />
       </View>
     </View>
   );
