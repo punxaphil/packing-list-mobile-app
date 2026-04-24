@@ -105,6 +105,16 @@ async function deletePackItemsForList(spaceId: string, listId: string, batch: Wr
   }
 }
 
+async function deleteImagesForEntity(spaceId: string, id: string, types: string[], batch: WriteBatch) {
+  const q = query(spaceColl(spaceId, IMAGES_KEY), where("typeId", "==", id));
+  const images = fromQueryResult<{ id: string; type: string }>(await getDocs(q));
+  const validTypes = new Set(types);
+  for (const image of images) {
+    if (!validTypes.has(image.type)) continue;
+    batch.delete(spaceDoc(spaceId, IMAGES_KEY, image.id));
+  }
+}
+
 async function assertUniqueEntityName(spaceId: string, collKey: string, name: string, excludeId?: string) {
   const existing = fromQueryResult<NamedEntity>(await getDocs(spaceColl(spaceId, collKey)));
   const lower = name.trim().toLowerCase();
@@ -130,6 +140,12 @@ async function assertUniqueItemName(
   if (dup) throw new DuplicateNameError(name);
 }
 
+async function assertPackingListExists(spaceId: string, packingList: string) {
+  if (!packingList) throw new Error("Pack item must belong to a packing list");
+  const snapshot = await getDoc(spaceDoc(spaceId, PACKING_LISTS_KEY, packingList));
+  if (!snapshot.exists()) throw new Error("Pack item references a missing packing list");
+}
+
 export function createWriteDb(spaceId: string) {
   const db = {
     addPackItem: async (
@@ -139,6 +155,7 @@ export function createWriteDb(spaceId: string) {
       packingList: string,
       rank: number
     ): Promise<PackItem> => {
+      await assertPackingListExists(spaceId, packingList);
       await assertUniqueItemName(spaceId, name, category, packingList);
       const ref = await add(spaceId, PACK_ITEMS_KEY, {
         name,
@@ -159,14 +176,19 @@ export function createWriteDb(spaceId: string) {
       };
     },
     updatePackItem: async (packItem: PackItem) => {
+      await assertPackingListExists(spaceId, packItem.packingList);
       await update(spaceId, PACK_ITEMS_KEY, packItem.id, packItem);
     },
     deletePackItem: async (id: string) => {
-      await del(spaceId, PACK_ITEMS_KEY, id);
+      const batch = writeBatch(firestore);
+      batch.delete(spaceDoc(spaceId, PACK_ITEMS_KEY, id));
+      await deleteImagesForEntity(spaceId, id, ["packItem", "packItems"], batch);
+      await batch.commit();
     },
     deletePackingList: async (id: string) => {
       const batch = writeBatch(firestore);
       await deletePackItemsForList(spaceId, id, batch);
+      await deleteImagesForEntity(spaceId, id, ["packingList", "packingLists"], batch);
       db.deletePackingListBatch(id, batch);
       await batch.commit();
     },
@@ -259,7 +281,10 @@ export function createWriteDb(spaceId: string) {
         }
         await batch.commit();
       }
-      await del(spaceId, CATEGORIES_KEY, id);
+      const batch = writeBatch(firestore);
+      await deleteImagesForEntity(spaceId, id, ["category", "categories"], batch);
+      batch.delete(spaceDoc(spaceId, CATEGORIES_KEY, id));
+      await batch.commit();
     },
     async deleteMember(id: string, packingLists: NamedEntity[], deleteEvenIfUsed = false) {
       const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("members", "!=", []));
@@ -279,7 +304,10 @@ export function createWriteDb(spaceId: string) {
         }
         await batch.commit();
       }
-      await del(spaceId, MEMBERS_KEY, id);
+      const batch = writeBatch(firestore);
+      await deleteImagesForEntity(spaceId, id, ["member", "members"], batch);
+      batch.delete(spaceDoc(spaceId, MEMBERS_KEY, id));
+      await batch.commit();
     },
     async moveMemberAssignments(sourceId: string, targetId: string) {
       if (sourceId === targetId) return;
