@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   LayoutChangeEvent,
   LayoutRectangle,
@@ -25,13 +24,18 @@ import { hasDuplicateEntityName } from "./entityValidation.ts";
 
 const DRAG_HANDLE_ICON = "≡";
 const MENU_ICON = "⋮";
-const USER_MEMBER_ALERT_TITLE = "User Member";
-const USER_MEMBER_ALERT_MESSAGE = "This member is linked to a real user. Manage name and image in profile settings.";
 
 export type EntityActions = {
   onAdd: (name: string) => Promise<void>;
   onDelete: (entity: NamedEntity) => Promise<void>;
   onRename: (entity: NamedEntity, name: string) => Promise<void>;
+};
+
+export type EntityMenuAction = {
+  text: string;
+  onPress: () => void;
+  style?: "destructive";
+  disabled?: boolean;
 };
 
 type EntityCardProps = {
@@ -49,6 +53,7 @@ type EntityCardProps = {
   imageLoading?: boolean;
   hideImagePlaceholder?: boolean;
   showImageMenuAction?: boolean;
+  menuItems?: EntityMenuAction[];
   onImagePress: () => void;
   onLayout?: (layout: LayoutRectangle) => void;
   onDragStart?: () => void;
@@ -107,15 +112,19 @@ export const EntityCard = (props: EntityCardProps) => {
     setRenameValue(props.entity.name);
   };
   const isReadOnly = props.readOnly ?? false;
+  const menuItems = buildMenuItems(
+    props,
+    isReadOnly,
+    openRename,
+    () => void props.actions.onDelete(props.entity),
+    !!props.image
+  );
   const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
   const showHighlight = !!props.highlightOpacity;
-  const openMenu = () =>
-    isReadOnly
-      ? Alert.alert(USER_MEMBER_ALERT_TITLE, USER_MEMBER_ALERT_MESSAGE)
-      : showActionSheet(
-          props.entity.name,
-          buildMenuItems(props, openRename, () => void props.actions.onDelete(props.entity), !!props.image)
-        );
+  const openMenu = () => {
+    if (!menuItems.length) return;
+    showActionSheet(props.entity.name, menuItems);
+  };
   return (
     <View onLayout={handleLayout}>
       <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
@@ -144,7 +153,7 @@ export const EntityCard = (props: EntityCardProps) => {
             )}
             <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
           </View>
-          <MenuButton onPress={openMenu} disabled={isReadOnly} />
+          <MenuButton onPress={openMenu} disabled={menuItems.length === 0} />
         </View>
       </Pressable>
       <TextPromptDialog
@@ -198,18 +207,22 @@ const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: Enti
 };
 
 const buildMenuItems = (
-  props: Pick<EntityCardProps, "showImageMenuAction" | "onImagePress">,
+  props: Pick<EntityCardProps, "menuItems" | "showImageMenuAction" | "onImagePress">,
+  isReadOnly: boolean,
   openRename: () => void,
   onDelete: () => void,
   hasImage: boolean
 ) => {
-  const items: { text: string; onPress: () => void; style?: "destructive" }[] = [
-    { text: HOME_COPY.rename, onPress: openRename },
-  ];
-  if (props.showImageMenuAction) {
+  const items = [...(props.menuItems ?? [])];
+  if (!isReadOnly) {
+    items.unshift({ text: HOME_COPY.rename, onPress: openRename });
+  }
+  if (!isReadOnly && props.showImageMenuAction) {
     items.push({ text: hasImage ? "Update image" : "Add image", onPress: props.onImagePress });
   }
-  items.push({ text: "Delete", style: "destructive" as const, onPress: onDelete });
+  if (!isReadOnly) {
+    items.push({ text: "Delete", style: "destructive" as const, onPress: onDelete });
+  }
   return items;
 };
 
@@ -220,7 +233,13 @@ const DragHandle = ({ disabled }: { disabled?: boolean }) => (
 );
 
 const MenuButton = ({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) => (
-  <Pressable style={entityStyles.menuButton} onPress={onPress} accessibilityRole="button" accessibilityLabel="Menu">
+  <Pressable
+    style={entityStyles.menuButton}
+    onPress={onPress}
+    disabled={disabled}
+    accessibilityRole="button"
+    accessibilityLabel="Menu"
+  >
     <Text style={[entityStyles.menuIcon, disabled && entityStyles.dragHandleDisabled]}>{MENU_ICON}</Text>
   </Pressable>
 );

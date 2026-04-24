@@ -281,6 +281,21 @@ export function createWriteDb(spaceId: string) {
       }
       await del(spaceId, MEMBERS_KEY, id);
     },
+    async moveMemberAssignments(sourceId: string, targetId: string) {
+      if (sourceId === targetId) return;
+      const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("members", "!=", []));
+      const packItems = fromQueryResult<PackItem>(await getDocs(q));
+      const updates = packItems.flatMap((item) => {
+        const source = item.members.find((member) => member.id === sourceId);
+        if (!source) return [];
+        const hasTarget = item.members.some((member) => member.id === targetId);
+        const members = hasTarget
+          ? item.members.filter((member) => member.id !== sourceId)
+          : item.members.map((member) => (member.id === sourceId ? { id: targetId, checked: source.checked } : member));
+        return [withPackItemMembers(item, members)];
+      });
+      await db.updatePackItemsBatched(updates);
+    },
     async getFirstPackingList(): Promise<NamedEntity | undefined> {
       const lists = fromQueryResult(await getDocs(spaceColl(spaceId, PACKING_LISTS_KEY))) as NamedEntity[];
       return lists.length ? lists[0] : undefined;
