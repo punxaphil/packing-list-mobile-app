@@ -19,8 +19,17 @@ export const useRevisitOrderedColors = <T extends Entity>(
   buildColorsRef.current = buildColors;
 
   useEffect(() => {
-    if (entities.length === 0 || Object.keys(colors).length > 0) return;
-    setColors(snapshotColors(entities, buildColors));
+    if (entities.length === 0) return;
+    const missingIds = entities.filter((entity) => !colors[entity.id]).map((entity) => entity.id);
+    if (missingIds.length === 0) return;
+    const nextColors = snapshotColors(entities, buildColors);
+    setColors((current) => {
+      const merged = { ...current };
+      missingIds.forEach((id) => {
+        merged[id] = nextColors[id];
+      });
+      return merged;
+    });
   }, [entities, buildColors, colors]);
 
   useEffect(() => {
