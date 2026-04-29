@@ -17,7 +17,6 @@ export function SpaceProvider({ userId, email, children }: Props) {
   const { switchSpace, createNewSpace } = useSpaceActions();
   const prevSpaceIdsRef = useRef<string[] | undefined>(undefined);
   const suppressRemovalAlert = useRef(false);
-  const handledRemovalSpaceIdRef = useRef<string | null>(null);
 
   const spaceIdsKey = [...(profile?.spaceIds ?? [])].sort().join(",");
   useEffect(() => {
@@ -30,8 +29,6 @@ export function SpaceProvider({ userId, email, children }: Props) {
 
   const handleRemoval = useCallback(
     (fallback: string, name?: string) => {
-      if (handledRemovalSpaceIdRef.current === spaceId) return;
-      handledRemovalSpaceIdRef.current = spaceId;
       switchSpace(fallback);
       if (suppressRemovalAlert.current) {
         suppressRemovalAlert.current = false;
@@ -39,7 +36,7 @@ export function SpaceProvider({ userId, email, children }: Props) {
         Alert.alert(SPACE_MGMT_COPY.removedTitle, SPACE_MGMT_COPY.removedMessage(name));
       }
     },
-    [switchSpace, spaceId]
+    [switchSpace]
   );
 
   useEffect(() => {

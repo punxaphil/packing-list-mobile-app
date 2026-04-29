@@ -15,7 +15,7 @@ const getMemberId = (member: unknown) => {
 export const areAllMembersChecked = (members: MemberPackItem[]) =>
   members.length > 0 && members.every((member) => member.checked);
 
-export const normalizePackItemMembers = (members: unknown[] | undefined, checked: boolean): MemberPackItem[] =>
+const normalizePackItemMembers = (members: unknown[] | undefined, checked: boolean): MemberPackItem[] =>
   (members ?? []).flatMap((member) => {
     const id = getMemberId(member);
     if (!id) return [];
