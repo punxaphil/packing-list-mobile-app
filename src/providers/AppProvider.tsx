@@ -6,7 +6,6 @@ import { SubscriptionGate } from "~/components/subscription/SubscriptionGate.tsx
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
-import { showLoginRoot } from "~/navigation/navigation.ts";
 import { clearSelectedId } from "~/navigation/selectionState.ts";
 import { clearSpaceState } from "~/navigation/spaceState.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -40,7 +39,6 @@ type AppProviderProps = PropsWithChildren<{ userId: string; email: string }>;
 const useSignOutAction = () =>
   useCallback(() => {
     const run = async () => {
-      showLoginRoot();
       try {
         await getAuth().signOut();
         clearSelectedId();
