@@ -31,6 +31,7 @@ const friendlyAuthError = (e: unknown, fallback: string): string =>
 
 export function Login() {
   const [showEmail, setShowEmail] = useState(false);
+  const [emailMode, setEmailMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -84,8 +85,9 @@ export function Login() {
         )}
         {showEmail && (
           <EmailForm
-            onLogin={handleLogin}
-            onRegister={handleRegister}
+            mode={emailMode}
+            onSubmit={emailMode === "login" ? handleLogin : handleRegister}
+            onToggleMode={() => setEmailMode(emailMode === "login" ? "register" : "login")}
             {...{ email, setEmail, password, setPassword, firstName, setFirstName, lastName, setLastName }}
           />
         )}

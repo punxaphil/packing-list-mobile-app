@@ -3,6 +3,7 @@ import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 
 type EmailFormProps = {
+  mode: "login" | "register";
   email: string;
   setEmail: (v: string) => void;
   password: string;
@@ -11,12 +12,13 @@ type EmailFormProps = {
   setFirstName: (v: string) => void;
   lastName: string;
   setLastName: (v: string) => void;
-  onLogin: () => void;
-  onRegister: () => void;
+  onSubmit: () => void;
+  onToggleMode: () => void;
 };
 
 export function EmailForm(props: EmailFormProps) {
   const {
+    mode,
     email,
     setEmail,
     password,
@@ -25,25 +27,32 @@ export function EmailForm(props: EmailFormProps) {
     setFirstName,
     lastName,
     setLastName,
-    onLogin,
-    onRegister,
+    onSubmit,
+    onToggleMode,
   } = props;
+
+  const isRegister = mode === "register";
+
   return (
     <View style={styles.section}>
-      <TextInput
-        autoCapitalize="words"
-        placeholder="First name (optional)"
-        style={styles.input}
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <TextInput
-        autoCapitalize="words"
-        placeholder="Last name (optional)"
-        style={styles.input}
-        value={lastName}
-        onChangeText={setLastName}
-      />
+      {isRegister && (
+        <>
+          <TextInput
+            autoCapitalize="words"
+            placeholder="First name (optional)"
+            style={styles.input}
+            value={firstName}
+            onChangeText={setFirstName}
+          />
+          <TextInput
+            autoCapitalize="words"
+            placeholder="Last name (optional)"
+            style={styles.input}
+            value={lastName}
+            onChangeText={setLastName}
+          />
+        </>
+      )}
       <TextInput
         autoCapitalize="none"
         autoCorrect={false}
@@ -61,8 +70,8 @@ export function EmailForm(props: EmailFormProps) {
         value={password}
         onChangeText={setPassword}
       />
-      <Button label="Login" onPress={onLogin} />
-      <Button label="Register" onPress={onRegister} />
+      <Button label={isRegister ? "Create account" : "Login"} onPress={onSubmit} />
+      <Button label={isRegister ? "Back to login" : "Create account instead"} onPress={onToggleMode} variant="ghost" />
     </View>
   );
 }
