@@ -68,6 +68,7 @@ type ItemsPanelProps = ItemsSectionProps &
     listImageUrl?: string;
     listImageLoading?: boolean;
     onListImagePress: () => void;
+    onItemImagePress: (item: PackItem) => void;
     renameDialog: TextDialogState;
     addItemDialog: AddItemDialogState;
     filterDialog: FilterDialogState;
@@ -198,9 +199,11 @@ const ItemsListView = ({
   onMoveItemsToCategory,
   onCopyToList,
   onSortCategoryAlpha,
+  onItemImagePress,
 }: ItemsPanelProps) => {
   const memberImages = imagesState.images.filter((img) => img.type === "members");
   const categoryImages = imagesState.images.filter((img) => img.type === "categories");
+  const itemImages = imagesState.images.filter((img) => img.type === "packItems");
   const { isTemplateList } = useTemplate();
   const isTemplate = isTemplateList(selection.selectedId);
   return (
@@ -213,6 +216,7 @@ const ItemsListView = ({
       members={membersState.members}
       memberImages={memberImages}
       categoryImages={categoryImages}
+      itemImages={itemImages}
       memberInitials={membersState.memberInitials}
       memberNames={membersState.memberNames}
       lists={lists}
@@ -232,6 +236,7 @@ const ItemsListView = ({
       onMoveItemsToCategory={onMoveItemsToCategory}
       onCopyToList={onCopyToList}
       onSortCategoryAlpha={onSortCategoryAlpha}
+      onItemImagePress={onItemImagePress}
       onBrowseKits={addItemDialog.onBrowseKits}
       onAddKit={addItemDialog.addKits}
     />

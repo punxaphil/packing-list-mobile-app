@@ -30,6 +30,7 @@ type ItemsListProps = {
   members: NamedEntity[];
   memberImages: Image[];
   categoryImages: Image[];
+  itemImages: Image[];
   memberInitials: MemberInitialsMap;
   memberNames: MemberNamesMap;
   lists: NamedEntity[];
@@ -49,6 +50,7 @@ type ItemsListProps = {
   onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
+  onItemImagePress: (item: PackItem) => void;
   onBrowseKits: () => void;
   onAddKit: (kits: PackingKit[]) => Promise<void>;
 };
@@ -113,6 +115,7 @@ export const ItemsList = (props: ItemsListProps) => {
             members={props.members}
             memberImages={props.memberImages}
             categoryImages={props.categoryImages}
+            itemImages={props.itemImages}
             initialsMap={props.memberInitials}
             memberNames={props.memberNames}
             categories={props.categories}
@@ -137,6 +140,7 @@ export const ItemsList = (props: ItemsListProps) => {
             onMoveItemsToCategory={props.onMoveItemsToCategory}
             onCopyToList={props.onCopyToList}
             onSortCategoryAlpha={props.onSortCategoryAlpha}
+            onItemImagePress={props.onItemImagePress}
           />
         ))}
       </View>

@@ -253,7 +253,13 @@ export const homeStyles = StyleSheet.create({
     marginHorizontal: 0,
     paddingHorizontal: 0,
   },
-  itemContent: { flex: 1, gap: 2, marginLeft: spacing.xs },
+  itemBody: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  itemContent: { flex: 1, gap: 2 },
   detailItem: {
     flexDirection: "row",
     alignItems: "center",

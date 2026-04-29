@@ -47,6 +47,7 @@ type CategorySectionProps = {
   members: NamedEntity[];
   memberImages: Image[];
   categoryImages: Image[];
+  itemImages: Image[];
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
   categories: NamedEntity[];
@@ -76,6 +77,7 @@ type CategorySectionProps = {
   onMoveItemsToCategory: (items: PackItem[], categoryId: string) => Promise<void>;
   onCopyToList: (item: PackItem, listId: string) => Promise<void>;
   onSortCategoryAlpha: (items: PackItem[]) => Promise<void>;
+  onItemImagePress: (item: PackItem) => void;
 };
 
 type CategoryItemRowProps = {
@@ -84,6 +86,7 @@ type CategoryItemRowProps = {
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
   memberImages: Image[];
+  itemImage?: Image;
   hidden: boolean;
   highlightOpacity: Animated.Value | undefined;
   hasOtherLists: boolean;
@@ -99,6 +102,7 @@ type CategoryItemRowProps = {
   onOpenMoveCategory: () => void;
   onOpenCopyToList: () => void;
   onOpenRename: () => void;
+  onOpenImagePicker: () => void;
   onToggleMemberPacked: (memberId: string) => void;
   onToggleAllMembers: (checked: boolean) => void;
 };
@@ -343,6 +347,7 @@ const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionP
   if (prev.memberNames !== next.memberNames) return false;
   if (prev.memberImages !== next.memberImages) return false;
   if (prev.categoryImages !== next.categoryImages) return false;
+  if (prev.itemImages !== next.itemImages) return false;
   return true;
 };
 
@@ -450,6 +455,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
     onToggle,
     onDeleteItem,
     memberImages,
+    itemImages,
     initialsMap,
     onToggleMemberPacked,
     onToggleAllMembers,
@@ -457,6 +463,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
     onOpenMoveCategory,
     onOpenCopyToList,
     onOpenRenameItem,
+    onItemImagePress,
     onDrop,
     checkboxDisabled,
   } = props;
@@ -476,6 +483,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           initialsMap={initialsMap}
           memberNames={props.memberNames}
           memberImages={memberImages}
+          itemImage={itemImages.find((img) => img.typeId === item.id)}
           hidden={drag.snapshot?.id === item.id}
           hasOtherLists={hasOtherLists}
           checkboxDisabled={checkboxDisabled}
@@ -491,6 +499,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onOpenMoveCategory={() => onOpenMoveCategory(item)}
           onOpenCopyToList={() => onOpenCopyToList(item)}
           onOpenRename={() => onOpenRenameItem(item)}
+          onOpenImagePicker={() => onItemImagePress(item)}
           onToggleMemberPacked={(memberId) => onToggleMemberPacked(item, memberId)}
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
@@ -539,7 +548,9 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
     prev.isCurrentMatch === next.isCurrentMatch &&
     prev.initialsMap === next.initialsMap &&
     prev.memberNames === next.memberNames &&
-    prev.memberImages === next.memberImages
+    prev.memberImages === next.memberImages &&
+    prev.itemImage?.id === next.itemImage?.id &&
+    prev.itemImage?.url === next.itemImage?.url
   );
 };
 
@@ -568,6 +579,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
       { text: HOME_COPY.rename, onPress: props.onOpenRename },
       { text: "Edit Members", onPress: props.onOpenAssignMembers },
       { text: "Change Category", onPress: props.onOpenMoveCategory },
+      { text: props.itemImage ? "Update image" : "Add image", onPress: props.onOpenImagePicker },
       ...(props.hasOtherLists ? [{ text: "Copy to List", onPress: props.onOpenCopyToList }] : []),
       {
         text: "Delete",
@@ -602,25 +614,28 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             checkedColor={props.checkboxColor}
           />
         )}
-        <View style={homeStyles.itemContent}>
-          <View>
-            <Pressable onPress={props.onOpenRename}>
-              <Text
-                style={[homeStyles.detailLabel, checked && homeStyles.detailLabelChecked]}
-                numberOfLines={wrapItemText ? undefined : 1}
-              >
-                {props.item.name}
-              </Text>
-            </Pressable>
+        <View style={homeStyles.itemBody}>
+          {props.itemImage && <ItemImageIcon imageUrl={props.itemImage.url} />}
+          <View style={homeStyles.itemContent}>
+            <View>
+              <Pressable onPress={props.onOpenRename}>
+                <Text
+                  style={[homeStyles.detailLabel, checked && homeStyles.detailLabelChecked]}
+                  numberOfLines={wrapItemText ? undefined : 1}
+                >
+                  {props.item.name}
+                </Text>
+              </Pressable>
+            </View>
+            <MemberInitials
+              item={props.item}
+              initialsMap={props.initialsMap}
+              memberNames={props.memberNames}
+              memberImages={props.memberImages}
+              checkedColor={props.checkboxColor}
+              onToggle={props.onToggleMemberPacked}
+            />
           </View>
-          <MemberInitials
-            item={props.item}
-            initialsMap={props.initialsMap}
-            memberNames={props.memberNames}
-            memberImages={props.memberImages}
-            checkedColor={props.checkboxColor}
-            onToggle={props.onToggleMemberPacked}
-          />
         </View>
         <Pressable
           style={homeStyles.menuButton}
@@ -634,6 +649,15 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
     </View>
   );
 }, areRowPropsEqual);
+
+const ItemImageIcon = ({ imageUrl }: { imageUrl: string }) => {
+  const emoji = getEmojiValue(imageUrl);
+  return emoji ? (
+    <Text style={homeStyles.categoryImage}>{emoji}</Text>
+  ) : (
+    <RNImage source={{ uri: imageUrl }} style={homeStyles.categoryImage} />
+  );
+};
 
 const DragHandle = () => (
   <View style={homeStyles.itemDragHandle}>

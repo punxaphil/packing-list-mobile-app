@@ -68,6 +68,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
     delete: writeDb.deleteImage,
   };
   const imageActions = useEntityImageActions("packingLists", imageDb);
+  const itemImageActions = useEntityImageActions("packItems", imageDb);
   const list = props.selection.selectedList;
   const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items, list?.id);
   const categoryImageMap = useMemo(
@@ -133,6 +134,10 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         listImageUrl={listImage?.url}
         listImageLoading={imageActions.loadingEntityId === list.id}
         onListImagePress={() => imageActions.handleImagePress(list.id, listImage)}
+        onItemImagePress={(item) => {
+          const existing = props.imagesState.images.find((img) => img.type === "packItems" && img.typeId === item.id);
+          itemImageActions.handleImagePress(item.id, existing);
+        }}
         renameDialog={renameDialog}
         addItemDialog={addItemDialog}
         filterDialog={filterDialog}
@@ -174,6 +179,22 @@ export const ItemsSection = (props: ItemsSectionProps) => {
           onClose={imageActions.closeViewer}
           onReplace={imageActions.handleReplace}
           onRemove={imageActions.handleRemove}
+        />
+      )}
+      {itemImageActions.viewerState && (
+        <ImageViewerModal
+          visible={true}
+          imageUrl={itemImageActions.viewerState.image.url}
+          loading={itemImageActions.modalLoading}
+          connectedLabel={optimisticItems.find((i) => i.id === itemImageActions.viewerState?.entityId)?.name}
+          textValue={itemImageActions.textValue}
+          textPlaceholder="Emoji or text"
+          textSubmitDisabled={!itemImageActions.textValue.trim()}
+          onTextChange={itemImageActions.setTextValue}
+          onTextSubmit={() => void itemImageActions.submitText()}
+          onClose={itemImageActions.closeViewer}
+          onReplace={itemImageActions.handleReplace}
+          onRemove={itemImageActions.handleRemove}
         />
       )}
     </>
