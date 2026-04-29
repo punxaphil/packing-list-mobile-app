@@ -7,16 +7,6 @@ export const LISTS_TAB = 1;
 const MEMBERS_TAB = 3;
 const BOTTOM_TABS_ID = "BOTTOM_TABS";
 
-export function showLoginRoot() {
-  Navigation.setRoot({
-    root: {
-      component: {
-        name: SCREEN_IDS.LOGIN,
-      },
-    },
-  });
-}
-
 export function showMainTabs(currentTabIndex = LISTS_TAB) {
   Navigation.setRoot({
     root: {
