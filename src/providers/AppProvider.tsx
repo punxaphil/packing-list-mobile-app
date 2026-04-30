@@ -1,17 +1,13 @@
-import { getAuth } from "firebase/auth";
-import { createContext, PropsWithChildren, useCallback, useContext } from "react";
+import { createContext, type PropsWithChildren, useCallback, useContext } from "react";
 import { PackingListSummary, SelectionState } from "~/components/home/types.ts";
 import { useSelectedList } from "~/components/home/useSelectedList.ts";
-import { SubscriptionGate } from "~/components/subscription/SubscriptionGate.tsx";
 import { PackItemCountRecord, usePackItemCounts } from "~/hooks/usePackItemCounts.ts";
 import { usePackingLists } from "~/hooks/usePackingLists.ts";
 import { useActiveSpaceId } from "~/hooks/useSpaces.ts";
-import { clearSelectedId } from "~/navigation/selectionState.ts";
-import { clearSpaceState } from "~/navigation/spaceState.ts";
+import { signOutUser } from "~/navigation/signOut.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { InviteProvider } from "./InviteProvider.tsx";
 import { SpaceProvider } from "./SpaceProvider.tsx";
-import { SubscriptionProvider } from "./SubscriptionProvider.tsx";
 import { TemplateProvider } from "./TemplateProvider.tsx";
 
 type AppContextValue = {
@@ -38,16 +34,7 @@ type AppProviderProps = PropsWithChildren<{ userId: string; email: string }>;
 
 const useSignOutAction = () =>
   useCallback(() => {
-    const run = async () => {
-      try {
-        await getAuth().signOut();
-        clearSelectedId();
-        await clearSpaceState();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    run().catch(console.error);
+    signOutUser().catch(console.error);
   }, []);
 
 function AppContent({ userId, email, children, signOut }: AppProviderProps & { signOut: () => void }) {
@@ -79,17 +66,13 @@ export function AppProvider({ userId, email, children }: AppProviderProps) {
   const signOut = useSignOutAction();
 
   return (
-    <SubscriptionProvider userId={userId}>
-      <SubscriptionGate email={email} onSignOut={signOut}>
-        <SpaceProvider userId={userId} email={email}>
-          <InviteProvider email={email}>
-            <AppContent userId={userId} email={email} signOut={signOut}>
-              {children}
-            </AppContent>
-          </InviteProvider>
-        </SpaceProvider>
-      </SubscriptionGate>
-    </SubscriptionProvider>
+    <SpaceProvider userId={userId} email={email}>
+      <InviteProvider email={email}>
+        <AppContent userId={userId} email={email} signOut={signOut}>
+          {children}
+        </AppContent>
+      </InviteProvider>
+    </SpaceProvider>
   );
 }
 

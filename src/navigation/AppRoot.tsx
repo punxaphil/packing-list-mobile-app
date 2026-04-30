@@ -1,29 +1,42 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Login } from "~/components/auth/Auth";
 import { VerifyEmail } from "~/components/auth/VerifyEmail";
 import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
+import { SubscriptionGate } from "~/components/subscription/SubscriptionGate.tsx";
+import { hasActiveAppAccessTrial } from "~/components/subscription/subscriptionAccess.ts";
 import { useCurrentUser } from "~/hooks/useCurrentUser.ts";
 import { useSpaceBootstrap } from "~/hooks/useSpaces.ts";
+import { useSubscription } from "~/providers/SubscriptionContext.ts";
+import { SubscriptionProvider } from "~/providers/SubscriptionProvider.tsx";
 import { setAppState } from "./appState";
 import { ITEMS_TAB, LISTS_TAB, showMainTabs } from "./navigation";
 import { getSelectedId } from "./selectionState";
+import { signOutUser } from "./signOut.ts";
 
 function BootstrapAndLaunch({ userId, email }: { userId: string; email: string }) {
   const ready = useSpaceBootstrap(userId, email);
+  const { isSubscribed, loading } = useSubscription();
   const prevHasSelection = useRef<boolean | null>(null);
-  const showLoader = useDelayedLoading(!ready);
+  const showLoader = useDelayedLoading(!ready || loading);
+  const hasAccess = hasActiveAppAccessTrial() || isSubscribed;
+  const signOut = useCallback(() => {
+    signOutUser().catch(console.error);
+  }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || loading || !hasAccess) return;
     setAppState({ userId, email });
     const hasSelection = getSelectedId() !== "";
     if (prevHasSelection.current !== hasSelection) {
       prevHasSelection.current = hasSelection;
       showMainTabs(hasSelection ? ITEMS_TAB : LISTS_TAB);
     }
-  }, [ready, userId, email]);
+  }, [ready, loading, hasAccess, userId, email]);
 
-  return showLoader ? <AppLoadingState /> : null;
+  if (showLoader) return <AppLoadingState />;
+  if (!ready || loading) return null;
+  if (hasAccess) return null;
+  return <SubscriptionGate email={email} onSignOut={signOut} />;
 }
 
 export function AppRoot() {
@@ -33,5 +46,9 @@ export function AppRoot() {
   if (!userId) return <Login />;
   if (verificationRequired) return <VerifyEmail recheckUser={recheckUser} />;
 
-  return <BootstrapAndLaunch userId={userId} email={email} />;
+  return (
+    <SubscriptionProvider userId={userId}>
+      <BootstrapAndLaunch userId={userId} email={email} />
+    </SubscriptionProvider>
+  );
 }
