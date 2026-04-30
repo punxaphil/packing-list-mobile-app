@@ -12,7 +12,7 @@ export function useSpaceManagement(onBack: () => void) {
   const { sendInvite } = useInvites();
   const currentEmail = profile?.email ?? "";
   const isPersonalSpace = spaceId === profile?.personalSpaceId;
-  const isOwner = activeSpace?.ownerId === getUserId();
+  const isOwner = activeSpace?.ownerId === profile?.id;
 
   const rename = useCallback(
     async (name: string) => {

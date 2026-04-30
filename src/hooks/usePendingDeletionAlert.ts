@@ -1,5 +1,5 @@
-import { getAuth } from "firebase/auth";
 import { Alert } from "react-native";
+import { signOutUser } from "~/navigation/signOut.ts";
 import { reactivateAccount } from "~/services/spaceDatabase.ts";
 import type { UserProfile } from "~/types/UserProfile.ts";
 import { resolveValidSpaceId } from "./useSpaces.ts";
@@ -17,7 +17,7 @@ export function showPendingDeletionAlert(
   setActiveSpaceId: (id: string) => void
 ) {
   Alert.alert(TITLE, BODY, [
-    { text: SIGN_OUT, style: "cancel", onPress: () => void getAuth().signOut() },
+    { text: SIGN_OUT, style: "cancel", onPress: () => void signOutUser() },
     {
       text: REACTIVATE,
       onPress: () => {
