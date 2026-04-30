@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp } from "firebase/app";
 import { getAuth, initializeAuth, type Persistence } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
+import { isSigningOut } from "~/navigation/signOutState.ts";
 
 type PersistenceLayer = Persistence & {
   _isAvailable(): Promise<boolean>;
@@ -78,6 +79,9 @@ export const firestore = initializeFirestore(app, {
 
 export function getUserId(): string {
   const userId = getAuth().currentUser?.uid;
-  if (!userId) throw new Error("No user logged in");
+  if (!userId) {
+    if (isSigningOut()) return "";
+    throw new Error("No user logged in");
+  }
   return userId;
 }

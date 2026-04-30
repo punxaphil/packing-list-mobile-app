@@ -2,6 +2,7 @@ import { getAuth, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { signOutUser } from "~/navigation/signOut.ts";
 import { homeColors } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { authStyles } from "./authStyles.ts";
@@ -47,7 +48,7 @@ export function VerifyEmail({ recheckUser }: { recheckUser: () => void }) {
         {message ? <Text style={styles.success}>{message}</Text> : null}
         <Button label="I've verified my email" variant="primary" onPress={() => void handleCheck()} />
         <Button label="Resend verification email" onPress={() => void handleResend()} />
-        <Button label="Sign out" variant="ghost" onPress={() => void getAuth().signOut()} />
+        <Button label="Sign out" variant="ghost" onPress={() => void signOutUser()} />
       </View>
     </SafeAreaView>
   );
