@@ -5,6 +5,7 @@ import { AppRoot } from "./AppRoot";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
 import { ListsScreen } from "./ListsScreen";
+import { LoadingOverlay } from "./LoadingOverlay";
 import { LoginScreen } from "./LoginScreen";
 import { MembersScreen } from "./MembersScreen";
 import { ProfileScreen } from "./ProfileScreen";
@@ -18,6 +19,7 @@ function wrapScreen<P extends object>(Screen: React.ComponentType<P>) {
 export function registerScreens() {
   Navigation.registerComponent(SCREEN_IDS.APP_ROOT, () => wrapScreen(AppRoot));
   Navigation.registerComponent(SCREEN_IDS.LOGIN, () => wrapScreen(LoginScreen));
+  Navigation.registerComponent(SCREEN_IDS.LOADING_OVERLAY, () => wrapScreen(LoadingOverlay));
   Navigation.registerComponent(SCREEN_IDS.ITEMS, () => wrapScreen(ItemsScreen));
   Navigation.registerComponent(SCREEN_IDS.LISTS, () => wrapScreen(ListsScreen));
   Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () => wrapScreen(CategoriesScreen));

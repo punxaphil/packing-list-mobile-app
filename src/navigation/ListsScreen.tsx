@@ -2,21 +2,20 @@ import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ListSection } from "~/components/home/ListSection";
 import { homeStyles } from "~/components/home/styles";
-import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushProfile, switchToItemsTab } from "./navigation";
+import { useLoadingOverlay } from "./useLoadingOverlay.ts";
 
 function ListsContent({ componentId }: { componentId: string }) {
   const { email, lists, listsLoading, selection } = useApp();
-  const showLoader = useDelayedLoading(listsLoading);
+  useLoadingOverlay(listsLoading);
 
   const handleListSelect = (id: string) => {
     selection.select(id);
     switchToItemsTab();
   };
 
-  if (showLoader) return <AppLoadingState />;
   if (listsLoading) return null;
 
   return (

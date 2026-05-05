@@ -9,9 +9,6 @@ type AppLoadingStateProps = {
 };
 
 const MESSAGE_SWAP_MS = 1000;
-const LOADER_DELAY_MS = 400;
-const LOADER_MIN_VISIBLE_MS = 3000;
-
 export function AppLoadingState({ message }: AppLoadingStateProps) {
   const { height } = useWindowDimensions();
   const currentMessage = useLoadingMessage(message);
@@ -24,32 +21,6 @@ export function AppLoadingState({ message }: AppLoadingStateProps) {
       </View>
     </View>
   );
-}
-
-export function useDelayedLoading(loading: boolean) {
-  const [visible, setVisible] = useState(false);
-  const shownAt = useRef<number | null>(null);
-
-  useEffect(() => {
-    const now = Date.now();
-    if (loading && visible) {
-      shownAt.current ??= now;
-      return;
-    }
-
-    const delay = loading
-      ? LOADER_DELAY_MS
-      : Math.max(0, LOADER_MIN_VISIBLE_MS - (shownAt.current == null ? 0 : now - shownAt.current));
-    const id = setTimeout(() => {
-      if (loading) shownAt.current = Date.now();
-      if (!loading) shownAt.current = null;
-      setVisible(loading);
-    }, delay);
-
-    return () => clearTimeout(id);
-  }, [loading, visible]);
-
-  return visible;
 }
 
 function shuffle<T>(array: readonly T[]): T[] {
@@ -75,6 +46,7 @@ function useLoadingMessage(message?: string) {
 const styles = StyleSheet.create({
   host: {
     flex: 1,
+    backgroundColor: "white",
   },
   container: {
     position: "absolute",
