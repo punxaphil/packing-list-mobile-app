@@ -122,6 +122,7 @@ export const AddItemDialog = ({
       <CategoryDropdown
         categories={categories}
         categoryImages={categoryImages}
+        usedCategoryIds={items.map((i) => i.category).filter(Boolean)}
         selected={selectedCategory}
         onSelect={(c) => {
           setSelectedCategory(c);
