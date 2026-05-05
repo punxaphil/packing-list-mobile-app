@@ -3,7 +3,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
 import { NoSelectionPanel } from "~/components/home/NoSelectionPanel.tsx";
 import { homeStyles } from "~/components/home/styles";
-import { AppLoadingState, useDelayedLoading } from "~/components/shared/AppLoadingState.tsx";
 import { useCategories } from "~/hooks/useCategories";
 import { useImages } from "~/hooks/useImages";
 import { useMembers } from "~/hooks/useMembers";
@@ -11,6 +10,7 @@ import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushProfile, switchToListsTab } from "./navigation";
+import { useLoadingOverlay } from "./useLoadingOverlay.ts";
 
 function ItemsContent({ componentId }: { componentId: string }) {
   const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
@@ -19,9 +19,8 @@ function ItemsContent({ componentId }: { componentId: string }) {
   const imagesState = useImages(spaceId);
   const itemsState = usePackingItems(spaceId, selection.selectedId);
   const loading = listsLoading || itemsState.loading;
-  const showLoader = useDelayedLoading(loading);
+  useLoadingOverlay(loading);
 
-  if (showLoader) return <AppLoadingState />;
   if (loading) return null;
 
   if (!hasLists || !selection.hasSelection) {
