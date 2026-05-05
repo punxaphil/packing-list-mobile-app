@@ -22,6 +22,7 @@ export const CategoryDropdown = ({
   onSelect,
   disabled,
   iosSheet = false,
+  usedCategoryIds,
 }: {
   categories: NamedEntity[];
   categoryImages: Image[];
@@ -29,13 +30,15 @@ export const CategoryDropdown = ({
   onSelect: (category: NamedEntity) => void;
   disabled: boolean;
   iosSheet?: boolean;
+  usedCategoryIds?: string[];
 }) => {
   const [open, setOpen] = useState(false);
   const { height } = useWindowDimensions();
-  const sorted = [...categories.filter((category) => category.id !== UNCATEGORIZED.id)].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
-  const allCategories = [UNCATEGORIZED, ...sorted];
+  const usedIds = new Set(usedCategoryIds ?? []);
+  const nonUncategorized = categories.filter((c) => c.id !== UNCATEGORIZED.id);
+  const used = nonUncategorized.filter((c) => usedIds.has(c.id)).sort((a, b) => a.name.localeCompare(b.name));
+  const unused = nonUncategorized.filter((c) => !usedIds.has(c.id)).sort((a, b) => a.name.localeCompare(b.name));
+  const allCategories = [UNCATEGORIZED, ...used, ...unused];
   const dropdownMaxHeight = Math.min(
     allCategories.length * DROPDOWN_ROW_HEIGHT,
     Math.floor(height * DROPDOWN_MAX_SCREEN_RATIO)
