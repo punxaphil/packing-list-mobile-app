@@ -7,6 +7,7 @@
     "start": "npx react-native start",
     "android": "npx react-native run-android",
     "ios": "npx react-native run-ios",
+    "ios:rebuild": "cd ios && pod install && cd .. && npx react-native run-ios --simulator='iPhone 17'",
     "ios:simulator": "npx react-native run-ios --simulator='iPhone 17'",
     "ios:simulator:ipad": "npx react-native run-ios --simulator='iPad (A16)'",
     "test:unit": "vitest run",
