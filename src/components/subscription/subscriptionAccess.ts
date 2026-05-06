@@ -11,6 +11,11 @@ const getCreationTimeMs = () => {
   return Number.isNaN(timestamp) ? null : timestamp;
 };
 
+export const getAppAccessTrialEndsAt = () => {
+  const createdAt = getCreationTimeMs();
+  return createdAt ? createdAt + TRIAL_DURATION_MS : null;
+};
+
 export const hasActiveAppAccessTrial = (now = Date.now()) => {
   const createdAt = getCreationTimeMs();
   if (!createdAt) return false;

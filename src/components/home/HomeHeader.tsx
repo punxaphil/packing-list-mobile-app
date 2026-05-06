@@ -6,6 +6,7 @@ import { PageSheet } from "~/components/shared/PageSheet.tsx";
 import { useApp } from "~/providers/AppProvider.tsx";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { SpaceSheet } from "./SpaceSheet.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
@@ -68,7 +69,17 @@ const BackButton = ({
   </View>
 );
 
-const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
+const AvatarButton = ({
+  email,
+  imageUrl,
+  onProfile,
+  showBadge,
+}: {
+  email: string;
+  imageUrl?: string;
+  onProfile?: () => void;
+  showBadge?: boolean;
+}) => (
   <View style={headerLocalStyles.avatarSlot}>
     <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
       {getEmojiValue(imageUrl) ? (
@@ -79,6 +90,7 @@ const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?
         <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
       )}
     </Pressable>
+    {showBadge && <View style={headerLocalStyles.avatarBadgeDot} />}
   </View>
 );
 
@@ -117,6 +129,7 @@ export const HomeHeader = ({
   const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
   const { signOut } = useApp();
+  const { isSubscribed } = useSubscription();
 
   const openProfile = () => {
     if (Platform.OS === "ios") {
@@ -143,7 +156,7 @@ export const HomeHeader = ({
             <StackedTitle title={title} onPress={onPressTitle} />
           )}
         </View>
-        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} />
+        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} showBadge={!isSubscribed} />
       </View>
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
       <PageSheet visible={profileVisible} title="Profile" onClose={() => setProfileVisible(false)}>
@@ -232,6 +245,15 @@ const headerLocalStyles = StyleSheet.create({
     height: AVATAR_SIZE,
     alignItems: "flex-end",
     justifyContent: "center",
+  },
+  avatarBadgeDot: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: homeColors.danger,
   },
   avatarButton: {
     width: AVATAR_SIZE,
