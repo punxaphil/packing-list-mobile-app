@@ -20,6 +20,7 @@ import { Button } from "../shared/Button.tsx";
 import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
 import { NameEditor } from "./NameEditor.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
+import { SubscriptionSection } from "./SubscriptionSection.tsx";
 
 type ProfileScreenProps = {
   email: string;
@@ -117,6 +118,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         <Text style={styles.email}>{email}</Text>
         <NameEditor />
         <PreferencesSection />
+        <SubscriptionSection />
         <View style={styles.actionsRow}>
           <SignOutButton email={email} onSignOut={onSignOut} />
           <DeleteAccountButton onSignOut={onSignOut} />

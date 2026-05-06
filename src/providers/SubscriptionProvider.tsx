@@ -3,9 +3,12 @@ import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-nativ
 import {
   configureRevenueCat,
   fetchOfferings,
+  getCurrentSubscriptionDetails,
   isActiveSubscription,
+  openManageSubscriptions,
   purchasePackage,
   restorePurchases,
+  type SubscriptionDetails,
   sortPreferredPackages,
 } from "~/services/subscription.ts";
 import { SubscriptionContext } from "./SubscriptionContext.ts";
@@ -14,6 +17,7 @@ type Props = { userId: string; children: ReactNode };
 
 export const SubscriptionProvider = ({ userId, children }: Props) => {
   const initialized = useRef(false);
+  const [details, setDetails] = useState<SubscriptionDetails | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -21,6 +25,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleCustomerInfo = useCallback((info: CustomerInfo) => {
+    setDetails(getCurrentSubscriptionDetails(info));
     setIsSubscribed(isActiveSubscription(info));
     setLoading(false);
   }, []);
@@ -79,8 +84,18 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
     }
   }, [refresh]);
 
+  const manage = useCallback(async () => {
+    setError(null);
+    try {
+      await openManageSubscriptions();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to open subscription settings");
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
+      details,
       isSubscribed,
       loading,
       processing,
@@ -89,8 +104,9 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
       purchase,
       restore,
       refresh,
+      manage,
     }),
-    [isSubscribed, loading, processing, offerings, error, purchase, restore, refresh]
+    [details, isSubscribed, loading, processing, offerings, error, purchase, restore, refresh, manage]
   );
 
   return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
