@@ -114,7 +114,7 @@ const notesBannerStyles = StyleSheet.create({
   banner: {
     marginHorizontal: homeSpacing.xs,
     marginBottom: homeSpacing.xs,
-    padding: homeSpacing.xs,
+    padding: homeSpacing.sm,
     backgroundColor: homeColors.primaryLight,
     borderRadius: 8,
   },
