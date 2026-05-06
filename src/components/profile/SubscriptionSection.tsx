@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { SubscriptionLegalLinks } from "~/components/subscription/SubscriptionLegalLinks.tsx";
 import { SubscriptionPackageRow } from "~/components/subscription/SubscriptionPackageRow.tsx";
 import { getAppAccessTrialEndsAt, hasActiveAppAccessTrial } from "~/components/subscription/subscriptionAccess.ts";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
@@ -13,6 +14,8 @@ const COPY = {
   none: "No active subscription",
   trial: "7-day free access",
   badgeHint: "Subscribe to continue after trial",
+  renewalNote:
+    "Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your Apple ID Account Settings.",
 };
 
 const formatDate = (value: string | number | null) => {
@@ -58,7 +61,11 @@ export const SubscriptionSection = () => {
           />
         ))}
       {!loading && onTrial ? (
-        <Button label={COPY.restore} onPress={() => void restore()} disabled={processing} />
+        <>
+          <Text style={styles.legalNote}>{COPY.renewalNote}</Text>
+          <Button label={COPY.restore} onPress={() => void restore()} disabled={processing} />
+          <SubscriptionLegalLinks />
+        </>
       ) : null}
       {!loading && details ? <Button label={COPY.manage} icon="open-in-new" onPress={() => void manage()} /> : null}
     </View>
@@ -79,4 +86,5 @@ const styles = StyleSheet.create({
   sectionTitle: { color: homeColors.muted, fontSize: 12, fontWeight: "600", textTransform: "uppercase" },
   status: { color: homeColors.text, fontSize: 16, fontWeight: "700" },
   detail: { color: homeColors.muted, fontSize: 14 },
+  legalNote: { color: homeColors.muted, fontSize: 11 },
 });
