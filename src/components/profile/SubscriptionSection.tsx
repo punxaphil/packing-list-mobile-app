@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { SubscriptionFeatures } from "~/components/subscription/SubscriptionFeatures.tsx";
 import { SubscriptionLegalLinks } from "~/components/subscription/SubscriptionLegalLinks.tsx";
 import { SubscriptionPackageRow } from "~/components/subscription/SubscriptionPackageRow.tsx";
 import { getAppAccessTrialEndsAt, hasActiveAppAccessTrial } from "~/components/subscription/subscriptionAccess.ts";
@@ -13,7 +14,7 @@ const COPY = {
   loading: "Loading subscription...",
   none: "No active subscription",
   trial: "7-day free access",
-  badgeHint: "Subscribe to continue after trial",
+  badgeHint: "A subscription is required to use the app after the trial.",
   renewalNote:
     "Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your Apple ID Account Settings.",
 };
@@ -50,6 +51,7 @@ export const SubscriptionSection = () => {
       )}
       <Text style={styles.status}>{loading ? COPY.loading : title}</Text>
       {!loading && subtitle ? <Text style={styles.detail}>{subtitle}</Text> : null}
+      {!loading && onTrial && <SubscriptionFeatures />}
       {!loading &&
         onTrial &&
         offerings.map((pkg) => (
