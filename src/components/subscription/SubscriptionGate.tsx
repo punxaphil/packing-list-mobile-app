@@ -2,15 +2,17 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button } from "~/components/shared/Button.tsx";
 import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
+import { SubscriptionFeatures } from "./SubscriptionFeatures.tsx";
 import { SubscriptionLegalLinks } from "./SubscriptionLegalLinks.tsx";
 import { SubscriptionPackageRow } from "./SubscriptionPackageRow.tsx";
 
 type Props = { email: string; onSignOut: () => void };
 
 const COPY = {
-  title: "Unlock Premium",
-  subtitle: "Packsy is free for your first 7 days.",
-  info: "Start a subscription after that to keep using the app. Any Apple trial details are shown before purchase.",
+  title: "Subscribe to Continue",
+  subtitle: "Packsy is free for your first 7 days. A subscription is required to keep using the app after the trial.",
+  info: "Pricing and trial details are shown before you confirm your purchase.",
+  noOfferings: "No subscriptions available. Please try again later.",
   renewalNote:
     "Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in your Apple ID Account Settings.",
   restore: "Restore Purchases",
@@ -25,6 +27,7 @@ export function SubscriptionGate({ email, onSignOut }: Props) {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>{COPY.title}</Text>
         <Text style={styles.subtitle}>{COPY.subtitle}</Text>
+        <SubscriptionFeatures />
         <Text style={styles.info}>{COPY.info}</Text>
         {offerings.map((pkg) => (
           <SubscriptionPackageRow
@@ -34,7 +37,7 @@ export function SubscriptionGate({ email, onSignOut }: Props) {
             disabled={processing}
           />
         ))}
-        {offerings.length === 0 && <Text style={styles.info}>{COPY.info}</Text>}
+        {offerings.length === 0 && <Text style={styles.info}>{COPY.noOfferings}</Text>}
         {error && <Text style={styles.error}>{error}</Text>}
         <Text style={styles.legalNote}>{COPY.renewalNote}</Text>
         <Button label={COPY.restore} onPress={() => void restore()} disabled={processing} />
