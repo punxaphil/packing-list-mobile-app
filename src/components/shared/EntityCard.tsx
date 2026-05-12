@@ -115,6 +115,7 @@ export const EntityCard = (props: EntityCardProps) => {
   const isReadOnly = props.readOnly ?? false;
   const menuItems = buildMenuItems(
     props,
+    props.copy,
     isReadOnly,
     openRename,
     () => void props.actions.onDelete(props.entity),
@@ -209,6 +210,7 @@ const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: Enti
 
 const buildMenuItems = (
   props: Pick<EntityCardProps, "menuItems" | "showImageMenuAction" | "onImagePress">,
+  copy: EntityCopy,
   isReadOnly: boolean,
   openRename: () => void,
   onDelete: () => void,
@@ -225,7 +227,7 @@ const buildMenuItems = (
     });
   }
   if (!isReadOnly) {
-    items.push({ text: "Delete", style: "destructive" as const, onPress: onDelete });
+    items.push({ text: copy.deleteAction, style: "destructive" as const, onPress: onDelete });
   }
   return items;
 };

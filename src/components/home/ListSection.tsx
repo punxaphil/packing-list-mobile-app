@@ -116,7 +116,6 @@ export const ListSection = (props: ListSectionProps) => {
           imageUrl={imgActions.viewerState.image.url}
           loading={imgActions.modalLoading}
           textValue={imgActions.textValue}
-          textPlaceholder="Emoji or text"
           textSubmitDisabled={!imgActions.textValue.trim()}
           onTextChange={imgActions.setTextValue}
           onTextSubmit={() => void imgActions.submitText()}
@@ -150,7 +149,7 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
     <View style={localStyles.spacer} />
     {hasArchived && (
       <View style={localStyles.archiveToggle}>
-        <Text style={localStyles.archiveToggleText}>{listCopy.archived}</Text>
+        <Text style={localStyles.archiveToggleText}>{listCopy.archivedPlural}</Text>
         <Switch
           value={showArchived}
           onValueChange={onToggleArchived}

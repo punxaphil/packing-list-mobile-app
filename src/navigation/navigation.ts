@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Platform } from "react-native";
 import { Navigation } from "react-native-navigation";
 import { SCREEN_IDS } from "./screenIds";
@@ -8,6 +9,12 @@ const MEMBERS_TAB = 3;
 const BOTTOM_TABS_ID = "BOTTOM_TABS";
 
 export function showMainTabs(currentTabIndex = LISTS_TAB) {
+  const bottomTabText = {
+    items: i18next.t("navigation.items"),
+    lists: i18next.t("navigation.lists"),
+    categories: i18next.t("navigation.categories"),
+    members: i18next.t("navigation.members"),
+  };
   Navigation.setRoot({
     root: {
       bottomTabs: {
@@ -18,7 +25,7 @@ export function showMainTabs(currentTabIndex = LISTS_TAB) {
               children: [{ component: { name: SCREEN_IDS.ITEMS } }],
               options: {
                 bottomTab: {
-                  text: "Items",
+                  text: bottomTabText.items,
                   ...(Platform.OS === "ios" ? { sfSymbol: "checkmark.square" } : {}),
                 },
               },
@@ -29,7 +36,7 @@ export function showMainTabs(currentTabIndex = LISTS_TAB) {
               children: [{ component: { name: SCREEN_IDS.LISTS } }],
               options: {
                 bottomTab: {
-                  text: "Lists",
+                  text: bottomTabText.lists,
                   ...(Platform.OS === "ios" ? { sfSymbol: "list.bullet" } : {}),
                 },
               },
@@ -40,7 +47,7 @@ export function showMainTabs(currentTabIndex = LISTS_TAB) {
               children: [{ component: { name: SCREEN_IDS.CATEGORIES } }],
               options: {
                 bottomTab: {
-                  text: "Categories",
+                  text: bottomTabText.categories,
                   ...(Platform.OS === "ios" ? { sfSymbol: "square.grid.2x2" } : {}),
                 },
               },
@@ -51,7 +58,7 @@ export function showMainTabs(currentTabIndex = LISTS_TAB) {
               children: [{ component: { name: SCREEN_IDS.MEMBERS } }],
               options: {
                 bottomTab: {
-                  text: "Members",
+                  text: bottomTabText.members,
                   ...(Platform.OS === "ios" ? { sfSymbol: "heart" } : {}),
                 },
               },

@@ -123,7 +123,6 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         showRemove={Boolean(imageUrl)}
         loading={handlers.loading}
         textValue={viewerText}
-        textPlaceholder="Emoji or text"
         textSubmitDisabled={!viewerText.trim()}
         onTextChange={setViewerText}
         onTextSubmit={() => void applyViewerText()}

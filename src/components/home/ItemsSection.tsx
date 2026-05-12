@@ -168,7 +168,6 @@ export const ItemsSection = (props: ItemsSectionProps) => {
           loading={imageActions.modalLoading}
           connectedLabel={displayName}
           textValue={imageActions.textValue}
-          textPlaceholder="Emoji or text"
           textSubmitDisabled={!imageActions.textValue.trim()}
           onTextChange={imageActions.setTextValue}
           onTextSubmit={() => void imageActions.submitText()}
@@ -184,7 +183,6 @@ export const ItemsSection = (props: ItemsSectionProps) => {
           loading={itemImageActions.modalLoading}
           connectedLabel={optimisticItems.find((i) => i.id === itemImageActions.viewerState?.entityId)?.name}
           textValue={itemImageActions.textValue}
-          textPlaceholder="Emoji or text"
           textSubmitDisabled={!itemImageActions.textValue.trim()}
           onTextChange={itemImageActions.setTextValue}
           onTextSubmit={() => void itemImageActions.submitText()}

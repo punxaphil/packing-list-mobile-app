@@ -45,7 +45,7 @@ export const ImageViewerModal = ({
   showRemove = true,
   loading = false,
   textValue,
-  textPlaceholder = "Emoji or text",
+  textPlaceholder = commonCopy.emojiOrText,
   textSubmitDisabled = false,
   onTextChange,
   onTextSubmit,

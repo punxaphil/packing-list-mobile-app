@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Alert, KeyboardTypeOptions, Platform } from "react-native";
 
 type NativeTextPromptOptions = {
@@ -11,13 +12,10 @@ type NativeTextPromptOptions = {
   onSubmit: (text: string) => void | Promise<void>;
 };
 
-const OK_LABEL = "OK";
-const DEFAULT_CANCEL = "Cancel";
-
 export const showNativeTextPrompt = ({
   title,
   confirmLabel,
-  cancelLabel = DEFAULT_CANCEL,
+  cancelLabel = i18next.t("common.cancel"),
   value = "",
   keyboardType,
   getError,
@@ -38,7 +36,7 @@ export const showNativeTextPrompt = ({
             const nextValue = text ?? "";
             const error = getError?.(nextValue);
             if (error) {
-              Alert.alert(title, error, [{ text: OK_LABEL, onPress: () => openPrompt(nextValue) }]);
+              Alert.alert(title, error, [{ text: i18next.t("common.ok"), onPress: () => openPrompt(nextValue) }]);
               return;
             }
             void onSubmit(nextValue);

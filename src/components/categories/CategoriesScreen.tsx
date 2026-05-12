@@ -5,6 +5,7 @@ import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { commonCopy } from "../home/copy.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildEntityColors } from "../home/listColors.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
@@ -115,7 +116,6 @@ export const CategoriesScreen = ({ componentId, email, onProfile }: CategoriesSc
             connectedLabel={categories.find((category) => category.id === imageActions.viewerState?.entityId)?.name}
             loading={imageActions.modalLoading}
             textValue={imageActions.textValue}
-            textPlaceholder="Emoji or text"
             textSubmitDisabled={!imageActions.textValue.trim()}
             onTextChange={imageActions.setTextValue}
             onTextSubmit={() => void imageActions.submitText()}
@@ -144,11 +144,11 @@ const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProp
       accessibilityLabel={CATEGORY_COPY.addButton}
       hitSlop={8}
     >
-      <Text style={entityStyles.addLinkLabel}>Add category...</Text>
+      <Text style={entityStyles.addLinkLabel}>{CATEGORY_COPY.addButton}</Text>
     </Pressable>
     <View style={entityStyles.spacer} />
     <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
       <Switch
         value={sortByAlpha}
         onValueChange={onToggleSort}

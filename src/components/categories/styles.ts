@@ -5,6 +5,7 @@ import { homeColors, homeSpacing } from "../home/theme.ts";
 type MoveCopy = {
   title: string;
   subtitle: string;
+  subtitleAll: string;
   noItems: string;
   selectTarget: string;
   noCategories: string;

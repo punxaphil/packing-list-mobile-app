@@ -2,7 +2,7 @@ import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { PACKING_KITS, type PackingKit } from "~/data/packingKits.ts";
+import { getTranslatedKits, type PackingKit } from "~/data/packingKits.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -184,7 +184,7 @@ const EmptyItems = ({
       <View style={emptyStyles.kitsSection}>
         <Text style={emptyStyles.kitsTitle}>{homeCopy.quickStart}</Text>
         <View style={emptyStyles.kitsList}>
-          {PACKING_KITS.map((kit) => (
+          {getTranslatedKits().map((kit) => (
             <Pressable
               key={kit.id}
               style={[emptyStyles.kitChip, addingKitId ? emptyStyles.kitChipDisabled : null]}

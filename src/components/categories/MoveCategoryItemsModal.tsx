@@ -3,6 +3,7 @@ import { Platform, Pressable, ScrollView, Switch, Text, View } from "react-nativ
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { commonCopy } from "../home/copy.ts";
 import { homeColors } from "../home/theme.ts";
 import { DialogActions, DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { entityStyles } from "../shared/entityStyles.ts";
@@ -128,7 +129,7 @@ const SortToggle = ({ sortByAlpha, onToggle }: { sortByAlpha: boolean; onToggle:
   <View style={moveStyles.sortRow}>
     <Text style={moveStyles.sortLabel}>{MOVE_COPY.selectTarget}</Text>
     <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
       <Switch
         value={sortByAlpha}
         onValueChange={onToggle}

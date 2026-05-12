@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
@@ -5,6 +6,7 @@ import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import { commonCopy } from "../home/copy.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildEntityColors } from "../home/listColors.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
@@ -49,7 +51,7 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
 
   const openMoveItems = (member: NamedEntity) => {
     if (members.length < 2) {
-      Alert.alert("Move Items", "Add another member first.");
+      Alert.alert(MEMBER_COPY.moveItems, i18next.t("member.moveItemsNeedMore"));
       return;
     }
     setMoveSource(member);
@@ -128,7 +130,6 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
             connectedLabel={members.find((member) => member.id === imageActions.viewerState?.entityId)?.name}
             loading={imageActions.modalLoading}
             textValue={imageActions.textValue}
-            textPlaceholder="Emoji or text"
             textSubmitDisabled={!imageActions.textValue.trim()}
             onTextChange={imageActions.setTextValue}
             onTextSubmit={() => void imageActions.submitText()}
@@ -165,11 +166,11 @@ const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) =
       accessibilityLabel={MEMBER_COPY.addButton}
       hitSlop={8}
     >
-      <Text style={entityStyles.addLinkLabel}>Add member...</Text>
+      <Text style={entityStyles.addLinkLabel}>{MEMBER_COPY.addButton}</Text>
     </Pressable>
     <View style={entityStyles.spacer} />
     <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : "Rank"}</Text>
+      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
       <Switch
         value={sortByAlpha}
         onValueChange={onToggleSort}

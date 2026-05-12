@@ -2,7 +2,8 @@ import { translatedCopy } from "~/i18n/translatedCopy.ts";
 
 type ListCopy = {
   createList: string;
-  archived: string;
+  archivedPlural: string;
+  archivedSingular: string;
   renameList: string;
   rename: string;
   renameConfirm: string;
