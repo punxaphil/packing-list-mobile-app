@@ -75,7 +75,7 @@ export function Login() {
   return (
     <SafeAreaView style={authStyles.safeArea}>
       <View style={authStyles.container}>
-        <Text style={authStyles.title}>Welcome to Packsy</Text>
+        <Text style={authStyles.title}>Welcome to FastPack</Text>
         <Button variant="apple" label="Sign in with Apple" onPress={() => void handleApple()} />
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {!showEmail && (

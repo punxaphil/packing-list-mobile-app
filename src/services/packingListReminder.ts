@@ -3,7 +3,7 @@ import { switchToItemsTab } from "~/navigation/navigation.ts";
 import { setSelectedId } from "~/navigation/selectionState.ts";
 import { setActiveSpaceId } from "~/navigation/spaceState.ts";
 
-const DEFAULT_REMINDER_TITLE = "Packsy reminder";
+const DEFAULT_REMINDER_TITLE = "FastPack reminder";
 const REMINDER_OPEN_EVENT = "PackingListReminderOpen";
 
 const buildPackingListReminderBody = (listName: string) => `Your list ${listName} is due ✈️`;

@@ -1,7 +1,7 @@
 import { Linking, StyleSheet, Text, View } from "react-native";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 
-const PRIVACY_URL = "https://kodsam.se/packsy-privacy.html";
+const PRIVACY_URL = "https://kodsam.se/fastpack-privacy.html";
 const EULA_URL = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/";
 
 const COPY = {

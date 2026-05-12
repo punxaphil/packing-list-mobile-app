@@ -20,7 +20,7 @@ const FeatureRow = ({ label }: { label: string }) => (
 
 export const SubscriptionFeatures = () => (
   <View style={styles.container}>
-    <Text style={styles.heading}>Packsy lets you:</Text>
+    <Text style={styles.heading}>FastPack lets you:</Text>
     {FEATURES.map((f) => (
       <FeatureRow key={f} label={f} />
     ))}

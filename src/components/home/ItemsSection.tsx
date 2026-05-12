@@ -56,7 +56,7 @@ const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, s
   entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
 const INFO_COPY = {
-  reminderErrorMessage: "Enable iPhone notifications for Packsy to receive due date reminders.",
+  reminderErrorMessage: "Enable iPhone notifications for FastPack to receive due date reminders.",
   reminderErrorTitle: "Reminder unavailable",
 };
 
