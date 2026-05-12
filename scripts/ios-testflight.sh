@@ -62,10 +62,9 @@ if [ "${1:-}" != "skip-archive" ]; then
 fi
 
 echo "$(timestamp) ==> Bumping build number..."
-INFO_PLIST="PackingList/Info.plist"
-BUILD_NUM=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "$INFO_PLIST")
+BUILD_NUM=$(xcrun agvtool what-version -terse)
 NEW_BUILD_NUM=$((BUILD_NUM + 1))
-/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD_NUM" "$INFO_PLIST"
+xcrun agvtool new-version -all "$NEW_BUILD_NUM" >/dev/null
 echo "             Build number: $BUILD_NUM -> $NEW_BUILD_NUM"
 
 cat > "$EXPORT_PLIST" <<EOF

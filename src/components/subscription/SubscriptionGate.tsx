@@ -10,7 +10,7 @@ type Props = { email: string; onSignOut: () => void };
 
 const COPY = {
   title: "Subscribe to Continue",
-  subtitle: "Packsy is free for your first 7 days. A subscription is required to keep using the app after the trial.",
+  subtitle: "FastPack is free for your first 7 days. A subscription is required to keep using the app after the trial.",
   info: "Pricing and trial details are shown before you confirm your purchase.",
   noOfferings: "No subscriptions available. Please try again later.",
   renewalNote:
