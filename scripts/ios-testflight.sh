@@ -27,6 +27,12 @@ trap cleanup EXIT INT TERM
 
 cd ios
 
+echo "$(timestamp) ==> Bumping build number..."
+BUILD_NUM=$(xcrun agvtool what-version -terse)
+NEW_BUILD_NUM=$((BUILD_NUM + 1))
+xcrun agvtool new-version -all "$NEW_BUILD_NUM" >/dev/null
+echo "             Build number: $BUILD_NUM -> $NEW_BUILD_NUM"
+
 if ! DevToolsSecurity -status 2>&1 | grep -q "enabled"; then
   echo "ERROR: Developer mode is disabled. Run: sudo DevToolsSecurity -enable"
   exit 1
@@ -60,12 +66,6 @@ if [ "${1:-}" != "skip-archive" ]; then
     archive
   echo "$(timestamp) ==> Archive complete."
 fi
-
-echo "$(timestamp) ==> Bumping build number..."
-BUILD_NUM=$(xcrun agvtool what-version -terse)
-NEW_BUILD_NUM=$((BUILD_NUM + 1))
-xcrun agvtool new-version -all "$NEW_BUILD_NUM" >/dev/null
-echo "             Build number: $BUILD_NUM -> $NEW_BUILD_NUM"
 
 cat > "$EXPORT_PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
