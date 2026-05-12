@@ -2,7 +2,7 @@ import i18next from "i18next";
 import { useCallback, useState } from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { PACKING_KITS, PackingKit } from "~/data/packingKits.ts";
+import { getTranslatedKits, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
@@ -19,6 +19,7 @@ const kitItemCount = (count: number) => i18next.t("home.kitPickerItemCount", { c
 
 export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps) => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const kits = getTranslatedKits();
 
   const toggle = useCallback((id: string) => {
     setSelected((prev) => {
@@ -30,11 +31,11 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
   }, []);
 
   const handleAdd = useCallback(() => {
-    const kits = PACKING_KITS.filter((k) => selected.has(k.id));
-    if (kits.length > 0) onAdd(kits);
+    const selected_kits = kits.filter((k) => selected.has(k.id));
+    if (selected_kits.length > 0) onAdd(selected_kits);
     setSelected(new Set());
     onClose();
-  }, [selected, onAdd, onClose]);
+  }, [kits, selected, onAdd, onClose]);
 
   const handleClose = useCallback(() => {
     setSelected(new Set());
@@ -53,7 +54,7 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
       >
         <Text style={styles.subtitle}>{homeCopy.kitPickerSubtitle}</Text>
         <ScrollView style={styles.list}>
-          {PACKING_KITS.map((kit) => (
+          {kits.map((kit) => (
             <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} iosSheet />
           ))}
         </ScrollView>
@@ -78,7 +79,7 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
     >
       <Text style={styles.subtitle}>{homeCopy.kitPickerSubtitle}</Text>
       <ScrollView style={styles.list}>
-        {PACKING_KITS.map((kit) => (
+        {kits.map((kit) => (
           <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
         ))}
       </ScrollView>

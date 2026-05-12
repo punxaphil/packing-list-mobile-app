@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Platform, Pressable, Image as RNImage, ScrollView, StyleSheet, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
@@ -27,7 +28,7 @@ export const MoveMemberItemsDialog = ({
 }: MoveMemberItemsDialogProps) => {
   const content = (
     <View style={styles.content}>
-      <Text style={styles.description}>Move all assigned items from {source?.name} to:</Text>
+      <Text style={styles.description}>{i18next.t("move.subtitleAll", { name: source?.name })}</Text>
       <ScrollView style={styles.list}>
         {targets.map((target, index) => (
           <Pressable

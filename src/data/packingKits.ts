@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 export type PackingKitItem = {
   name: string;
   category: string;
@@ -10,7 +12,7 @@ export type PackingKit = {
   items: PackingKitItem[];
 };
 
-export const PACKING_KITS: PackingKit[] = [
+const PACKING_KITS: PackingKit[] = [
   {
     id: "beach",
     name: "Beach Vacation",
@@ -141,3 +143,13 @@ export const PACKING_KITS: PackingKit[] = [
     ],
   },
 ];
+
+export const getTranslatedKits = (): PackingKit[] =>
+  PACKING_KITS.map((kit) => ({
+    ...kit,
+    name: i18next.t(`kits.${kit.id}.name`),
+    items: kit.items.map((_item, idx) => ({
+      name: i18next.t(`kits.${kit.id}.items.${idx}.name`),
+      category: i18next.t(`kits.${kit.id}.items.${idx}.category`),
+    })),
+  }));

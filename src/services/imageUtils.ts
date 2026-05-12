@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Alert, Platform } from "react-native";
 import ImageCropPicker from "react-native-image-crop-picker";
 import { toEmojiValue } from "~/services/mediaValue.ts";
@@ -5,10 +6,6 @@ import { toEmojiValue } from "~/services/mediaValue.ts";
 const MAX_SIZE = 400;
 const JPEG_QUALITY = 0.8;
 const isIPad = Platform.OS === "ios" && Platform.isPad;
-const EMOJI_PROMPT_TITLE = "Emoji";
-const EMOJI_PROMPT_MESSAGE = "Enter emoji or text";
-const CANCEL_OPTION = "Cancel";
-const EMOJI_CONFIRM = "Use";
 
 export const pickAndResizeImage = async (): Promise<string | null> => {
   try {
@@ -38,12 +35,12 @@ export const promptForEmojiValue = () =>
       return;
     }
     Alert.prompt(
-      EMOJI_PROMPT_TITLE,
-      EMOJI_PROMPT_MESSAGE,
+      i18next.t("common.emoji"),
+      i18next.t("common.enterEmojiOrText"),
       [
-        { text: CANCEL_OPTION, style: "cancel", onPress: () => resolve(null) },
+        { text: i18next.t("common.cancel"), style: "cancel", onPress: () => resolve(null) },
         {
-          text: EMOJI_CONFIRM,
+          text: i18next.t("common.use"),
           onPress: (value?: string) => {
             const trimmed = value?.trim() ?? "";
             resolve(trimmed ? toEmojiValue(trimmed) : null);

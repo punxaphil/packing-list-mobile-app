@@ -72,6 +72,9 @@ export const homeCopy = translatedCopy<HomeCopy>("home");
 
 type CommonCopy = {
   cancel: string;
+  ok: string;
+  rank: string;
+  emojiOrText: string;
   pickImage: string;
   removeImage: string;
   useText: string;

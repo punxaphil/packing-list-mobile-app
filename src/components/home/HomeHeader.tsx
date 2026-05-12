@@ -162,12 +162,7 @@ export const HomeHeader = ({
         <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} showBadge={!isSubscribed} />
       </View>
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-      <PageSheet
-        visible={profileVisible}
-        title={t("profile.title")}
-        onClose={() => setProfileVisible(false)}
-        scrollable={false}
-      >
+      <PageSheet visible={profileVisible} title={t("profile.title")} onClose={() => setProfileVisible(false)}>
         <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
       </PageSheet>
     </View>

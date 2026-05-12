@@ -232,7 +232,7 @@ const PinButton = ({ onPress }: { onPress: () => void }) => (
 
 const ArchivedBadge = () => (
   <View style={homeStyles.archivedBadge}>
-    <Text style={homeStyles.archivedBadgeText}>{listCopy.archived}</Text>
+    <Text style={homeStyles.archivedBadgeText}>{listCopy.archivedSingular}</Text>
   </View>
 );
 
