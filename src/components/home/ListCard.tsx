@@ -160,7 +160,8 @@ const useRenameDialog = (
   const close = () => setVisible(false);
   const getError = (text: string) => {
     const trimmed = text.trim();
-    const isDuplicate = trimmed && trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
+    if (!trimmed) return HOME_COPY.nameRequired;
+    const isDuplicate = trimmed !== list.name && hasDuplicateEntityName(trimmed, lists, list.id);
     return isDuplicate ? HOME_COPY.duplicateListName : null;
   };
   const onChange = (text: string) => {

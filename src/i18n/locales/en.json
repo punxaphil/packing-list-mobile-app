@@ -51,6 +51,7 @@
     "duplicateItemName": "Item with this name already exists in category",
     "duplicateCategoryName": "A category with this name already exists",
     "duplicateListName": "A list with this name already exists",
+    "nameRequired": "Name is required",
     "withoutMembers": "Without members",
     "duplicateCopyToList": "\"{name}\" already exists in this list",
     "duplicateCopyToListTitle": "Duplicate Item",
