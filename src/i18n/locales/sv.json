@@ -51,6 +51,7 @@
     "duplicateItemName": "En sak med det här namnet finns redan i kategorin",
     "duplicateCategoryName": "En kategori med det här namnet finns redan",
     "duplicateListName": "En lista med det här namnet finns redan",
+    "nameRequired": "Namn krävs",
     "withoutMembers": "Utan medlemmar",
     "duplicateCopyToList": "\"{name}\" finns redan i den här listan",
     "duplicateCopyToListTitle": "Dubblett av sak",

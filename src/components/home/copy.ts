@@ -52,6 +52,7 @@ type HomeCopy = {
   duplicateItemName: string;
   duplicateCategoryName: string;
   duplicateListName: string;
+  nameRequired: string;
   duplicateCopyToList: string;
   duplicateCopyToListTitle: string;
   deleteCategoryQuestionTitle: string;

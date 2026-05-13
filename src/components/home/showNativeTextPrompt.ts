@@ -24,10 +24,10 @@ export const showNativeTextPrompt = ({
 }: NativeTextPromptOptions) => {
   if (Platform.OS !== "ios") return false;
 
-  const openPrompt = (currentValue: string) => {
+  const openPrompt = (currentValue: string, errorMessage?: string) => {
     Alert.prompt(
       title,
-      undefined,
+      errorMessage,
       [
         { text: cancelLabel, style: "cancel", onPress: onCancel },
         {
@@ -36,7 +36,7 @@ export const showNativeTextPrompt = ({
             const nextValue = text ?? "";
             const error = getError?.(nextValue);
             if (error) {
-              Alert.alert(title, error, [{ text: i18next.t("common.ok"), onPress: () => openPrompt(nextValue) }]);
+              openPrompt(nextValue, error);
               return;
             }
             void onSubmit(nextValue);
