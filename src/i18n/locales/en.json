@@ -270,6 +270,9 @@
     "wrapItemText": "Show full item text (even if it takes up multiple lines)",
     "hideImagePlaceholder": "Hide image placeholder when no image is connected",
     "addNewItemsOnTop": "Add new items on top instead of bottom",
+    "useDeviceLanguage": "Use device language",
+    "language": "Language",
+    "selectLanguage": "Select Language",
     "firstName": "First Name",
     "lastName": "Last Name",
     "updateName": "Update"

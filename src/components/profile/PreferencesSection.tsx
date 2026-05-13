@@ -6,6 +6,7 @@ import {
   updateProfileWrapItemText,
 } from "~/services/spaceDatabase.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
+import { LanguageSection } from "./LanguageSection.tsx";
 import { profileCopy } from "./profileCopy.ts";
 
 export const PreferencesSection = () => {
@@ -32,6 +33,7 @@ export const PreferencesSection = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{profileCopy.preferencesTitle}</Text>
+      <LanguageSection />
       <View style={styles.row}>
         <Text style={styles.label}>{profileCopy.wrapItemText}</Text>
         <Switch
