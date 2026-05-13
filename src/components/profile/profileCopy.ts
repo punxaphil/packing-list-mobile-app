@@ -34,6 +34,9 @@ type ProfileCopy = {
   wrapItemText: string;
   hideImagePlaceholder: string;
   addNewItemsOnTop: string;
+  useDeviceLanguage: string;
+  language: string;
+  selectLanguage: string;
   firstName: string;
   lastName: string;
   updateName: string;
