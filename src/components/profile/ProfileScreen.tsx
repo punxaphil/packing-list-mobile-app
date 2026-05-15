@@ -19,6 +19,7 @@ import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
+import { FeedbackButton } from "./FeedbackButton.tsx";
 import { NameEditor } from "./NameEditor.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
 import { profileCopy } from "./profileCopy.ts";
@@ -109,6 +110,9 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         <NameEditor />
         <PreferencesSection />
         <SubscriptionSection />
+        <View style={styles.actionsRow}>
+          <FeedbackButton />
+        </View>
         <View style={styles.actionsRow}>
           <SignOutButton email={email} onSignOut={onSignOut} />
           <DeleteAccountButton onSignOut={onSignOut} />

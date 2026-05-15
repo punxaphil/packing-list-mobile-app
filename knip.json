@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["babel.config.js", "metro.config.js", "scripts/**"],
   "entry": ["src/**/*.test.ts"],
-  "ignoreBinaries": ["lsof", "awk", "pod", "xcrun"],
+  "ignoreBinaries": ["firebase", "lsof", "awk", "pod", "xcrun"],
   "ignoreDependencies": [
     "@babel/core",
     "@types/hoist-non-react-statics",

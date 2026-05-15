@@ -277,7 +277,16 @@
     "nameSectionTitle": "Namn",
     "firstName": "Förnamn",
     "lastName": "Efternamn",
-    "updateName": "Uppdatera"
+    "updateName": "Uppdatera",
+    "feedbackButton": "Skicka feedback",
+    "feedbackTitle": "Skicka feedback",
+    "feedbackConfirm": "Skicka",
+    "feedbackRequired": "Feedback krävs",
+    "feedbackTooLong": "Feedback måste vara högst 500 tecken",
+    "feedbackSentTitle": "Tack!",
+    "feedbackSentMessage": "Din feedback har tagits emot.",
+    "feedbackErrorTitle": "Kunde inte skicka feedback",
+    "feedbackErrorMessage": "Försök igen."
   },
   "assignMembers": {
     "title": "Tilldela medlemmar",
