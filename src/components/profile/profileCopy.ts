@@ -40,6 +40,15 @@ type ProfileCopy = {
   firstName: string;
   lastName: string;
   updateName: string;
+  feedbackButton: string;
+  feedbackTitle: string;
+  feedbackConfirm: string;
+  feedbackRequired: string;
+  feedbackTooLong: string;
+  feedbackSentTitle: string;
+  feedbackSentMessage: string;
+  feedbackErrorTitle: string;
+  feedbackErrorMessage: string;
 };
 
 export const profileCopy = translatedCopy<ProfileCopy>("profile");

@@ -276,7 +276,16 @@
     "selectLanguage": "Select Language",
     "firstName": "First Name",
     "lastName": "Last Name",
-    "updateName": "Update"
+    "updateName": "Update",
+    "feedbackButton": "Send Feedback",
+    "feedbackTitle": "Send Feedback",
+    "feedbackConfirm": "Send",
+    "feedbackRequired": "Feedback is required",
+    "feedbackTooLong": "Feedback must be 500 characters or less",
+    "feedbackSentTitle": "Thank you!",
+    "feedbackSentMessage": "Your feedback has been received.",
+    "feedbackErrorTitle": "Could not send feedback",
+    "feedbackErrorMessage": "Please try again."
   },
   "assignMembers": {
     "title": "Assign Members",
