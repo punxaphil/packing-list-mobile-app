@@ -1,7 +1,15 @@
+const resolveReactNativePreset = () => {
+  try {
+    return require.resolve("@react-native/babel-preset");
+  } catch {
+    return require.resolve("@react-native/metro-babel-transformer/node_modules/@react-native/babel-preset");
+  }
+};
+
 module.exports = (api) => {
   api.cache(true);
   return {
-    presets: ["module:@react-native/babel-preset"],
+    presets: [resolveReactNativePreset()],
     plugins: [
       [
         "module-resolver",

@@ -16,7 +16,6 @@ type ButtonProps = {
   flex?: boolean;
 };
 
-const APPLE_SYMBOL = "\uF8FF";
 const PRESS_IN_DURATION = 140;
 const PRESS_OUT_DURATION = 220;
 const BACKGROUND_COLORS = {
@@ -64,10 +63,8 @@ export const Button = ({ label, onPress, variant = "default", icon, centered, di
     outputRange: [idleColor, pressedColor],
   });
 
-  const displayLabel = variant === "apple" ? `${APPLE_SYMBOL} ${label}` : label;
-  const textEl = (
-    <Text style={[styles.text, TEXT_STYLES[variant], disabled && styles.disabledText]}>{displayLabel}</Text>
-  );
+  const textEl = <Text style={[styles.text, TEXT_STYLES[variant], disabled && styles.disabledText]}>{label}</Text>;
+  const appleIcon = variant === "apple" ? "apple" : icon;
 
   return (
     <Pressable
@@ -88,9 +85,9 @@ export const Button = ({ label, onPress, variant = "default", icon, centered, di
           },
         ]}
       >
-        {icon ? (
+        {appleIcon ? (
           <View style={styles.row}>
-            <MaterialCommunityIcons name={icon} size={18} color={ICON_COLORS[variant]} />
+            <MaterialCommunityIcons name={appleIcon} size={18} color={ICON_COLORS[variant]} />
             {textEl}
           </View>
         ) : (

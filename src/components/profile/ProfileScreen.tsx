@@ -5,6 +5,7 @@ import {
   Platform,
   Pressable,
   Image as RNImage,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -104,7 +105,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
   return (
     <View style={[styles.container, embeddedInSheet && styles.sheetContainer]}>
       {!embeddedInSheet && onBack ? <Header onBack={onBack} /> : null}
-      <View style={[styles.content, embeddedInSheet && styles.sheetContent]}>
+      <ScrollView contentContainerStyle={[styles.content, embeddedInSheet && styles.sheetContent]}>
         <Avatar email={email} imageUrl={imageUrl} onPress={handleAvatarPress} loading={handlers.loading} />
         <Text style={styles.email}>{email}</Text>
         <NameEditor />
@@ -117,7 +118,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
           <SignOutButton email={email} onSignOut={onSignOut} />
           <DeleteAccountButton onSignOut={onSignOut} />
         </View>
-      </View>
+      </ScrollView>
       <ImageViewerModal
         visible={viewerVisible}
         imageUrl={imageUrl}
@@ -206,7 +207,8 @@ const useImageHandlers = (userId: string | undefined) => {
 const Header = ({ onBack }: { onBack: () => void }) => (
   <View style={styles.header}>
     <Pressable style={styles.backButton} onPress={onBack} hitSlop={8}>
-      <Text style={styles.backText}>← Back</Text>
+      <Text style={styles.backArrow}>←</Text>
+      <Text style={styles.backLabel}>Back</Text>
     </Pressable>
     <Text style={styles.title}>{profileCopy.title}</Text>
     <View style={styles.placeholder} />
@@ -228,14 +230,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  backButton: { minWidth: 60 },
-  backText: { color: colors.muted, fontWeight: "600", fontSize: 16 },
+  backButton: { minWidth: 60, flexDirection: "row", alignItems: "center", gap: 4 },
+  backArrow: { color: colors.muted, fontWeight: "600", fontSize: 18, lineHeight: 20 },
+  backLabel: { color: colors.muted, fontWeight: "600", fontSize: 16 },
   title: { fontSize: 20, fontWeight: "700", color: colors.text },
   placeholder: { minWidth: 60 },
   content: {
-    flex: 1,
     alignItems: "center",
     paddingTop: spacing.lg * 2,
+    paddingBottom: spacing.lg * 2,
     gap: spacing.lg,
   },
   actionsRow: {

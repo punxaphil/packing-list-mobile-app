@@ -29,5 +29,6 @@
     "node_modules": true,
     "ios": true,
     "android": true
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "disabled"
 }

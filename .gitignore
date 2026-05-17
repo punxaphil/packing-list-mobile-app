@@ -90,6 +90,7 @@ Thumbs.db
 .idea/
 .env
 .env.*
+.android-env
 /plan.md
 drivers/
 scripts/serviceAccountKey.json

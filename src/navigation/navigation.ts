@@ -2,11 +2,26 @@ import i18next from "i18next";
 import { Platform } from "react-native";
 import { Navigation } from "react-native-navigation";
 import { SCREEN_IDS } from "./screenIds";
+import { getSelectedTabIcon, getTabIcon, TAB_SELECTED_TEXT_COLOR } from "./tabIcons";
 
 export const ITEMS_TAB = 0;
 export const LISTS_TAB = 1;
 const MEMBERS_TAB = 3;
 const BOTTOM_TABS_ID = "BOTTOM_TABS";
+
+const getBottomTabOptions = (text: string, sfSymbol: string, icon: Parameters<typeof getTabIcon>[0]) => ({
+  text,
+  ...(Platform.OS === "ios"
+    ? { sfSymbol }
+    : { icon: getTabIcon(icon), selectedIcon: getSelectedTabIcon(icon), selectedTextColor: TAB_SELECTED_TEXT_COLOR }),
+});
+
+const createTab = (name: string, text: string, sfSymbol: string, icon: Parameters<typeof getTabIcon>[0]) => ({
+  stack: {
+    children: [{ component: { name } }],
+    options: { bottomTab: getBottomTabOptions(text, sfSymbol, icon) },
+  },
+});
 
 export function showMainTabs(currentTabIndex = LISTS_TAB) {
   const bottomTabText = {
@@ -20,50 +35,10 @@ export function showMainTabs(currentTabIndex = LISTS_TAB) {
       bottomTabs: {
         id: BOTTOM_TABS_ID,
         children: [
-          {
-            stack: {
-              children: [{ component: { name: SCREEN_IDS.ITEMS } }],
-              options: {
-                bottomTab: {
-                  text: bottomTabText.items,
-                  ...(Platform.OS === "ios" ? { sfSymbol: "checkmark.square" } : {}),
-                },
-              },
-            },
-          },
-          {
-            stack: {
-              children: [{ component: { name: SCREEN_IDS.LISTS } }],
-              options: {
-                bottomTab: {
-                  text: bottomTabText.lists,
-                  ...(Platform.OS === "ios" ? { sfSymbol: "list.bullet" } : {}),
-                },
-              },
-            },
-          },
-          {
-            stack: {
-              children: [{ component: { name: SCREEN_IDS.CATEGORIES } }],
-              options: {
-                bottomTab: {
-                  text: bottomTabText.categories,
-                  ...(Platform.OS === "ios" ? { sfSymbol: "square.grid.2x2" } : {}),
-                },
-              },
-            },
-          },
-          {
-            stack: {
-              children: [{ component: { name: SCREEN_IDS.MEMBERS } }],
-              options: {
-                bottomTab: {
-                  text: bottomTabText.members,
-                  ...(Platform.OS === "ios" ? { sfSymbol: "heart" } : {}),
-                },
-              },
-            },
-          },
+          createTab(SCREEN_IDS.ITEMS, bottomTabText.items, "checkmark.square", "checkbox-marked-outline"),
+          createTab(SCREEN_IDS.LISTS, bottomTabText.lists, "list.bullet", "format-list-bulleted"),
+          createTab(SCREEN_IDS.CATEGORIES, bottomTabText.categories, "square.grid.2x2", "view-grid-outline"),
+          createTab(SCREEN_IDS.MEMBERS, bottomTabText.members, "heart", "heart-outline"),
         ],
         options: {
           bottomTabs: {

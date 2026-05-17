@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { ActionSheetIOS } from "react-native";
+import { ActionSheetIOS, Alert, Platform } from "react-native";
 
 type ActionSheetItem = {
   text: string;
@@ -8,8 +8,23 @@ type ActionSheetItem = {
   disabled?: boolean;
 };
 
+const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
+
+const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
+  const buttons = [
+    ...getActionItems(items).filter((item) => !item.disabled),
+    { text: i18next.t("common.cancel"), style: "cancel" as const },
+  ];
+  Alert.alert(title, undefined, buttons, { cancelable: true });
+};
+
 export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
-  const actionItems = items.filter((i) => i.style !== "cancel");
+  if (Platform.OS !== "ios") {
+    showAndroidActionSheet(title, items);
+    return;
+  }
+
+  const actionItems = getActionItems(items);
   const options = [...actionItems.map((i) => i.text), i18next.t("common.cancel")];
   const cancelButtonIndex = actionItems.length;
   const destructiveIndices = actionItems

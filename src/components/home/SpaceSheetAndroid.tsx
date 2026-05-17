@@ -1,13 +1,19 @@
-import { Modal, Pressable } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { AppLoadingState } from "../shared/AppLoadingState.tsx";
-import { ActionMenu } from "./ActionMenu.tsx";
+import { Modal, Pressable, ScrollView, Text } from "react-native";
+import { UserList } from "../space/UserList.tsx";
+import { SpaceSheetDialogs } from "./SpaceSheetDialogs.tsx";
+import {
+  AndroidSheetHeader,
+  CreateSpaceButton,
+  InviteSection,
+  SpaceActions,
+  SpaceNameRow,
+  SpaceRow,
+} from "./SpaceSheetParts.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
-import { TextPromptDialog } from "./TextPromptDialog.tsx";
-import { homeColors } from "./theme.ts";
+import { androidSheetStyles, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
 
-export type SpaceSheetSubDialog = "none" | "create" | "rename" | "invite" | "inviteSent";
+export type SpaceSheetSubDialog = "none" | "create" | "rename" | "invite";
 
 type Props = {
   visible: boolean;
@@ -15,49 +21,58 @@ type Props = {
   sheet: ReturnType<typeof useSpaceSheet>;
 };
 
-export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => {
-  const items = s.spaces.map((space) => ({
-    text: space.name,
-    onPress: () => {
-      s.switchSpace(space.id);
-      onClose();
-    },
-  }));
-  const inviteItems = s.pendingInvites.map((inv) => ({
-    text: `${inv.spaceName} — ${spaceCopy.inviteFrom} ${inv.fromEmail}`,
-    onPress: () => void onClose(),
-  }));
-  const headerRight = (
-    <Pressable onPress={() => s.setSubDialog("create")} hitSlop={8}>
-      <MaterialCommunityIcons name="plus" size={22} color={homeColors.buttonText} />
-    </Pressable>
-  );
-
-  return (
-    <>
-      <ActionMenu
-        visible={visible && s.subDialog === "none" && !s.creatingSpace}
-        title={spaceCopy.switchSpace}
-        items={[...items, ...inviteItems]}
-        onClose={onClose}
-        headerColor={homeColors.primary}
-        headerTextColor={homeColors.primaryForeground}
-        headerRight={headerRight}
-      />
-      <TextPromptDialog
-        visible={s.subDialog === "create"}
-        title={spaceCopy.createSpacePrompt}
-        confirmLabel={spaceCopy.createSpaceConfirm}
-        value={s.promptValue}
-        placeholder={spaceCopy.createSpacePlaceholder}
-        disabled={s.creatingSpace}
-        onChange={s.setPromptValue}
-        onCancel={s.resetSubDialog}
-        onSubmit={s.handleCreateSubmit}
-      />
-      <Modal visible={s.creatingSpace} transparent animationType="fade">
-        <AppLoadingState />
-      </Modal>
-    </>
-  );
-};
+export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => (
+  <>
+    <Modal
+      visible={visible && s.subDialog === "none" && !s.creatingSpace}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable style={androidSheetStyles.backdrop} onPress={onClose}>
+        <Pressable style={androidSheetStyles.sheet} onPress={(e) => e.stopPropagation()}>
+          <AndroidSheetHeader title={spaceCopy.spacesTitle} onClose={onClose} />
+          <ScrollView style={styles.sheetListAndroid} contentContainerStyle={styles.sheetListContent}>
+            <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} />
+            {s.activeSpace && (
+              <UserList
+                emails={s.activeSpace.memberEmails}
+                onRemove={s.mgmt.removeUser}
+                currentEmail={s.mgmt.currentEmail}
+                imagesByEmail={s.imagesByEmail}
+                isOwner={s.mgmt.isOwner}
+                ownerEmail={s.ownerEmail}
+              />
+            )}
+            <SpaceActions
+              onInvite={s.handleInvite}
+              onLeave={s.mgmt.leave}
+              onDelete={s.mgmt.confirmDelete}
+              isPersonal={s.mgmt.isPersonalSpace}
+              isOwner={s.mgmt.isOwner}
+            />
+            <InviteSection invites={s.pendingInvites} onAccept={s.handleAccept} />
+            {s.otherSpaces.length > 0 && (
+              <>
+                <Text style={styles.sectionTitle}>{spaceCopy.switchSpace}</Text>
+                {s.otherSpaces.map((space) => (
+                  <SpaceRow
+                    key={space.id}
+                    label={space.name}
+                    members={s.memberInfoBySpaceId[space.id]}
+                    onPress={() => {
+                      s.switchSpace(space.id);
+                      onClose();
+                    }}
+                  />
+                ))}
+              </>
+            )}
+            <CreateSpaceButton onPress={() => s.setSubDialog("create")} />
+          </ScrollView>
+        </Pressable>
+      </Pressable>
+    </Modal>
+    <SpaceSheetDialogs sheet={s} />
+  </>
+);

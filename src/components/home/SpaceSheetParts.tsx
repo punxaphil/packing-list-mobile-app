@@ -5,7 +5,7 @@ import { Button } from "../shared/Button.tsx";
 import { MemberAvatars } from "./MemberAvatars.tsx";
 import type { MemberInfo } from "./memberInfo.ts";
 import { spaceCopy } from "./spaceCopy.ts";
-import { spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
+import { androidSheetStyles, ICON_SIZE_MD, ICON_SIZE_SM, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
 export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
@@ -14,7 +14,7 @@ export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () =>
       {name}
     </Text>
     <Pressable onPress={onRename} hitSlop={8}>
-      <MaterialCommunityIcons name="pencil-outline" size={18} color={homeColors.muted} />
+      <MaterialCommunityIcons name="pencil-outline" size={ICON_SIZE_SM} color={homeColors.muted} />
     </Pressable>
   </View>
 );
@@ -73,3 +73,12 @@ type SpaceRowProps = {
   onPress: () => void;
   members?: MemberInfo[];
 };
+
+export const AndroidSheetHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
+  <View style={androidSheetStyles.header}>
+    <Text style={androidSheetStyles.headerTitle}>{title}</Text>
+    <Pressable onPress={onClose} hitSlop={8}>
+      <MaterialCommunityIcons name="close" size={ICON_SIZE_MD} color={homeColors.muted} />
+    </Pressable>
+  </View>
+);
