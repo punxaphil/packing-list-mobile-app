@@ -1,0 +1,19 @@
+# fastlane snapshot configuration
+# Run: bundle exec fastlane snapshot
+
+scheme("PackingList")
+workspace("./ios/PackingList.xcworkspace")
+
+devices([
+  "iPhone 15 Pro Max",
+])
+ios_version("17.0")
+
+languages([
+  "en-US",
+])
+
+output_directory("./fastlane/screenshots")
+output_simulator_logs(false)
+clear_previous_screenshots(true)
+override_status_bar(true)

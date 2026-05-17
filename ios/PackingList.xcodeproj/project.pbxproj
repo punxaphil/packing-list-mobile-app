@@ -3,35 +3,46 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2C5144EE9A22B1785897AC9F /* libPods-PackingList.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2742ED714A7EB610BCDE48E /* libPods-PackingList.a */; };
-		3A8CB6A62FEC100100B23001 /* RenameItemSheetModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */; };
-		3A8CB6A82FEC100100B23001 /* RenameItemSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */; };
-		3A8CB6AA2FEC100100B23001 /* RenameItemSheetModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */; };
+		3A8CB6A62FEC100100B23001 /* PackingList/RenameItemSheetModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */; };
+		3A8CB6A82FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */; };
+		3A8CB6AA2FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		6B2F114A34F6000100A32001 /* PackingListReminderModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114934F6000100A32001 /* PackingListReminderModule.swift */; };
-		6B2F114C34F6000100A32001 /* PackingListReminderModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */; };
-		6B2F114E34F6000100A32001 /* ReminderDatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */; };
+		6B2F114A34F6000100A32001 /* PackingList/PackingListReminderModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */; };
+		6B2F114C34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */; };
+		6B2F114E34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */; };
 		93652CA42F4391BD0033609F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 93652CA32F4391BD0033609F /* GoogleService-Info.plist */; };
 		AEA5F10178E5F66824ACEEA5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 37CE62326ADBBA20CAD1AEE2 /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		934D8DF62FB70CF400940EBB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = PackingList;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* PackingList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PackingList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PackingList/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PackingList/Info.plist; sourceTree = "<group>"; };
 		37CE62326ADBBA20CAD1AEE2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = PackingList/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetModule.swift; sourceTree = "<group>"; };
-		3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetViewController.swift; sourceTree = "<group>"; };
-		3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/RenameItemSheetModuleBridge.m; sourceTree = "<group>"; };
-		6B2F114934F6000100A32001 /* PackingListReminderModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/PackingListReminderModule.swift; sourceTree = "<group>"; };
-		6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/PackingListReminderModuleBridge.m; sourceTree = "<group>"; };
-		6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/ReminderDatePickerViewController.swift; sourceTree = "<group>"; };
+		3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetModule.swift; sourceTree = "<group>"; };
+		3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetViewController.swift; sourceTree = "<group>"; };
+		3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/RenameItemSheetModuleBridge.m; sourceTree = "<group>"; };
+		6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/PackingListReminderModule.swift; sourceTree = "<group>"; };
+		6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/PackingListReminderModuleBridge.m; sourceTree = "<group>"; };
+		6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/ReminderDatePickerViewController.swift; sourceTree = "<group>"; };
+		934D8DF02FB70CF400940EBB /* PackingListUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PackingListUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93652CA32F4391BD0033609F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A095A6C6C4D3F352A5EDE8E6 /* Pods-PackingList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PackingList.debug.xcconfig"; path = "Target Support Files/Pods-PackingList/Pods-PackingList.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = PackingList/SplashScreen.storyboard; sourceTree = "<group>"; };
@@ -42,12 +53,23 @@
 		F2742ED714A7EB610BCDE48E /* libPods-PackingList.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PackingList.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		934D8DF12FB70CF400940EBB /* PackingListUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PackingListUITests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				2C5144EE9A22B1785897AC9F /* libPods-PackingList.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		934D8DED2FB70CF400940EBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,12 +81,12 @@
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748442D0722820044C1D9 /* PackingList-Bridging-Header.h */,
-				6B2F114934F6000100A32001 /* PackingListReminderModule.swift */,
-				6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */,
-				6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */,
-				3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */,
-				3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */,
-				3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */,
+				6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */,
+				6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */,
+				6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */,
+				3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */,
+				3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */,
+				3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -96,6 +118,7 @@
 			children = (
 				13B07FAE1A68108700A75B9A /* PackingList */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
+				934D8DF12FB70CF400940EBB /* PackingListUITests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				FF6255774D0E885114AD622F /* Pods */,
@@ -109,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* PackingList.app */,
+				934D8DF02FB70CF400940EBB /* PackingListUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,16 +178,44 @@
 			productReference = 13B07F961A680F5B00A75B9A /* PackingList.app */;
 			productType = "com.apple.product-type.application";
 		};
+		934D8DEF2FB70CF400940EBB /* PackingListUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 934D8DFA2FB70CF500940EBB /* Build configuration list for PBXNativeTarget "PackingListUITests" */;
+			buildPhases = (
+				934D8DEC2FB70CF400940EBB /* Sources */,
+				934D8DED2FB70CF400940EBB /* Frameworks */,
+				934D8DEE2FB70CF400940EBB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				934D8DF72FB70CF400940EBB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				934D8DF12FB70CF400940EBB /* PackingListUITests */,
+			);
+			name = PackingListUITests;
+			packageProductDependencies = (
+			);
+			productName = PackingListUITests;
+			productReference = 934D8DF02FB70CF400940EBB /* PackingListUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
+					};
+					934D8DEF2FB70CF400940EBB = {
+						CreatedOnToolsVersion = 26.4.1;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 				};
 			};
@@ -181,6 +233,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* PackingList */,
+				934D8DEF2FB70CF400940EBB /* PackingListUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -194,6 +247,13 @@
 				93652CA42F4391BD0033609F /* GoogleService-Info.plist in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				AEA5F10178E5F66824ACEEA5 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		934D8DEE2FB70CF400940EBB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,17 +398,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B2F114C34F6000100A32001 /* PackingListReminderModuleBridge.m in Sources */,
-				6B2F114E34F6000100A32001 /* ReminderDatePickerViewController.swift in Sources */,
-				6B2F114A34F6000100A32001 /* PackingListReminderModule.swift in Sources */,
-				3A8CB6AA2FEC100100B23001 /* RenameItemSheetModuleBridge.m in Sources */,
-				3A8CB6A82FEC100100B23001 /* RenameItemSheetViewController.swift in Sources */,
-				3A8CB6A62FEC100100B23001 /* RenameItemSheetModule.swift in Sources */,
+				6B2F114C34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m in Sources */,
+				6B2F114E34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift in Sources */,
+				6B2F114A34F6000100A32001 /* PackingList/PackingListReminderModule.swift in Sources */,
+				3A8CB6AA2FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m in Sources */,
+				3A8CB6A82FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift in Sources */,
+				3A8CB6A62FEC100100B23001 /* PackingList/RenameItemSheetModule.swift in Sources */,
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		934D8DEC2FB70CF400940EBB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		934D8DF72FB70CF400940EBB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* PackingList */;
+			targetProxy = 934D8DF62FB70CF400940EBB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -535,6 +610,77 @@
 			};
 			name = Release;
 		};
+		934D8DF82FB70CF500940EBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = punxaphil.PackingListUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PackingList;
+			};
+			name = Debug;
+		};
+		934D8DF92FB70CF500940EBB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = punxaphil.PackingListUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PackingList;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -552,6 +698,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		934D8DFA2FB70CF500940EBB /* Build configuration list for PBXNativeTarget "PackingListUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				934D8DF82FB70CF500940EBB /* Debug */,
+				934D8DF92FB70CF500940EBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,0 +1,71 @@
+{
+  "device_frame_version": "latest",
+  "default": {
+    "title": {
+      "font_size": 80,
+      "font": "/System/Library/Fonts/SFCompact.ttf",
+      "color": "#333333"
+    },
+    "keyword": {
+      "font_size": 80,
+      "font": "/System/Library/Fonts/SFCompact.ttf",
+      "color": "#1a7f37"
+    },
+    "padding": 50,
+    "show_complete_frame": true,
+    "stack_title": true,
+    "title_below_image": false
+  },
+  "data": [
+    {
+      "filter": "01_Home",
+      "keyword": {
+        "text": "Smarter\nPacking Lists"
+      },
+      "title": {
+        "text": "Pack faster, forget less."
+      },
+      "background": "#fce4ec"
+    },
+    {
+      "filter": "02_Lists",
+      "keyword": {
+        "text": "Manage lists"
+      },
+      "title": {
+        "text": "Create organized lists.\nBuild templates for reuse."
+      },
+      "background": "#e8f5e9"
+    },
+    {
+      "filter": "03_Sharing",
+      "keyword": {
+        "text": "List sharing"
+      },
+      "title": {
+        "text": "Invite family and friends.\nTrack who has packed what."
+      },
+      "background": "#e3f2fd"
+    },
+    {
+      "filter": "04_Filters",
+      "keyword": {
+        "text": "Powerful Filters\n& Search"
+      },
+      "title": {
+        "text": "Quickly find items.\nFilter by status or category."
+      },
+      "background": "#f3e5f5"
+    },
+    {
+      "filter": "05_Notes",
+      "keyword": {
+        "text": "Notes, Due Dates\n& Reminders"
+      },
+      "title": {
+        "text": "Add trip notes and due dates.\nIntegrates with notifications."
+      },
+      "background": "#ede7f6"
+    }
+  ]
+}

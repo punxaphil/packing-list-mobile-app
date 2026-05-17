@@ -1,6 +1,4 @@
-import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Animated, Platform, Pressable, Text, TextInput, View } from "react-native";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
@@ -11,7 +9,7 @@ import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
-import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
+import { CATEGORY_FIELD_COPY, CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
@@ -62,7 +60,6 @@ export const AddItemDialog = ({
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   const isIosSheet = Platform.OS === "ios";
-  const { t } = useTranslation();
   const isSubmitDisabled = itemName.trim().length === 0;
   const hasNewCategory = newCategoryName.trim().length > 0;
   const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
@@ -121,7 +118,7 @@ export const AddItemDialog = ({
         autoFocus
       />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{t("addItem.existingCategory")}</Text>
+      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.existingCategory}</Text>
       <CategoryDropdown
         categories={categories}
         categoryImages={categoryImages}
@@ -134,14 +131,14 @@ export const AddItemDialog = ({
         disabled={submitting || hasNewCategory}
         iosSheet={isIosSheet}
       />
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{t("addItem.newCategory")}</Text>
+      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.newCategory}</Text>
       <TextInput
         value={newCategoryName}
         onChangeText={(text) => {
           setNewCategoryName(text);
           setError(null);
         }}
-        placeholder={t("addItem.newCategoryPlaceholder")}
+        placeholder={COPY.newCategoryPlaceholder}
         style={isIosSheet ? STYLES.sheetInput : homeStyles.modalInput}
         editable={!submitting}
       />
@@ -155,9 +152,9 @@ export const AddItemDialog = ({
         <View pointerEvents="none">
           <AppCheckbox checked={keepOpen} onToggle={toggleKeepOpen} size={24} />
         </View>
-        <Text style={STYLES.keepOpenText}>{t("addItem.keepOpen")}</Text>
+        <Text style={STYLES.keepOpenText}>{COPY.keepOpen}</Text>
       </Pressable>
-      <Button label={t("addItem.browseKits")} onPress={onBrowseKits} disabled={submitting} />
+      <Button label={COPY.browseKits} onPress={onBrowseKits} disabled={submitting} />
     </>
   );
   if (isIosSheet) {
@@ -252,7 +249,7 @@ const useSubmitHandler = (
     const trimmedName = itemName.trim();
     if (!trimmedName) return;
     if (!hasNewCategory && hasDuplicateName(trimmedName, targetCategoryId, items)) {
-      setError(i18next.t("addItem.duplicateError"));
+      setError(COPY.duplicateError);
       return;
     }
     let nextCategory: NamedEntity;
@@ -265,7 +262,7 @@ const useSubmitHandler = (
       );
     } catch (e) {
       if (e instanceof DuplicateNameError) {
-        setError(i18next.t("addItem.duplicateError"));
+        setError(COPY.duplicateError);
         return;
       }
       throw e;
@@ -275,8 +272,10 @@ const useSubmitHandler = (
     setSelectedCategory(nextCategory);
     setNewCategoryName("");
     setError(null);
-    showToast(i18next.t("addItem.added", { name: trimmedName }));
-    inputRef.current?.focus();
+    showToast(COPY.added.replace("{name}", trimmedName));
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
   }, [
     itemName,
     selectedCategory,
@@ -294,6 +293,13 @@ const useSubmitHandler = (
     onSubmit,
   ]);
 
+const COPY = {
+  ...CATEGORY_FIELD_COPY,
+  duplicateError: "An item with this name already exists in this category",
+  added: 'Added "{name}"',
+  keepOpen: "Keep open (to add multiple items)",
+  browseKits: "Browse Packing Kits",
+};
 const STYLES = {
   ...CATEGORY_FIELD_STYLES,
   keepOpenRow: {
