@@ -82,6 +82,7 @@ vendor/bundle/
 !default.perspectivev3
 
 # Misc
+android/app/google-services.json
 *.swp
 *.swo
 .DS_Store
