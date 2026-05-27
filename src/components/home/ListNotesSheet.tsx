@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Platform, Pressable, StyleSheet, Switch, Text, TextInput, View } from "react-native";
-import { canEditPackingListReminder, formatPackingListDueAt } from "~/services/packingListReminder.ts";
+import { canEditDueDate, formatPackingListDueAt } from "~/services/packingListReminder.ts";
 import { PageSheet } from "../shared/PageSheet.tsx";
+import { AndroidDateTimePicker } from "./AndroidDateTimePicker.tsx";
 import { listCopy } from "./listCopy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 
@@ -13,6 +15,7 @@ export type ListNotesState = {
   close: () => void;
   clearDueAt: () => void;
   pickDueAt: () => void;
+  setDueAt: (v: number | null) => void;
   setNotes: (v: string) => void;
   setShowNotes: (v: boolean) => void;
 };
@@ -20,21 +23,7 @@ export type ListNotesState = {
 export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
   <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close} scrollable={false}>
     <View style={styles.content}>
-      {Platform.OS === "ios" && canEditPackingListReminder ? (
-        <View style={styles.fieldGroup}>
-          <Text style={styles.fieldLabel}>{listCopy.dueDate}</Text>
-          <Pressable style={styles.fieldButton} onPress={() => void state.pickDueAt()}>
-            <Text style={state.dueAt ? styles.fieldValue : styles.fieldPlaceholder}>
-              {state.dueAt ? formatPackingListDueAt(state.dueAt) : listCopy.dueDatePlaceholder}
-            </Text>
-          </Pressable>
-          {state.dueAt ? (
-            <Pressable hitSlop={8} onPress={state.clearDueAt}>
-              <Text style={styles.clearButton}>{listCopy.clearDueDate}</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      ) : null}
+      {canEditDueDate ? <DueDateField state={state} /> : null}
       <View style={styles.toggleRow}>
         <Text style={styles.toggleLabel}>{listCopy.showNotes}</Text>
         <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
@@ -52,6 +41,39 @@ export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
     </View>
   </PageSheet>
 );
+
+const DueDateField = ({ state }: { state: ListNotesState }) => {
+  const [showPicker, setShowPicker] = useState(false);
+  const handlePress = () => {
+    if (Platform.OS === "android") {
+      setShowPicker(true);
+    } else {
+      void state.pickDueAt();
+    }
+  };
+  return (
+    <View style={styles.fieldGroup}>
+      <Text style={styles.fieldLabel}>{listCopy.dueDate}</Text>
+      <Pressable style={styles.fieldButton} onPress={handlePress}>
+        <Text style={state.dueAt ? styles.fieldValue : styles.fieldPlaceholder}>
+          {state.dueAt ? formatPackingListDueAt(state.dueAt) : listCopy.dueDatePlaceholder}
+        </Text>
+      </Pressable>
+      {state.dueAt ? (
+        <Pressable hitSlop={8} onPress={state.clearDueAt}>
+          <Text style={styles.clearButton}>{listCopy.clearDueDate}</Text>
+        </Pressable>
+      ) : null}
+      {showPicker && (
+        <AndroidDateTimePicker
+          initialTimestamp={state.dueAt}
+          onPicked={state.setDueAt}
+          onDismiss={() => setShowPicker(false)}
+        />
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   content: {

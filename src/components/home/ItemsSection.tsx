@@ -451,5 +451,5 @@ const useListNotes = (list: NamedEntity | null, spaceId: string, writeDb: WriteD
 
   const setShowNotes = useCallback((v: boolean) => setShowNotesLocal(v), []);
 
-  return { visible, dueAt, notes, showNotes, open, close, clearDueAt, pickDueAt, setNotes, setShowNotes };
+  return { visible, dueAt, notes, showNotes, open, close, clearDueAt, pickDueAt, setDueAt, setNotes, setShowNotes };
 };

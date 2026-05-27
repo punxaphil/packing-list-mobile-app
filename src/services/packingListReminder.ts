@@ -42,6 +42,8 @@ const reminderEvents = reminderModule ? new NativeEventEmitter(reminderModule) :
 
 export const canEditPackingListReminder = Platform.OS === "ios" && !!reminderModule?.showDatePicker;
 
+export const canEditDueDate = Platform.OS === "android" || canEditPackingListReminder;
+
 export const formatPackingListDueAt = (dueAt: number) =>
   new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(dueAt));
 
