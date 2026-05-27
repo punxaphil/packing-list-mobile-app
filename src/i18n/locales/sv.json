@@ -341,6 +341,11 @@
     "subtitle": "FastPack är gratis under dina första 7 dagar. En prenumeration krävs för att fortsätta använda appen efter testperioden.",
     "info": "Priser och information om testperioden visas innan du bekräftar ditt köp.",
     "noOfferings": "Inga prenumerationer tillgängliga. Försök igen senare.",
+    "unavailableError": "Prenumerationer är tillfälligt otillgängliga. Försök igen senare.",
+    "initializeError": "Kunde inte starta prenumerationer.",
+    "purchaseError": "Köpet misslyckades.",
+    "restoreError": "Återställning misslyckades.",
+    "manageError": "Kunde inte öppna prenumerationsinställningar.",
     "renewalNote": "Prenumerationen förnyas automatiskt om den inte sägs upp minst 24 timmar före slutet av den aktuella perioden. Hantera eller säg upp i inställningarna för ditt Apple-ID-konto.",
     "featuresHeading": "Med FastPack kan du:",
     "features": [

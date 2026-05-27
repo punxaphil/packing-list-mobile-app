@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import i18next from "i18next";
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 import {
   configureRevenueCat,
@@ -14,6 +15,20 @@ import {
 import { SubscriptionContext } from "./SubscriptionContext.ts";
 
 type Props = { userId: string; children: ReactNode };
+
+const INTERNAL_SUBSCRIPTION_ERROR_PATTERNS = [
+  /RevenueCat .* API key is missing/i,
+  /REVENUECAT_/i,
+  /src\/services\/subscription\.ts/i,
+];
+
+const toUserErrorMessage = (error: unknown, fallbackKey: string) => {
+  if (!(error instanceof Error)) return i18next.t(fallbackKey);
+  const message = error.message.trim();
+  if (!message) return i18next.t(fallbackKey);
+  const isInternalError = INTERNAL_SUBSCRIPTION_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+  return isInternalError ? i18next.t("subscription.unavailableError") : message;
+};
 
 export const SubscriptionProvider = ({ userId, children }: Props) => {
   const initialized = useRef(false);
@@ -44,7 +59,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
       .then(refresh)
       .catch((e) => {
         setLoading(false);
-        setError(e instanceof Error ? e.message : "Unable to initialize subscriptions");
+        setError(toUserErrorMessage(e, "subscription.initializeError"));
       });
 
     Purchases.addCustomerInfoUpdateListener(handleCustomerInfo);
@@ -62,7 +77,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
         setIsSubscribed(active);
         await refresh();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Purchase failed");
+        setError(toUserErrorMessage(e, "subscription.purchaseError"));
       } finally {
         setProcessing(false);
       }
@@ -78,7 +93,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
       setIsSubscribed(active);
       await refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Restore failed");
+      setError(toUserErrorMessage(e, "subscription.restoreError"));
     } finally {
       setProcessing(false);
     }
@@ -89,7 +104,7 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
     try {
       await openManageSubscriptions();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Unable to open subscription settings");
+      setError(toUserErrorMessage(e, "subscription.manageError"));
     }
   }, []);
 

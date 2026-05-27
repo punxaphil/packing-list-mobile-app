@@ -1,12 +1,12 @@
+import { Platform } from "react-native";
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 
 const REVENUECAT_IOS_KEY = "appl_MAycwXxDDcWiytfvDCHGUZVkGRR";
+const REVENUECAT_ANDROID_KEY = "goog_qLWNyLTXbpianmjYAilUtwfveqA";
 const ENTITLEMENT_ID = "entitlement-1";
 const MONTHLY_PACKAGE_ID = "monthly";
 const YEARLY_PACKAGE_ID = "yearly";
-
 type PlanName = "Monthly" | "Yearly" | "Subscription";
-
 export type SubscriptionDetails = {
   productIdentifier: string;
   planName: PlanName;
@@ -15,17 +15,36 @@ export type SubscriptionDetails = {
   willRenew: boolean;
 };
 
-const hasRevenueCatKey = () =>
-  Boolean(REVENUECAT_IOS_KEY) && !REVENUECAT_IOS_KEY.includes("YOUR_REVENUECAT_IOS_API_KEY");
+const hasRevenueCatKey = (key: string, placeholder: string) => Boolean(key) && !key.includes(placeholder);
+
+const getRevenueCatConfig = () => {
+  if (Platform.OS === "android") {
+    return {
+      apiKey: REVENUECAT_ANDROID_KEY,
+      placeholder: "YOUR_REVENUECAT_ANDROID_API_KEY",
+      platform: "Android",
+    } as const;
+  }
+  return {
+    apiKey: REVENUECAT_IOS_KEY,
+    placeholder: "YOUR_REVENUECAT_IOS_API_KEY",
+    platform: "iOS",
+  } as const;
+};
 
 let configuredUserId: string | null = null;
 
 export const configureRevenueCat = async (userId: string) => {
   if (configuredUserId === userId) return;
-  if (!hasRevenueCatKey()) {
-    throw new Error("RevenueCat iOS API key is missing. Set REVENUECAT_IOS_KEY in src/services/subscription.ts");
+  const { apiKey, placeholder, platform } = getRevenueCatConfig();
+  if (!hasRevenueCatKey(apiKey, placeholder)) {
+    throw new Error(
+      `RevenueCat ${platform} API key is missing. Set ${
+        platform === "Android" ? "REVENUECAT_ANDROID_KEY" : "REVENUECAT_IOS_KEY"
+      } in src/services/subscription.ts`
+    );
   }
-  Purchases.configure({ apiKey: REVENUECAT_IOS_KEY });
+  Purchases.configure({ apiKey });
   await Purchases.logIn(userId);
   configuredUserId = userId;
 };
@@ -56,7 +75,6 @@ export const fetchOfferings = async (): Promise<PurchasesPackage[]> => {
   const offerings = await Purchases.getOfferings();
   return offerings.current?.availablePackages ?? [];
 };
-
 export const sortPreferredPackages = (packages: PurchasesPackage[]) => {
   const rank = (pkg: PurchasesPackage) => {
     if (pkg.identifier === MONTHLY_PACKAGE_ID) return 0;
