@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Keyboard, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { Keyboard, Platform, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { Image } from "~/types/Image.ts";
@@ -76,7 +76,13 @@ export const CategoryDropdown = ({
         <Text style={CATEGORY_FIELD_STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
       </Pressable>
       {open && (
-        <View style={[CATEGORY_FIELD_STYLES.dropdownList, iosSheet ? CATEGORY_FIELD_STYLES.sheetDropdownList : null]}>
+        <View
+          style={[
+            CATEGORY_FIELD_STYLES.dropdownList,
+            iosSheet ? CATEGORY_FIELD_STYLES.sheetDropdownList : null,
+            !iosSheet && Platform.OS === "android" ? CATEGORY_FIELD_STYLES.dropdownListInline : null,
+          ]}
+        >
           <ScrollView
             style={[CATEGORY_FIELD_STYLES.dropdownScroll, { maxHeight: dropdownMaxHeight }]}
             nestedScrollEnabled
@@ -190,6 +196,13 @@ export const CATEGORY_FIELD_STYLES = {
     borderColor: homeColors.border,
     borderRadius: 8,
     zIndex: 20,
+  },
+  dropdownListInline: {
+    position: "relative" as const,
+    top: undefined,
+    left: undefined,
+    right: undefined,
+    marginTop: 4,
   },
   sheetDropdownList: { borderRadius: 20 },
   dropdownScroll: {},
