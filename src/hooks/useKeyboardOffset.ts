@@ -6,16 +6,15 @@ const ANIMATION_DURATION = 250;
 export const useKeyboardOffset = () => {
   const offset = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    const showSub = Keyboard.addListener(showEvent, (e) => {
+    if (Platform.OS !== "ios") return;
+    const showSub = Keyboard.addListener("keyboardWillShow", (e) => {
       Animated.timing(offset, {
         toValue: -e.endCoordinates.height / 2,
         duration: ANIMATION_DURATION,
         useNativeDriver: true,
       }).start();
     });
-    const hideSub = Keyboard.addListener(hideEvent, () => {
+    const hideSub = Keyboard.addListener("keyboardWillHide", () => {
       Animated.timing(offset, { toValue: 0, duration: ANIMATION_DURATION, useNativeDriver: true }).start();
     });
     return () => {
