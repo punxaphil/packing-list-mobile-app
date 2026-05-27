@@ -1,16 +1,34 @@
 import i18next from "i18next";
 import { ActionSheetIOS, Alert, Platform } from "react-native";
 
-type ActionSheetItem = {
+export type ActionSheetItem = {
   text: string;
   style?: "default" | "destructive" | "cancel";
   onPress?: () => void;
   disabled?: boolean;
 };
 
+type AndroidActionSheetPayload = {
+  title: string;
+  items: ActionSheetItem[];
+};
+
+type AndroidActionSheetListener = (payload: AndroidActionSheetPayload) => void;
+
+let androidActionSheetListener: AndroidActionSheetListener | null = null;
+
+export const setAndroidActionSheetListener = (listener: AndroidActionSheetListener | null) => {
+  androidActionSheetListener = listener;
+};
+
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
 const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
+  if (androidActionSheetListener) {
+    androidActionSheetListener({ title, items });
+    return;
+  }
+
   const buttons = [
     ...getActionItems(items).filter((item) => !item.disabled),
     { text: i18next.t("common.cancel"), style: "cancel" as const },
