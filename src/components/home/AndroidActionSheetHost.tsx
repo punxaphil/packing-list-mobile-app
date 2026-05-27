@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { ActionMenu } from "./ActionMenu.tsx";
-import { ActionSheetItem, setAndroidActionSheetListener } from "./showActionSheet.ts";
+import {
+  ActionSheetItem,
+  getAndroidActionSheetListener,
+  setAndroidActionSheetListener,
+} from "./showActionSheet.ts";
 
 type SheetState = {
   title: string;
@@ -14,7 +18,11 @@ export const AndroidActionSheetHost = () => {
   useEffect(() => {
     if (Platform.OS !== "android") return;
     setAndroidActionSheetListener(setSheet);
-    return () => setAndroidActionSheetListener(null);
+    return () => {
+      if (getAndroidActionSheetListener() === setSheet) {
+        setAndroidActionSheetListener(null);
+      }
+    };
   }, []);
 
   if (Platform.OS !== "android" || !sheet) return null;

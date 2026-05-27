@@ -13,6 +13,7 @@ import {
   sortPreferredPackages,
 } from "~/services/subscription.ts";
 import { SubscriptionContext } from "./SubscriptionContext.ts";
+import { Platform } from "react-native";
 
 type Props = { userId: string; children: ReactNode };
 
@@ -31,6 +32,28 @@ const toUserErrorMessage = (error: unknown, fallbackKey: string) => {
 };
 
 export const SubscriptionProvider = ({ userId, children }: Props) => {
+  if (Platform.OS === "android") {
+    // Always treat as subscribed, skip RevenueCat
+    return (
+      <SubscriptionContext.Provider
+        value={{
+          details: null,
+          isSubscribed: true,
+          loading: false,
+          processing: false,
+          offerings: [],
+          error: null,
+          purchase: async () => {},
+          restore: async () => {},
+          refresh: () => {},
+          manage: () => {},
+        }}
+      >
+        {children}
+      </SubscriptionContext.Provider>
+    );
+  }
+
   const initialized = useRef(false);
   const [details, setDetails] = useState<SubscriptionDetails | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);

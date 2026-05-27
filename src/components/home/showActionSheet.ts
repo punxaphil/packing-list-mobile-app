@@ -21,6 +21,8 @@ export const setAndroidActionSheetListener = (listener: AndroidActionSheetListen
   androidActionSheetListener = listener;
 };
 
+export const getAndroidActionSheetListener = () => androidActionSheetListener;
+
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
 const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
