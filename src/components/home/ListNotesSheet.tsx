@@ -21,7 +21,7 @@ export type ListNotesState = {
 };
 
 export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
-  <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close} scrollable={false}>
+  <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close}>
     <View style={styles.content}>
       {canEditDueDate ? <DueDateField state={state} /> : null}
       <View style={styles.toggleRow}>
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   textarea: {
-    flex: 1,
+    minHeight: 200,
     borderWidth: 1,
     borderColor: homeColors.border,
     borderRadius: 10,

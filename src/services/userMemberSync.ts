@@ -102,21 +102,18 @@ export async function unassignUserFromPackItems(spaceId: string, userId: string)
 }
 
 export async function finalizeUserRemoval(spaceId: string, userId: string, email: string): Promise<void> {
-  console.log("[finalizeUserRemoval] spaceId:", spaceId, "userId:", userId, "email:", email);
   const spaceSnap = await getDoc(spaceDoc(spaceId));
   const memberSnap = await getDocs(query(membersCol(spaceId), where("userId", "==", userId)));
   const batch = writeBatch(firestore);
   const normalizedEmail = email.trim().toLowerCase();
   const space = spaceSnap.data() as Space | undefined;
   const emailsToRemove = (space?.memberEmails ?? []).filter((value) => value.trim().toLowerCase() === normalizedEmail);
-  console.log("[finalizeUserRemoval] emailsToRemove:", emailsToRemove, "memberDocs:", memberSnap.docs.length);
   batch.update(spaceDoc(spaceId), {
     members: arrayRemove(userId),
     memberEmails: arrayRemove(...emailsToRemove),
   });
   for (const memberDoc of memberSnap.docs) batch.delete(memberDoc.ref);
   await batch.commit();
-  console.log("[finalizeUserRemoval] batch committed");
 
   try {
     await updateDoc(userDoc(userId), { spaceIds: arrayRemove(spaceId) });

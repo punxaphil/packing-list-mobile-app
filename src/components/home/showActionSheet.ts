@@ -30,7 +30,6 @@ const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item
 
 const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
   const listener = listenerStack[listenerStack.length - 1];
-  console.log("[showActionSheet] Android, listenerStack length:", listenerStack.length, "hasListener:", !!listener);
   if (listener) {
     listener({ title, items });
     return;

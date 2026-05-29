@@ -40,6 +40,8 @@ type ItemsListProps = {
   currentListId: string;
   isTemplateList: boolean;
   search: SearchState;
+  notes?: string;
+  onNotesPress?: () => void;
   onToggle: (item: PackItem) => void;
   onRenameItem: (item: PackItem, name: string) => void;
   onDeleteItem: (id: string) => void;
@@ -108,6 +110,7 @@ export const ItemsList = (props: ItemsListProps) => {
       scrollEnabled={!drag.snapshot}
     >
       <View style={homeStyles.list}>
+        {props.notes ? <NotesBanner notes={props.notes} onPress={props.onNotesPress} /> : null}
         {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} onAddKit={props.onAddKit} />}
         {props.filteredEmpty && <FilteredEmpty />}
         {sections.map((section, i) => (
@@ -249,5 +252,26 @@ const emptyStyles = StyleSheet.create({
     fontWeight: "600",
     color: homeColors.muted,
     marginTop: homeSpacing.xs,
+  },
+});
+
+const NotesBanner = ({ notes, onPress }: { notes: string; onPress?: () => void }) => (
+  <Pressable style={notesBannerStyles.banner} onPress={onPress}>
+    <Text style={notesBannerStyles.text}>{notes}</Text>
+  </Pressable>
+);
+
+const notesBannerStyles = StyleSheet.create({
+  banner: {
+    marginHorizontal: homeSpacing.xs,
+    marginBottom: homeSpacing.xs,
+    padding: homeSpacing.sm,
+    backgroundColor: homeColors.primaryLight,
+    borderRadius: 8,
+  },
+  text: {
+    fontSize: 14,
+    color: homeColors.primaryForeground,
+    lineHeight: 20,
   },
 });

@@ -60,7 +60,6 @@ export const ActionMenu = ({
 
 const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
   const handlePress = () => {
-    console.log("[ActionMenu] MenuItem pressed:", item.text, "disabled:", item.disabled);
     if (item.disabled) return;
     item.onPress?.();
     onClose();
