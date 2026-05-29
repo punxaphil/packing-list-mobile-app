@@ -17,8 +17,8 @@ export function setDefaultOptions() {
       hideShadow: false,
     },
     bottomTab: {
-      selectedTextColor: MUTED_COLOR,
-      selectedIconColor: homeColors.primary,
+      selectedTextColor: homeColors.primaryStrong,
+      selectedIconColor: homeColors.primaryStrong,
       textColor: MUTED_COLOR,
       iconColor: MUTED_COLOR,
       fontSize: 10,

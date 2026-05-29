@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Platform } from "react-native";
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 
@@ -6,7 +7,7 @@ const REVENUECAT_ANDROID_KEY = "goog_qLWNyLTXbpianmjYAilUtwfveqA";
 const ENTITLEMENT_ID = "entitlement-1";
 const MONTHLY_PACKAGE_ID = "monthly";
 const YEARLY_PACKAGE_ID = "yearly";
-type PlanName = "Monthly" | "Yearly" | "Subscription";
+type PlanName = string;
 export type SubscriptionDetails = {
   productIdentifier: string;
   planName: PlanName;
@@ -52,11 +53,11 @@ export const configureRevenueCat = async (userId: string) => {
 export const isActiveSubscription = (info: CustomerInfo): boolean =>
   info.entitlements.active[ENTITLEMENT_ID] !== undefined;
 
-const getPlanName = (productIdentifier: string): PlanName => {
+const getPlanName = (productIdentifier: string): string => {
   const productId = productIdentifier.toLowerCase();
-  if (productId.includes("year")) return "Yearly";
-  if (productId.includes("month")) return "Monthly";
-  return "Subscription";
+  if (productId.includes("year")) return i18next.t("subscription.planYearly");
+  if (productId.includes("month")) return i18next.t("subscription.planMonthly");
+  return i18next.t("subscription.planDefault");
 };
 
 export const getCurrentSubscriptionDetails = (info: CustomerInfo): SubscriptionDetails | null => {

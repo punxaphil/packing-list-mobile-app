@@ -45,8 +45,8 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
           error: null,
           purchase: async () => {},
           restore: async () => {},
-          refresh: () => {},
-          manage: () => {},
+          refresh: async () => {},
+          manage: async () => {},
         }}
       >
         {children}

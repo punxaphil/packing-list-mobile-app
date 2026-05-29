@@ -15,19 +15,24 @@ type AndroidActionSheetPayload = {
 
 type AndroidActionSheetListener = (payload: AndroidActionSheetPayload) => void;
 
-let androidActionSheetListener: AndroidActionSheetListener | null = null;
+const listenerStack: AndroidActionSheetListener[] = [];
 
-export const setAndroidActionSheetListener = (listener: AndroidActionSheetListener | null) => {
-  androidActionSheetListener = listener;
+export const pushAndroidActionSheetListener = (listener: AndroidActionSheetListener) => {
+  listenerStack.push(listener);
 };
 
-export const getAndroidActionSheetListener = () => androidActionSheetListener;
+export const removeAndroidActionSheetListener = (listener: AndroidActionSheetListener) => {
+  const idx = listenerStack.indexOf(listener);
+  if (idx !== -1) listenerStack.splice(idx, 1);
+};
 
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
 const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
-  if (androidActionSheetListener) {
-    androidActionSheetListener({ title, items });
+  const listener = listenerStack[listenerStack.length - 1];
+  console.log("[showActionSheet] Android, listenerStack length:", listenerStack.length, "hasListener:", !!listener);
+  if (listener) {
+    listener({ title, items });
     return;
   }
 

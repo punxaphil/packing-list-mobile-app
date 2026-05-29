@@ -1,10 +1,16 @@
 import { useCallback } from "react";
-import { Alert } from "react-native";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getUserId } from "~/services/firebase.ts";
-import { deleteSpace, removeSpaceFromProfile, updateSpaceName } from "~/services/spaceDatabase.ts";
+import {
+  deleteSpace,
+  findUserIdByEmail,
+  removeEmailFromSpace,
+  removeSpaceFromProfile,
+  updateSpaceName,
+} from "~/services/spaceDatabase.ts";
 import { finalizeUserRemoval, unassignUserFromPackItems } from "~/services/userMemberSync.ts";
+import { showActionSheet } from "../home/showActionSheet.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
 export function useSpaceManagement(onBack: () => void) {
@@ -23,7 +29,10 @@ export function useSpaceManagement(onBack: () => void) {
 
   const invite = useCallback(
     async (email: string) => {
+      const exists = await findUserIdByEmail(email);
+      if (!exists) return false;
       await sendInvite(email);
+      return true;
     },
     [sendInvite]
   );
@@ -31,8 +40,11 @@ export function useSpaceManagement(onBack: () => void) {
   const removeUser = useCallback(
     async (email: string) => {
       if (!activeSpace) return;
-      const userId = findUserIdByEmail(activeSpace.members, activeSpace.memberEmails, email);
-      if (!userId) return;
+      const userId = await findUserIdByEmail(email);
+      if (!userId) {
+        await removeEmailFromSpace(spaceId, email);
+        return;
+      }
       await unassignUserFromPackItems(spaceId, userId);
       await finalizeUserRemoval(spaceId, userId, email);
     },
@@ -73,16 +85,12 @@ export function useSpaceManagement(onBack: () => void) {
   const confirmDelete = useCallback(() => {
     const error = getDeleteError();
     if (error) {
-      Alert.alert(SPACE_MGMT_COPY.delete, error);
+      showActionSheet(error, [{ text: SPACE_MGMT_COPY.cancel, style: "cancel" }]);
       return;
     }
-    Alert.alert(SPACE_MGMT_COPY.delete, SPACE_MGMT_COPY.confirmDelete, [
+    showActionSheet(SPACE_MGMT_COPY.confirmDelete, [
+      { text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: deleteCurrentSpace },
       { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
-      {
-        text: SPACE_MGMT_COPY.confirm,
-        style: "destructive",
-        onPress: deleteCurrentSpace,
-      },
     ]);
   }, [getDeleteError, deleteCurrentSpace]);
 
@@ -96,9 +104,4 @@ export function useSpaceManagement(onBack: () => void) {
     isPersonalSpace,
     isOwner,
   };
-}
-
-function findUserIdByEmail(members: string[], memberEmails: string[], email: string): string | undefined {
-  const index = memberEmails.indexOf(email);
-  return index >= 0 ? members[index] : undefined;
 }

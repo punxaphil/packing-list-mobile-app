@@ -33,6 +33,9 @@ export const SPACE_MGMT_COPY = {
   get cannotDeleteHasUsers() {
     return t("cannotDeleteHasUsers");
   },
+  get inviteUserNotFound() {
+    return t("inviteUserNotFound");
+  },
   get removedTitle() {
     return t("removedTitle");
   },

@@ -2,6 +2,7 @@ import { translatedCopy } from "~/i18n/translatedCopy.ts";
 
 type ProfileCopy = {
   title: string;
+  back: string;
   imageTitle: string;
   signOut: string;
   changePhoto: string;

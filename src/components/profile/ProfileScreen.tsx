@@ -208,7 +208,7 @@ const Header = ({ onBack }: { onBack: () => void }) => (
   <View style={styles.header}>
     <Pressable style={styles.backButton} onPress={onBack} hitSlop={8}>
       <Text style={styles.backArrow}>←</Text>
-      <Text style={styles.backLabel}>Back</Text>
+      <Text style={styles.backLabel}>{profileCopy.back}</Text>
     </Pressable>
     <Text style={styles.title}>{profileCopy.title}</Text>
     <View style={styles.placeholder} />

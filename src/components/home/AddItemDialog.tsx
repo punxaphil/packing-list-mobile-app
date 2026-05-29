@@ -9,8 +9,9 @@ import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
-import { CATEGORY_FIELD_COPY, CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
+import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
+import { addItemCopy } from "./listCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors } from "./theme.ts";
 import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
@@ -293,13 +294,7 @@ const useSubmitHandler = (
     onSubmit,
   ]);
 
-const COPY = {
-  ...CATEGORY_FIELD_COPY,
-  duplicateError: "An item with this name already exists in this category",
-  added: 'Added "{name}"',
-  keepOpen: "Keep open (to add multiple items)",
-  browseKits: "Browse Packing Kits",
-};
+const COPY = addItemCopy;
 const STYLES = {
   ...CATEGORY_FIELD_STYLES,
   keepOpenRow: {

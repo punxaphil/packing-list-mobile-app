@@ -8,12 +8,13 @@ type DialogShellProps = PropsWithChildren<{
   title: string;
   onClose: () => void;
   actions?: React.ReactNode;
+  onShow?: () => void;
 }>;
 
-export const DialogShell = ({ visible, title, onClose, children, actions }: DialogShellProps) => {
+export const DialogShell = ({ visible, title, onClose, children, actions, onShow }: DialogShellProps) => {
   const keyboardOffset = useKeyboardOffset();
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
+    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose} onShow={onShow}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Animated.View style={[styles.card, { transform: [{ translateY: keyboardOffset }] }]}>
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
@@ -94,6 +95,6 @@ const styles = StyleSheet.create({
     paddingVertical: homeSpacing.md,
   },
   actionLabel: { fontSize: 16, color: homeColors.muted },
-  actionPrimary: { fontWeight: "600" },
+  actionPrimary: { fontWeight: "600", color: homeColors.primaryStrong },
   disabled: { opacity: 0.5 },
 });

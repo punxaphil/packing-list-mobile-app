@@ -51,7 +51,7 @@ export const ActionMenu = ({
             .map((item) => (
               <MenuItem key={item.text} item={item} onClose={onClose} />
             ))}
-          <CancelButton onPress={onClose} />
+          <CancelButton label={items.find((i) => i.style === "cancel")?.text} onPress={onClose} />
         </Pressable>
       </Pressable>
     </Modal>
@@ -60,9 +60,10 @@ export const ActionMenu = ({
 
 const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
   const handlePress = () => {
+    console.log("[ActionMenu] MenuItem pressed:", item.text, "disabled:", item.disabled);
     if (item.disabled) return;
-    onClose();
     item.onPress?.();
+    onClose();
   };
   const textStyle = [
     styles.itemText,
@@ -86,8 +87,8 @@ const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void
   );
 };
 
-const CancelButton = ({ onPress }: { onPress: () => void }) => (
+const CancelButton = ({ label, onPress }: { label?: string; onPress: () => void }) => (
   <Pressable style={styles.cancelItem} onPress={onPress}>
-    <Text style={styles.cancelText}>{commonCopy.cancel}</Text>
+    <Text style={styles.cancelText}>{label ?? commonCopy.cancel}</Text>
   </Pressable>
 );

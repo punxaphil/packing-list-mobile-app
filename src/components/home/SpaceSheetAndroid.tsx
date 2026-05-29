@@ -1,5 +1,6 @@
 import { Modal, Pressable, ScrollView, Text } from "react-native";
 import { UserList } from "../space/UserList.tsx";
+import { AndroidActionSheetHost } from "./AndroidActionSheetHost.tsx";
 import { SpaceSheetDialogs } from "./SpaceSheetDialogs.tsx";
 import {
   AndroidSheetHeader,
@@ -23,12 +24,7 @@ type Props = {
 
 export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => (
   <>
-    <Modal
-      visible={visible && s.subDialog === "none" && !s.creatingSpace}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible && !s.creatingSpace} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={androidSheetStyles.backdrop} onPress={onClose}>
         <Pressable style={androidSheetStyles.sheet} onPress={(e) => e.stopPropagation()}>
           <AndroidSheetHeader title={spaceCopy.spacesTitle} onClose={onClose} />
@@ -72,6 +68,7 @@ export const SpaceSheetAndroid = ({ visible, onClose, sheet: s }: Props) => (
           </ScrollView>
         </Pressable>
       </Pressable>
+      <AndroidActionSheetHost />
     </Modal>
     <SpaceSheetDialogs sheet={s} />
   </>

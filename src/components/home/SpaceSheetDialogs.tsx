@@ -1,5 +1,8 @@
-import { Alert, Modal } from "react-native";
+import { Modal } from "react-native";
 import { AppLoadingState } from "../shared/AppLoadingState.tsx";
+import { SPACE_MGMT_COPY } from "../space/spaceMgmtCopy.ts";
+import { commonCopy } from "./copy.ts";
+import { showActionSheet } from "./showActionSheet.ts";
 import { spaceCopy } from "./spaceCopy.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
@@ -16,9 +19,11 @@ export const SpaceSheetDialogs = ({ sheet: s }: Props) => {
   const submitInvite = async () => {
     const trimmed = s.promptValue.trim();
     if (!trimmed) return;
-    await s.mgmt.invite(trimmed);
+    const sent = await s.mgmt.invite(trimmed);
     s.resetSubDialog();
-    Alert.alert(spaceCopy.inviteSent);
+    showActionSheet(sent ? spaceCopy.inviteSent : SPACE_MGMT_COPY.inviteUserNotFound, [
+      { text: commonCopy.ok, style: "cancel" },
+    ]);
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
+import { showActionSheet } from "../home/showActionSheet.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
 
@@ -77,7 +78,13 @@ const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps)
         {isSelf ? t("userList.youSuffix") : ""}
       </Text>
       {canRemove && !isSelf && (
-        <Pressable onPress={onRemove} hitSlop={8}>
+        <Pressable
+          onPress={() => {
+            console.log("[UserList] Remove button pressed for:", email);
+            onRemove();
+          }}
+          hitSlop={8}
+        >
           <Text style={styles.removeText}>{SPACE_MGMT_COPY.remove}</Text>
         </Pressable>
       )}
@@ -86,9 +93,17 @@ const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps)
 };
 
 const confirmRemove = (email: string, onRemove: (email: string) => void) => {
-  Alert.alert(SPACE_MGMT_COPY.confirmRemove, email, [
+  console.log("[confirmRemove] showing action sheet for:", email);
+  showActionSheet(SPACE_MGMT_COPY.confirmRemove, [
+    {
+      text: SPACE_MGMT_COPY.confirm,
+      style: "destructive",
+      onPress: () => {
+        console.log("[confirmRemove] CONFIRMED - calling onRemove for:", email);
+        onRemove(email);
+      },
+    },
     { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
-    { text: SPACE_MGMT_COPY.confirm, style: "destructive", onPress: () => onRemove(email) },
   ]);
 };
 

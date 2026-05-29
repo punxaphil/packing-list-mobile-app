@@ -3,8 +3,8 @@ import { Platform } from "react-native";
 import { ActionMenu } from "./ActionMenu.tsx";
 import {
   ActionSheetItem,
-  getAndroidActionSheetListener,
-  setAndroidActionSheetListener,
+  pushAndroidActionSheetListener,
+  removeAndroidActionSheetListener,
 } from "./showActionSheet.ts";
 
 type SheetState = {
@@ -17,11 +17,9 @@ export const AndroidActionSheetHost = () => {
 
   useEffect(() => {
     if (Platform.OS !== "android") return;
-    setAndroidActionSheetListener(setSheet);
+    pushAndroidActionSheetListener(setSheet);
     return () => {
-      if (getAndroidActionSheetListener() === setSheet) {
-        setAndroidActionSheetListener(null);
-      }
+      removeAndroidActionSheetListener(setSheet);
     };
   }, []);
 

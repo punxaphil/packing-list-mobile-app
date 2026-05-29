@@ -1,8 +1,11 @@
+import i18next from "i18next";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 
 export const UNCATEGORIZED: NamedEntity = {
   id: "",
-  name: "Uncategorized",
+  get name() {
+    return i18next.t("category.uncategorized");
+  },
   rank: Number.MAX_VALUE,
   color: "gray.50",
 };

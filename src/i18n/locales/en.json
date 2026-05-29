@@ -98,10 +98,12 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "cannotDeleteHasUsers": "Remove other users first.",
+    "inviteUserNotFound": "No account found with this email.",
     "removedTitle": "Removed from space",
     "removedMessage": "You were removed from \"{name}\"."
   },
   "category": {
+    "uncategorized": "Uncategorized",
     "type": "Category",
     "header": "Categories",
     "addButton": "+ Add Category",
@@ -239,6 +241,7 @@
   },
   "profile": {
     "title": "Profile",
+    "back": "Back",
     "imageTitle": "Profile image",
     "signOut": "Sign Out",
     "changePhoto": "Change Photo",
@@ -359,7 +362,10 @@
     "signOut": "Sign Out ({email})",
     "freeTrialLabel": "{count}-{unit} free trial",
     "privacy": "Privacy Policy",
-    "eula": "Terms of Use"
+    "eula": "Terms of Use",
+    "planYearly": "Yearly",
+    "planMonthly": "Monthly",
+    "planDefault": "Subscription"
   },
   "userList": {
     "youSuffix": " (you)"

@@ -98,10 +98,12 @@
     "confirm": "Bekräfta",
     "cancel": "Avbryt",
     "cannotDeleteHasUsers": "Ta först bort andra användare.",
+    "inviteUserNotFound": "Inget konto hittades med denna e-post.",
     "removedTitle": "Borttagen från space",
     "removedMessage": "Du togs bort från \"{name}\"."
   },
   "category": {
+    "uncategorized": "Okategoriserad",
     "type": "Kategori",
     "header": "Kategorier",
     "addButton": "Lägg till kategori...",
@@ -239,6 +241,7 @@
   },
   "profile": {
     "title": "Profil",
+    "back": "Tillbaka",
     "imageTitle": "Profilbild",
     "signOut": "Logga ut",
     "changePhoto": "Byt bild",
@@ -360,7 +363,10 @@
     "signOut": "Logga ut ({email})",
     "freeTrialLabel": "{count}-{unit} gratis provperiod",
     "privacy": "Integritetspolicy",
-    "eula": "Användarvillkor"
+    "eula": "Användarvillkor",
+    "planYearly": "Årsvis",
+    "planMonthly": "Månadsvis",
+    "planDefault": "Prenumeration"
   },
   "userList": {
     "youSuffix": " (du)"

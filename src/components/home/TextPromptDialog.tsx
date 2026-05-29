@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { KeyboardTypeOptions, Platform, Text, TextInput } from "react-native";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
@@ -38,6 +38,11 @@ export const TextPromptDialog = ({
   onSubmit,
 }: TextPromptDialogProps) => {
   const promptVisible = useRef(false);
+  const inputRef = useRef<TextInput>(null);
+
+  const focusInput = useCallback(() => {
+    setTimeout(() => inputRef.current?.focus(), 300);
+  }, []);
 
   useEffect(() => {
     if (Platform.OS !== "ios") return;
@@ -94,6 +99,7 @@ export const TextPromptDialog = ({
       visible={visible}
       title={title}
       onClose={onCancel}
+      onShow={focusInput}
       actions={
         <DialogActions
           cancelLabel={HOME_COPY.cancel}
@@ -105,6 +111,7 @@ export const TextPromptDialog = ({
       }
     >
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChange}
         onSubmitEditing={disabled ? undefined : onSubmit}

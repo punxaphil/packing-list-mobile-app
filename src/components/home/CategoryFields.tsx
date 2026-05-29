@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Keyboard, Platform, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  Image as RNImage,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { Image } from "~/types/Image.ts";
@@ -8,12 +17,6 @@ import { homeColors } from "./theme.ts";
 
 const DROPDOWN_ROW_HEIGHT = 49;
 const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
-
-export const CATEGORY_FIELD_COPY = {
-  existingCategory: "Existing category",
-  newCategory: "Or create new category",
-  newCategoryPlaceholder: "New category name",
-};
 
 export const CategoryDropdown = ({
   categories,

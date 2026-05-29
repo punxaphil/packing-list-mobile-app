@@ -24,6 +24,19 @@ const SPACES = "spaces";
 const USERS = "users";
 const INVITES = "invites";
 
+export async function findUserIdByEmail(email: string): Promise<string | undefined> {
+  const normalized = email.trim().toLowerCase();
+  console.log("[findUserIdByEmail] querying for:", normalized);
+  const q = query(collection(firestore, USERS), where("email", "==", normalized));
+  const snap = await getDocs(q);
+  console.log(
+    "[findUserIdByEmail] results:",
+    snap.docs.length,
+    snap.docs.map((d) => d.id)
+  );
+  return snap.docs[0]?.id;
+}
+
 export async function createSpace(name: string, email: string): Promise<Space> {
   const userId = getUserId();
   const space: Omit<Space, "id"> = {
@@ -64,6 +77,12 @@ export function subscribeToSpaces(spaceIds: string[], onUpdate: (spaces: Space[]
 
 export async function updateSpaceName(spaceId: string, name: string) {
   await updateDoc(doc(firestore, SPACES, spaceId), { name });
+}
+
+export async function removeEmailFromSpace(spaceId: string, email: string) {
+  await updateDoc(doc(firestore, SPACES, spaceId), {
+    memberEmails: arrayRemove(email),
+  });
 }
 
 export async function addMemberEmailToSpace(spaceId: string, email: string) {
