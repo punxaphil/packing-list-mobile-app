@@ -37,7 +37,7 @@ export const filterSheetStyles = StyleSheet.create({
   content: { flexShrink: 1, minHeight: 100, gap: homeSpacing.md },
   list: { flex: 1, minHeight: 0 },
   listContent: { paddingBottom: homeSpacing.lg },
-  section: { minHeight: 0 },
+  section: { minHeight: 0, flexShrink: 1 },
   categorySection: { maxHeight: 220 },
   memberSection: { maxHeight: 220 },
   sectionTitle: {
