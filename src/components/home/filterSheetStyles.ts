@@ -39,7 +39,7 @@ export const filterSheetStyles = StyleSheet.create({
   listContent: { paddingBottom: homeSpacing.lg },
   section: { minHeight: 0 },
   categorySection: { maxHeight: 220 },
-  memberSection: { flex: 1 },
+  memberSection: { maxHeight: 220 },
   sectionTitle: {
     fontSize: 14,
     fontWeight: "600",
