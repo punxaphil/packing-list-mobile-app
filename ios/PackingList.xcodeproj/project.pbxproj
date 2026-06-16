@@ -3,19 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2C5144EE9A22B1785897AC9F /* libPods-PackingList.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2742ED714A7EB610BCDE48E /* libPods-PackingList.a */; };
-		3A8CB6A62FEC100100B23001 /* PackingList/RenameItemSheetModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */; };
-		3A8CB6A82FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */; };
-		3A8CB6AA2FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */; };
+		3A8CB6A62FEC100100B23001 /* RenameItemSheetModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */; };
+		3A8CB6A82FEC100100B23001 /* RenameItemSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */; };
+		3A8CB6AA2FEC100100B23001 /* RenameItemSheetModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		6B2F114A34F6000100A32001 /* PackingList/PackingListReminderModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */; };
-		6B2F114C34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */; };
-		6B2F114E34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */; };
+		6B2F114A34F6000100A32001 /* PackingListReminderModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114934F6000100A32001 /* PackingListReminderModule.swift */; };
+		6B2F114C34F6000100A32001 /* PackingListReminderModuleBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */; };
+		6B2F114E34F6000100A32001 /* ReminderDatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */; };
 		93652CA42F4391BD0033609F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 93652CA32F4391BD0033609F /* GoogleService-Info.plist */; };
 		AEA5F10178E5F66824ACEEA5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 37CE62326ADBBA20CAD1AEE2 /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
@@ -36,12 +36,12 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PackingList/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PackingList/Info.plist; sourceTree = "<group>"; };
 		37CE62326ADBBA20CAD1AEE2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = PackingList/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetModule.swift; sourceTree = "<group>"; };
-		3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetViewController.swift; sourceTree = "<group>"; };
-		3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/RenameItemSheetModuleBridge.m; sourceTree = "<group>"; };
-		6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/PackingListReminderModule.swift; sourceTree = "<group>"; };
-		6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/PackingListReminderModuleBridge.m; sourceTree = "<group>"; };
-		6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/ReminderDatePickerViewController.swift; sourceTree = "<group>"; };
+		3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetModule.swift; sourceTree = "<group>"; };
+		3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/RenameItemSheetViewController.swift; sourceTree = "<group>"; };
+		3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/RenameItemSheetModuleBridge.m; sourceTree = "<group>"; };
+		6B2F114934F6000100A32001 /* PackingListReminderModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/PackingListReminderModule.swift; sourceTree = "<group>"; };
+		6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PackingList/PackingListReminderModuleBridge.m; sourceTree = "<group>"; };
+		6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackingList/ReminderDatePickerViewController.swift; sourceTree = "<group>"; };
 		934D8DF02FB70CF400940EBB /* PackingListUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PackingListUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93652CA32F4391BD0033609F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A095A6C6C4D3F352A5EDE8E6 /* Pods-PackingList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PackingList.debug.xcconfig"; path = "Target Support Files/Pods-PackingList/Pods-PackingList.debug.xcconfig"; sourceTree = "<group>"; };
@@ -54,7 +54,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		934D8DF12FB70CF400940EBB /* PackingListUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PackingListUITests; sourceTree = "<group>"; };
+		934D8DF12FB70CF400940EBB /* PackingListUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = PackingListUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,12 +91,12 @@
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748442D0722820044C1D9 /* PackingList-Bridging-Header.h */,
-				6B2F114934F6000100A32001 /* PackingList/PackingListReminderModule.swift */,
-				6B2F114D34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift */,
-				6B2F114B34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m */,
-				3A8CB6A52FEC100100B23001 /* PackingList/RenameItemSheetModule.swift */,
-				3A8CB6A72FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift */,
-				3A8CB6A92FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m */,
+				6B2F114934F6000100A32001 /* PackingListReminderModule.swift */,
+				6B2F114D34F6000100A32001 /* ReminderDatePickerViewController.swift */,
+				6B2F114B34F6000100A32001 /* PackingListReminderModuleBridge.m */,
+				3A8CB6A52FEC100100B23001 /* RenameItemSheetModule.swift */,
+				3A8CB6A72FEC100100B23001 /* RenameItemSheetViewController.swift */,
+				3A8CB6A92FEC100100B23001 /* RenameItemSheetModuleBridge.m */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -195,8 +205,6 @@
 				934D8DF12FB70CF400940EBB /* PackingListUITests */,
 			);
 			name = PackingListUITests;
-			packageProductDependencies = (
-			);
 			productName = PackingListUITests;
 			productReference = 934D8DF02FB70CF400940EBB /* PackingListUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -398,12 +406,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6B2F114C34F6000100A32001 /* PackingList/PackingListReminderModuleBridge.m in Sources */,
-				6B2F114E34F6000100A32001 /* PackingList/ReminderDatePickerViewController.swift in Sources */,
-				6B2F114A34F6000100A32001 /* PackingList/PackingListReminderModule.swift in Sources */,
-				3A8CB6AA2FEC100100B23001 /* PackingList/RenameItemSheetModuleBridge.m in Sources */,
-				3A8CB6A82FEC100100B23001 /* PackingList/RenameItemSheetViewController.swift in Sources */,
-				3A8CB6A62FEC100100B23001 /* PackingList/RenameItemSheetModule.swift in Sources */,
+				6B2F114C34F6000100A32001 /* PackingListReminderModuleBridge.m in Sources */,
+				6B2F114E34F6000100A32001 /* ReminderDatePickerViewController.swift in Sources */,
+				6B2F114A34F6000100A32001 /* PackingListReminderModule.swift in Sources */,
+				3A8CB6AA2FEC100100B23001 /* RenameItemSheetModuleBridge.m in Sources */,
+				3A8CB6A82FEC100100B23001 /* RenameItemSheetViewController.swift in Sources */,
+				3A8CB6A62FEC100100B23001 /* RenameItemSheetModule.swift in Sources */,
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,7 +441,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PackingList/PackingList.entitlements;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 9B7D9DCSAW;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -469,7 +477,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PackingList/PackingList.entitlements;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = 9B7D9DCSAW;
 				INFOPLIST_FILE = PackingList/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -622,7 +630,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -659,7 +667,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 47;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;

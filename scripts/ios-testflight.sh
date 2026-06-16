@@ -28,7 +28,7 @@ trap cleanup EXIT INT TERM
 cd ios
 
 echo "$(timestamp) ==> Bumping build number..."
-BUILD_NUM=$(xcrun agvtool what-version -terse)
+BUILD_NUM=$(xcrun agvtool what-version -terse | tail -1 | tr -d '[:space:]')
 NEW_BUILD_NUM=$((BUILD_NUM + 1))
 xcrun agvtool new-version -all "$NEW_BUILD_NUM" >/dev/null
 echo "             Build number: $BUILD_NUM -> $NEW_BUILD_NUM"
