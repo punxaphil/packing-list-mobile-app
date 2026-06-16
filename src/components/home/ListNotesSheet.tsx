@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Platform, Pressable, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { useRef, useState } from "react";
+import { Platform, Pressable, type ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import { canEditDueDate, formatPackingListDueAt } from "~/services/packingListReminder.ts";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { AndroidDateTimePicker } from "./AndroidDateTimePicker.tsx";
@@ -20,27 +20,32 @@ export type ListNotesState = {
   setShowNotes: (v: boolean) => void;
 };
 
-export const ListNotesSheet = ({ state }: { state: ListNotesState }) => (
-  <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close}>
-    <View style={styles.content}>
-      {canEditDueDate ? <DueDateField state={state} /> : null}
-      <View style={styles.toggleRow}>
-        <Text style={styles.toggleLabel}>{listCopy.showNotes}</Text>
-        <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
+export const ListNotesSheet = ({ state }: { state: ListNotesState }) => {
+  const scrollRef = useRef<ScrollView>(null);
+  const scrollToEnd = () => scrollRef.current?.scrollToEnd({ animated: true });
+  return (
+    <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close} scrollViewRef={scrollRef}>
+      <View style={styles.content}>
+        {canEditDueDate ? <DueDateField state={state} /> : null}
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>{listCopy.showNotes}</Text>
+          <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
+        </View>
+        <TextInput
+          style={styles.textarea}
+          value={state.notes}
+          onChangeText={state.setNotes}
+          onContentSizeChange={scrollToEnd}
+          placeholder={listCopy.notesPlaceholder}
+          placeholderTextColor={homeColors.muted}
+          multiline
+          textAlignVertical="top"
+          autoFocus
+        />
       </View>
-      <TextInput
-        style={styles.textarea}
-        value={state.notes}
-        onChangeText={state.setNotes}
-        placeholder={listCopy.notesPlaceholder}
-        placeholderTextColor={homeColors.muted}
-        multiline
-        textAlignVertical="top"
-        autoFocus
-      />
-    </View>
-  </PageSheet>
-);
+    </PageSheet>
+  );
+};
 
 const DueDateField = ({ state }: { state: ListNotesState }) => {
   const [showPicker, setShowPicker] = useState(false);

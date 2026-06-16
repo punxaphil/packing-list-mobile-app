@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useRef } from "react";
+import { type PropsWithChildren, type RefObject, useRef } from "react";
 import { Animated, Keyboard, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -14,6 +14,7 @@ type PageSheetProps = PropsWithChildren<{
   confirmVariant?: "icon" | "text";
   headerRight?: React.ReactNode;
   scrollable?: boolean;
+  scrollViewRef?: RefObject<ScrollView | null>;
 }>;
 
 export const PageSheet = ({
@@ -26,6 +27,7 @@ export const PageSheet = ({
   confirmVariant = "icon",
   headerRight,
   scrollable = true,
+  scrollViewRef,
   children,
 }: PageSheetProps) => (
   <Modal
@@ -66,6 +68,7 @@ export const PageSheet = ({
       </View>
       {scrollable ? (
         <ScrollView
+          ref={scrollViewRef}
           style={styles.content}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
