@@ -8,6 +8,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -73,7 +74,8 @@ async function doSync(spaceId: string, profile: UserProfile): Promise<void> {
   }
 
   const rank = lowestRank(allSnap.docs);
-  const ref = await addDoc(membersCol(spaceId), { name: displayName, rank, userId: profile.id });
+  const ref = doc(membersCol(spaceId), profile.id);
+  await setDoc(ref, { name: displayName, rank, userId: profile.id }, { merge: true });
   await syncMemberImage(spaceId, ref.id, profile.imageUrl);
 }
 
