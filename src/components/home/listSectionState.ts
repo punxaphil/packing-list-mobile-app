@@ -1,14 +1,17 @@
 import { useCallback } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { WriteDb } from "~/services/database.ts";
+import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout, animateListEntry } from "./layoutAnimation.ts";
+import { listCopy } from "./listCopy.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export type ListActions = {
   onAdd: (name: string, useTemplate: boolean) => Promise<void>;
+  onCopy: (list: PackingListSummary) => Promise<void>;
   onDelete: (list: PackingListSummary) => Promise<void>;
   onRename: (list: PackingListSummary, name: string) => Promise<void>;
   onSetTemplate: (list: PackingListSummary) => Promise<void>;
@@ -24,11 +27,13 @@ export const useListActions = (
   lists: PackingListSummary[],
   selection: SelectionState,
   templateList: NamedEntity | null,
+  images: Image[],
   onListSelect?: (id: string) => void
 ): ListActions => {
   const { writeDb } = useSpace();
   return {
     onAdd: useAddList(lists, selection, templateList, writeDb, onListSelect),
+    onCopy: useCopyList(lists, selection, images, writeDb, onListSelect),
     onDelete: useDeleteList(selection, writeDb),
     onRename: useRenameList(writeDb),
     onSetTemplate: useSetTemplate(templateList, writeDb),
@@ -75,6 +80,33 @@ const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
       if (wasSelected) selection.clear();
     },
     [selection, writeDb]
+  );
+
+const useCopyList = (
+  lists: PackingListSummary[],
+  selection: SelectionState,
+  images: Image[],
+  writeDb: WriteDb,
+  onListSelect?: (id: string) => void
+) =>
+  useCallback(
+    async (list: PackingListSummary) => {
+      const name = buildCopiedListName(list.name, lists);
+      const rank = getNextListRank(lists);
+      animateListEntry();
+      const id = await writeDb.addPackingList(name, rank);
+      await Promise.all([
+        writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),
+        writeDb.copyPackItemsToList(list.id, id),
+        copyListImage(images, list.id, id, writeDb),
+      ]);
+      if (onListSelect) {
+        onListSelect(id);
+      } else {
+        selection.select(id);
+      }
+    },
+    [images, lists, onListSelect, selection, writeDb]
   );
 
 const useRenameList = (writeDb: WriteDb) =>
@@ -153,5 +185,38 @@ const useUncheckAll = (writeDb: WriteDb) =>
     },
     [writeDb]
   );
+
+const buildCopiedListName = (name: string, lists: PackingListSummary[]) => {
+  const existing = new Set(lists.map((list) => list.name.trim().toLowerCase()));
+  let count = 1;
+  let candidate = formatCopiedListName(name, count);
+  while (existing.has(candidate.trim().toLowerCase())) {
+    count += 1;
+    candidate = formatCopiedListName(name, count);
+  }
+  return candidate;
+};
+
+const formatCopiedListName = (name: string, count: number) =>
+  count === 1
+    ? listCopy.copyName.replace("{name}", name)
+    : listCopy.copyNameWithCount.replace("{name}", name).replace("{count}", String(count));
+
+const buildCopiedList = (list: PackingListSummary, id: string, name: string, rank: number): NamedEntity => ({
+  id,
+  name,
+  rank,
+  ...(list.color ? { color: list.color } : {}),
+  ...(list.notes ? { notes: list.notes } : {}),
+  ...(list.showNotes ? { showNotes: true } : {}),
+  ...(list.dueAt !== undefined ? { dueAt: list.dueAt } : {}),
+  ...(list.userId ? { userId: list.userId } : {}),
+});
+
+const copyListImage = async (images: Image[], sourceId: string, targetId: string, writeDb: WriteDb) => {
+  const image = images.find((entry) => entry.typeId === sourceId);
+  if (!image) return;
+  await writeDb.addImage(image.type, targetId, image.url);
+};
 
 const getNextListRank = (lists: PackingListSummary[]) => Math.max(...lists.map((list) => list.rank ?? 0), 0) + 1;

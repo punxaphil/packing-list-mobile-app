@@ -331,6 +331,7 @@ const buildMenuItems = (
   const t = (key: string) => (listCopy as Record<string, string>)[key] ?? key;
   const items = [];
   items.push({ text: t("rename"), onPress: showRename });
+  items.push({ text: t("copy"), onPress: () => void actions.onCopy(list) });
   if (showImageMenuAction) {
     items.push({
       text: hasImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage,

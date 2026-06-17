@@ -57,7 +57,7 @@ export const ListSection = (props: ListSectionProps) => {
     },
     [spaceId]
   );
-  const actions = useListActions(props.lists, props.selection, templateList, props.onListSelect);
+  const actions = useListActions(props.lists, props.selection, templateList, listImages, props.onListSelect);
   const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);

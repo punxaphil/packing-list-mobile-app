@@ -7,6 +7,9 @@ type ListCopy = {
   renameList: string;
   rename: string;
   renameConfirm: string;
+  copy: string;
+  copyName: string;
+  copyNameWithCount: string;
   template: string;
   restore: string;
   unpin: string;
