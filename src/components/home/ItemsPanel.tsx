@@ -1,4 +1,5 @@
 import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { useState } from "react";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -11,6 +12,7 @@ import { ItemsList } from "./ItemsList.tsx";
 import type { ListNotesState } from "./ListNotesSheet.tsx";
 import { QuickAddRow } from "./QuickAddRow.tsx";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { SpaceSheet } from "./SpaceSheet.tsx";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsSectionProps } from "./types.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
@@ -75,13 +77,17 @@ type ItemsPanelProps = ItemsSectionProps &
     notesSheet: ListNotesState;
   };
 
-export const ItemsPanel = (props: ItemsPanelProps) => (
-  <View style={homeStyles.swipeWrapper}>
-    <PanelCard {...props} />
-  </View>
-);
+export const ItemsPanel = (props: ItemsPanelProps) => {
+  const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
+  return (
+    <View style={homeStyles.swipeWrapper}>
+      <PanelCard {...props} onSpacePress={() => setSpaceSheetVisible(true)} />
+      <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
+    </View>
+  );
+};
 
-const PanelCard = (props: ItemsPanelProps) => (
+const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
     <KeyboardAvoidingView style={homeStyles.panelBody} behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -108,7 +114,8 @@ const HeaderRow = ({
   onListImagePress,
   renameDialog,
   onProfile,
-}: ItemsPanelProps) => {
+  onSpacePress,
+}: ItemsPanelProps & { onSpacePress: () => void }) => {
   const { profile } = useSpace();
   return (
     <HomeHeader
@@ -120,6 +127,7 @@ const HeaderRow = ({
       hideLeftImagePlaceholder={profile?.hideImagePlaceholder ?? false}
       onPressLeftImage={onListImagePress}
       onPressTitle={renameDialog.open}
+      onSpacePress={onSpacePress}
       onProfile={onProfile}
     />
   );

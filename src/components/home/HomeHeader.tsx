@@ -26,6 +26,7 @@ type HeaderProps = {
   onBack?: () => void;
   onPressLeftImage?: () => void;
   onPressTitle?: () => void;
+  onSpacePress?: () => void;
   onProfile?: () => void;
   useSpaceAsTitle?: boolean;
 };
@@ -124,6 +125,7 @@ export const HomeHeader = ({
   onBack,
   onPressLeftImage,
   onPressTitle,
+  onSpacePress,
   onProfile,
   useSpaceAsTitle,
 }: HeaderProps) => {
@@ -156,7 +158,7 @@ export const HomeHeader = ({
           {useSpaceAsTitle ? (
             <SpaceTitle onPress={() => setSpaceSheetVisible(true)} />
           ) : (
-            <StackedTitle title={title} onPress={onPressTitle} />
+            <StackedTitle title={title} onPress={onPressTitle} onSpacePress={onSpacePress} />
           )}
         </View>
         <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} showBadge={!isSubscribed} />
@@ -169,9 +171,9 @@ export const HomeHeader = ({
   );
 };
 
-const StackedTitle = ({ title, onPress }: { title: string; onPress?: () => void }) => (
+const StackedTitle = ({ title, onPress, onSpacePress }: { title: string; onPress?: () => void; onSpacePress?: () => void }) => (
   <>
-    <SpaceBar />
+    <SpaceBar onPress={onSpacePress} />
     <Title title={title} onPress={onPress} />
   </>
 );
@@ -190,20 +192,28 @@ const SpaceTitle = ({ onPress }: { onPress: () => void }) => {
   );
 };
 
-const SpaceBar = () => {
+const SpaceBar = ({ onPress }: { onPress?: () => void }) => {
   const { activeSpace } = useSpace();
   const { pendingInvites } = useInvites();
-  return (
-    <View style={headerLocalStyles.spaceBar}>
+  const content = (
+    <>
       <Text style={headerLocalStyles.spaceName} numberOfLines={1}>
         {activeSpace?.name ?? ""}
       </Text>
+      {onPress && <Text style={headerLocalStyles.spaceBarChevron}>{spaceCopy.chevron}</Text>}
       {pendingInvites.length > 0 && (
         <View style={headerLocalStyles.inviteBadge}>
           <Text style={headerLocalStyles.inviteBadgeText}>{pendingInvites.length}</Text>
         </View>
       )}
-    </View>
+    </>
+  );
+  return onPress ? (
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={headerLocalStyles.spaceBar}>
+      {content}
+    </Pressable>
+  ) : (
+    <View style={headerLocalStyles.spaceBar}>{content}</View>
   );
 };
 
@@ -308,6 +318,11 @@ const headerLocalStyles = StyleSheet.create({
     fontWeight: "500",
     color: homeColors.muted,
     textAlign: "center",
+  },
+  spaceBarChevron: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: homeColors.muted,
   },
   inviteBadge: {
     backgroundColor: homeColors.primary,
