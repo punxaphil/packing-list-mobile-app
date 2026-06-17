@@ -325,7 +325,7 @@
     "restore": "Återställ",
     "unpin": "Avnåla",
     "pinToTop": "Fäst högst upp",
-    "removeTemplate": "Ta bort mall",
+    "unsetTemplate": "Avmarkera som mall",
     "setAsTemplate": "Ange som mall",
     "archive": "Arkivera",
     "uncheckAll": "Avmarkera alla",

@@ -14,7 +14,7 @@ type ListCopy = {
   restore: string;
   unpin: string;
   pinToTop: string;
-  removeTemplate: string;
+  unsetTemplate: string;
   setAsTemplate: string;
   archive: string;
   uncheckAll: string;

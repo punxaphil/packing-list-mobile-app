@@ -324,7 +324,7 @@
     "restore": "Restore",
     "unpin": "Unpin",
     "pinToTop": "Pin to Top",
-    "removeTemplate": "Remove Template",
+    "unsetTemplate": "Unset as Template",
     "setAsTemplate": "Set as Template",
     "archive": "Archive",
     "uncheckAll": "Uncheck All",

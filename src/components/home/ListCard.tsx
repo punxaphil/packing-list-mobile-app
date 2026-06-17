@@ -355,8 +355,8 @@ const buildMenuItems = (
     const hasPacked = (list.packedCount ?? 0) > 0;
     if (isTemplate) {
       items.push({
-        text: t("removeTemplate"),
-        onPress: () => void actions.onRemoveTemplate(list),
+        text: t("unsetTemplate"),
+        onPress: () => void actions.onunsetTemplate(list),
       });
     } else {
       items.push({

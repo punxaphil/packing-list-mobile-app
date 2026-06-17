@@ -15,7 +15,7 @@ export type ListActions = {
   onDelete: (list: PackingListSummary) => Promise<void>;
   onRename: (list: PackingListSummary, name: string) => Promise<void>;
   onSetTemplate: (list: PackingListSummary) => Promise<void>;
-  onRemoveTemplate: (list: PackingListSummary) => Promise<void>;
+  onunsetTemplate: (list: PackingListSummary) => Promise<void>;
   onPin: (list: PackingListSummary) => Promise<void>;
   onUnpin: (list: PackingListSummary) => Promise<void>;
   onArchive: (list: PackingListSummary) => Promise<void>;
@@ -37,7 +37,7 @@ export const useListActions = (
     onDelete: useDeleteList(selection, writeDb),
     onRename: useRenameList(writeDb),
     onSetTemplate: useSetTemplate(templateList, writeDb),
-    onRemoveTemplate: useRemoveTemplate(writeDb),
+    onunsetTemplate: useunsetTemplate(writeDb),
     onPin: usePin(writeDb),
     onUnpin: useUnpin(writeDb),
     onArchive: useArchive(writeDb),
@@ -132,7 +132,7 @@ const useSetTemplate = (currentTemplate: NamedEntity | null, writeDb: WriteDb) =
     [currentTemplate, writeDb]
   );
 
-const useRemoveTemplate = (writeDb: WriteDb) =>
+const useunsetTemplate = (writeDb: WriteDb) =>
   useCallback(
     async (list: PackingListSummary) => {
       await delay(50);
