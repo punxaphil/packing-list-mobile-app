@@ -49,7 +49,7 @@
     "categoryMenuAddItem": "Lägg till sak",
     "categoryMenuSortAlpha": "Sortera alfabetiskt",
     "categoryMenuDeleteItems": "Ta bort alla saker",
-    "duplicateItemName": "En sak med det här namnet finns redan i kategorin",
+    "duplicateItemName": "En sak med det här namnet finns redan i kategorin (om du inte ser den kan det vara för att den är dold av ett filter)",
     "duplicateCategoryName": "En kategori med det här namnet finns redan",
     "duplicateListName": "En lista med det här namnet finns redan",
     "nameRequired": "Namn krävs",
@@ -167,7 +167,7 @@
   },
   "addItem": {
     "added": "Lade till \"{name}\"",
-    "duplicateError": "En sak med det här namnet finns redan i den här kategorin",
+    "duplicateError": "En sak med det här namnet finns redan i den här kategorin (om du inte ser den kan det vara för att den är dold av ett filter).",
     "existingCategory": "Befintlig kategori",
     "newCategory": "Eller skapa ny kategori",
     "newCategoryPlaceholder": "Nytt kategorinamn",

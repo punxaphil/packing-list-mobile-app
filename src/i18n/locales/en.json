@@ -49,7 +49,7 @@
     "categoryMenuAddItem": "Add Item",
     "categoryMenuSortAlpha": "Sort Alphabetically",
     "categoryMenuDeleteItems": "Delete All Items",
-    "duplicateItemName": "Item with this name already exists in category",
+    "duplicateItemName": "Item with this name already exists in category (if you don't see it, it may be hidden by a filter)",
     "duplicateCategoryName": "A category with this name already exists",
     "duplicateListName": "A list with this name already exists",
     "nameRequired": "Name is required",
@@ -167,7 +167,7 @@
   },
   "addItem": {
     "added": "Added \"{name}\"",
-    "duplicateError": "An item with this name already exists in this category",
+    "duplicateError": "An item with this name already exists in this category (if you don't see it, it may be hidden by a filter).",
     "existingCategory": "Existing category",
     "newCategory": "Or create new category",
     "newCategoryPlaceholder": "New category name",
