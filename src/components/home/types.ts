@@ -49,4 +49,5 @@ export type ItemsSectionProps = {
   lists: NamedEntity[];
   email: string;
   onProfile: () => void;
+  onShowChanges: () => void;
 };

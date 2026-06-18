@@ -6,6 +6,7 @@ import { createWriteDb } from "~/services/database.ts";
 import { ensureUserMemberId, subscribeToSpaces } from "~/services/spaceDatabase.ts";
 import { subscribeToSpaceUserProfiles, syncUserMember } from "~/services/userMemberSync.ts";
 import type { Space } from "~/types/Space.ts";
+import { getDisplayName } from "~/types/UserProfile.ts";
 import { SpaceContext } from "./SpaceContext.ts";
 
 type Props = { userId: string; email: string; children: ReactNode };
@@ -78,7 +79,8 @@ export function SpaceProvider({ userId, email, children }: Props) {
     switchSpace(spaces[0].id);
   }, [spaceId, spaces, switchSpace]);
 
-  const writeDb = useMemo(() => createWriteDb(spaceId), [spaceId]);
+  const actor = useMemo(() => (profile ? { id: profile.id, name: getDisplayName(profile) } : undefined), [profile]);
+  const writeDb = useMemo(() => createWriteDb(spaceId, actor), [spaceId, actor]);
 
   const handleCreate = useCallback(
     (name: string) => createNewSpace(name, userId, email),

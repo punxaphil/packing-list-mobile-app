@@ -4,6 +4,7 @@ import "~/services/firebase.ts";
 import { AppRoot } from "./AppRoot";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
+import { ListChangesScreen } from "./ListChangesScreen";
 import { ListsScreen } from "./ListsScreen";
 import { LoadingOverlay } from "./LoadingOverlay";
 import { LoginScreen } from "./LoginScreen";
@@ -25,4 +26,5 @@ export function registerScreens() {
   Navigation.registerComponent(SCREEN_IDS.CATEGORIES, () => wrapScreen(CategoriesScreen));
   Navigation.registerComponent(SCREEN_IDS.MEMBERS, () => wrapScreen(MembersScreen));
   Navigation.registerComponent(SCREEN_IDS.PROFILE, () => wrapScreen(ProfileScreen));
+  Navigation.registerComponent(SCREEN_IDS.LIST_CHANGES, () => wrapScreen(ListChangesScreen));
 }

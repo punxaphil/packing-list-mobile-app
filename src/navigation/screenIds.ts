@@ -7,4 +7,5 @@ export const SCREEN_IDS = {
   CATEGORIES: "CategoriesScreen",
   MEMBERS: "MembersScreen",
   PROFILE: "ProfileScreen",
+  LIST_CHANGES: "ListChangesScreen",
 } as const;

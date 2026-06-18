@@ -1,5 +1,5 @@
-import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { useState } from "react";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -11,8 +11,8 @@ import { HomeHeader } from "./HomeHeader.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import type { ListNotesState } from "./ListNotesSheet.tsx";
 import { QuickAddRow } from "./QuickAddRow.tsx";
-import { HOME_COPY, homeStyles } from "./styles.ts";
 import { SpaceSheet } from "./SpaceSheet.tsx";
+import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { ItemsSectionProps } from "./types.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
@@ -185,6 +185,7 @@ const ItemsListView = ({
   onCopyToList,
   onSortCategoryAlpha,
   onItemImagePress,
+  onShowChanges,
 }: ItemsPanelProps) => {
   const memberImages = imagesState.images.filter((img) => img.type === "members");
   const categoryImages = imagesState.images.filter((img) => img.type === "categories");
@@ -226,6 +227,7 @@ const ItemsListView = ({
       onItemImagePress={onItemImagePress}
       onBrowseKits={addItemDialog.onBrowseKits}
       onAddKit={addItemDialog.addKits}
+      onShowChanges={onShowChanges}
     />
   );
 };

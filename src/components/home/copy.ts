@@ -17,6 +17,7 @@ type HomeCopy = {
   avatarFallback: string;
   addItem: string;
   addItemQuick: string;
+  listChanges: string;
   addItemPrompt: string;
   addItemConfirm: string;
   addItemPlaceholder: string;

@@ -58,6 +58,7 @@ type ItemsListProps = {
   onItemImagePress: (item: PackItem) => void;
   onBrowseKits: () => void;
   onAddKit: (kits: PackingKit[]) => Promise<void>;
+  onShowChanges: () => void;
 };
 
 export const ItemsList = (props: ItemsListProps) => {
@@ -149,6 +150,17 @@ export const ItemsList = (props: ItemsListProps) => {
             onItemImagePress={props.onItemImagePress}
           />
         ))}
+        {props.hasItems && (
+          <Pressable
+            style={homeStyles.quickAdd}
+            onPress={props.onShowChanges}
+            accessibilityRole="button"
+            accessibilityLabel={homeCopy.listChanges}
+            hitSlop={8}
+          >
+            <Text style={homeStyles.quickAddLabel}>{homeCopy.listChanges}</Text>
+          </Pressable>
+        )}
       </View>
     </FadeScrollView>
   );

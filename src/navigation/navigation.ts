@@ -67,6 +67,18 @@ export function pushProfile(componentId: string) {
   });
 }
 
+export function pushListChanges(componentId: string, packingListId: string) {
+  Navigation.push(componentId, {
+    component: {
+      name: SCREEN_IDS.LIST_CHANGES,
+      passProps: { packingListId },
+      options: {
+        bottomTabs: { visible: false },
+      },
+    },
+  });
+}
+
 export function popScreen(componentId: string) {
   Navigation.pop(componentId);
 }

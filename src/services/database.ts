@@ -21,8 +21,9 @@ import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { type ChangeActor, logItemAdded, logItemDeleted, logItemImage, logItemUpdated } from "./changeLog.ts";
 import { firestore } from "./firebase.ts";
-import { getPackItemChecked, withPackItemMembers } from "./packItemState.ts";
+import { getPackItemChecked, normalizePackItem, withPackItemMembers } from "./packItemState.ts";
 import { sortEntities } from "./utils.ts";
 
 const SPACES_KEY = "spaces";
@@ -146,7 +147,24 @@ async function assertPackingListExists(spaceId: string, packingList: string) {
   if (!snapshot.exists()) throw new Error("Pack item references a missing packing list");
 }
 
-export function createWriteDb(spaceId: string) {
+async function getPackItem(spaceId: string, id: string): Promise<PackItem | undefined> {
+  const snapshot = await getDoc(spaceDoc(spaceId, PACK_ITEMS_KEY, id));
+  return snapshot.exists() ? normalizePackItem({ ...snapshot.data(), id: snapshot.id } as PackItem) : undefined;
+}
+
+const PACK_ITEM_IMAGE_TYPES = new Set(["packItem", "packItems"]);
+
+async function getImageRef(spaceId: string, imageId: string): Promise<{ type: string; typeId: string } | undefined> {
+  const snapshot = await getDoc(spaceDoc(spaceId, IMAGES_KEY, imageId));
+  return snapshot.exists() ? (snapshot.data() as { type: string; typeId: string }) : undefined;
+}
+
+async function logPackItemImageChange(spaceId: string, actor: ChangeActor | undefined, type: string, typeId: string) {
+  if (!PACK_ITEM_IMAGE_TYPES.has(type)) return;
+  await logItemImage(spaceId, actor, await getPackItem(spaceId, typeId));
+}
+
+export function createWriteDb(spaceId: string, actor?: ChangeActor) {
   const db = {
     addPackItem: async (
       name: string,
@@ -165,25 +183,23 @@ export function createWriteDb(spaceId: string) {
         packingList,
         rank,
       });
-      return {
-        id: ref.id,
-        checked: false,
-        members,
-        name,
-        category,
-        packingList,
-        rank,
-      };
+      const item: PackItem = { id: ref.id, checked: false, members, name, category, packingList, rank };
+      await logItemAdded(spaceId, actor, item);
+      return item;
     },
     updatePackItem: async (packItem: PackItem) => {
       await assertPackingListExists(spaceId, packItem.packingList);
+      const before = await getPackItem(spaceId, packItem.id);
       await update(spaceId, PACK_ITEMS_KEY, packItem.id, packItem);
+      await logItemUpdated(spaceId, actor, before, packItem);
     },
     deletePackItem: async (id: string) => {
+      const before = await getPackItem(spaceId, id);
       const batch = writeBatch(firestore);
       batch.delete(spaceDoc(spaceId, PACK_ITEMS_KEY, id));
       await deleteImagesForEntity(spaceId, id, ["packItem", "packItems"], batch);
       await batch.commit();
+      await logItemDeleted(spaceId, actor, before);
     },
     deletePackingList: async (id: string) => {
       const batch = writeBatch(firestore);
@@ -222,9 +238,12 @@ export function createWriteDb(spaceId: string) {
     },
     addImage: async (type: string, typeId: string, url: string): Promise<void> => {
       await add(spaceId, IMAGES_KEY, { type, typeId, url });
+      await logPackItemImageChange(spaceId, actor, type, typeId);
     },
     async updateImage(imageId: string, fileUrl: string) {
       await update(spaceId, IMAGES_KEY, imageId, { url: fileUrl });
+      const image = await getImageRef(spaceId, imageId);
+      if (image) await logPackItemImageChange(spaceId, actor, image.type, image.typeId);
     },
     async deleteImage(imageId: string) {
       await del(spaceId, IMAGES_KEY, imageId);

@@ -9,7 +9,7 @@ import { useMembers } from "~/hooks/useMembers";
 import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
-import { pushProfile, switchToListsTab } from "./navigation";
+import { pushListChanges, pushProfile, switchToListsTab } from "./navigation";
 import { useLoadingOverlay } from "./useLoadingOverlay.ts";
 
 function ItemsContent({ componentId }: { componentId: string }) {
@@ -42,6 +42,7 @@ function ItemsContent({ componentId }: { componentId: string }) {
         lists={lists}
         email={email}
         onProfile={() => pushProfile(componentId)}
+        onShowChanges={() => pushListChanges(componentId, selection.selectedId)}
       />
     </SafeAreaView>
   );

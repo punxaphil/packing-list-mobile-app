@@ -16,6 +16,7 @@
     "avatarFallback": "?",
     "addItem": "Add",
     "addItemQuick": "Add...",
+    "listChanges": "List Changes",
     "addItemPrompt": "Add",
     "addItemConfirm": "Add",
     "addItemPlaceholder": "Travel adapter",
@@ -289,6 +290,23 @@
     "feedbackSentMessage": "Your feedback has been received.",
     "feedbackErrorTitle": "Could not send feedback",
     "feedbackErrorMessage": "Please try again."
+  },
+  "changes": {
+    "title": "List Changes",
+    "back": "Back",
+    "empty": "No changes yet.",
+    "uncategorized": "Uncategorized",
+    "added": "added",
+    "ticked": "ticked",
+    "unticked": "unticked",
+    "deleted": "deleted",
+    "renamed": "renamed",
+    "moved": "moved",
+    "image": "changed image of",
+    "from": "from",
+    "to": "to",
+    "assigned": "assigned",
+    "unassigned": "unassigned"
   },
   "assignMembers": {
     "title": "Assign Members",

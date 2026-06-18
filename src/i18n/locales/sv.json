@@ -16,6 +16,7 @@
     "avatarFallback": "?",
     "addItem": "Lägg till",
     "addItemQuick": "Lägg till...",
+    "listChanges": "Liständringar",
     "addItemPrompt": "Lägg till",
     "addItemConfirm": "Lägg till",
     "addItemPlaceholder": "Reseadapter",
@@ -290,6 +291,23 @@
     "feedbackSentMessage": "Din feedback har tagits emot.",
     "feedbackErrorTitle": "Kunde inte skicka feedback",
     "feedbackErrorMessage": "Försök igen."
+  },
+  "changes": {
+    "title": "Liständringar",
+    "back": "Tillbaka",
+    "empty": "Inga ändringar än.",
+    "uncategorized": "Okategoriserat",
+    "added": "lade till",
+    "ticked": "bockade i",
+    "unticked": "bockade ur",
+    "deleted": "tog bort",
+    "renamed": "bytte namn på",
+    "moved": "flyttade",
+    "image": "ändrade bild på",
+    "from": "från",
+    "to": "till",
+    "assigned": "tilldelade",
+    "unassigned": "avtilldelade"
   },
   "assignMembers": {
     "title": "Tilldela medlemmar",
