@@ -46,7 +46,7 @@
     "useTemplateMessage": "Skapa den här listan med saker från din mall?",
     "useTemplateYes": "Ja, använd mall",
     "useTemplateNo": "Nej, börja tomt",
-    "categoryMenuAddItem": "Lägg till sak",
+    "categoryMenuAddItem": "Lägg till",
     "categoryMenuSortAlpha": "Sortera alfabetiskt",
     "categoryMenuDeleteItems": "Ta bort alla saker",
     "duplicateItemName": "En sak med det här namnet finns redan i kategorin (om du inte ser den kan det vara för att den är dold av ett filter)",

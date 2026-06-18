@@ -46,7 +46,7 @@
     "useTemplateMessage": "Create this list with items from your template?",
     "useTemplateYes": "Yes, use template",
     "useTemplateNo": "No, start empty",
-    "categoryMenuAddItem": "Add Item",
+    "categoryMenuAddItem": "Add",
     "categoryMenuSortAlpha": "Sort Alphabetically",
     "categoryMenuDeleteItems": "Delete All Items",
     "duplicateItemName": "Item with this name already exists in category (if you don't see it, it may be hidden by a filter)",
