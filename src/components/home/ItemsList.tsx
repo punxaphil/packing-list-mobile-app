@@ -151,15 +151,18 @@ export const ItemsList = (props: ItemsListProps) => {
           />
         ))}
         {props.hasItems && (
-          <Pressable
-            style={homeStyles.quickAdd}
-            onPress={props.onShowChanges}
-            accessibilityRole="button"
-            accessibilityLabel={homeCopy.listChanges}
-            hitSlop={8}
-          >
-            <Text style={homeStyles.quickAddLabel}>{homeCopy.listChanges}</Text>
-          </Pressable>
+          // add some margin and place it in center horizontally
+          <View style={{ marginTop: homeSpacing.md, alignItems: "center" }}>
+            <Pressable
+              style={homeStyles.quickAdd}
+              onPress={props.onShowChanges}
+              accessibilityRole="button"
+              accessibilityLabel={homeCopy.listChanges}
+              hitSlop={8}
+            >
+              <Text style={homeStyles.quickAddLabel}>{homeCopy.listChanges}</Text>
+            </Pressable>
+          </View>
         )}
       </View>
     </FadeScrollView>
