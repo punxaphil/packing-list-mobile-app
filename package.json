@@ -13,6 +13,7 @@
     "ios:rebuild": "cd ios && pod install && cd .. && npx react-native run-ios --simulator='iPhone 17'",
     "ios:simulator": "npx react-native run-ios --simulator='iPhone 17'",
     "ios:simulator:ipad": "npx react-native run-ios --simulator='iPad (A16)'",
+    "ios:testflight": "sh scripts/ios-testflight.sh",
     "test:unit": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
