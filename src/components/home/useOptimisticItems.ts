@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { withPackItemMembers } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { animateLayout } from "./layoutAnimation.ts";
 
-type PendingChecked = Record<string, boolean>;
+type PendingChecked = Record<string, Pick<PackItem, "checked" | "members">>;
 
 export const useOptimisticItems = (items: PackItem[], listId?: string | null) => {
   const { writeDb } = useSpace();
@@ -22,9 +22,14 @@ export const useOptimisticItems = (items: PackItem[], listId?: string | null) =>
     if (Object.keys(pendingRef.current).length === 0) return;
     setPendingChecked((prev) => {
       const next: PendingChecked = {};
-      for (const [id, checked] of Object.entries(prev)) {
+      for (const [id, pending] of Object.entries(prev)) {
         const item = items.find((i) => i.id === id);
-        if (item && item.checked !== checked) next[id] = checked;
+        if (
+          item &&
+          (item.checked !== pending.checked ||
+            item.members.some((member, index) => member.checked !== pending.members[index]?.checked))
+        )
+          next[id] = pending;
       }
       return next;
     });
@@ -35,36 +40,61 @@ export const useOptimisticItems = (items: PackItem[], listId?: string | null) =>
     if (pendingKeys.length === 0) return items;
     return items.map((item) => {
       if (!(item.id in pendingChecked)) return item;
-      const checked = pendingChecked[item.id];
-      const members = item.members.map((m) => ({ ...m, checked }));
-      return { ...item, checked, members };
+      return { ...item, ...pendingChecked[item.id] };
     });
   }, [items, pendingChecked]);
 
   const toggleCategory = useCallback(
     (categoryItems: PackItem[], checked: boolean) => {
-      const pending: PendingChecked = {};
-      for (const item of categoryItems) pending[item.id] = checked;
-      setPendingChecked((prev) => ({ ...prev, ...pending }));
       const updatedItems = categoryItems.map((item) => ({
         ...item,
         checked,
         members: item.members.map((m) => ({ ...m, checked })),
       }));
+      setPendingChecked((prev) => ({ ...prev, ...Object.fromEntries(updatedItems.map((item) => [item.id, item])) }));
       void writeDb.updatePackItemsBatched(updatedItems);
     },
     [writeDb]
   );
 
-  const toggleItem = useCallback(
-    async (item: PackItem) => {
-      animateLayout();
-      const newChecked = !item.checked;
-      setPendingChecked((prev) => ({ ...prev, [item.id]: newChecked }));
-      await writeDb.updatePackItem({ ...item, checked: newChecked });
+  const updateItem = useCallback(
+    (item: PackItem) => {
+      setPendingChecked((prev) => ({ ...prev, [item.id]: item }));
+      void writeDb.updatePackItem(item);
     },
     [writeDb]
   );
 
-  return { optimisticItems, toggleCategory, toggleItem };
+  const toggleItem = useCallback(
+    (item: PackItem) => {
+      updateItem({ ...item, checked: !item.checked });
+    },
+    [updateItem]
+  );
+
+  const toggleMemberPacked = useCallback(
+    (item: PackItem, memberId: string) => {
+      updateItem(
+        withPackItemMembers(
+          item,
+          item.members.map((member) => (member.id === memberId ? { ...member, checked: !member.checked } : member))
+        )
+      );
+    },
+    [updateItem]
+  );
+
+  const toggleAllMembers = useCallback(
+    (item: PackItem, checked: boolean) => {
+      updateItem(
+        withPackItemMembers(
+          item,
+          item.members.map((member) => ({ ...member, checked }))
+        )
+      );
+    },
+    [updateItem]
+  );
+
+  return { optimisticItems, toggleCategory, toggleItem, toggleMemberPacked, toggleAllMembers };
 };

@@ -30,8 +30,6 @@ import {
   useMoveCategory,
   useMoveItemsToCategory,
   useSortCategoryAlpha,
-  useToggleAllMembers,
-  useToggleMemberPacked,
 } from "./itemHandlers.ts";
 import { getNextCategoryRank, getNextItemRank, getTopItemRank } from "./itemsSectionHelpers.ts";
 import { KitPickerModal } from "./KitPickerModal.tsx";
@@ -66,7 +64,10 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const imageActions = useEntityImageActions("packingLists", imageDb);
   const itemImageActions = useEntityImageActions("packItems", imageDb);
   const list = props.selection.selectedList;
-  const { optimisticItems, toggleCategory, toggleItem } = useOptimisticItems(props.itemsState.items, list?.id);
+  const { optimisticItems, toggleCategory, toggleItem, toggleMemberPacked, toggleAllMembers } = useOptimisticItems(
+    props.itemsState.items,
+    list?.id
+  );
   const categoryImageMap = useMemo(
     () => buildImageMap(props.imagesState.images, "categories"),
     [props.imagesState.images]
@@ -103,6 +104,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const handlers = useItemsSectionHandlers(
     toggleItem,
     toggleCategory,
+    toggleMemberPacked,
+    toggleAllMembers,
     optimisticItems,
     props.categoriesState.categories,
     props.lists
@@ -195,12 +198,14 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   );
 };
 
-type ToggleItem = (item: PackItem) => Promise<void>;
+type ToggleItem = (item: PackItem) => void;
 type ToggleCategory = (items: PackItem[], checked: boolean) => void;
 
 const useItemsSectionHandlers = (
   toggleItem: ToggleItem,
   toggleCategory: ToggleCategory,
+  toggleMemberPacked: (item: PackItem, memberId: string) => void,
+  toggleAllMembers: (item: PackItem, checked: boolean) => void,
   items: PackItem[],
   categories: NamedEntity[],
   lists: NamedEntity[]
@@ -209,8 +214,6 @@ const useItemsSectionHandlers = (
   const deleteItem = useItemDelete();
   const renameCategory = useCategoryRename();
   const assignMembers = useAssignMembers();
-  const toggleMemberPacked = useToggleMemberPacked();
-  const toggleAllMembers = useToggleAllMembers();
   const moveCategory = useMoveCategory();
   const moveItemsToCategory = useMoveItemsToCategory();
   const copyToList = useCopyToList();
