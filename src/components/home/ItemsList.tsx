@@ -8,6 +8,7 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
+import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
 import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { CategorySection } from "./CategorySection.tsx";
@@ -68,6 +69,17 @@ export const ItemsList = (props: ItemsListProps) => {
   const ordering = useItemOrdering(props.items);
   const checkedAtVisit = useVisitCheckedOrder(props.items, props.currentListId);
   const sections = buildSections(ordering.items, props.categories, checkedAtVisit).filter((s) => s.items.length);
+  const layouts = { ...drag.layouts };
+  for (const section of sections) {
+    Object.assign(
+      layouts,
+      orderEntityLayouts(
+        section.items.map((item) => item.id),
+        drag.layouts,
+        homeSpacing.xs
+      )
+    );
+  }
   const colors = useRevisitOrderedColors(
     sections.map((s) => s.category),
     buildItemCategoryColors
@@ -137,6 +149,7 @@ export const ItemsList = (props: ItemsListProps) => {
             isTemplateList={props.isTemplateList}
             search={props.search}
             drag={drag}
+            layouts={layouts}
             highlightId={highlightId}
             highlightOpacity={highlightOpacity}
             onDrop={ordering.drop}

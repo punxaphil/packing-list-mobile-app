@@ -60,6 +60,7 @@ type CategorySectionProps = {
   isTemplateList: boolean;
   search: SearchState;
   drag: ReturnType<typeof useDragState>;
+  layouts: Record<string, LayoutRectangle>;
   highlightId: string | null;
   highlightOpacity: Animated.Value;
   onDrop: (
@@ -474,7 +475,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
   } = props;
   const items = section.items;
   const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
-  const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id);
+  const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id, props.layouts);
   return (
     <View
       style={[homeStyles.categoryBody, { position: "relative" }]}
@@ -497,7 +498,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onLayout={(layout) => drag.recordLayout(item.id, layout)}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
-          onDragEnd={() => drag.end((s) => s && onDrop(s, drag.layouts, drag.sectionLayouts, drag.bodyLayouts))}
+          onDragEnd={() => drag.end((s) => s && onDrop(s, props.layouts, drag.sectionLayouts, drag.bodyLayouts))}
           onToggle={onToggle}
           onDeleteItem={onDeleteItem}
           onOpenAssignMembers={() => onOpenAssignMembers(item)}
@@ -509,18 +510,23 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
       ))}
-      <DropIndicator targetId={indicatorTargetId} layouts={drag.layouts} below={indicatorBelow} />
-      <GhostRow items={items} drag={drag.snapshot} layouts={drag.layouts} animatedOffsetY={drag.animatedOffsetY} />
+      <DropIndicator targetId={indicatorTargetId} layouts={props.layouts} below={indicatorBelow} />
+      <GhostRow items={items} drag={drag.snapshot} layouts={props.layouts} animatedOffsetY={drag.animatedOffsetY} />
     </View>
   );
 };
 
-const computeIndicator = (items: PackItem[], drag: ReturnType<typeof useDragState>, categoryId: string) => {
+const computeIndicator = (
+  items: PackItem[],
+  drag: ReturnType<typeof useDragState>,
+  categoryId: string,
+  layouts: Record<string, LayoutRectangle>
+) => {
   const itemIds = items.map((i) => i.id);
   const dropIndex = computeDropIndex(
     itemIds,
     drag.snapshot,
-    drag.layouts,
+    layouts,
     drag.sectionLayouts,
     drag.bodyLayouts,
     categoryId

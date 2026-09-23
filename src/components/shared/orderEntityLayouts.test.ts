@@ -24,6 +24,14 @@ describe("orderEntityLayouts", () => {
     expect(ordered.second.y).toBe(132);
   });
 
+  it("places second and third items from the body padding despite stale measured positions", () => {
+    const stale = { ...layouts, second: { ...layouts.second, y: 136 }, third: { ...layouts.third, y: 60 } };
+    const ordered = orderEntityLayouts(["first", "second", "third"], stale, 4);
+
+    expect(ordered.second.y).toBe(64);
+    expect(ordered.third.y).toBe(140);
+  });
+
   it("keeps measured layouts until every row is available", () => {
     expect(orderEntityLayouts(["first", "missing"], layouts)).toBe(layouts);
   });
