@@ -1,15 +1,12 @@
-import { useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Entity = { id: string };
 type BuildColors<T extends Entity> = (entities: T[]) => Record<string, string>;
 
 const snapshotColors = <T extends Entity>(entities: T[], buildColors: BuildColors<T>) => buildColors([...entities]);
 
-export const useRevisitOrderedColors = <T extends Entity>(
-  entities: T[],
-  buildColors: BuildColors<T>
-) => {
+export const useRevisitOrderedColors = <T extends Entity>(entities: T[], buildColors: BuildColors<T>) => {
   const entitiesRef = useRef(entities);
   const buildColorsRef = useRef(buildColors);
   const [colors, setColors] = useState(() => snapshotColors(entities, buildColors));
@@ -31,10 +28,11 @@ export const useRevisitOrderedColors = <T extends Entity>(
     });
   }, [entities, buildColors, colors]);
 
-  // Reset colors when screen comes into focus
-  useFocusEffect(() => {
-    setColors(snapshotColors(entitiesRef.current, buildColorsRef.current));
-  });
+  useFocusEffect(
+    useCallback(() => {
+      setColors(snapshotColors(entitiesRef.current, buildColorsRef.current));
+    }, [])
+  );
 
   return colors;
 };

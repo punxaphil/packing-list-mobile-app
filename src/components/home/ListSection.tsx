@@ -22,6 +22,7 @@ import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
+import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
 import { buildListColors } from "./listColors.ts";
@@ -67,7 +68,7 @@ export const ListSection = (props: ListSectionProps) => {
   const [showArchived, setShowArchived] = useState(false);
   const hasArchived = props.lists.some((list) => list.archived);
   const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
-  const colors = useMemo(() => buildListColors(filteredLists), [filteredLists]);
+  const colors = useRevisitOrderedColors(filteredLists, buildListColors);
   return (
     <View style={homeStyles.panel}>
       <HomeHeader
