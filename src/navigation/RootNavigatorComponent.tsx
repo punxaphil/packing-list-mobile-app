@@ -1,7 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import i18next from "i18next";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { homeSpacing } from "~/components/home/theme.ts";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
 import { ListChangesScreen } from "./ListChangesScreen";
@@ -82,9 +85,11 @@ export const CATEGORIES_TAB = 2;
 export const MEMBERS_TAB = 3;
 
 function MainTabsNavigator() {
+  const insets = useSafeAreaInsets();
   return (
     <MainTabs.Navigator
       initialRouteName={getSelectedId() ? "ItemsStack" : "ListsStack"}
+      safeAreaInsets={Platform.OS === "web" ? { bottom: insets.bottom + homeSpacing.md } : undefined}
       screenOptions={({ route }) => {
         const labels: Record<keyof MainTabsParamList, string> = {
           ItemsStack: i18next.t("navigation.items"),
