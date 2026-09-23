@@ -1,0 +1,38 @@
+@font-face {
+  font-family: MaterialCommunityIcons;
+  src: url("../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf") format("truetype");
+  font-display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* Fix for modal/overlay rendering */
+.react-native-modal {
+  z-index: 1000;
+}

@@ -22,12 +22,11 @@ import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { MoveCategoryItemsModal } from "./MoveCategoryItemsModal.tsx";
 
 type CategoriesScreenProps = {
-  componentId: string;
   email: string;
   onProfile: () => void;
 };
 
-export const CategoriesScreen = ({ componentId, email, onProfile }: CategoriesScreenProps) => {
+export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { categories } = useCategories(spaceId);
   const { images } = useImages(spaceId);
@@ -52,7 +51,7 @@ export const CategoriesScreen = ({ componentId, email, onProfile }: CategoriesSc
   const ordering = useEntityOrdering(categories, writeDb.updateCategories);
   const [sortByAlpha, setSortByAlpha] = useState(false);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
-  const colors = useRevisitOrderedColors(componentId, sorted, buildEntityColors);
+  const colors = useRevisitOrderedColors(sorted, buildEntityColors);
   const categoryImages = images.filter((img) => img.type === "categories");
   const imageActions = useEntityImageActions("categories", imageDb);
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;

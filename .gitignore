@@ -32,6 +32,7 @@ node_modules/
 .expo-google-services.json
 web-build/
 dist/
+.firebase/
 
 # Testing
 coverage/

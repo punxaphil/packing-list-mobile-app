@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "module": "ES2020",
     "moduleResolution": "bundler",
+    "moduleSuffixes": [".native", ""],
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
@@ -17,6 +18,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"],
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js", "index.web.tsx"],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js", "vite.config.ts"]
 }

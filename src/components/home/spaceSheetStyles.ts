@@ -6,7 +6,7 @@ const ICON_SIZE_MD = 22;
 const ROW_RADIUS = 18;
 const ROW_PADDING = 14;
 const SHEET_RADIUS = 16;
-const SHEET_MAX_WIDTH = 400;
+const SHEET_MAX_WIDTH = 480;
 const NAME_GAP = 6;
 const PRESS_SCALE = 0.985;
 
@@ -64,7 +64,7 @@ export const androidSheetStyles = StyleSheet.create({
   sheet: {
     width: "100%",
     maxWidth: SHEET_MAX_WIDTH,
-    maxHeight: "80%",
+    maxHeight: "90%",
     backgroundColor: homeColors.surface,
     borderRadius: SHEET_RADIUS,
     padding: homeSpacing.md,

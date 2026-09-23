@@ -106,28 +106,30 @@ export const ListCard = (props: ListCardProps) => {
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (
     <View>
-      <Pressable
-        style={[cardStyle, props.hidden ? { opacity: 0 } : null]}
-        onPress={() => props.onSelect(props.list.id)}
-        accessibilityRole="button"
-        accessibilityLabel={props.list.name}
-        accessibilityHint={summary}
-      >
+      <View style={[cardStyle, props.hidden ? { opacity: 0 } : null]}>
         <View style={homeStyles.listCardInner}>
           {!isTemplate && wrap(<DragHandle />)}
-          <ListImage
-            imageUrl={props.image?.url}
-            loading={props.imageLoading}
-            hidePlaceholder={props.hideImagePlaceholder}
-            onPress={() => props.onImagePress(props.list.id, props.image)}
-          />
-          <View style={homeStyles.listCardBody}>
-            <ListCardText list={props.list} summary={summary} />
-          </View>
-          {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
-          <ListMenuButton onPress={openMenu} />
+          <Pressable
+            style={homeStyles.listCardInner}
+            onPress={() => props.onSelect(props.list.id)}
+            accessibilityRole="button"
+            accessibilityLabel={props.list.name}
+            accessibilityHint={summary}
+          >
+            <ListImage
+              imageUrl={props.image?.url}
+              loading={props.imageLoading}
+              hidePlaceholder={props.hideImagePlaceholder}
+              onPress={() => props.onImagePress(props.list.id, props.image)}
+            />
+            <View style={homeStyles.listCardBody}>
+              <ListCardText list={props.list} summary={summary} />
+            </View>
+            {isPinned && <PinButton onPress={() => void props.actions.onUnpin(props.list)} />}
+            <ListMenuButton onPress={openMenu} />
+          </Pressable>
         </View>
-      </Pressable>
+      </View>
       <TextPromptDialog
         visible={rename.visible}
         title={listCopy.renameList}

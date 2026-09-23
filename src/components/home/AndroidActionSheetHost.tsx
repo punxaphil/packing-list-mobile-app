@@ -16,14 +16,14 @@ export const AndroidActionSheetHost = () => {
   const [sheet, setSheet] = useState<SheetState | null>(null);
 
   useEffect(() => {
-    if (Platform.OS !== "android") return;
+    if (Platform.OS === "ios") return;
     pushAndroidActionSheetListener(setSheet);
     return () => {
       removeAndroidActionSheetListener(setSheet);
     };
   }, []);
 
-  if (Platform.OS !== "android" || !sheet) return null;
+  if (Platform.OS === "ios" || !sheet) return null;
 
   return <ActionMenu visible title={sheet.title} items={sheet.items} onClose={() => setSheet(null)} />;
 };

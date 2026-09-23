@@ -1,5 +1,5 @@
 import { type PropsWithChildren } from "react";
-import { Animated, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, Keyboard, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useKeyboardOffset } from "~/hooks/useKeyboardOffset.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
@@ -18,7 +18,13 @@ export const DialogShell = ({ visible, title, onClose, children, actions, onShow
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Animated.View style={[styles.card, { transform: [{ translateY: keyboardOffset }] }]}>
           <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
-            <Pressable style={styles.content} onPress={() => Keyboard.dismiss()}>
+            <Pressable
+              style={styles.content}
+              onPress={(event) => {
+                event.stopPropagation();
+                if (Platform.OS !== "web") Keyboard.dismiss();
+              }}
+            >
               <Text style={styles.title}>{title}</Text>
               {children}
             </Pressable>

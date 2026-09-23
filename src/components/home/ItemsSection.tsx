@@ -7,7 +7,7 @@ import {
   buildPackingListReminderContent,
   pickPackingListDueAt,
   syncPackingListReminder,
-} from "~/services/packingListReminder.ts";
+} from "~/services/packingListReminder";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";

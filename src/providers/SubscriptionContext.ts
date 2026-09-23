@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import type { PurchasesPackage } from "react-native-purchases";
-import type { SubscriptionDetails } from "~/services/subscription.ts";
+import type { SubscriptionDetails } from "~/services/subscription";
 
 type SubscriptionContextValue = {
   details: SubscriptionDetails | null;

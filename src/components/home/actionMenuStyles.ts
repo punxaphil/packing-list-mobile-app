@@ -3,7 +3,8 @@ import { homeColors, homeSpacing } from "./theme.ts";
 
 export const actionMenuStyles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: homeSpacing.lg },
-  menu: { backgroundColor: homeColors.surface, borderRadius: 12, overflow: "hidden" },
+  menu: { backgroundColor: homeColors.surface, borderRadius: 12, overflow: "hidden", maxHeight: "100%" },
+  itemsScroll: { flexShrink: 1 },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",

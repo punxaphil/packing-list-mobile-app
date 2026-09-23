@@ -1,17 +1,19 @@
 import { getAuth } from "firebase/auth";
-import { Navigation } from "react-native-navigation";
-import { SCREEN_IDS } from "./screenIds.ts";
 import { clearSelectedId } from "./selectionState.ts";
 import { setSigningOut } from "./signOutState.ts";
 import { clearSpaceState } from "./spaceState.ts";
 
+/**
+ * Sign out user and reset to login screen.
+ * Navigation reset is handled by App component detecting userId === null
+ */
 export async function signOutUser() {
   setSigningOut(true);
   try {
     clearSelectedId();
     await clearSpaceState();
     await getAuth().signOut();
-    Navigation.setRoot({ root: { component: { name: SCREEN_IDS.APP_ROOT } } });
+    // App component will detect userId === null and reset navigation
   } finally {
     setSigningOut(false);
   }

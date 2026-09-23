@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { signInWithApple } from "~/services/appleAuth.ts";
+import { signInWithApple } from "~/services/appleAuth";
 import { homeColors } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { authStyles } from "./authStyles.ts";

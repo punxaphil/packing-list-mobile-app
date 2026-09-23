@@ -225,10 +225,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: homeColors.text,
     paddingVertical: homeSpacing.sm,
+    paddingHorizontal: homeSpacing.sm,
   },
   matchCount: {
     fontSize: 12,
     color: homeColors.muted,
+    marginLeft: homeSpacing.sm,
     marginRight: homeSpacing.xs,
   },
   noMatch: { fontSize: 12, color: "#ef4444", marginRight: homeSpacing.xs },

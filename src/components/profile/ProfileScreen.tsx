@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  ActionSheetIOS,
   ActivityIndicator,
   Platform,
   Pressable,
@@ -10,9 +9,10 @@ import {
   Text,
   View,
 } from "react-native";
+import { showIosActionSheet } from "~/components/shared/iosActionSheet";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils.ts";
+import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
 import { commonCopy } from "../home/copy.ts";
@@ -171,7 +171,7 @@ const useImageHandlers = (userId: string | undefined) => {
     if (Platform.OS !== "ios") return pickPhoto();
     return new Promise<boolean>((resolve) => {
       const options = [profileCopy.choosePhoto, profileCopy.chooseEmoji, commonCopy.cancel];
-      ActionSheetIOS.showActionSheetWithOptions({ options, cancelButtonIndex: options.length - 1 }, (index) => {
+      showIosActionSheet({ options, cancelButtonIndex: options.length - 1 }, (index) => {
         if (index === 0) {
           void pickPhoto().then(resolve);
           return;

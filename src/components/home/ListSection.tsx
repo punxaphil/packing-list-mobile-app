@@ -4,6 +4,7 @@ import {
   Animated,
   LayoutChangeEvent,
   LayoutRectangle,
+  Platform,
   Pressable,
   StyleSheet,
   Switch,
@@ -19,6 +20,7 @@ import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
+import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
@@ -26,6 +28,7 @@ import { buildListColors } from "./listColors.ts";
 import { listCopy } from "./listCopy.ts";
 import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
 import { ListActions, useListActions } from "./listSectionState.ts";
+import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
@@ -196,12 +199,13 @@ const ListScroll = ({
   onListSelect,
 }: ScrollProps) => {
   const listIds = lists.map((l) => l.id);
-  const dropIndex = computeDropIndex(listIds, drag.snapshot, drag.layouts);
+  const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
+  const layouts = orderEntityLayouts(listIds, drag.layouts, homeSpacing.xs, separatorIndices);
+  const dropIndex = computeDropIndex(listIds, drag.snapshot, layouts);
   const originalIndex = drag.snapshot ? listIds.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   const isDropping = drag.snapshot?.frozenY !== undefined;
-  const separatorIndices = useMemo(() => getSeparatorIndices(lists), [lists]);
   const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
     <FadeScrollView style={homeStyles.scroll}>
@@ -229,13 +233,13 @@ const ListScroll = ({
               hidden={drag.snapshot?.id === list.id}
               onDragStart={() => drag.start(list.id, "")}
               onDragMove={(offset: DragOffset) => drag.move(list.id, offset)}
-              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts), drag.layouts)}
+              onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, layouts), layouts)}
               onSelect={onListSelect}
             />
           </View>
         ))}
-        {!isDropping && <DropIndicator dropIndex={dropIndex} lists={lists} layouts={drag.layouts} below={showBelow} />}
-        <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={drag.layouts} />
+        {!isDropping && <DropIndicator dropIndex={dropIndex} lists={lists} layouts={layouts} below={showBelow} />}
+        <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={layouts} />
       </View>
     </FadeScrollView>
   );
@@ -313,6 +317,13 @@ const useCreateListDialog = (
 };
 
 const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
+  if (Platform.OS === "web") {
+    showActionSheet(HOME_COPY.useTemplateMessage, [
+      { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
+      { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
+    ]);
+    return;
+  }
   Alert.alert(HOME_COPY.useTemplateTitle, HOME_COPY.useTemplateMessage, [
     { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
     { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },

@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { Platform, Pressable, type ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
-import { canEditDueDate, formatPackingListDueAt } from "~/services/packingListReminder.ts";
+import { canEditDueDate, formatPackingListDueAt } from "~/services/packingListReminder";
 import { PageSheet } from "../shared/PageSheet.tsx";
-import { AndroidDateTimePicker } from "./AndroidDateTimePicker.tsx";
+import { AndroidDateTimePicker } from "./AndroidDateTimePicker";
 import { listCopy } from "./listCopy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 

@@ -23,12 +23,11 @@ import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { MoveMemberItemsDialog } from "./MoveMemberItemsDialog.tsx";
 
 type MembersScreenProps = {
-  componentId: string;
   email: string;
   onProfile: () => void;
 };
 
-export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenProps) => {
+export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   const { spaceId, writeDb, profile } = useSpace();
   const { members } = useMembers(spaceId);
   const { images } = useImages(spaceId);
@@ -68,7 +67,7 @@ export const MembersScreen = ({ componentId, email, onProfile }: MembersScreenPr
   const drag = useDragState();
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
   const sorted = sortByAlpha ? [...ordering.entities].sort((a, b) => a.name.localeCompare(b.name)) : ordering.entities;
-  const colors = useRevisitOrderedColors(componentId, sorted, buildEntityColors);
+  const colors = useRevisitOrderedColors(sorted, buildEntityColors);
   const memberImages = images.filter((img) => img.type === "members");
   const imageActions = useEntityImageActions("members", imageDb);
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;

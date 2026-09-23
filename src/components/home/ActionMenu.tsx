@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Modal, Pressable, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
 import { commonCopy } from "./copy.ts";
 import { homeColors } from "./theme.ts";
@@ -46,11 +46,13 @@ export const ActionMenu = ({
             <Text style={titleTextStyle}>{title}</Text>
             <View style={styles.titleSpacer}>{headerRight}</View>
           </View>
-          {items
-            .filter((i) => i.style !== "cancel")
-            .map((item) => (
-              <MenuItem key={item.text} item={item} onClose={onClose} />
-            ))}
+          <ScrollView style={styles.itemsScroll}>
+            {items
+              .filter((i) => i.style !== "cancel")
+              .map((item) => (
+                <MenuItem key={item.text} item={item} onClose={onClose} />
+              ))}
+          </ScrollView>
           <CancelButton label={items.find((i) => i.style === "cancel")?.text} onPress={onClose} />
         </Pressable>
       </Pressable>
@@ -61,8 +63,8 @@ export const ActionMenu = ({
 const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
   const handlePress = () => {
     if (item.disabled) return;
-    item.onPress?.();
     onClose();
+    item.onPress?.();
   };
   const textStyle = [
     styles.itemText,

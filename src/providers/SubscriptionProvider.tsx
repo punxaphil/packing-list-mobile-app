@@ -1,5 +1,6 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import i18next from "i18next";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Platform } from "react-native";
 import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 import {
   configureRevenueCat,
@@ -11,9 +12,8 @@ import {
   restorePurchases,
   type SubscriptionDetails,
   sortPreferredPackages,
-} from "~/services/subscription.ts";
+} from "~/services/subscription";
 import { SubscriptionContext } from "./SubscriptionContext.ts";
-import { Platform } from "react-native";
 
 type Props = { userId: string; children: ReactNode };
 
@@ -32,8 +32,7 @@ const toUserErrorMessage = (error: unknown, fallbackKey: string) => {
 };
 
 export const SubscriptionProvider = ({ userId, children }: Props) => {
-  if (Platform.OS === "android") {
-    // Always treat as subscribed, skip RevenueCat
+  if (Platform.OS === "android" || Platform.OS === "web") {
     return (
       <SubscriptionContext.Provider
         value={{
@@ -54,6 +53,10 @@ export const SubscriptionProvider = ({ userId, children }: Props) => {
     );
   }
 
+  return <RevenueCatSubscriptionProvider userId={userId}>{children}</RevenueCatSubscriptionProvider>;
+};
+
+const RevenueCatSubscriptionProvider = ({ userId, children }: Props) => {
   const initialized = useRef(false);
   const [details, setDetails] = useState<SubscriptionDetails | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
-import { ActionSheetIOS, Platform } from "react-native";
-import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils.ts";
+import { Platform } from "react-native";
+import { showIosActionSheet } from "~/components/shared/iosActionSheet";
+import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 
@@ -55,7 +56,7 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
         return;
       }
       const options = [PHOTO_OPTION, EMOJI_OPTION, CANCEL_OPTION];
-      ActionSheetIOS.showActionSheetWithOptions({ options, cancelButtonIndex: options.length - 1 }, (index) => {
+      showIosActionSheet({ options, cancelButtonIndex: options.length - 1 }, (index) => {
         if (index === 0) {
           void pickPhoto(entityId, existing);
           return;

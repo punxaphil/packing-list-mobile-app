@@ -1,6 +1,6 @@
 import { Image, StyleSheet } from "react-native";
+import squirrelAnimation from "../../../assets/squirrel_animation_slow.gif";
 
-const squirrelAnimation = require("../../../assets/squirrel_animation_slow.gif");
 const sizes = { full: 80, compact: 28 } as const;
 
 type SquirrelLoaderProps = { variant?: keyof typeof sizes };

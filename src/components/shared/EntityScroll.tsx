@@ -7,6 +7,7 @@ import { DragSnapshot, useDragState } from "../home/useDragState.ts";
 import { EntityActions, EntityCard, EntityCardPreview, EntityMenuAction } from "./EntityCard.tsx";
 import { EntityCopy, entityStyles } from "./entityStyles.ts";
 import { FadeScrollView, FadeScrollViewRef } from "./FadeScrollView.tsx";
+import { orderEntityLayouts } from "./orderEntityLayouts.ts";
 import { useFlashHighlight } from "./useFlashHighlight.ts";
 
 const SCROLL_DELAY_MS = 100;
@@ -51,7 +52,8 @@ export const EntityScroll = (props: EntityScrollProps) => {
     getMenuItems,
   } = props;
   const ids = entities.map((e) => e.id);
-  const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, drag.layouts) : null;
+  const layouts = orderEntityLayouts(ids, drag.layouts);
+  const dropIndex = dragEnabled ? computeDropIndex(ids, drag.snapshot, layouts) : null;
   const originalIndex = drag.snapshot ? ids.indexOf(drag.snapshot.id) : -1;
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
@@ -97,16 +99,12 @@ export const EntityScroll = (props: EntityScrollProps) => {
               onLayout={(layout: LayoutRectangle) => drag.recordLayout(entity.id, layout)}
               onDragStart={dragEnabled ? () => drag.start(entity.id, "") : undefined}
               onDragMove={dragEnabled ? (offset: DragOffset) => drag.move(entity.id, offset) : undefined}
-              onDragEnd={
-                dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, drag.layouts)) : undefined
-              }
+              onDragEnd={dragEnabled ? () => drag.end((snapshot) => snapshot && onDrop(snapshot, layouts)) : undefined}
             />
           );
         })}
-        {dragEnabled && (
-          <DropIndicator dropIndex={dropIndex} entities={entities} layouts={drag.layouts} below={showBelow} />
-        )}
-        {dragEnabled && <GhostRow entities={entities} drag={drag.snapshot} layouts={drag.layouts} />}
+        {dragEnabled && <DropIndicator dropIndex={dropIndex} entities={entities} layouts={layouts} below={showBelow} />}
+        {dragEnabled && <GhostRow entities={entities} drag={drag.snapshot} layouts={layouts} />}
       </View>
     </FadeScrollView>
   );

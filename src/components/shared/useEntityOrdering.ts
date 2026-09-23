@@ -63,18 +63,17 @@ const resolveTargetIndex = (
 ) => {
   if (!offsetY) return fromIndex;
   let target = fromIndex;
+  const ghostCenter = layout.y + layout.height / 2 + offsetY;
   if (offsetY > 0) {
-    const ghostBottom = layout.y + layout.height + offsetY;
     for (let i = fromIndex + 1; i < ids.length; i++) {
       const l = layouts[ids[i]];
-      if (l && ghostBottom >= l.y + l.height / 2) target = i;
+      if (l && ghostCenter >= l.y + l.height / 2) target = i;
       else break;
     }
   } else {
-    const ghostTop = layout.y + offsetY;
     for (let i = fromIndex - 1; i >= 0; i--) {
       const l = layouts[ids[i]];
-      if (l && ghostTop <= l.y + l.height / 2) target = i;
+      if (l && ghostCenter <= l.y + l.height / 2) target = i;
       else break;
     }
   }

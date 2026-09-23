@@ -1,5 +1,6 @@
 import i18next from "i18next";
-import { ActionSheetIOS, Alert, Platform } from "react-native";
+import { Alert, Platform } from "react-native";
+import { showIosActionSheet } from "~/components/shared/iosActionSheet";
 
 export type ActionSheetItem = {
   text: string;
@@ -56,7 +57,7 @@ export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
     .filter((i) => i >= 0);
   const disabledIndices = actionItems.map((item, index) => (item.disabled ? index : -1)).filter((i) => i >= 0);
 
-  ActionSheetIOS.showActionSheetWithOptions(
+  showIosActionSheet(
     {
       title,
       options,

@@ -1,3 +1,8 @@
+declare module "*.gif" {
+  const source: number;
+  export default source;
+}
+
 declare module "react-lifecycles-compat" {
   export function polyfill<T>(component: T): T;
 }

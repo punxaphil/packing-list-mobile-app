@@ -1,4 +1,3 @@
-import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
 import { NoSelectionPanel } from "~/components/home/NoSelectionPanel.tsx";
@@ -10,23 +9,21 @@ import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushListChanges, pushProfile, switchToListsTab } from "./navigation";
-import { useLoadingOverlay } from "./useLoadingOverlay.ts";
 
-function ItemsContent({ componentId }: { componentId: string }) {
+function ItemsContent() {
   const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
   const categoriesState = useCategories(spaceId);
   const membersState = useMembers(spaceId);
   const imagesState = useImages(spaceId);
   const itemsState = usePackingItems(spaceId, selection.selectedId);
   const loading = listsLoading || itemsState.loading;
-  useLoadingOverlay(loading);
 
   if (loading) return null;
 
   if (!hasLists || !selection.hasSelection) {
     return (
       <SafeAreaView edges={["top"]} style={homeStyles.home}>
-        <NoSelectionPanel email={email} onProfile={() => pushProfile(componentId)} onShowLists={switchToListsTab} />
+        <NoSelectionPanel email={email} onProfile={pushProfile} onShowLists={switchToListsTab} />
       </SafeAreaView>
     );
   }
@@ -41,18 +38,20 @@ function ItemsContent({ componentId }: { componentId: string }) {
         imagesState={imagesState}
         lists={lists}
         email={email}
-        onProfile={() => pushProfile(componentId)}
-        onShowChanges={() => pushListChanges(componentId, selection.selectedId)}
+        onProfile={pushProfile}
+        onShowChanges={() => pushListChanges(selection.selectedId)}
       />
     </SafeAreaView>
   );
 }
 
-export function ItemsScreen({ componentId }: NavigationComponentProps) {
+export function ItemsScreen() {
   const { userId, email } = getAppState();
   return (
-    <AppProvider userId={userId} email={email}>
-      <ItemsContent componentId={componentId} />
-    </AppProvider>
+    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+      <AppProvider userId={userId} email={email}>
+        <ItemsContent />
+      </AppProvider>
+    </SafeAreaView>
   );
 }

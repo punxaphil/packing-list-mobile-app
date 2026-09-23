@@ -1,6 +1,6 @@
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useTranslation } from "react-i18next";
 import { Text } from "react-native";
+import { SegmentedControl } from "~/components/shared/SegmentedControl";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import type { StatusFilter } from "./useFilterDialog.ts";
 
@@ -20,7 +20,7 @@ export const StatusSection = ({ statusFilter, onSetStatus }: StatusSectionProps)
       <SegmentedControl
         values={statusLabels}
         selectedIndex={STATUS_OPTIONS.indexOf(statusFilter)}
-        onChange={(e) => onSetStatus(STATUS_OPTIONS[e.nativeEvent.selectedSegmentIndex])}
+        onChange={(index) => onSetStatus(STATUS_OPTIONS[index])}
       />
     </>
   );

@@ -1,15 +1,12 @@
-import type { NavigationComponentProps } from "react-native-navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ListSection } from "~/components/home/ListSection";
 import { homeStyles } from "~/components/home/styles";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushProfile, switchToItemsTab } from "./navigation";
-import { useLoadingOverlay } from "./useLoadingOverlay.ts";
 
-function ListsContent({ componentId }: { componentId: string }) {
+function ListsContent() {
   const { email, lists, listsLoading, selection } = useApp();
-  useLoadingOverlay(listsLoading);
 
   const handleListSelect = (id: string) => {
     selection.select(id);
@@ -23,18 +20,18 @@ function ListsContent({ componentId }: { componentId: string }) {
       lists={lists}
       selection={selection}
       email={email}
-      onProfile={() => pushProfile(componentId)}
+      onProfile={pushProfile}
       onListSelect={handleListSelect}
     />
   );
 }
 
-export function ListsScreen({ componentId }: NavigationComponentProps) {
+export function ListsScreen() {
   const { userId, email } = getAppState();
   return (
     <SafeAreaView edges={["top"]} style={homeStyles.home}>
       <AppProvider userId={userId} email={email}>
-        <ListsContent componentId={componentId} />
+        <ListsContent />
       </AppProvider>
     </SafeAreaView>
   );

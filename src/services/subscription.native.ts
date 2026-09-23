@@ -1,16 +1,14 @@
+import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 import i18next from "i18next";
 import { Platform } from "react-native";
-import Purchases, { type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 
 const REVENUECAT_IOS_KEY = "appl_MAycwXxDDcWiytfvDCHGUZVkGRR";
 const REVENUECAT_ANDROID_KEY = "goog_qLWNyLTXbpianmjYAilUtwfveqA";
 const ENTITLEMENT_ID = "entitlement-1";
-const MONTHLY_PACKAGE_ID = "monthly";
-const YEARLY_PACKAGE_ID = "yearly";
-type PlanName = string;
+
 export type SubscriptionDetails = {
   productIdentifier: string;
-  planName: PlanName;
+  planName: string;
   expiresAt: string | null;
   isTrial: boolean;
   willRenew: boolean;
@@ -24,19 +22,16 @@ const getRevenueCatConfig = () => {
       apiKey: REVENUECAT_ANDROID_KEY,
       placeholder: "YOUR_REVENUECAT_ANDROID_API_KEY",
       platform: "Android",
-    } as const;
+    };
   }
   return {
     apiKey: REVENUECAT_IOS_KEY,
     placeholder: "YOUR_REVENUECAT_IOS_API_KEY",
     platform: "iOS",
-  } as const;
+  };
 };
 
-let configuredUserId: string | null = null;
-
 export const configureRevenueCat = async (userId: string) => {
-  if (configuredUserId === userId) return;
   const { apiKey, placeholder, platform } = getRevenueCatConfig();
   if (!hasRevenueCatKey(apiKey, placeholder)) {
     throw new Error(
@@ -47,7 +42,6 @@ export const configureRevenueCat = async (userId: string) => {
   }
   Purchases.configure({ apiKey });
   await Purchases.logIn(userId);
-  configuredUserId = userId;
 };
 
 export const isActiveSubscription = (info: CustomerInfo): boolean =>
@@ -76,10 +70,11 @@ export const fetchOfferings = async (): Promise<PurchasesPackage[]> => {
   const offerings = await Purchases.getOfferings();
   return offerings.current?.availablePackages ?? [];
 };
+
 export const sortPreferredPackages = (packages: PurchasesPackage[]) => {
   const rank = (pkg: PurchasesPackage) => {
-    if (pkg.identifier === MONTHLY_PACKAGE_ID) return 0;
-    if (pkg.identifier === YEARLY_PACKAGE_ID) return 1;
+    if (pkg.identifier.includes("annual")) return 0;
+    if (pkg.identifier.includes("monthly")) return 1;
     return 2;
   };
   return [...packages].sort((a, b) => rank(a) - rank(b));
