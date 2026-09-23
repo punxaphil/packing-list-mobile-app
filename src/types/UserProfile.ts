@@ -9,6 +9,7 @@ export interface UserProfile {
   hideImagePlaceholder?: boolean;
   wrapItemText?: boolean;
   addNewItemsOnTop?: boolean;
+  checkedItemsLast?: boolean;
   pendingDeletion?: boolean;
 }
 

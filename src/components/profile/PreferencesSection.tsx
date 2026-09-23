@@ -2,6 +2,7 @@ import { StyleSheet, Switch, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import {
   updateProfileAddNewItemsOnTop,
+  updateProfileCheckedItemsLast,
   updateProfileHideImagePlaceholder,
   updateProfileWrapItemText,
 } from "~/services/spaceDatabase.ts";
@@ -14,6 +15,7 @@ export const PreferencesSection = () => {
   const wrapItemText = profile?.wrapItemText ?? false;
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
   const addNewItemsOnTop = profile?.addNewItemsOnTop ?? false;
+  const checkedItemsLast = profile?.checkedItemsLast ?? false;
 
   const toggleWrapItemText = (value: boolean) => {
     if (!profile?.id) return;
@@ -28,6 +30,11 @@ export const PreferencesSection = () => {
   const toggleAddNewItemsOnTop = (value: boolean) => {
     if (!profile?.id) return;
     void updateProfileAddNewItemsOnTop(profile.id, value);
+  };
+
+  const toggleCheckedItemsLast = (value: boolean) => {
+    if (!profile?.id) return;
+    void updateProfileCheckedItemsLast(profile.id, value);
   };
 
   return (
@@ -55,6 +62,14 @@ export const PreferencesSection = () => {
         <Switch
           value={addNewItemsOnTop}
           onValueChange={toggleAddNewItemsOnTop}
+          trackColor={{ true: homeColors.primary, false: homeColors.border }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{profileCopy.checkedItemsLast}</Text>
+        <Switch
+          value={checkedItemsLast}
+          onValueChange={toggleCheckedItemsLast}
           trackColor={{ true: homeColors.primary, false: homeColors.border }}
         />
       </View>

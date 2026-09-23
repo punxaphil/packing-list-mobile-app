@@ -13,8 +13,8 @@ const entries: PackItem[] = ["first", "second", "third"].map((id, index) => ({
   checked: false,
   members: [],
 }));
-const visibleIds = (items: PackItem[], visit: ReadonlyMap<string, boolean>) =>
-  buildSections(items, [category], visit)
+const visibleIds = (items: PackItem[], checkedItemsLast: boolean) =>
+  buildSections(items, [category], checkedItemsLast)
     .find((section) => section.category.id === category.id)
     ?.items.map((item) => item.id);
 
@@ -31,15 +31,23 @@ describe("itemsSectionHelpers", () => {
     expect(getTopItemRank(items, 3)).toBe(11);
   });
 
-  it("keeps checked items in place until revisit, while honoring drag order", () => {
-    const visit = new Map(entries.map((item) => [item.id, item.checked]));
+  it("keeps rank order by default, including on revisit", () => {
     const checked = entries.map((item) => (item.id === "first" ? { ...item, checked: true } : item));
-    expect(visibleIds(checked, visit)).toEqual(["first", "second", "third"]);
-    expect(visibleIds(checked, new Map(checked.map((item) => [item.id, item.checked])))).toEqual([
-      "second",
-      "third",
-      "first",
-    ]);
-    expect(visibleIds([checked[1], checked[0], checked[2]], visit)).toEqual(["second", "first", "third"]);
+    expect(visibleIds(checked, false)).toEqual(["first", "second", "third"]);
+    expect(visibleIds([checked[1], checked[0], checked[2]], false)).toEqual(["second", "first", "third"]);
+  });
+
+  it("moves checked items to the bottom immediately when enabled", () => {
+    const checked = entries.map((item) => (item.id === "first" ? { ...item, checked: true } : item));
+    expect(visibleIds(checked, true)).toEqual(["second", "third", "first"]);
+    expect(visibleIds(entries, true)).toEqual(["first", "second", "third"]);
+  });
+
+  it("uses member checkoffs for the checked-last preference", () => {
+    const assigned = entries.map((item) =>
+      item.id === "first" ? { ...item, members: [{ id: "member", checked: true }] } : item
+    );
+    expect(visibleIds(assigned, false)).toEqual(["first", "second", "third"]);
+    expect(visibleIds(assigned, true)).toEqual(["second", "third", "first"]);
   });
 });

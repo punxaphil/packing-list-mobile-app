@@ -341,6 +341,12 @@ export async function updateProfileAddNewItemsOnTop(userId: string, addNewItemsO
   });
 }
 
+export async function updateProfileCheckedItemsLast(userId: string, checkedItemsLast: boolean) {
+  await updateDoc(doc(firestore, USERS, userId), {
+    checkedItemsLast: checkedItemsLast || deleteField(),
+  });
+}
+
 export async function markAccountForDeletion(userId: string) {
   await updateDoc(doc(firestore, USERS, userId), { pendingDeletion: true });
 }

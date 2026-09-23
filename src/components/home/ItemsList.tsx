@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getTranslatedKits, type PackingKit } from "~/data/packingKits.ts";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -22,7 +23,6 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import { useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
-import { useVisitCheckedOrder } from "./useVisitCheckedOrder.ts";
 
 const SCROLL_PADDING = 100;
 const HIGHLIGHT_DELAY_MS = 300;
@@ -65,10 +65,12 @@ type ItemsListProps = {
 };
 
 export const ItemsList = (props: ItemsListProps) => {
+  const { profile } = useSpace();
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
-  const checkedAtVisit = useVisitCheckedOrder(props.items, props.currentListId);
-  const sections = buildSections(ordering.items, props.categories, checkedAtVisit).filter((s) => s.items.length);
+  const sections = buildSections(ordering.items, props.categories, profile?.checkedItemsLast ?? false).filter(
+    (section) => section.items.length
+  );
   const layouts = { ...drag.layouts };
   for (const section of sections) {
     Object.assign(
