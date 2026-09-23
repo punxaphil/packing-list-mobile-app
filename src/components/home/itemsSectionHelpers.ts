@@ -11,14 +11,14 @@ export type SectionGroup = {
 
 const ALL_ITEMS_TITLE = "All items";
 
-const orderItems = (items: PackItem[]) =>
+const orderItems = (items: PackItem[], checkedAtVisit: ReadonlyMap<string, boolean>) =>
   [...items].sort((first, second) => {
-    const firstChecked = getPackItemChecked(first);
-    const secondChecked = getPackItemChecked(second);
+    const firstChecked = checkedAtVisit.get(first.id) ?? getPackItemChecked(first);
+    const secondChecked = checkedAtVisit.get(second.id) ?? getPackItemChecked(second);
     if (firstChecked !== secondChecked) {
       return Number(firstChecked) - Number(secondChecked);
     }
-    return second.rank - first.rank;
+    return 0;
   });
 
 const groupItems = (items: PackItem[]) =>
@@ -52,8 +52,12 @@ const getOrderedCategories = (categories: NamedEntity[], groups: Map<string, Pac
   return [...map.values()].sort((a, b) => b.rank - a.rank);
 };
 
-export const buildSections = (items: PackItem[], categories: NamedEntity[]): SectionGroup[] => {
-  const grouped = groupItems(orderItems(items));
+export const buildSections = (
+  items: PackItem[],
+  categories: NamedEntity[],
+  checkedAtVisit: ReadonlyMap<string, boolean>
+): SectionGroup[] => {
+  const grouped = groupItems(orderItems(items, checkedAtVisit));
   const showAllItemsTitle = grouped.size === 1 && grouped.has(UNCATEGORIZED.id);
   return getOrderedCategories(categories, grouped).map((category) => ({
     category,

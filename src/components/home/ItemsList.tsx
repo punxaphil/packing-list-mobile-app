@@ -9,6 +9,7 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
 import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
+import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { filterCopy, homeCopy } from "./copy.ts";
 import { useItemOrdering } from "./itemOrdering.ts";
@@ -20,6 +21,7 @@ import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import { useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
+import { useVisitCheckedOrder } from "./useVisitCheckedOrder.ts";
 
 const SCROLL_PADDING = 100;
 const HIGHLIGHT_DELAY_MS = 300;
@@ -64,8 +66,12 @@ type ItemsListProps = {
 export const ItemsList = (props: ItemsListProps) => {
   const drag = useDragState();
   const ordering = useItemOrdering(props.items);
-  const sections = buildSections(ordering.items, props.categories).filter((s) => s.items.length);
-  const colors = buildItemCategoryColors(sections.map((s) => s.category));
+  const checkedAtVisit = useVisitCheckedOrder(props.items, props.currentListId);
+  const sections = buildSections(ordering.items, props.categories, checkedAtVisit).filter((s) => s.items.length);
+  const colors = useRevisitOrderedColors(
+    sections.map((s) => s.category),
+    buildItemCategoryColors
+  );
   const itemCategoryMap = buildItemCategoryMap(props.items);
   const prevItemIds = useRef(new Set(props.items.map((i) => i.id)));
   const pendingScrollId = useRef<string | null>(null);
