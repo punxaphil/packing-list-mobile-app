@@ -37,7 +37,7 @@ export function App() {
       {ready ? (
         <>
           <AppRoot>
-            <NavigationContainer ref={navigationRef}>
+            <NavigationContainer ref={navigationRef} documentTitle={{ enabled: false }}>
               <RootNavigator />
             </NavigationContainer>
           </AppRoot>
