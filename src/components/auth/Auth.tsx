@@ -9,7 +9,7 @@ import {
 import i18next from "i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signInWithApple } from "~/services/appleAuth";
 import { homeColors } from "../home/theme.ts";
@@ -35,7 +35,7 @@ const friendlyAuthError = (e: unknown, fallbackKey: string): string => {
 
 export function Login() {
   const { t } = useTranslation();
-  const [showEmail, setShowEmail] = useState(false);
+  const [showEmail, setShowEmail] = useState(Platform.OS === "web");
   const [emailMode, setEmailMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,7 +81,9 @@ export function Login() {
     <SafeAreaView style={authStyles.safeArea}>
       <View style={authStyles.container}>
         <Text style={authStyles.title}>{t("auth.welcome")}</Text>
-        <Button variant="apple" label={t("auth.signInApple")} onPress={() => void handleApple()} />
+        {Platform.OS !== "web" && (
+          <Button variant="apple" label={t("auth.signInApple")} onPress={() => void handleApple()} />
+        )}
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
         {!showEmail && (
           <Pressable onPress={() => setShowEmail(true)}>

@@ -1,6 +1,8 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { useTranslation } from "react-i18next";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
+import { PasswordResetButton } from "./PasswordResetButton.tsx";
 
 type EmailFormProps = {
   mode: "login" | "register";
@@ -17,6 +19,7 @@ type EmailFormProps = {
 };
 
 export function EmailForm(props: EmailFormProps) {
+  const { t } = useTranslation();
   const {
     mode,
     email,
@@ -39,14 +42,14 @@ export function EmailForm(props: EmailFormProps) {
         <>
           <TextInput
             autoCapitalize="words"
-            placeholder="First name (optional)"
+            placeholder={t("auth.firstNameOptional")}
             style={styles.input}
             value={firstName}
             onChangeText={setFirstName}
           />
           <TextInput
             autoCapitalize="words"
-            placeholder="Last name (optional)"
+            placeholder={t("auth.lastNameOptional")}
             style={styles.input}
             value={lastName}
             onChangeText={setLastName}
@@ -57,7 +60,7 @@ export function EmailForm(props: EmailFormProps) {
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
-        placeholder="Email"
+        placeholder={t("auth.email")}
         style={styles.input}
         value={email}
         onChangeText={setEmail}
@@ -65,13 +68,18 @@ export function EmailForm(props: EmailFormProps) {
       <TextInput
         autoCapitalize="none"
         secureTextEntry
-        placeholder="Password"
+        placeholder={t("auth.password")}
         style={styles.input}
         value={password}
         onChangeText={setPassword}
       />
-      <Button label={isRegister ? "Create account" : "Login"} onPress={onSubmit} />
-      <Button label={isRegister ? "Back to login" : "Create account instead"} onPress={onToggleMode} variant="ghost" />
+      <Button label={t(isRegister ? "auth.createAccount" : "auth.login")} onPress={onSubmit} />
+      {!isRegister && Platform.OS === "web" ? <PasswordResetButton email={email} /> : null}
+      <Button
+        label={t(isRegister ? "auth.backToLogin" : "auth.createAccountInstead")}
+        onPress={onToggleMode}
+        variant="ghost"
+      />
     </View>
   );
 }
