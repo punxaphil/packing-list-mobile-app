@@ -70,6 +70,8 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
         <ScrollView
           ref={scrollRef}
           style={styles.scroll}
+          automaticallyAdjustContentInsets={false}
+          contentInsetAdjustmentBehavior="never"
           contentContainerStyle={[
             { paddingBottom: Math.max(TAB_BAR_HEIGHT, keyboardHeight + 16) },
             contentContainerStyle,
