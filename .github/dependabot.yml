@@ -4,6 +4,27 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      navigation:
+        patterns:
+          - "@react-navigation/native"
+          - "@react-navigation/bottom-tabs"
+          - "@react-navigation/native-stack"
+      i18n:
+        patterns:
+          - i18next
+          - react-i18next
+      vite:
+        patterns:
+          - vite
+          - "@vitejs/plugin-react"
+          - vitest
   - package-ecosystem: github-actions
     directory: /
     schedule:
