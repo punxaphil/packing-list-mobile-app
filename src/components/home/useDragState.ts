@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
-import { Animated, LayoutRectangle } from "react-native";
+import { Animated, type LayoutRectangle } from "react-native";
 import { DragOffset } from "./useDraggableRow.tsx";
+import { useDragLayouts } from "./useDragLayouts.ts";
 
 export type DragSnapshot = {
   id: string;
@@ -12,48 +13,25 @@ export type DragSnapshot = {
 export const useDragState = () => {
   const [snapshot, setSnapshotState] = useState<DragSnapshot>(null);
   const snapshotRef = useRef<DragSnapshot>(null);
+  const pointerY = useRef<number | null>(null);
+  const translationY = useRef(0);
+  const scrollDistance = useRef(0);
   const animatedOffsetY = useRef(new Animated.Value(0)).current;
+  const dragLayouts = useDragLayouts();
 
   // Sync ref with state synchronously
   const setSnapshot = useCallback((value: DragSnapshot | ((prev: DragSnapshot) => DragSnapshot)) => {
-    setSnapshotState((prev) => {
-      const next = typeof value === "function" ? value(prev) : value;
-      snapshotRef.current = next;
-      return next;
-    });
-  }, []);
-
-  const [layouts, setLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const [sectionLayouts, setSectionLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const [bodyLayouts, setBodyLayouts] = useState<Record<string, LayoutRectangle>>({});
-
-  const recordLayout = useCallback((id: string, layout: LayoutRectangle) => {
-    setLayouts((current) => {
-      const previous = current[id];
-      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
-      return { ...current, [id]: layout };
-    });
-  }, []);
-
-  const recordSectionLayout = useCallback((id: string, layout: LayoutRectangle) => {
-    setSectionLayouts((current) => {
-      const previous = current[id];
-      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
-      return { ...current, [id]: layout };
-    });
-  }, []);
-
-  const recordBodyLayout = useCallback((id: string, layout: LayoutRectangle) => {
-    setBodyLayouts((current) => {
-      const previous = current[id];
-      if (previous && previous.height === layout.height && previous.y === layout.y) return current;
-      return { ...current, [id]: layout };
-    });
+    const next = typeof value === "function" ? value(snapshotRef.current) : value;
+    snapshotRef.current = next;
+    setSnapshotState(next);
   }, []);
 
   const start = useCallback(
     (id: string, categoryId: string) => {
       animatedOffsetY.setValue(0);
+      pointerY.current = null;
+      translationY.current = 0;
+      scrollDistance.current = 0;
       setSnapshot({ id, categoryId, offsetY: 0 });
     },
     [setSnapshot, animatedOffsetY]
@@ -61,8 +39,21 @@ export const useDragState = () => {
 
   const move = useCallback(
     (id: string, offset: DragOffset) => {
-      animatedOffsetY.setValue(offset.y);
-      setSnapshot((current) => (current && current.id === id ? { ...current, offsetY: offset.y } : current));
+      pointerY.current = offset.absoluteY;
+      translationY.current = offset.y;
+      const offsetY = offset.y + scrollDistance.current;
+      animatedOffsetY.setValue(offsetY);
+      setSnapshot((current) => (current && current.id === id ? { ...current, offsetY } : current));
+    },
+    [setSnapshot, animatedOffsetY]
+  );
+
+  const scrollBy = useCallback(
+    (distance: number) => {
+      scrollDistance.current += distance;
+      const offsetY = translationY.current + scrollDistance.current;
+      animatedOffsetY.setValue(offsetY);
+      setSnapshot((current) => (current ? { ...current, offsetY } : current));
     },
     [setSnapshot, animatedOffsetY]
   );
@@ -71,6 +62,7 @@ export const useDragState = () => {
     (onComplete?: (value: DragSnapshot) => void, layouts?: Record<string, LayoutRectangle>) => {
       // Read from ref to avoid dependency on 'snapshot' state which would break memoization
       const current = snapshotRef.current;
+      pointerY.current = null;
 
       // Freeze the Y position FIRST, before triggering reorder, to prevent jump
       if (current && layouts) {
@@ -97,13 +89,10 @@ export const useDragState = () => {
 
   return {
     snapshot,
+    pointerY,
+    scrollBy,
     animatedOffsetY,
-    layouts,
-    sectionLayouts,
-    bodyLayouts,
-    recordLayout,
-    recordSectionLayout,
-    recordBodyLayout,
+    ...dragLayouts,
     start,
     move,
     end,

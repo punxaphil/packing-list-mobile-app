@@ -129,6 +129,7 @@ export const ItemsList = (props: ItemsListProps) => {
       ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>}
       style={homeStyles.scroll}
       scrollEnabled={!drag.snapshot}
+      drag={drag}
     >
       <View style={homeStyles.list}>
         {props.notes ? <NotesBanner notes={props.notes} onPress={props.onNotesPress} /> : null}

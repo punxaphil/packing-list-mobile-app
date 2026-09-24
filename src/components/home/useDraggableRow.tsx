@@ -10,7 +10,7 @@ import {
   State,
 } from "react-native-gesture-handler";
 
-export type DragOffset = { x: number; y: number };
+export type DragOffset = { x: number; y: number; absoluteY: number };
 
 type DragCallbacks = {
   onStart?: () => void;
@@ -72,9 +72,9 @@ export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOpti
   const handlePanMove = useCallback(
     (event: PanGestureHandlerGestureEvent) => {
       if (!dragStarted.current) return;
-      const { translationX, translationY } = event.nativeEvent;
+      const { translationX, translationY, absoluteY } = event.nativeEvent;
       position.setValue({ x: translationX, y: translationY });
-      callbacks.onMove?.({ x: translationX, y: translationY });
+      callbacks.onMove?.({ x: translationX, y: translationY, absoluteY });
     },
     [position, callbacks]
   );

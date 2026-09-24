@@ -10,12 +10,15 @@ import {
   ViewStyle,
 } from "react-native";
 import { TAB_BAR_HEIGHT } from "~/components/home/theme.ts";
+import type { useDragState } from "../home/useDragState.ts";
+import { useDragEdgeScroll } from "./useDragEdgeScroll.ts";
 
 type FlashScrollViewProps = {
   children: ReactNode;
   style?: ViewStyle;
   contentContainerStyle?: ViewStyle;
   scrollEnabled?: boolean;
+  drag?: ReturnType<typeof useDragState>;
   onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
@@ -27,8 +30,9 @@ export type FadeScrollViewRef = {
 const SCROLL_THRESHOLD = 4;
 
 export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps>(
-  ({ children, style, contentContainerStyle, scrollEnabled = true, onScroll }, ref) => {
+  ({ children, style, contentContainerStyle, scrollEnabled = true, onScroll, drag }, ref) => {
     const scrollRef = useRef<ScrollView>(null);
+    useDragEdgeScroll(scrollRef, drag);
     const [containerHeight, setContainerHeight] = useState(0);
     const [contentHeight, setContentHeight] = useState(0);
     const [keyboardHeight, setKeyboardHeight] = useState(0);

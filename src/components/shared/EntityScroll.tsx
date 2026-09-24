@@ -72,7 +72,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
   }, [entities, flash]);
 
   return (
-    <FadeScrollView ref={scrollRef} style={entityStyles.scroll}>
+    <FadeScrollView ref={scrollRef} style={entityStyles.scroll} drag={drag}>
       <View style={[entityStyles.list, entityStyles.relative]}>
         {entities.map((entity) => {
           const image = images.find((img) => img.typeId === entity.id);

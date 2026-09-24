@@ -198,7 +198,7 @@ const ListScroll = ({
   const isDropping = drag.snapshot?.frozenY !== undefined;
   const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
-    <FadeScrollView style={homeStyles.scroll}>
+    <FadeScrollView style={homeStyles.scroll} drag={drag}>
       <View style={[homeStyles.list, dragStyles.relative]}>
         {lists.map((list, index) => (
           <View
