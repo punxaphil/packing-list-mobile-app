@@ -117,7 +117,7 @@ function MainTabsNavigator() {
           tabBarLabelStyle: { fontSize: 10 },
           tabBarStyle:
             Platform.OS === "web"
-              ? { paddingHorizontal: WEB_TAB_SIDE_PADDING }
+              ? { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: WEB_TAB_SIDE_PADDING }
               : { position: "absolute", bottom: 0, left: 0, right: 0 },
         };
       }}
