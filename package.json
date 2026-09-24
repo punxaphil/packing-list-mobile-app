@@ -36,7 +36,7 @@
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0",
+    "@babel/core": "^8.0.6",
     "@biomejs/biome": "^2.5.14",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@types/lodash": "^4.17.23",
