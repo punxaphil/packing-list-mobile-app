@@ -80,10 +80,11 @@ function MembersStackNavigator() {
 }
 
 function MainTabsNavigator() {
+  const bottomInset = window.matchMedia("(pointer: coarse)").matches ? WEB_TAB_INSET : 0;
   return (
     <MainTabs.Navigator
       initialRouteName={getSelectedId() ? "ItemsStack" : "ListsStack"}
-      safeAreaInsets={{ bottom: WEB_TAB_INSET }}
+      safeAreaInsets={{ bottom: bottomInset }}
       screenOptions={({ route }) => {
         const labels: Record<keyof MainTabsParamList, string> = {
           ItemsStack: i18next.t("navigation.items"),
@@ -122,8 +123,8 @@ function MainTabsNavigator() {
             left: 0,
             right: 0,
             paddingHorizontal: homeSpacing.md,
-            paddingTop: homeSpacing.md - homeSpacing.xs / 2,
-            paddingBottom: homeSpacing.md + homeSpacing.xs / 2,
+            paddingTop: bottomInset / 2,
+            paddingBottom: bottomInset / 2,
           },
         };
       }}
