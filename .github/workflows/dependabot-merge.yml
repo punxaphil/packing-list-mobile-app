@@ -1,0 +1,30 @@
+name: Merge Dependabot
+
+on:
+  workflow_run:
+    workflows: [PR checks]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge checked Dependabot pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA/pulls" --jq '.[] | select(.user.login == "dependabot[bot]" and .base.ref == "main" and .state == "open") | .number')
+          if [ -z "$pr" ]; then exit 1; fi
+          gh api -X PUT "repos/$GITHUB_REPOSITORY/pulls/$pr/merge" -f merge_method=squash -f sha="$HEAD_SHA" --jq '.merged' | grep -qx true
+          gh workflow run deploy-web.yml --repo "$GITHUB_REPOSITORY" --ref main
