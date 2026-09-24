@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import type { AddItemDialogState } from "./ItemsPanel.tsx";
+import { listCopy } from "./listCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
@@ -12,12 +13,11 @@ type Props = {
   addDialog: AddItemDialogState;
   filterDialog: FilterDialogState;
   search: SearchState;
-  hasDueAt: boolean;
   onNotes: () => void;
   hasNotes: boolean;
 };
 
-export const QuickAddRow = ({ addDialog, filterDialog, search, hasDueAt, onNotes, hasNotes }: Props) => {
+export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes }: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localText, setLocalText] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -77,7 +77,6 @@ export const QuickAddRow = ({ addDialog, filterDialog, search, hasDueAt, onNotes
     <DefaultRow
       addDialog={addDialog}
       filterDialog={filterDialog}
-      hasDueAt={hasDueAt}
       onSearch={onToggleSearch}
       onNotes={onNotes}
       hasNotes={hasNotes}
@@ -160,13 +159,12 @@ const NavButtons = ({ onPrev, onNext }: { onPrev: () => void; onNext: () => void
 type DefaultRowProps = {
   addDialog: AddItemDialogState;
   filterDialog: FilterDialogState;
-  hasDueAt: boolean;
   onSearch: () => void;
   onNotes: () => void;
   hasNotes: boolean;
 };
 
-const DefaultRow = ({ addDialog, filterDialog, hasDueAt, onSearch, onNotes, hasNotes }: DefaultRowProps) => (
+const DefaultRow = ({ addDialog, filterDialog, onSearch, onNotes, hasNotes }: DefaultRowProps) => (
   <View style={styles.row}>
     <Pressable
       style={homeStyles.quickAdd}
@@ -178,12 +176,9 @@ const DefaultRow = ({ addDialog, filterDialog, hasDueAt, onSearch, onNotes, hasN
       <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
     </Pressable>
     <View style={styles.iconRow}>
-      <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8}>
-        <MaterialCommunityIcons name="alarm" size={20} color={hasDueAt ? homeColors.primaryStrong : homeColors.muted} />
-      </Pressable>
-      <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8}>
+      <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8} accessibilityLabel={listCopy.title}>
         <MaterialCommunityIcons
-          name="information-outline"
+          name="note-edit-outline"
           size={20}
           color={hasNotes ? homeColors.primaryStrong : homeColors.muted}
         />

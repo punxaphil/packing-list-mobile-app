@@ -97,7 +97,6 @@ const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
         filterDialog={props.filterDialog}
         search={props.search}
         onNotes={props.notesSheet.open}
-        hasDueAt={!!props.list.dueAt}
         hasNotes={!!props.list.notes}
       />
       <ItemsListView {...props} />
