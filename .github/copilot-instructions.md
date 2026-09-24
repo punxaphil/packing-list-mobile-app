@@ -17,7 +17,7 @@
 - No unused code. No unused variables, functions, imports, or exports.
 - Never implement hacky workarounds. Use built-in language/platform features.
 
-# React Native Specific
+# Web UI
 
 - Don't use colored icons, use mdi or similar icon font and style.
 - Reuse components. Don't create several versions of a button for instance. Instead create one button component that can be styled via a `variant` prop (e.g. `default`, `primary`, `danger`). Avoid allowing arbitrary styles via props.
@@ -25,8 +25,8 @@
 # Workflow
 
 - When user corrects general behavior, update these instructions accordingly.
-- Never commit build files (ios/, android/build/, node_modules/, etc.). Only commit source files.
-- Do NOT run `npx react-native run-ios`. A dev server is always running; changes are picked up automatically.
+- Never commit build files (dist/, node_modules/, etc.). Only commit source files.
+- Use the Vite dev server for local web development.
 - Boy scout rule: fix pre-existing issues (formatting, lint, etc.) when touching nearby code.
 - After each change:
   1. Run `npm run prebuild` (typecheck + lint) and fix any errors

@@ -4,12 +4,11 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Platform,
+  ScrollView,
   StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { TAB_BAR_HEIGHT } from "~/components/home/theme.ts";
 
 type FlashScrollViewProps = {
@@ -49,10 +48,8 @@ export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps
     }, [isScrollable]);
 
     useEffect(() => {
-      const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-      const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-      const show = Keyboard.addListener(showEvent, (event) => setKeyboardHeight(event.endCoordinates.height));
-      const hide = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
+      const show = Keyboard.addListener("keyboardDidShow", (event) => setKeyboardHeight(event.endCoordinates.height));
+      const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardHeight(0));
       return () => {
         show.remove();
         hide.remove();

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Platform, Pressable, ScrollView, Switch, Text, View } from "react-native";
+import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -7,7 +7,6 @@ import { commonCopy } from "../home/copy.ts";
 import { homeColors } from "../home/theme.ts";
 import { DialogActions, DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { entityStyles } from "../shared/entityStyles.ts";
-import { PageSheet } from "../shared/PageSheet.tsx";
 import { MOVE_COPY, moveStyles } from "./styles.ts";
 
 type MoveCategoryItemsModalProps = {
@@ -57,13 +56,6 @@ export const MoveCategoryItemsModal = ({
   };
 
   if (items.length === 0 && visible) {
-    if (Platform.OS === "ios") {
-      return (
-        <PageSheet visible={visible} title={MOVE_COPY.title} onClose={onClose}>
-          <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
-        </PageSheet>
-      );
-    }
     return (
       <DialogShell
         visible={visible}
@@ -73,28 +65,6 @@ export const MoveCategoryItemsModal = ({
       >
         <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
       </DialogShell>
-    );
-  }
-
-  if (Platform.OS === "ios") {
-    const targetName = targets.find((c) => c.id === selectedId)?.name;
-    const confirmLabel = selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory;
-    return (
-      <PageSheet
-        visible={visible}
-        title={MOVE_COPY.title}
-        onClose={onClose}
-        confirmLabel={confirmLabel}
-        onConfirm={handleMove}
-        confirmDisabled={!selectedId}
-      >
-        <Text style={moveStyles.subtitle}>
-          {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
-        </Text>
-        <ItemsList items={items} />
-        <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
-        <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} iosSheet />
-      </PageSheet>
     );
   }
 
@@ -143,22 +113,16 @@ const CategoryPicker = ({
   targets,
   selectedId,
   onSelect,
-  iosSheet = false,
 }: {
   targets: NamedEntity[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  iosSheet?: boolean;
 }) => (
   <ScrollView style={moveStyles.categoryList}>
     {targets.map((cat) => (
       <Pressable
         key={cat.id}
-        style={[
-          moveStyles.categoryItem,
-          iosSheet ? moveStyles.sheetCategoryItem : null,
-          selectedId === cat.id && moveStyles.categorySelected,
-        ]}
+        style={[moveStyles.categoryItem, selectedId === cat.id && moveStyles.categorySelected]}
         onPress={() => onSelect(cat.id)}
       >
         <Text style={moveStyles.categoryName}>{cat.name}</Text>

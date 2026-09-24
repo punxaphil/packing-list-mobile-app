@@ -3,14 +3,9 @@ import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { fetchMemberData, type MemberData } from "~/services/spaceDatabase.ts";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
-import { SPACE_MGMT_COPY } from "../space/spaceMgmtCopy.ts";
 import { useSpaceManagement } from "../space/useSpaceManagement.ts";
-import { commonCopy } from "./copy.ts";
 import type { MemberInfo } from "./memberInfo.ts";
-import type { SpaceSheetSubDialog } from "./SpaceSheetAndroid.tsx";
-import { showActionSheet } from "./showActionSheet.ts";
-import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
-import { spaceCopy } from "./spaceCopy.ts";
+import type { SpaceSheetSubDialog } from "./SpaceSheetContent.tsx";
 
 export function useSpaceSheet(onClose: () => void) {
   const { spaces, spaceId, activeSpace, switchSpace, createNewSpace, profile } = useSpace();
@@ -67,38 +62,14 @@ export function useSpaceSheet(onClose: () => void) {
   }, [promptValue, creatingSpace, handleCreate]);
 
   const handleRename = useCallback(() => {
-    const used = showNativeTextPrompt({
-      title: spaceCopy.renamePrompt,
-      confirmLabel: spaceCopy.renameConfirm,
-      value: activeSpace?.name ?? "",
-      onSubmit: (t) => {
-        if (t.trim()) void mgmt.rename(t.trim());
-      },
-    });
-    if (!used) {
-      setPromptValue(activeSpace?.name ?? "");
-      setSubDialog("rename");
-    }
-  }, [activeSpace?.name, mgmt]);
+    setPromptValue(activeSpace?.name ?? "");
+    setSubDialog("rename");
+  }, [activeSpace?.name]);
 
   const handleInvite = useCallback(() => {
-    const used = showNativeTextPrompt({
-      title: spaceCopy.invitePrompt,
-      confirmLabel: spaceCopy.inviteConfirm,
-      keyboardType: "email-address",
-      onSubmit: async (t) => {
-        if (!t.trim()) return;
-        const sent = await mgmt.invite(t.trim());
-        showActionSheet(sent ? spaceCopy.inviteSent : SPACE_MGMT_COPY.inviteUserNotFound, [
-          { text: commonCopy.ok, style: "cancel" },
-        ]);
-      },
-    });
-    if (!used) {
-      setPromptValue("");
-      setSubDialog("invite");
-    }
-  }, [mgmt]);
+    setPromptValue("");
+    setSubDialog("invite");
+  }, []);
 
   const otherSpaces = spaces.filter((s) => s.id !== spaceId);
 

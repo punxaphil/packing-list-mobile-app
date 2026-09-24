@@ -61,8 +61,6 @@ type HomeCopy = {
   keepCategory: string;
   deleteCategoryAction: string;
   withoutMembers: string;
-  reminderErrorTitle: string;
-  reminderErrorMessage: string;
   kitPickerTitle: string;
   kitPickerSubtitle: string;
   kitPickerAdd: string;

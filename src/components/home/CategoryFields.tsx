@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-  Keyboard,
-  Platform,
-  Pressable,
-  Image as RNImage,
-  ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Keyboard, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
 import { Image } from "~/types/Image.ts";
@@ -24,7 +15,6 @@ export const CategoryDropdown = ({
   selected,
   onSelect,
   disabled,
-  iosSheet = false,
   usedCategoryIds,
 }: {
   categories: NamedEntity[];
@@ -32,7 +22,6 @@ export const CategoryDropdown = ({
   selected: NamedEntity;
   onSelect: (category: NamedEntity) => void;
   disabled: boolean;
-  iosSheet?: boolean;
   usedCategoryIds?: string[];
 }) => {
   const [open, setOpen] = useState(false);
@@ -62,10 +51,7 @@ export const CategoryDropdown = ({
 
   return (
     <View style={[CATEGORY_FIELD_STYLES.dropdownContainer, disabled ? CATEGORY_FIELD_STYLES.pickerDisabled : null]}>
-      <Pressable
-        style={iosSheet ? CATEGORY_FIELD_STYLES.sheetDropdownButton : CATEGORY_FIELD_STYLES.dropdownButton}
-        onPress={toggle}
-      >
+      <Pressable style={CATEGORY_FIELD_STYLES.dropdownButton} onPress={toggle}>
         <View style={CATEGORY_FIELD_STYLES.dropdownValue}>
           <Text style={CATEGORY_FIELD_STYLES.dropdownText}>{selected.name}</Text>
           <View style={CATEGORY_FIELD_STYLES.dropdownMedia}>
@@ -79,13 +65,7 @@ export const CategoryDropdown = ({
         <Text style={CATEGORY_FIELD_STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
       </Pressable>
       {open && (
-        <View
-          style={[
-            CATEGORY_FIELD_STYLES.dropdownList,
-            iosSheet ? CATEGORY_FIELD_STYLES.sheetDropdownList : null,
-            !iosSheet && Platform.OS === "android" ? CATEGORY_FIELD_STYLES.dropdownListInline : null,
-          ]}
-        >
+        <View style={CATEGORY_FIELD_STYLES.dropdownList}>
           <ScrollView
             style={[CATEGORY_FIELD_STYLES.dropdownScroll, { maxHeight: dropdownMaxHeight }]}
             nestedScrollEnabled

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Platform, Pressable, Text, TextInput, View } from "react-native";
+import { Animated, Pressable, Text, TextInput, View } from "react-native";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import type { Image } from "~/types/Image.ts";
@@ -7,7 +7,6 @@ import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
@@ -60,7 +59,6 @@ export const AddItemDialog = ({
   const inputRef = useRef<TextInput>(null);
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
-  const isIosSheet = Platform.OS === "ios";
   const isSubmitDisabled = itemName.trim().length === 0;
   const hasNewCategory = newCategoryName.trim().length > 0;
   const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
@@ -100,10 +98,7 @@ export const AddItemDialog = ({
       setSubmitting(false);
     }
   }, [submit]);
-  const inputStyle = [
-    isIosSheet ? STYLES.sheetInput : homeStyles.modalInput,
-    error ? homeStyles.modalInputError : null,
-  ];
+  const inputStyle = [homeStyles.modalInput, error ? homeStyles.modalInputError : null];
   const content = (
     <>
       <TextInput
@@ -119,7 +114,7 @@ export const AddItemDialog = ({
         autoFocus
       />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.existingCategory}</Text>
+      <Text style={homeStyles.modalLabel}>{COPY.existingCategory}</Text>
       <CategoryDropdown
         categories={categories}
         categoryImages={categoryImages}
@@ -130,9 +125,8 @@ export const AddItemDialog = ({
           setError(null);
         }}
         disabled={submitting || hasNewCategory}
-        iosSheet={isIosSheet}
       />
-      <Text style={isIosSheet ? STYLES.sheetLabel : homeStyles.modalLabel}>{COPY.newCategory}</Text>
+      <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
       <TextInput
         value={newCategoryName}
         onChangeText={(text) => {
@@ -140,7 +134,7 @@ export const AddItemDialog = ({
           setError(null);
         }}
         placeholder={COPY.newCategoryPlaceholder}
-        style={isIosSheet ? STYLES.sheetInput : homeStyles.modalInput}
+        style={homeStyles.modalInput}
         editable={!submitting}
       />
       <Pressable
@@ -158,25 +152,6 @@ export const AddItemDialog = ({
       <Button label={COPY.browseKits} onPress={onBrowseKits} disabled={submitting} />
     </>
   );
-  if (isIosSheet) {
-    return (
-      <PageSheet
-        visible={visible}
-        title={HOME_COPY.addItemPrompt}
-        onClose={onCancel}
-        confirmLabel={HOME_COPY.addItemConfirm}
-        onConfirm={handleSubmit}
-        confirmDisabled={isSubmitDisabled || submitting}
-      >
-        {content}
-        {toastMessage && (
-          <Animated.View style={[TOAST_STYLES.container, { opacity: toastOpacity }]}>
-            <Text style={TOAST_STYLES.text}>{toastMessage}</Text>
-          </Animated.View>
-        )}
-      </PageSheet>
-    );
-  }
   return (
     <DialogShell
       visible={visible}

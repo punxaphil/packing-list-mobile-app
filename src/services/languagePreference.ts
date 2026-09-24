@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getLocales } from "react-native-localize";
 
 const STORAGE_KEY = "@language_pref";
 
@@ -16,7 +15,7 @@ export type LanguagePreference = {
 };
 
 export const getDeviceLanguage = (): LanguageCode => {
-  const lang = getLocales()[0]?.languageCode;
+  const lang = navigator.language.split("-")[0];
   return SUPPORTED_LANGUAGES.find((l) => l.code === lang)?.code ?? "en";
 };
 

@@ -13,8 +13,7 @@ const PRESS_SCALE = 0.985;
 export { ICON_SIZE_MD, ICON_SIZE_SM };
 
 export const spaceSheetStyles = StyleSheet.create({
-  sheetList: { flex: 1, minHeight: 0 },
-  sheetListAndroid: { flexShrink: 1 },
+  modalList: { flexShrink: 1 },
   sheetListContent: { paddingBottom: homeSpacing.sm, gap: homeSpacing.sm },
   nameRow: {
     flexDirection: "row",
@@ -53,7 +52,7 @@ export const spaceSheetStyles = StyleSheet.create({
   rowLabel: { flex: 1, fontSize: 16, color: homeColors.text },
 });
 
-export const androidSheetStyles = StyleSheet.create({
+export const spaceModalStyles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: homeColors.overlayMuted,

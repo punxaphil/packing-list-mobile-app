@@ -24,12 +24,6 @@ node_modules/
 .pnp.*
 .pnpm-debug.log*
 
-# Expo / React Native artifacts
-.expo/
-.expo-shared/
-.expo-dev-server/
-.expo-packager-cache/
-.expo-google-services.json
 web-build/
 dist/
 .firebase/
@@ -39,7 +33,6 @@ coverage/
 
 # Metro bundler
 metro-cache/
-.expo/__generated__/AppEntry.js
 
 # Fastlane
 fastlane/report.xml
@@ -47,43 +40,6 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-# React Native Android build artifacts
-android/.gradle/
-android/app/build/
-android/app/debug.keystore
-android/build/
-android/local.properties
-android/keystores/
-*.keystore
-*.jks
-*.keystore.*
-
-# React Native iOS build artifacts
-ios/build/
-ios/DerivedData/
-ios/Pods/
-ios/*.xcworkspace
-ios/.xcode.env
-ios/.xcode.env.local
-ios/ExportOptions.plist
-ios/GoogleService-Info.plist
-*.xcodeproj/project.xcworkspace/
-*.xcuserstate
-*.xcuserdata/
-.last_build_configuration
-hermes-engine/
-
-# CocoaPods
-vendor/bundle/
-
-# Xcode user data
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-!default.perspectivev3
-
-# Misc
-android/app/google-services.json
 *.swp
 *.swo
 .DS_Store

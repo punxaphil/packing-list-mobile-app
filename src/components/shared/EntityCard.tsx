@@ -15,7 +15,6 @@ import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
-import { showNativeTextPrompt } from "../home/showNativeTextPrompt.ts";
 import { HOME_COPY } from "../home/styles.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { homeColors } from "../home/theme.ts";
@@ -94,18 +93,6 @@ export const EntityCard = (props: EntityCardProps) => {
   };
   const openRename = () => {
     setRenameValue(props.entity.name);
-    if (
-      showNativeTextPrompt({
-        title: props.copy.renamePrompt,
-        confirmLabel: props.copy.renameConfirm,
-        cancelLabel: HOME_COPY.cancel,
-        value: props.entity.name,
-        getError: getRenameError,
-        onSubmit: submitRename,
-      })
-    ) {
-      return;
-    }
     setRenameVisible(true);
   };
   const closeRename = () => {

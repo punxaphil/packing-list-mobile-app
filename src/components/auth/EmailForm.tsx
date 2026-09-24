@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { EmailFields, type EmailFieldsProps } from "./EmailFields.tsx";
@@ -40,7 +40,7 @@ export function EmailForm(props: EmailFormProps) {
     <View style={styles.section}>
       <EmailFields {...props} isRegister={isRegister} pending={pending} onSubmitEditing={submitFromInput} />
       <Button label={t(submitLabel)} onPress={submitFromInput} disabled={pending} />
-      {!isRegister && Platform.OS === "web" ? <PasswordResetButton email={email} disabled={pending} /> : null}
+      {!isRegister && <PasswordResetButton email={email} disabled={pending} />}
       <Button
         disabled={pending}
         label={t(isRegister ? "auth.backToLogin" : "auth.createAccountInstead")}

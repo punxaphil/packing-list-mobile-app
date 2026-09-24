@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react";
-import { Platform } from "react-native";
-import { showIosActionSheet } from "~/components/shared/iosActionSheet";
-import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils";
+import { pickAndResizeImage } from "~/services/imageUtils";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 
@@ -12,11 +10,6 @@ type ImageDbOperations = {
 };
 
 type ViewerState = { entityId: string; image: Image } | null;
-
-const PHOTO_OPTION = "Choose Photo";
-const EMOJI_OPTION = "Choose Emoji";
-const CANCEL_OPTION = "Cancel";
-const MODAL_TRANSITION_DELAY_MS = 280;
 
 export const useEntityImageActions = (imageType: string, db: ImageDbOperations) => {
   const [viewerState, setViewerState] = useState<ViewerState>(null);
@@ -49,39 +42,14 @@ export const useEntityImageActions = (imageType: string, db: ImageDbOperations) 
     [saveValue]
   );
 
-  const openPicker = useCallback(
-    (entityId: string, existing?: Image) => {
-      if (Platform.OS !== "ios") {
-        void pickPhoto(entityId, existing);
-        return;
-      }
-      const options = [PHOTO_OPTION, EMOJI_OPTION, CANCEL_OPTION];
-      showIosActionSheet({ options, cancelButtonIndex: options.length - 1 }, (index) => {
-        if (index === 0) {
-          void pickPhoto(entityId, existing);
-          return;
-        }
-        if (index === 1) {
-          setTimeout(() => {
-            void promptForEmojiValue().then((value) => {
-              if (!value) return;
-              void saveValue(entityId, value, existing);
-            });
-          }, MODAL_TRANSITION_DELAY_MS);
-        }
-      });
-    },
-    [pickPhoto, saveValue]
-  );
-
   const handleImagePress = useCallback(
     (entityId: string, image?: Image) => {
       if (image) {
         setViewerState({ entityId, image });
         setTextValue(getEmojiValue(image.url) ?? "");
-      } else openPicker(entityId);
+      } else void pickPhoto(entityId);
     },
-    [openPicker]
+    [pickPhoto]
   );
 
   const handleReplace = () => {

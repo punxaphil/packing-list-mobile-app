@@ -1,16 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  Alert,
-  Animated,
-  LayoutChangeEvent,
-  LayoutRectangle,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Switch,
-  Text,
-  View,
-} from "react-native";
+import { Animated, LayoutChangeEvent, LayoutRectangle, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -318,14 +307,7 @@ const useCreateListDialog = (
 };
 
 const askUseTemplate = (name: string, create: (name: string, useTemplate: boolean) => Promise<void>) => {
-  if (Platform.OS === "web") {
-    showActionSheet(HOME_COPY.useTemplateMessage, [
-      { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
-      { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
-    ]);
-    return;
-  }
-  Alert.alert(HOME_COPY.useTemplateTitle, HOME_COPY.useTemplateMessage, [
+  showActionSheet(HOME_COPY.useTemplateMessage, [
     { text: HOME_COPY.useTemplateNo, onPress: () => void create(name, false) },
     { text: HOME_COPY.useTemplateYes, onPress: () => void create(name, true) },
   ]);

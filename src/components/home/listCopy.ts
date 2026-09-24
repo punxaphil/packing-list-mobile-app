@@ -25,9 +25,6 @@ type ListCopy = {
   cancel: string;
   listMenu: string;
   title: string;
-  dueDate: string;
-  dueDatePlaceholder: string;
-  clearDueDate: string;
   notesPlaceholder: string;
   showNotes: string;
 };

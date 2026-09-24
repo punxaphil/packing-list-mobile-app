@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, TextInput } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
 export type EmailFieldsProps = {
@@ -17,7 +17,7 @@ type Props = EmailFieldsProps & { isRegister: boolean; pending: boolean; onSubmi
 
 export function EmailFields({ isRegister, pending, onSubmitEditing, ...fields }: Props) {
   const { t } = useTranslation();
-  const webDisabled = Platform.OS === "web" ? { disabled: pending } : {};
+  const webDisabled = { disabled: pending };
   return (
     <>
       {isRegister && (

@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import i18next from "i18next";
-import { Platform } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeSpacing } from "~/components/home/theme.ts";
 import { CategoriesScreen } from "./CategoriesScreen";
@@ -80,16 +79,11 @@ function MembersStackNavigator() {
   );
 }
 
-export const ITEMS_TAB = 0;
-export const LISTS_TAB = 1;
-export const CATEGORIES_TAB = 2;
-export const MEMBERS_TAB = 3;
-
 function MainTabsNavigator() {
   return (
     <MainTabs.Navigator
       initialRouteName={getSelectedId() ? "ItemsStack" : "ListsStack"}
-      safeAreaInsets={Platform.OS === "web" ? { bottom: WEB_TAB_INSET } : undefined}
+      safeAreaInsets={{ bottom: WEB_TAB_INSET }}
       screenOptions={({ route }) => {
         const labels: Record<keyof MainTabsParamList, string> = {
           ItemsStack: i18next.t("navigation.items"),
@@ -120,20 +114,17 @@ function MainTabsNavigator() {
           tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
           tabBarInactiveTintColor: MUTED_COLOR,
           tabBarLabelStyle: { fontSize: 10 },
-          tabBarIconStyle: Platform.OS === "web" ? { flexGrow: 0, flexShrink: 0, flexBasis: TAB_ICON_SIZE } : undefined,
-          tabBarItemStyle: Platform.OS === "web" ? { justifyContent: "center" } : undefined,
-          tabBarStyle:
-            Platform.OS === "web"
-              ? {
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  paddingHorizontal: homeSpacing.md,
-                  paddingTop: homeSpacing.md - homeSpacing.xs / 2,
-                  paddingBottom: homeSpacing.md + homeSpacing.xs / 2,
-                }
-              : { position: "absolute", bottom: 0, left: 0, right: 0 },
+          tabBarIconStyle: { flexGrow: 0, flexShrink: 0, flexBasis: TAB_ICON_SIZE },
+          tabBarItemStyle: { justifyContent: "center" },
+          tabBarStyle: {
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            paddingHorizontal: homeSpacing.md,
+            paddingTop: homeSpacing.md - homeSpacing.xs / 2,
+            paddingBottom: homeSpacing.md + homeSpacing.xs / 2,
+          },
         };
       }}
     >

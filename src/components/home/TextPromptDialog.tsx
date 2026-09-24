@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef } from "react";
-import { KeyboardTypeOptions, Platform, Text, TextInput } from "react-native";
+import { useCallback, useRef } from "react";
+import { KeyboardTypeOptions, Text, TextInput } from "react-native";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 
 type TextPromptDialogProps = {
@@ -31,66 +30,15 @@ export const TextPromptDialog = ({
   disabled,
   autoCapitalize,
   keyboardType,
-  getError,
   onChange,
-  onSubmitText,
   onCancel,
   onSubmit,
 }: TextPromptDialogProps) => {
-  const promptVisible = useRef(false);
   const inputRef = useRef<TextInput>(null);
 
   const focusInput = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 300);
   }, []);
-
-  useEffect(() => {
-    if (Platform.OS !== "ios") return;
-    if (!visible) {
-      promptVisible.current = false;
-      return;
-    }
-    if (disabled) return;
-    if (promptVisible.current) return;
-    promptVisible.current = true;
-
-    showNativeTextPrompt({
-      title,
-      confirmLabel,
-      cancelLabel: HOME_COPY.cancel,
-      value,
-      keyboardType,
-      getError,
-      onCancel,
-      onSubmit: (text) => {
-        if (disabled) return;
-        onChange(text);
-        if (onSubmitText) {
-          void onSubmitText(text);
-          return;
-        }
-        onSubmit();
-      },
-    });
-
-    return () => {
-      promptVisible.current = false;
-    };
-  }, [
-    visible,
-    title,
-    confirmLabel,
-    value,
-    keyboardType,
-    getError,
-    onChange,
-    onSubmitText,
-    onCancel,
-    onSubmit,
-    disabled,
-  ]);
-
-  if (Platform.OS === "ios") return null;
 
   const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
 

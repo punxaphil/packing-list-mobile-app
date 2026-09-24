@@ -1,13 +1,8 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Platform, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { ProfileScreen } from "~/components/profile/ProfileScreen.tsx";
-import { PageSheet } from "~/components/shared/PageSheet.tsx";
-import { useApp } from "~/providers/AppProvider.tsx";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { useSubscription } from "~/providers/SubscriptionContext.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { SpaceSheet } from "./SpaceSheet.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
@@ -71,17 +66,7 @@ const BackButton = ({
   </View>
 );
 
-const AvatarButton = ({
-  email,
-  imageUrl,
-  onProfile,
-  showBadge,
-}: {
-  email: string;
-  imageUrl?: string;
-  onProfile?: () => void;
-  showBadge?: boolean;
-}) => (
+const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
   <View style={headerLocalStyles.avatarSlot}>
     <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
       {getEmojiValue(imageUrl) ? (
@@ -92,7 +77,6 @@ const AvatarButton = ({
         <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
       )}
     </Pressable>
-    {showBadge && <View style={headerLocalStyles.avatarBadgeDot} />}
   </View>
 );
 
@@ -130,19 +114,6 @@ export const HomeHeader = ({
   useSpaceAsTitle,
 }: HeaderProps) => {
   const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
-  const [profileVisible, setProfileVisible] = useState(false);
-  const { signOut } = useApp();
-  const { isSubscribed } = useSubscription();
-
-  const openProfile = () => {
-    if (Platform.OS === "ios") {
-      setProfileVisible(true);
-      return;
-    }
-    onProfile?.();
-  };
-
-  const { t } = useTranslation();
 
   return (
     <View style={headerLocalStyles.wrapper}>
@@ -161,17 +132,22 @@ export const HomeHeader = ({
             <StackedTitle title={title} onPress={onPressTitle} onSpacePress={onSpacePress} />
           )}
         </View>
-        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={openProfile} showBadge={!isSubscribed} />
+        <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={onProfile} />
       </View>
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-      <PageSheet visible={profileVisible} title={t("profile.title")} onClose={() => setProfileVisible(false)}>
-        <ProfileScreen email={email} onSignOut={signOut} embeddedInSheet />
-      </PageSheet>
     </View>
   );
 };
 
-const StackedTitle = ({ title, onPress, onSpacePress }: { title: string; onPress?: () => void; onSpacePress?: () => void }) => (
+const StackedTitle = ({
+  title,
+  onPress,
+  onSpacePress,
+}: {
+  title: string;
+  onPress?: () => void;
+  onSpacePress?: () => void;
+}) => (
   <>
     <SpaceBar onPress={onSpacePress} />
     <Title title={title} onPress={onPress} />
@@ -258,15 +234,6 @@ const headerLocalStyles = StyleSheet.create({
     height: AVATAR_SIZE,
     alignItems: "flex-end",
     justifyContent: "center",
-  },
-  avatarBadgeDot: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: homeColors.danger,
   },
   avatarButton: {
     width: AVATAR_SIZE,

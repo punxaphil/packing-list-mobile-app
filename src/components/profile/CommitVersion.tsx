@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { homeColors } from "../home/theme.ts";
 import { profileCopy } from "./profileCopy.ts";
 
@@ -12,7 +12,6 @@ export const CommitVersion = () => {
   const [checkoutSha, setCheckoutSha] = useState<string | null>(null);
 
   useEffect(() => {
-    if (Platform.OS !== "web") return;
     let active = true;
     fetch(COMMIT_PATH, { cache: "no-store" })
       .then((response) => (response.ok ? response.text() : null))

@@ -1,9 +1,8 @@
 import i18next from "i18next";
 import { useEffect, useRef } from "react";
-import { Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { Button } from "../shared/Button.tsx";
-import { PageSheet } from "../shared/PageSheet.tsx";
 import { filterCopy } from "./copy.ts";
 import { CategorySection, MemberSection } from "./FilterComponents.tsx";
 import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
@@ -41,34 +40,6 @@ export const FilterSheet = (props: FilterSheetProps) => {
     }
   }, [props.visible]);
 
-  if (Platform.OS === "ios") {
-    return (
-      <PageSheet
-        visible={props.visible}
-        title={filterCopy.title}
-        onClose={props.onClose}
-        confirmLabel={filterCopy.done}
-        onConfirm={props.onClose}
-        scrollable={false}
-      >
-        <SheetHeader
-          count={totalCount}
-          onClear={props.onClear}
-          shownCount={props.shownCount}
-          totalItemCount={props.totalItemCount}
-          iosSheet
-        />
-        <FilterContent
-          {...props}
-          categoryScrollRef={categoryScrollRef}
-          memberScrollRef={memberScrollRef}
-          sortedCategories={props.categories}
-          sortedMembers={props.members}
-        />
-      </PageSheet>
-    );
-  }
-
   return (
     <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
       <Pressable style={styles.backdrop} onPress={props.onClose}>
@@ -98,11 +69,10 @@ type SheetHeaderProps = {
   onClear: () => void;
   shownCount: number;
   totalItemCount: number;
-  iosSheet?: boolean;
 };
 
-const SheetHeader = ({ count, onClear, shownCount, totalItemCount, iosSheet = false }: SheetHeaderProps) => (
-  <View style={iosSheet ? styles.sheetHeader : styles.header}>
+const SheetHeader = ({ count, onClear, shownCount, totalItemCount }: SheetHeaderProps) => (
+  <View style={styles.header}>
     <Text style={styles.itemCount}>{i18next.t("filter.itemsShowing", { shownCount, totalItemCount })}</Text>
     {count > 0 && (
       <Pressable onPress={onClear} hitSlop={8}>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { KeyboardAvoidingView, View } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -90,7 +90,7 @@ export const ItemsPanel = (props: ItemsPanelProps) => {
 const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
   <View style={homeStyles.panel}>
     <HeaderRow {...props} />
-    <KeyboardAvoidingView style={homeStyles.panelBody} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView style={homeStyles.panelBody}>
       <QuickAddRow
         addDialog={props.addItemDialog}
         filterDialog={props.filterDialog}

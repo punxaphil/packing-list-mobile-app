@@ -1,5 +1,5 @@
 import { type PropsWithChildren, type RefObject, useRef } from "react";
-import { Animated, Keyboard, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { homeColors, homeSpacing } from "../home/theme.ts";
@@ -71,7 +71,7 @@ export const PageSheet = ({
           ref={scrollViewRef}
           style={styles.content}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+          keyboardDismissMode="on-drag"
           automaticallyAdjustKeyboardInsets
           contentContainerStyle={styles.scrollContent}
         >
@@ -236,12 +236,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom: homeSpacing.lg,
   },
   scrollContent: {
     paddingHorizontal: homeSpacing.lg,
     paddingVertical: homeSpacing.md,
-    paddingBottom: homeSpacing.lg + (Platform.OS === "ios" ? homeSpacing.lg : 0),
+    paddingBottom: homeSpacing.lg,
   },
   panel: {
     backgroundColor: "rgba(255,255,255,0.52)",

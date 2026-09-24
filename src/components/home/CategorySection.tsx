@@ -1,16 +1,6 @@
 import i18next from "i18next";
 import { memo, useEffect, useState } from "react";
-import {
-  Alert,
-  Animated,
-  LayoutRectangle,
-  Platform,
-  Pressable,
-  Image as RNImage,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Alert, Animated, LayoutRectangle, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
@@ -36,8 +26,6 @@ import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { showActionSheet } from "./showActionSheet.ts";
-import { showNativeRenameItemPrompt } from "./showNativeRenameItemPrompt.ts";
-import { showNativeTextPrompt } from "./showNativeTextPrompt.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { CHECKBOX_SIZE, homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
@@ -129,7 +117,6 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
 
   const onAdd = () => props.onAddItem(props.section.category);
   const openRenameItem = (item: PackItem) => {
-    if (showNativeRenameItemPrompt(item, props.section.items, (name) => props.onRenameItem(item, name))) return;
     setRenameItem(item);
     setRenameItemText(item.name);
   };
@@ -138,22 +125,6 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     setRenameItem(null);
   };
   const openRenameCategory = () => {
-    if (
-      showNativeTextPrompt({
-        title: HOME_COPY.renameCategoryPrompt,
-        confirmLabel: HOME_COPY.renameListConfirm,
-        cancelLabel: HOME_COPY.cancel,
-        value: props.section.category.name,
-        getError: (text) => getRenameCategoryError(props.section.category, text, props.categories),
-        onSubmit: (text) => {
-          const trimmed = text.trim();
-          if (!trimmed || trimmed === props.section.category.name) return;
-          props.onRenameCategory(props.section.category, trimmed);
-        },
-      })
-    ) {
-      return;
-    }
     setRenameCategoryVisible(true);
     setRenameCategoryText(props.section.category.name);
   };
@@ -195,29 +166,6 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       setPendingToggle(null);
     }
   }, [allChecked, pendingToggle]);
-
-  useEffect(() => {
-    if (!confirmDelete || Platform.OS !== "ios") return;
-    Alert.alert(
-      HOME_COPY.categoryMenuDeleteItems,
-      i18next.t("category.deleteItemsBody", { count: props.section.items.length, name: props.section.title }),
-      [
-        {
-          text: commonCopy.cancel,
-          style: "cancel",
-          onPress: () => setConfirmDelete(false),
-        },
-        {
-          text: homeCopy.deleteListAction,
-          style: "destructive",
-          onPress: () => {
-            setConfirmDelete(false);
-            for (const item of props.section.items) props.onDeleteItem(item.id);
-          },
-        },
-      ]
-    );
-  }, [confirmDelete, props.section.items, props.section.title, props.onDeleteItem]);
 
   const handleMoveSection = async (category: NamedEntity | null, newCategoryName: string | null) => {
     const nextCategory = await resolveMoveCategory(category, newCategoryName);
@@ -286,31 +234,29 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         onClose={() => setCopyItem(null)}
         onSelect={handleCopyToList}
       />
-      {Platform.OS !== "ios" && (
-        <DialogShell
-          visible={confirmDelete}
-          title={HOME_COPY.categoryMenuDeleteItems}
-          onClose={() => setConfirmDelete(false)}
-          actions={
-            <DialogActions
-              cancelLabel={commonCopy.cancel}
-              confirmLabel={homeCopy.deleteListAction}
-              onCancel={() => setConfirmDelete(false)}
-              onConfirm={() => {
-                setConfirmDelete(false);
-                for (const item of props.section.items) props.onDeleteItem(item.id);
-              }}
-            />
-          }
-        >
-          <Text style={deleteStyles.body}>
-            {i18next.t("category.deleteItemsBody", {
-              count: props.section.items.length,
-              name: props.section.title,
-            })}
-          </Text>
-        </DialogShell>
-      )}
+      <DialogShell
+        visible={confirmDelete}
+        title={HOME_COPY.categoryMenuDeleteItems}
+        onClose={() => setConfirmDelete(false)}
+        actions={
+          <DialogActions
+            cancelLabel={commonCopy.cancel}
+            confirmLabel={homeCopy.deleteListAction}
+            onCancel={() => setConfirmDelete(false)}
+            onConfirm={() => {
+              setConfirmDelete(false);
+              for (const item of props.section.items) props.onDeleteItem(item.id);
+            }}
+          />
+        }
+      >
+        <Text style={deleteStyles.body}>
+          {i18next.t("category.deleteItemsBody", {
+            count: props.section.items.length,
+            name: props.section.title,
+          })}
+        </Text>
+      </DialogShell>
       <CategoryRenameDialogs
         renameItem={renameItem}
         renameItemText={renameItemText}

@@ -8,7 +8,6 @@ import { signOutUser } from "~/navigation/signOut.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { InviteProvider } from "./InviteProvider.tsx";
 import { SpaceProvider } from "./SpaceProvider.tsx";
-import { SubscriptionProvider } from "./SubscriptionProvider.tsx";
 import { TemplateProvider } from "./TemplateProvider.tsx";
 
 type AppContextValue = {
@@ -67,15 +66,13 @@ export function AppProvider({ userId, email, children }: AppProviderProps) {
   const signOut = useSignOutAction();
 
   return (
-    <SubscriptionProvider userId={userId}>
-      <SpaceProvider userId={userId} email={email}>
-        <InviteProvider email={email}>
-          <AppContent userId={userId} email={email} signOut={signOut}>
-            {children}
-          </AppContent>
-        </InviteProvider>
-      </SpaceProvider>
-    </SubscriptionProvider>
+    <SpaceProvider userId={userId} email={email}>
+      <InviteProvider email={email}>
+        <AppContent userId={userId} email={email} signOut={signOut}>
+          {children}
+        </AppContent>
+      </InviteProvider>
+    </SpaceProvider>
   );
 }
 

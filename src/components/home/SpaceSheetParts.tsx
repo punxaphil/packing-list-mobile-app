@@ -5,7 +5,7 @@ import { Button } from "../shared/Button.tsx";
 import { MemberAvatars } from "./MemberAvatars.tsx";
 import type { MemberInfo } from "./memberInfo.ts";
 import { spaceCopy } from "./spaceCopy.ts";
-import { androidSheetStyles, ICON_SIZE_MD, ICON_SIZE_SM, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
+import { ICON_SIZE_MD, ICON_SIZE_SM, spaceModalStyles, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
 export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
@@ -74,9 +74,9 @@ type SpaceRowProps = {
   members?: MemberInfo[];
 };
 
-export const AndroidSheetHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
-  <View style={androidSheetStyles.header}>
-    <Text style={androidSheetStyles.headerTitle}>{title}</Text>
+export const SpaceSheetHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
+  <View style={spaceModalStyles.header}>
+    <Text style={spaceModalStyles.headerTitle}>{title}</Text>
     <Pressable onPress={onClose} hitSlop={8}>
       <MaterialCommunityIcons name="close" size={ICON_SIZE_MD} color={homeColors.muted} />
     </Pressable>

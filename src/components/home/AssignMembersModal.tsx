@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Platform,
-  Pressable,
-  Image as RNImage,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Pressable, Image as RNImage, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { switchToMembersTab } from "~/navigation/navigation.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { PageSheet } from "../shared/PageSheet.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 
@@ -31,9 +20,7 @@ type AssignMembersModalProps = {
   onSave: (item: PackItem, members: MemberPackItem[]) => Promise<void>;
 };
 
-const IOS_SHEET_LIST_RATIO = 0.52;
 const DIALOG_LIST_RATIO = 0.42;
-const IOS_ROW_HEIGHT = 48;
 const DEFAULT_ROW_HEIGHT = 40;
 const EMPTY_LIST_HEIGHT = 72;
 
@@ -80,22 +67,6 @@ export const AssignMembersModal = ({
 
   if (!item) return null;
 
-  if (Platform.OS === "ios") {
-    return (
-      <PageSheet
-        visible={visible}
-        title={t("assignMembers.title")}
-        onClose={onClose}
-        confirmLabel={t("assignMembers.save")}
-        onConfirm={handleSave}
-      >
-        <Text style={styles.subtitle}>{item.name}</Text>
-        <MemberList members={members} memberImages={memberImages} selected={selected} onToggle={toggle} iosSheet />
-        <Button label={t("assignMembers.manageMembers")} onPress={handleManageMembers} centered />
-      </PageSheet>
-    );
-  }
-
   return (
     <DialogShell
       visible={visible}
@@ -124,12 +95,11 @@ type MemberListProps = {
   memberImages: Image[];
   selected: Set<string>;
   onToggle: (id: string) => void;
-  iosSheet?: boolean;
 };
 
-const MemberList = ({ members, memberImages, selected, onToggle, iosSheet = false }: MemberListProps) => {
+const MemberList = ({ members, memberImages, selected, onToggle }: MemberListProps) => {
   const { t } = useTranslation();
-  const listMaxHeight = useListMaxHeight(members.length, iosSheet);
+  const listMaxHeight = useListMaxHeight(members.length);
 
   return (
     <ScrollView style={[styles.list, { maxHeight: listMaxHeight }]}>
@@ -141,7 +111,6 @@ const MemberList = ({ members, memberImages, selected, onToggle, iosSheet = fals
           imageUrl={memberImages.find((image) => image.typeId === member.id)?.url}
           checked={selected.has(member.id)}
           onToggle={() => onToggle(member.id)}
-          iosSheet={iosSheet}
           isLast={index === members.length - 1}
         />
       ))}
@@ -149,12 +118,11 @@ const MemberList = ({ members, memberImages, selected, onToggle, iosSheet = fals
   );
 };
 
-const useListMaxHeight = (memberCount: number, iosSheet: boolean) => {
+const useListMaxHeight = (memberCount: number) => {
   const { height } = useWindowDimensions();
   if (memberCount === 0) return EMPTY_LIST_HEIGHT;
-  const rowHeight = iosSheet ? IOS_ROW_HEIGHT : DEFAULT_ROW_HEIGHT;
-  const screenCap = Math.floor(height * (iosSheet ? IOS_SHEET_LIST_RATIO : DIALOG_LIST_RATIO));
-  return Math.min(memberCount * rowHeight, screenCap);
+  const screenCap = Math.floor(height * DIALOG_LIST_RATIO);
+  return Math.min(memberCount * DEFAULT_ROW_HEIGHT, screenCap);
 };
 
 type MemberRowProps = {
@@ -162,12 +130,11 @@ type MemberRowProps = {
   imageUrl?: string;
   checked: boolean;
   onToggle: () => void;
-  iosSheet?: boolean;
   isLast?: boolean;
 };
 
-const MemberRow = ({ member, imageUrl, checked, onToggle, iosSheet = false, isLast = false }: MemberRowProps) => (
-  <Pressable style={[styles.row, iosSheet ? styles.sheetRow : null, isLast ? styles.lastRow : null]} onPress={onToggle}>
+const MemberRow = ({ member, imageUrl, checked, onToggle, isLast = false }: MemberRowProps) => (
+  <Pressable style={[styles.row, isLast ? styles.lastRow : null]} onPress={onToggle}>
     <AppCheckbox checked={checked} onToggle={onToggle} size={16} />
     <Text style={styles.memberName}>{member.name}</Text>
     <View style={styles.rowSpacer} />
@@ -195,9 +162,6 @@ const styles = StyleSheet.create({
     borderBottomColor: homeColors.border,
   },
   lastRow: { borderBottomWidth: 0 },
-  sheetRow: {
-    paddingHorizontal: 0,
-  },
   memberName: { fontSize: 16, color: homeColors.text },
   rowSpacer: { flex: 1 },
   avatarImage: { width: 28, height: 28, borderRadius: 6 },

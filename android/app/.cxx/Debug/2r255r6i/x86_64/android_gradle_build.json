@@ -1,0 +1,91 @@
+{
+  "buildFiles": [
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-image-crop-picker/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-localize/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-navigation/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native-vector-icons/android/build/generated/source/codegen/jni/CMakeLists.txt",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/johan.frick/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/android/app/.cxx/Debug/2r255r6i/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/johan.frick/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/android/app/.cxx/Debug/2r255r6i/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "appmodules",
+      "output": "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/android/app/build/intermediates/cxx/Debug/2r255r6i/obj/x86_64/libappmodules.so",
+      "runtimeFiles": [
+        "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/android/app/build/intermediates/cxx/Debug/2r255r6i/obj/x86_64/libreact_codegen_safeareacontext.so",
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/d30e5a2de501b0e037276d10979e2fcd/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/43b8102822689de62c1fe4cc39119c3e/transformed/react-android-0.81.5-debug/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/43b8102822689de62c1fe4cc39119c3e/transformed/react-android-0.81.5-debug/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    },
+    "react_codegen_RNCImageCropPickerSpec::@702b02f8d2524609d414": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_RNCImageCropPickerSpec"
+    },
+    "react_codegen_RNLocalizeSpec::@f3ba5298aff84514e205": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_RNLocalizeSpec"
+    },
+    "react_codegen_RNVectorIconsSpec::@479809fae146501fd34d": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_RNVectorIconsSpec"
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_rnasyncstorage"
+    },
+    "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_rngesturehandler_codegen"
+    },
+    "react_codegen_rnnavigation::@8e33082ccc1ef81518b5": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_rnnavigation"
+    },
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "react_codegen_safeareacontext",
+      "output": "/Users/johan.frick/code/other/punxaphil/packing-list-mobile-app/android/app/build/intermediates/cxx/Debug/2r255r6i/obj/x86_64/libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/d30e5a2de501b0e037276d10979e2fcd/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86_64/libfbjni.so",
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/43b8102822689de62c1fe4cc39119c3e/transformed/react-android-0.81.5-debug/prefab/modules/jsi/libs/android.x86_64/libjsi.so",
+        "/Users/johan.frick/.gradle/caches/8.14.3/transforms/43b8102822689de62c1fe4cc39119c3e/transformed/react-android-0.81.5-debug/prefab/modules/reactnative/libs/android.x86_64/libreactnative.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/johan.frick/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/johan.frick/Library/Android/sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

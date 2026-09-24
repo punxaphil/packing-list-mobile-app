@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 import { submitFeedback, validateFeedback } from "~/services/feedbackDatabase.ts";
-import { showNativeTextPrompt } from "../home/showNativeTextPrompt.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { Button } from "../shared/Button.tsx";
 import { profileCopy } from "./profileCopy.ts";
@@ -28,15 +27,6 @@ export const FeedbackButton = () => {
 
   const open = () => {
     setText("");
-    if (
-      showNativeTextPrompt({
-        title: profileCopy.feedbackTitle,
-        confirmLabel: profileCopy.feedbackConfirm,
-        getError,
-        onSubmit: send,
-      })
-    )
-      return;
     setVisible(true);
   };
 

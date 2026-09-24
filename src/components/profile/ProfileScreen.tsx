@@ -1,21 +1,10 @@
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  Image as RNImage,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, Image as RNImage, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
-import { showIosActionSheet } from "~/components/shared/iosActionSheet";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils";
+import { pickAndResizeImage } from "~/services/imageUtils";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
 import { updateProfileImageUrl } from "~/services/spaceDatabase.ts";
-import { commonCopy } from "../home/copy.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
@@ -25,7 +14,6 @@ import { FeedbackButton } from "./FeedbackButton.tsx";
 import { NameEditor } from "./NameEditor.tsx";
 import { PreferencesSection } from "./PreferencesSection.tsx";
 import { profileCopy } from "./profileCopy.ts";
-import { SubscriptionSection } from "./SubscriptionSection.tsx";
 
 type ProfileScreenProps = {
   email: string;
@@ -35,7 +23,6 @@ type ProfileScreenProps = {
 };
 
 const PICKER_OPEN_DELAY_MS = 250;
-const MODAL_TRANSITION_DELAY_MS = 280;
 
 type AvatarProps = { email: string; imageUrl?: string; onPress: () => void };
 
@@ -111,7 +98,6 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
         <Text style={styles.email}>{email}</Text>
         <NameEditor />
         <PreferencesSection />
-        <SubscriptionSection />
         <View style={styles.actionsRow}>
           <FeedbackButton />
         </View>
@@ -162,30 +148,6 @@ const useImageHandlers = (userId: string | undefined) => {
       if (!url) return false;
       return saveImage(url);
     });
-  const pickEmojiText = () =>
-    runWithLoading(async () => {
-      const value = await promptForEmojiValue();
-      if (!value) return false;
-      return saveImage(value);
-    });
-  const pick = async () => {
-    if (!userId) return false;
-    if (Platform.OS !== "ios") return pickPhoto();
-    return new Promise<boolean>((resolve) => {
-      const options = [profileCopy.choosePhoto, profileCopy.chooseEmoji, commonCopy.cancel];
-      showIosActionSheet({ options, cancelButtonIndex: options.length - 1 }, (index) => {
-        if (index === 0) {
-          void pickPhoto().then(resolve);
-          return;
-        }
-        if (index === 1) {
-          setTimeout(() => void pickEmojiText().then(resolve), MODAL_TRANSITION_DELAY_MS);
-          return;
-        }
-        resolve(false);
-      });
-    });
-  };
   const remove = async () => {
     if (!userId) return false;
     return runWithLoading(async () => {
@@ -199,7 +161,7 @@ const useImageHandlers = (userId: string | undefined) => {
       return saveImage(toEmojiValue(trimmed));
     });
   return {
-    pick,
+    pick: pickPhoto,
     remove,
     saveText,
     loading,

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Platform, Text, TextInput } from "react-native";
+import { Text, TextInput } from "react-native";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { PageSheet } from "../shared/PageSheet.tsx";
-import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
+import { CategoryDropdown } from "./CategoryFields.tsx";
 import { commonCopy, homeCopy } from "./copy.ts";
 import { addItemCopy, moveCategoryCopy } from "./listCopy.ts";
 import { homeStyles } from "./styles.ts";
@@ -33,7 +32,6 @@ export const MoveCategoryModal = ({
   const [newCategoryName, setNewCategoryName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const isIosSheet = Platform.OS === "ios";
   const hasNewCategory = newCategoryName.trim().length > 0;
   const trimmedName = newCategoryName.trim();
   const existingCategory = categories.find((category) => category.name.toLowerCase() === trimmedName.toLowerCase());
@@ -70,9 +68,7 @@ export const MoveCategoryModal = ({
 
   const content = (
     <>
-      <Text style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetLabel : homeStyles.modalLabel}>
-        {addItemCopy.existingCategory}
-      </Text>
+      <Text style={homeStyles.modalLabel}>{addItemCopy.existingCategory}</Text>
       <CategoryDropdown
         categories={categories}
         categoryImages={categoryImages}
@@ -82,11 +78,8 @@ export const MoveCategoryModal = ({
           setError(null);
         }}
         disabled={submitting || hasNewCategory}
-        iosSheet={isIosSheet}
       />
-      <Text style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetLabel : homeStyles.modalLabel}>
-        {addItemCopy.newCategory}
-      </Text>
+      <Text style={homeStyles.modalLabel}>{addItemCopy.newCategory}</Text>
       <TextInput
         ref={inputRef}
         value={newCategoryName}
@@ -95,27 +88,12 @@ export const MoveCategoryModal = ({
           setError(null);
         }}
         placeholder={addItemCopy.newCategoryPlaceholder}
-        style={isIosSheet ? CATEGORY_FIELD_STYLES.sheetInput : homeStyles.modalInput}
+        style={homeStyles.modalInput}
         editable={!submitting}
       />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
     </>
   );
-
-  if (isIosSheet) {
-    return (
-      <PageSheet
-        visible={visible}
-        title={moveCategoryCopy.title}
-        onClose={onClose}
-        confirmLabel={homeCopy.renameListConfirm}
-        onConfirm={handleSubmit}
-        confirmDisabled={isSubmitDisabled}
-      >
-        {content}
-      </PageSheet>
-    );
-  }
 
   return (
     <DialogShell

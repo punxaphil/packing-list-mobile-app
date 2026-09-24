@@ -1,7 +1,6 @@
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { Platform } from "react-native";
-import { AndroidActionSheetHost } from "~/components/home/AndroidActionSheetHost.tsx";
+import { ActionSheetHost } from "~/components/home/ActionSheetHost.tsx";
 import { homeColors } from "~/components/home/theme.ts";
 import { AppLoadingState } from "~/components/shared/AppLoadingState.tsx";
 import { applyStoredLanguage } from "~/i18n";
@@ -17,8 +16,6 @@ async function bootstrap() {
   await applyStoredLanguage();
   const { initSelection } = await import("./selectionState");
   await initSelection();
-  const { registerPackingListReminderHandler } = await import("~/services/packingListReminder");
-  registerPackingListReminderHandler();
 }
 
 function useBootstrapped() {
@@ -41,15 +38,11 @@ export function App() {
       {ready ? (
         <>
           <AppRoot>
-            <NavigationContainer
-              ref={navigationRef}
-              documentTitle={{ enabled: false }}
-              theme={Platform.OS === "web" ? webTheme : undefined}
-            >
+            <NavigationContainer ref={navigationRef} documentTitle={{ enabled: false }} theme={webTheme}>
               <RootNavigator />
             </NavigationContainer>
           </AppRoot>
-          <AndroidActionSheetHost />
+          <ActionSheetHost />
         </>
       ) : (
         <AppLoadingState />

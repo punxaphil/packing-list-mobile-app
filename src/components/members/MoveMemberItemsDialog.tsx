@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { Platform, Pressable, Image as RNImage, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, Image as RNImage, ScrollView, StyleSheet, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -7,7 +7,6 @@ import { MOVE_COPY } from "../categories/styles.ts";
 import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
-import { PageSheet } from "../shared/PageSheet.tsx";
 
 type MoveMemberItemsDialogProps = {
   visible: boolean;
@@ -44,14 +43,6 @@ export const MoveMemberItemsDialog = ({
       </ScrollView>
     </View>
   );
-
-  if (Platform.OS === "ios") {
-    return (
-      <PageSheet visible={visible} title={MOVE_COPY.title} onClose={onClose} scrollable={false}>
-        {content}
-      </PageSheet>
-    );
-  }
 
   return (
     <DialogShell

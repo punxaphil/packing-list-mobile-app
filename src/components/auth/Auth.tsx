@@ -9,11 +9,8 @@ import {
 import i18next from "i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { signInWithApple } from "~/services/appleAuth";
-import { homeColors } from "../home/theme.ts";
-import { Button } from "../shared/Button.tsx";
 import { authStyles } from "./authStyles.ts";
 import { EmailForm } from "./EmailForm.tsx";
 
@@ -35,22 +32,12 @@ const friendlyAuthError = (e: unknown, fallbackKey: string): string => {
 
 export function Login() {
   const { t } = useTranslation();
-  const [showEmail, setShowEmail] = useState(Platform.OS === "web");
   const [emailMode, setEmailMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-
-  const handleApple = async () => {
-    setError("");
-    try {
-      await signInWithApple();
-    } catch (e) {
-      setError(friendlyAuthError(e, "auth.appleSignInFailed"));
-    }
-  };
 
   const handleLogin = async () => {
     setError("");
@@ -81,33 +68,14 @@ export function Login() {
     <SafeAreaView style={authStyles.safeArea}>
       <View style={authStyles.container}>
         <Text style={authStyles.title}>{t("auth.welcome")}</Text>
-        {Platform.OS !== "web" && (
-          <Button variant="apple" label={t("auth.signInApple")} onPress={() => void handleApple()} />
-        )}
         {error ? <Text style={authStyles.error}>{error}</Text> : null}
-        {!showEmail && (
-          <Pressable onPress={() => setShowEmail(true)}>
-            <Text style={styles.emailToggle}>{t("auth.signInEmail")}</Text>
-          </Pressable>
-        )}
-        {showEmail && (
-          <EmailForm
-            mode={emailMode}
-            onSubmit={emailMode === "login" ? handleLogin : handleRegister}
-            onToggleMode={() => setEmailMode(emailMode === "login" ? "register" : "login")}
-            {...{ email, setEmail, password, setPassword, firstName, setFirstName, lastName, setLastName }}
-          />
-        )}
+        <EmailForm
+          mode={emailMode}
+          onSubmit={emailMode === "login" ? handleLogin : handleRegister}
+          onToggleMode={() => setEmailMode(emailMode === "login" ? "register" : "login")}
+          {...{ email, setEmail, password, setPassword, firstName, setFirstName, lastName, setLastName }}
+        />
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  emailToggle: {
-    color: homeColors.muted,
-    fontSize: 14,
-    textAlign: "center",
-    textDecorationLine: "underline",
-  },
-});

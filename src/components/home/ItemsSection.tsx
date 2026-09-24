@@ -1,13 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
-import {
-  buildPackingListReminderContent,
-  pickPackingListDueAt,
-  syncPackingListReminder,
-} from "~/services/packingListReminder";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
@@ -16,7 +10,6 @@ import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
-import { homeCopy } from "./copy.ts";
 import { FilterSheet } from "./FilterSheet.tsx";
 import { applyFilters } from "./filterUtils.ts";
 import { type AddItemDialogState, ItemsPanel, type ListHandlers, type TextDialogState } from "./ItemsPanel.tsx";
@@ -55,7 +48,7 @@ const attachImagesToEntities = (entities: NamedEntity[], imageMap: Map<string, s
   entities.map((entity) => ({ ...entity, image: imageMap.get(entity.id) }));
 
 export const ItemsSection = (props: ItemsSectionProps) => {
-  const { profile, spaceId, writeDb } = useSpace();
+  const { profile, writeDb } = useSpace();
   const imageDb = {
     add: writeDb.addImage,
     update: writeDb.updateImage,
@@ -119,7 +112,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
     list?.id
   );
   const renameDialog = useRenameDialog(list, props.lists, renameList);
-  const notesSheet = useListNotes(list, spaceId, writeDb);
+  const notesSheet = useListNotes(list, writeDb);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const listImage = props.imagesState.images.find((img) => img.type === "packingLists" && img.typeId === list.id);
@@ -415,44 +408,28 @@ const useAddItemDialog = (
   };
 };
 
-const useListNotes = (list: NamedEntity | null, spaceId: string, writeDb: WriteDb): ListNotesState => {
-  const [dueAt, setDueAt] = useState<number | null>(null);
+const useListNotes = (list: NamedEntity | null, writeDb: WriteDb): ListNotesState => {
   const [visible, setVisible] = useState(false);
   const [notes, setNotes] = useState("");
   const [showNotes, setShowNotesLocal] = useState(false);
 
   const open = useCallback(() => {
-    setDueAt(list?.dueAt ?? null);
     setNotes(list?.notes ?? "");
     setShowNotesLocal(list?.showNotes ?? false);
     setVisible(true);
-  }, [list?.dueAt, list?.notes, list?.showNotes]);
+  }, [list?.notes, list?.showNotes]);
 
   const persist = useCallback(async () => {
     if (!list) return;
-    await writeDb.updatePackingListInfo(list.id, notes, showNotes, dueAt);
-    try {
-      const reminder = buildPackingListReminderContent(list.name);
-      await syncPackingListReminder({ ...reminder, dueAt, id: list.id, spaceId });
-    } catch (error) {
-      console.error(error);
-      Alert.alert(homeCopy.reminderErrorTitle, homeCopy.reminderErrorMessage);
-    }
-  }, [dueAt, list, notes, showNotes, spaceId, writeDb]);
+    await writeDb.updatePackingListInfo(list.id, notes, showNotes, list.dueAt ?? null);
+  }, [list, notes, showNotes, writeDb]);
 
   const close = useCallback(() => {
     setVisible(false);
     void persist();
   }, [persist]);
 
-  const pickDueAt = useCallback(async () => {
-    const nextDueAt = await pickPackingListDueAt(dueAt);
-    if (nextDueAt !== undefined) setDueAt(nextDueAt);
-  }, [dueAt]);
-
-  const clearDueAt = useCallback(() => setDueAt(null), []);
-
   const setShowNotes = useCallback((v: boolean) => setShowNotesLocal(v), []);
 
-  return { visible, dueAt, notes, showNotes, open, close, clearDueAt, pickDueAt, setDueAt, setNotes, setShowNotes };
+  return { visible, notes, showNotes, open, close, setNotes, setShowNotes };
 };

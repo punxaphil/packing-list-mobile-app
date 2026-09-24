@@ -1,6 +1,5 @@
 import i18next from "i18next";
-import { Alert, Platform } from "react-native";
-import { showIosActionSheet } from "~/components/shared/iosActionSheet";
+import { Alert } from "react-native";
 
 export type ActionSheetItem = {
   text: string;
@@ -9,27 +8,27 @@ export type ActionSheetItem = {
   disabled?: boolean;
 };
 
-type AndroidActionSheetPayload = {
+type ActionSheetPayload = {
   title: string;
   items: ActionSheetItem[];
 };
 
-type AndroidActionSheetListener = (payload: AndroidActionSheetPayload) => void;
+type ActionSheetListener = (payload: ActionSheetPayload) => void;
 
-const listenerStack: AndroidActionSheetListener[] = [];
+const listenerStack: ActionSheetListener[] = [];
 
-export const pushAndroidActionSheetListener = (listener: AndroidActionSheetListener) => {
+export const pushActionSheetListener = (listener: ActionSheetListener) => {
   listenerStack.push(listener);
 };
 
-export const removeAndroidActionSheetListener = (listener: AndroidActionSheetListener) => {
+export const removeActionSheetListener = (listener: ActionSheetListener) => {
   const idx = listenerStack.indexOf(listener);
   if (idx !== -1) listenerStack.splice(idx, 1);
 };
 
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
-const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
+export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
   const listener = listenerStack[listenerStack.length - 1];
   if (listener) {
     listener({ title, items });
@@ -41,34 +40,4 @@ const showAndroidActionSheet = (title: string, items: ActionSheetItem[]) => {
     { text: i18next.t("common.cancel"), style: "cancel" as const },
   ];
   Alert.alert(title, undefined, buttons, { cancelable: true });
-};
-
-export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
-  if (Platform.OS !== "ios") {
-    showAndroidActionSheet(title, items);
-    return;
-  }
-
-  const actionItems = getActionItems(items);
-  const options = [...actionItems.map((i) => i.text), i18next.t("common.cancel")];
-  const cancelButtonIndex = actionItems.length;
-  const destructiveIndices = actionItems
-    .map((item, index) => (item.style === "destructive" ? index : -1))
-    .filter((i) => i >= 0);
-  const disabledIndices = actionItems.map((item, index) => (item.disabled ? index : -1)).filter((i) => i >= 0);
-
-  showIosActionSheet(
-    {
-      title,
-      options,
-      cancelButtonIndex,
-      destructiveButtonIndex: destructiveIndices[0] ?? undefined,
-      disabledButtonIndices: disabledIndices.length > 0 ? disabledIndices : undefined,
-    },
-    (buttonIndex) => {
-      if (buttonIndex !== cancelButtonIndex) {
-        actionItems[buttonIndex]?.onPress?.();
-      }
-    }
-  );
 };
