@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
-    "@biomejs/biome": "^2.3.13",
+    "@biomejs/biome": "^2.5.14",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@types/lodash": "^4.17.23",
     "@types/prop-types": "^15.7.15",
