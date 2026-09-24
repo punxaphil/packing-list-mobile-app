@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import i18next from "i18next";
 import { Platform } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { homeSpacing } from "~/components/home/theme.ts";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
 import { ListChangesScreen } from "./ListChangesScreen";
@@ -29,7 +30,7 @@ const MembersStack = createNativeStackNavigator<MembersStackParamList>();
 
 const MUTED_COLOR = "#6b7280";
 const WEB_TAB_INSET = 26;
-const WEB_TAB_SIDE_PADDING = 16;
+const TAB_ICON_SIZE = 24;
 
 function ItemsStackNavigator() {
   return (
@@ -109,15 +110,29 @@ function MainTabsNavigator() {
         return {
           title: label,
           tabBarIcon: ({ focused }: { focused: boolean }) => (
-            <MaterialCommunityIcons name={icon} size={24} color={focused ? TAB_SELECTED_TEXT_COLOR : MUTED_COLOR} />
+            <MaterialCommunityIcons
+              name={icon}
+              size={TAB_ICON_SIZE}
+              color={focused ? TAB_SELECTED_TEXT_COLOR : MUTED_COLOR}
+            />
           ),
           tabBarLabel: label,
           tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
           tabBarInactiveTintColor: MUTED_COLOR,
           tabBarLabelStyle: { fontSize: 10 },
+          tabBarIconStyle: Platform.OS === "web" ? { flexGrow: 0, flexShrink: 0, flexBasis: TAB_ICON_SIZE } : undefined,
+          tabBarItemStyle: Platform.OS === "web" ? { justifyContent: "center" } : undefined,
           tabBarStyle:
             Platform.OS === "web"
-              ? { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: WEB_TAB_SIDE_PADDING }
+              ? {
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  paddingHorizontal: homeSpacing.md,
+                  paddingTop: homeSpacing.md - homeSpacing.xs / 2,
+                  paddingBottom: homeSpacing.md + homeSpacing.xs / 2,
+                }
               : { position: "absolute", bottom: 0, left: 0, right: 0 },
         };
       }}
