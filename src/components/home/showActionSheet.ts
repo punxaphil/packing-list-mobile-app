@@ -1,11 +1,13 @@
 import i18next from "i18next";
 import { Alert } from "react-native";
+import type { Space } from "~/types/Space.ts";
 
 export type ActionSheetItem = {
   text: string;
   style?: "default" | "destructive" | "cancel";
   onPress?: () => void;
   disabled?: boolean;
+  space?: Space;
 };
 
 type ActionSheetPayload = {

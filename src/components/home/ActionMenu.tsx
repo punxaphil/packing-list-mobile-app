@@ -1,8 +1,12 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import type { Space } from "~/types/Space.ts";
 import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
 import { commonCopy } from "./copy.ts";
+import type { MemberInfo } from "./memberInfo.ts";
+import { SpaceRow } from "./SpaceSheetParts.tsx";
 import { homeColors } from "./theme.ts";
+import { useSpaceMemberInfo } from "./useSpaceMemberInfo.ts";
 
 type ActionMenuItem = {
   text: string;
@@ -12,6 +16,7 @@ type ActionMenuItem = {
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   onRightPress?: () => void;
+  space?: Space;
 };
 
 type ActionMenuProps = {
@@ -33,6 +38,8 @@ export const ActionMenu = ({
   headerTextColor,
   headerRight,
 }: ActionMenuProps) => {
+  const spaces = useMemo(() => items.flatMap((item) => (item.space ? [item.space] : [])), [items]);
+  const { memberInfoBySpaceId } = useSpaceMemberInfo(spaces);
   const titleTextStyle = headerColor
     ? [styles.titleText, { color: headerTextColor ?? homeColors.text }]
     : styles.titleText;
@@ -50,7 +57,12 @@ export const ActionMenu = ({
             {items
               .filter((i) => i.style !== "cancel")
               .map((item) => (
-                <MenuItem key={item.text} item={item} onClose={onClose} />
+                <MenuItem
+                  key={item.text}
+                  item={item}
+                  onClose={onClose}
+                  members={item.space ? (memberInfoBySpaceId[item.space.id] ?? []) : undefined}
+                />
               ))}
           </ScrollView>
           <CancelButton label={items.find((i) => i.style === "cancel")?.text} onPress={onClose} />
@@ -60,7 +72,15 @@ export const ActionMenu = ({
   );
 };
 
-const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void }) => {
+const MenuItem = ({
+  item,
+  onClose,
+  members,
+}: {
+  item: ActionMenuItem;
+  onClose: () => void;
+  members?: MemberInfo[];
+}) => {
   const handlePress = () => {
     if (item.disabled) return;
     onClose();
@@ -71,6 +91,7 @@ const MenuItem = ({ item, onClose }: { item: ActionMenuItem; onClose: () => void
     item.style === "destructive" && styles.destructive,
     item.disabled && styles.disabled,
   ];
+  if (members) return <SpaceRow label={item.text} members={members} onPress={handlePress} />;
   return (
     <Pressable style={styles.item} onPress={handlePress}>
       <View style={styles.itemRow}>

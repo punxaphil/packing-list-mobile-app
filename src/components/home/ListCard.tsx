@@ -82,6 +82,7 @@ export const ListCard = (props: ListCardProps) => {
         .filter((s) => s.id !== props.currentSpaceId)
         .map((s) => ({
           text: s.name,
+          space: s,
           onPress: () => props.onMoveToSpace(props.list.id, s.id),
         }))
     );
