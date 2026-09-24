@@ -32,6 +32,7 @@ type ItemsListProps = {
   hasItems: boolean;
   filteredEmpty: boolean;
   items: PackItem[];
+  allItems: PackItem[];
   categories: NamedEntity[];
   members: NamedEntity[];
   memberImages: Image[];
@@ -139,6 +140,7 @@ export const ItemsList = (props: ItemsListProps) => {
           <CategorySection
             key={section.category.id || `uncategorized-${i}`}
             section={section}
+            allItems={props.allItems}
             color={colors[section.category.id]}
             members={props.members}
             memberImages={props.memberImages}

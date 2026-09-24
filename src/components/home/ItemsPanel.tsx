@@ -64,6 +64,7 @@ export type ListHandlers = {
 
 type ItemsPanelProps = ItemsSectionProps &
   ListHandlers & {
+    allItems: PackItem[];
     list: NamedEntity;
     displayName: string;
     listImageUrl?: string;
@@ -148,13 +149,13 @@ const RenameDialog = ({ dialog }: { dialog: TextDialogState }) => (
   />
 );
 
-const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState, imagesState }: ItemsPanelProps) => (
+const AddItemDialogView = ({ addItemDialog, categoriesState, allItems, imagesState }: ItemsPanelProps) => (
   <AddItemDialog
     visible={addItemDialog.visible}
     initialCategory={addItemDialog.initialCategory}
     categories={categoriesState.categories}
     categoryImages={imagesState.images.filter((img) => img.type === "categories")}
-    items={itemsState.items}
+    items={allItems}
     onCancel={addItemDialog.close}
     onSubmit={addItemDialog.submit}
     onBrowseKits={addItemDialog.onBrowseKits}
@@ -164,6 +165,7 @@ const AddItemDialogView = ({ addItemDialog, categoriesState, itemsState, imagesS
 const ItemsListView = ({
   categoriesState,
   itemsState,
+  allItems,
   membersState,
   imagesState,
   lists,
@@ -198,6 +200,7 @@ const ItemsListView = ({
       hasItems={itemsState.hasItems}
       filteredEmpty={itemsState.filteredEmpty === true}
       items={itemsState.items}
+      allItems={allItems}
       categories={categoriesState.categories}
       members={membersState.members}
       memberImages={memberImages}

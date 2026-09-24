@@ -121,6 +121,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
       <ItemsPanel
         {...filteredProps}
         {...handlers}
+        allItems={optimisticItems}
         list={list}
         displayName={displayName}
         listImageUrl={listImage?.url}

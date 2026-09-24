@@ -8,7 +8,7 @@ import { TextPromptDialog } from "./TextPromptDialog.tsx";
 type CategoryRenameDialogsProps = {
   renameItem: PackItem | null;
   renameItemText: string;
-  sectionItems: PackItem[];
+  allItems: PackItem[];
   renameCategoryVisible: boolean;
   renameCategoryText: string;
   category: NamedEntity;
@@ -35,7 +35,7 @@ export const getRenameCategoryError = (category: NamedEntity, text: string, cate
 };
 
 export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
-  const renameItemError = getRenameItemError(props.renameItem, props.renameItemText, props.sectionItems);
+  const renameItemError = getRenameItemError(props.renameItem, props.renameItemText, props.allItems);
   const renameCategoryError = getRenameCategoryError(props.category, props.renameCategoryText, props.categories);
   return (
     <>

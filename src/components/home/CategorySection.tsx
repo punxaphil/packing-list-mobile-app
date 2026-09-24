@@ -35,6 +35,7 @@ import type { SearchState } from "./useSearch.ts";
 
 type CategorySectionProps = {
   section: SectionGroup;
+  allItems: PackItem[];
   color: string;
   members: NamedEntity[];
   memberImages: Image[];
@@ -112,7 +113,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   const [renameItemText, setRenameItemText] = useState("");
   const [renameCategoryVisible, setRenameCategoryVisible] = useState(false);
   const [renameCategoryText, setRenameCategoryText] = useState("");
-  const renameItemErrorText = getRenameItemError(renameItem, renameItemText, props.section.items);
+  const renameItemErrorText = getRenameItemError(renameItem, renameItemText, props.allItems);
   const renameCategoryErrorText = getRenameCategoryError(props.section.category, renameCategoryText, props.categories);
 
   const onAdd = () => props.onAddItem(props.section.category);
@@ -260,7 +261,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       <CategoryRenameDialogs
         renameItem={renameItem}
         renameItemText={renameItemText}
-        sectionItems={props.section.items}
+        allItems={props.allItems}
         renameCategoryVisible={renameCategoryVisible}
         renameCategoryText={renameCategoryText}
         category={props.section.category}
@@ -277,6 +278,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
 };
 
 const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionProps): boolean => {
+  if (prev.allItems !== next.allItems) return false;
   if (prev.section.category.id !== next.section.category.id) return false;
   if (prev.section.items.length !== next.section.items.length) return false;
   for (let i = 0; i < prev.section.items.length; i++) {
