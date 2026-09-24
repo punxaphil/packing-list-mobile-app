@@ -1,3 +1,5 @@
+const { execFileSync } = require("node:child_process");
+
 const resolveReactNativePreset = () => {
   try {
     return require.resolve("@react-native/babel-preset");
@@ -7,10 +9,20 @@ const resolveReactNativePreset = () => {
 };
 
 module.exports = (api) => {
-  api.cache(true);
+  const commitSha = api.cache.using(() =>
+    execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { encoding: "utf8" }).trim()
+  );
   return {
     presets: [resolveReactNativePreset()],
     plugins: [
+      ({ types }) => ({
+        visitor: {
+          Identifier(path) {
+            if (path.isReferencedIdentifier({ name: "__COMMIT_SHA__" }))
+              path.replaceWith(types.stringLiteral(commitSha));
+          },
+        },
+      }),
       [
         "module-resolver",
         {

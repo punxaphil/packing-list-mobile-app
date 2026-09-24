@@ -9,7 +9,6 @@ export const entityStyles = StyleSheet.create({
     backgroundColor: homeColors.surface,
     borderRadius: 16,
     paddingHorizontal: homeSpacing.md,
-    paddingBottom: homeSpacing.md,
     paddingTop: 0,
     gap: homeSpacing.md,
   },

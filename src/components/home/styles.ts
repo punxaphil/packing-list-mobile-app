@@ -21,7 +21,6 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 16,
     paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
     paddingTop: 0,
     gap: spacing.md,
   },

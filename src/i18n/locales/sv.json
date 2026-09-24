@@ -255,6 +255,8 @@
     "back": "Tillbaka",
     "imageTitle": "Profilbild",
     "signOut": "Logga ut",
+    "commit": "Commit",
+    "runningBuild": "Körd version",
     "changePhoto": "Byt bild",
     "addPhoto": "Lägg till bild",
     "removePhoto": "Ta bort",

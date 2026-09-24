@@ -1,8 +1,31 @@
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin, transformWithEsbuild } from "vite";
 
 const UNTRANSPILED_JSX_MODULES = /node_modules\/react-native-vector-icons\/.*\.js$/;
+const commitSha = () => execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { encoding: "utf8" }).trim();
+
+const currentCommit = (): Plugin => {
+  const middleware = (
+    request: { url?: string },
+    response: { setHeader: (name: string, value: string) => void; end: (body: string) => void },
+    next: () => void
+  ) => {
+    if (request.url !== "/__commit") return next();
+    response.setHeader("Cache-Control", "no-store");
+    response.end(commitSha());
+  };
+  return {
+    name: "current-commit",
+    configureServer(server) {
+      server.middlewares.use(middleware);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(middleware);
+    },
+  };
+};
 
 const untranspiledJsx = (): Plugin => ({
   name: "untranspiled-jsx",
@@ -14,9 +37,10 @@ const untranspiledJsx = (): Plugin => ({
 });
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), untranspiledJsx()],
+  plugins: [react(), untranspiledJsx(), currentCommit()],
   define: {
     __DEV__: JSON.stringify(mode !== "production"),
+    __COMMIT_SHA__: JSON.stringify(commitSha()),
     global: "globalThis",
   },
   resolve: {

@@ -255,6 +255,8 @@
     "back": "Back",
     "imageTitle": "Profile image",
     "signOut": "Sign Out",
+    "commit": "Commit",
+    "runningBuild": "Running build",
     "changePhoto": "Change Photo",
     "addPhoto": "Add Photo",
     "removePhoto": "Remove",

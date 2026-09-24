@@ -115,7 +115,10 @@ function MainTabsNavigator() {
           tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
           tabBarInactiveTintColor: MUTED_COLOR,
           tabBarLabelStyle: { fontSize: 10 },
-          tabBarStyle: Platform.OS === "web" ? { paddingHorizontal: WEB_TAB_SIDE_PADDING } : undefined,
+          tabBarStyle:
+            Platform.OS === "web"
+              ? { paddingHorizontal: WEB_TAB_SIDE_PADDING }
+              : { position: "absolute", bottom: 0, left: 0, right: 0 },
         };
       }}
     >

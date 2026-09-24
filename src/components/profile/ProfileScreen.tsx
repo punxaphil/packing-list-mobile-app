@@ -9,8 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { showIosActionSheet } from "~/components/shared/iosActionSheet";
 import { ImageViewerModal } from "~/components/shared/ImageViewerModal.tsx";
+import { showIosActionSheet } from "~/components/shared/iosActionSheet";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { pickAndResizeImage, promptForEmojiValue } from "~/services/imageUtils";
 import { getEmojiValue, toEmojiValue } from "~/services/mediaValue.ts";
@@ -19,6 +19,7 @@ import { commonCopy } from "../home/copy.ts";
 import { confirmSignOut } from "../home/SignOutButton.tsx";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
+import { CommitVersion } from "./CommitVersion.tsx";
 import { DeleteAccountButton } from "./DeleteAccountButton.tsx";
 import { FeedbackButton } from "./FeedbackButton.tsx";
 import { NameEditor } from "./NameEditor.tsx";
@@ -118,6 +119,7 @@ export const ProfileScreen = ({ email, onSignOut, onBack, embeddedInSheet = fals
           <SignOutButton email={email} onSignOut={onSignOut} />
           <DeleteAccountButton onSignOut={onSignOut} />
         </View>
+        <CommitVersion />
       </ScrollView>
       <ImageViewerModal
         visible={viewerVisible}

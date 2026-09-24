@@ -5,6 +5,8 @@ type ProfileCopy = {
   back: string;
   imageTitle: string;
   signOut: string;
+  commit: string;
+  runningBuild: string;
   changePhoto: string;
   addPhoto: string;
   removePhoto: string;
