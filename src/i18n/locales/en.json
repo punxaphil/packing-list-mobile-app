@@ -189,6 +189,8 @@
     "email": "Email",
     "password": "Password",
     "login": "Login",
+    "signingIn": "Signing in...",
+    "creatingAccount": "Creating account...",
     "register": "Register",
     "loginFailed": "Login failed",
     "registrationFailed": "Registration failed",

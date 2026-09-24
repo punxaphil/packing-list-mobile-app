@@ -23,7 +23,7 @@ async function requestPasswordReset(address: string) {
   }
 }
 
-export function PasswordResetButton({ email }: { email: string }) {
+export function PasswordResetButton({ email, disabled = false }: { email: string; disabled?: boolean }) {
   const { t } = useTranslation();
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState({ email: "", key: "" });
@@ -41,7 +41,12 @@ export function PasswordResetButton({ email }: { email: string }) {
 
   return (
     <View style={styles.container}>
-      <Button label={t("auth.forgotPassword")} variant="ghost" disabled={pending} onPress={() => void handleReset()} />
+      <Button
+        label={t("auth.forgotPassword")}
+        variant="ghost"
+        disabled={pending || disabled}
+        onPress={() => void handleReset()}
+      />
       {feedback.email === email && feedback.key ? (
         <Text style={feedback.key === "auth.resetSent" ? styles.success : authStyles.error}>{t(feedback.key)}</Text>
       ) : null}

@@ -189,6 +189,8 @@
     "email": "E-post",
     "password": "Lösenord",
     "login": "Logga in",
+    "signingIn": "Loggar in...",
+    "creatingAccount": "Skapar konto...",
     "register": "Registrera",
     "loginFailed": "Inloggningen misslyckades",
     "registrationFailed": "Registreringen misslyckades",
