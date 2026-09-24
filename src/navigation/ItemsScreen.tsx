@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
 import { NoSelectionPanel } from "~/components/home/NoSelectionPanel.tsx";
@@ -22,14 +23,14 @@ function ItemsContent() {
 
   if (!hasLists || !selection.hasSelection) {
     return (
-      <SafeAreaView edges={["top"]} style={homeStyles.home}>
+      <SafeAreaView edges={Platform.OS === "web" ? [] : ["top"]} style={homeStyles.home}>
         <NoSelectionPanel email={email} onProfile={pushProfile} onShowLists={switchToListsTab} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+    <SafeAreaView edges={Platform.OS === "web" ? [] : ["top"]} style={homeStyles.home}>
       <ItemsSection
         selection={selection}
         categoriesState={categoriesState}

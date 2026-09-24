@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import i18next from "i18next";
+import { Platform } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
@@ -27,6 +28,8 @@ const CategoriesStack = createNativeStackNavigator<CategoriesStackParamList>();
 const MembersStack = createNativeStackNavigator<MembersStackParamList>();
 
 const MUTED_COLOR = "#6b7280";
+const WEB_TAB_INSET = 26;
+const WEB_TAB_SIDE_PADDING = 16;
 
 function ItemsStackNavigator() {
   return (
@@ -85,6 +88,7 @@ function MainTabsNavigator() {
   return (
     <MainTabs.Navigator
       initialRouteName={getSelectedId() ? "ItemsStack" : "ListsStack"}
+      safeAreaInsets={Platform.OS === "web" ? { bottom: WEB_TAB_INSET } : undefined}
       screenOptions={({ route }) => {
         const labels: Record<keyof MainTabsParamList, string> = {
           ItemsStack: i18next.t("navigation.items"),
@@ -111,6 +115,7 @@ function MainTabsNavigator() {
           tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
           tabBarInactiveTintColor: MUTED_COLOR,
           tabBarLabelStyle: { fontSize: 10 },
+          tabBarStyle: Platform.OS === "web" ? { paddingHorizontal: WEB_TAB_SIDE_PADDING } : undefined,
         };
       }}
     >
