@@ -10,6 +10,7 @@ type TextPromptDialogProps = {
   value: string;
   error?: string | null;
   disabled?: boolean;
+  editable?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   keyboardType?: KeyboardTypeOptions;
   getError?: (text: string) => string | null;
@@ -26,6 +27,7 @@ export const TextPromptDialog = ({
   value,
   error,
   disabled,
+  editable = true,
   autoCapitalize,
   keyboardType,
   onChange,
@@ -70,7 +72,7 @@ export const TextPromptDialog = ({
         autoCapitalize={autoCapitalize}
         keyboardType={keyboardType}
         accessibilityLabel={title}
-        editable={!disabled}
+        editable={editable}
       />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
     </DialogShell>

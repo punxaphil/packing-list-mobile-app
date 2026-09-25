@@ -34,6 +34,7 @@ export const SpaceSheetDialogs = ({ sheet: s }: Props) => {
         confirmLabel={spaceCopy.createSpaceConfirm}
         value={s.promptValue}
         disabled={s.creatingSpace}
+        editable={!s.creatingSpace}
         onChange={s.setPromptValue}
         onCancel={s.resetSubDialog}
         onSubmit={s.handleCreateSubmit}
