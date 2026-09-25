@@ -58,10 +58,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   const imageActions = useEntityImageActions("packingLists", imageDb);
   const itemImageActions = useEntityImageActions("packItems", imageDb);
   const list = props.selection.selectedList;
-  const { optimisticItems, toggleCategory, toggleItem, toggleMemberPacked, toggleAllMembers } = useOptimisticItems(
-    props.itemsState.items,
-    list?.id
-  );
+  const { optimisticItems, toggleCategory, toggleItem, toggleMemberPacked, toggleAllMembers, undo, canUndo } =
+    useOptimisticItems(props.itemsState.items, list?.id);
   const categoryImageMap = useMemo(
     () => buildImageMap(props.imagesState.images, "categories"),
     [props.imagesState.images]
@@ -140,6 +138,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         notesSheet={notesSheet}
         onBulkEdit={bulkEdit.open}
         bulkEditing={bulkEdit.busy}
+        onUndo={undo}
+        canUndo={canUndo}
       />
       <FilterSheet
         visible={filterDialog.visible}

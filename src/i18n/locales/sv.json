@@ -394,6 +394,7 @@
   },
   "common": {
     "cancel": "Avbryt",
+    "undo": "Ångra bockning",
     "emoji": "Emoji",
     "enterEmojiOrText": "Ange emoji eller text",
     "ok": "OK",

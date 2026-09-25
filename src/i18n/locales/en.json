@@ -393,6 +393,7 @@
   },
   "common": {
     "cancel": "Cancel",
+    "undo": "Undo tick",
     "emoji": "Emoji",
     "enterEmojiOrText": "Enter emoji or text",
     "ok": "OK",

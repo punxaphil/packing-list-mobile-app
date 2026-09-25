@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MultiEditButton } from "../shared/MultiEditButton.tsx";
-import { homeCopy } from "./copy.ts";
+import { commonCopy, homeCopy } from "./copy.ts";
 import type { AddItemDialogState } from "./ItemsPanel.tsx";
 import { listCopy } from "./listCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -19,9 +19,21 @@ type Props = {
   hasNotes: boolean;
   onBulkEdit: () => void;
   bulkEditing: boolean;
+  onUndo: () => void;
+  canUndo: boolean;
 };
 
-export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes, onBulkEdit, bulkEditing }: Props) => {
+export const QuickAddRow = ({
+  addDialog,
+  filterDialog,
+  search,
+  onNotes,
+  hasNotes,
+  onBulkEdit,
+  bulkEditing,
+  onUndo,
+  canUndo,
+}: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localText, setLocalText] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,6 +87,8 @@ export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes
         onClearSearch={onClearSearch}
         onSubmitSearch={onSubmitSearch}
         onClose={onToggleSearch}
+        onUndo={onUndo}
+        canUndo={canUndo}
       />
     );
   return (
@@ -86,6 +100,8 @@ export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes
       hasNotes={hasNotes}
       onBulkEdit={onBulkEdit}
       bulkEditing={bulkEditing}
+      onUndo={onUndo}
+      canUndo={canUndo}
     />
   );
 };
@@ -98,6 +114,8 @@ type SearchRowProps = {
   onClearSearch: () => void;
   onSubmitSearch: () => void;
   onClose: () => void;
+  onUndo: () => void;
+  canUndo: boolean;
 };
 
 const SearchRow = ({
@@ -108,6 +126,8 @@ const SearchRow = ({
   onClearSearch,
   onSubmitSearch,
   onClose,
+  onUndo,
+  canUndo,
 }: SearchRowProps) => {
   const { t } = useTranslation();
   const hasText = localText.length > 0;
@@ -143,6 +163,7 @@ const SearchRow = ({
           </Pressable>
         )}
       </View>
+      <UndoButton onPress={onUndo} disabled={!canUndo} />
       <Pressable style={styles.filterButton} onPress={onClose} hitSlop={8}>
         <MaterialCommunityIcons name="close" size={20} color={homeColors.muted} />
       </Pressable>
@@ -169,6 +190,8 @@ type DefaultRowProps = {
   hasNotes: boolean;
   onBulkEdit: () => void;
   bulkEditing: boolean;
+  onUndo: () => void;
+  canUndo: boolean;
 };
 
 const DefaultRow = ({
@@ -179,6 +202,8 @@ const DefaultRow = ({
   hasNotes,
   onBulkEdit,
   bulkEditing,
+  onUndo,
+  canUndo,
 }: DefaultRowProps) => (
   <View style={styles.row}>
     <Pressable
@@ -191,6 +216,7 @@ const DefaultRow = ({
       <Text style={homeStyles.quickAddLabel}>{HOME_COPY.addItemQuick}</Text>
     </Pressable>
     <View style={styles.iconRow}>
+      <UndoButton onPress={onUndo} disabled={!canUndo} />
       <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8} accessibilityLabel={listCopy.title}>
         <MaterialCommunityIcons
           name="note-text-outline"
@@ -213,6 +239,19 @@ const DefaultRow = ({
   </View>
 );
 
+const UndoButton = ({ onPress, disabled }: { onPress: () => void; disabled: boolean }) => (
+  <Pressable
+    style={[styles.filterButton, disabled && styles.disabledButton]}
+    onPress={onPress}
+    disabled={disabled}
+    hitSlop={8}
+    accessibilityRole="button"
+    accessibilityLabel={commonCopy.undo}
+  >
+    <MaterialCommunityIcons name="undo" size={20} color={homeColors.muted} />
+  </Pressable>
+);
+
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
@@ -221,6 +260,7 @@ const styles = StyleSheet.create({
   },
   iconRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
   filterButton: { padding: homeSpacing.xs },
+  disabledButton: { opacity: 0.45 },
   searchContainer: {
     flex: 1,
     flexDirection: "row",

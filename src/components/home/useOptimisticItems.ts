@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
-import { withPackItemMembers } from "~/services/packItemState.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { useItemTickActions } from "./useItemTickActions.ts";
 
 type PendingChecked = Record<string, Pick<PackItem, "checked" | "members">>;
 
@@ -44,13 +44,8 @@ export const useOptimisticItems = (items: PackItem[], listId?: string | null) =>
     });
   }, [items, pendingChecked]);
 
-  const toggleCategory = useCallback(
-    (categoryItems: PackItem[], checked: boolean) => {
-      const updatedItems = categoryItems.map((item) => ({
-        ...item,
-        checked,
-        members: item.members.map((m) => ({ ...m, checked })),
-      }));
+  const updateBatch = useCallback(
+    (updatedItems: PackItem[]) => {
       setPendingChecked((prev) => ({ ...prev, ...Object.fromEntries(updatedItems.map((item) => [item.id, item])) }));
       void writeDb.updatePackItemsBatched(updatedItems);
     },
@@ -65,36 +60,6 @@ export const useOptimisticItems = (items: PackItem[], listId?: string | null) =>
     [writeDb]
   );
 
-  const toggleItem = useCallback(
-    (item: PackItem) => {
-      updateItem({ ...item, checked: !item.checked });
-    },
-    [updateItem]
-  );
-
-  const toggleMemberPacked = useCallback(
-    (item: PackItem, memberId: string) => {
-      updateItem(
-        withPackItemMembers(
-          item,
-          item.members.map((member) => (member.id === memberId ? { ...member, checked: !member.checked } : member))
-        )
-      );
-    },
-    [updateItem]
-  );
-
-  const toggleAllMembers = useCallback(
-    (item: PackItem, checked: boolean) => {
-      updateItem(
-        withPackItemMembers(
-          item,
-          item.members.map((member) => ({ ...member, checked }))
-        )
-      );
-    },
-    [updateItem]
-  );
-
-  return { optimisticItems, toggleCategory, toggleItem, toggleMemberPacked, toggleAllMembers };
+  const tickActions = useItemTickActions(optimisticItems, listId, updateItem, updateBatch);
+  return { optimisticItems, ...tickActions };
 };

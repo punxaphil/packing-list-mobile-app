@@ -78,6 +78,8 @@ type ItemsPanelProps = ItemsSectionProps &
     notesSheet: ListNotesState;
     onBulkEdit: () => void;
     bulkEditing: boolean;
+    onUndo: () => void;
+    canUndo: boolean;
   };
 
 export const ItemsPanel = (props: ItemsPanelProps) => {
@@ -102,6 +104,8 @@ const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
         hasNotes={!!props.list.notes}
         onBulkEdit={props.onBulkEdit}
         bulkEditing={props.bulkEditing}
+        onUndo={props.onUndo}
+        canUndo={props.canUndo}
       />
       <ItemsListView {...props} />
     </KeyboardAvoidingView>
