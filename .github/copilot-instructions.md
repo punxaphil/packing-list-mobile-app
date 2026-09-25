@@ -19,7 +19,9 @@
 
 # Web UI
 
+- This project targets web only. Native iOS and Android support has been removed; do not add native-specific branches, fallbacks, tooling, or verification. React Native components are used through React Native Web.
 - Don't use colored icons, use mdi or similar icon font and style.
+- Don't display placeholder text in empty text fields. Use visible labels where needed and accessibility labels for inputs. Prefill edit and rename fields with their actual existing value.
 - Reuse components. Don't create several versions of a button for instance. Instead create one button component that can be styled via a `variant` prop (e.g. `default`, `primary`, `danger`). Avoid allowing arbitrary styles via props.
 
 # Workflow
