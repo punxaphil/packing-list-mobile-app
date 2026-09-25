@@ -424,7 +424,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
     checkboxDisabled,
   } = props;
   const items = section.items;
-  const hasOtherLists = lists.filter((l) => l.id !== currentListId).length > 0;
+  const hasOtherLists = lists.some((list) => list.id !== currentListId && !list.archived);
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id, props.layouts);
   return (
     <View

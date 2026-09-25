@@ -15,7 +15,7 @@ type CopyToListModalProps = {
 export const CopyToListModal = (props: CopyToListModalProps) => {
   const { visible, lists, currentListId, onClose, onSelect } = props;
   const { t } = useTranslation();
-  const availableLists = lists.filter((l) => l.id !== currentListId);
+  const availableLists = lists.filter((list) => list.id !== currentListId && !list.archived);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
