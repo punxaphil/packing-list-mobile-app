@@ -90,6 +90,7 @@ export const ImageViewerModal = ({
                 accessibilityLabel={commonCopy.emojiOrText}
                 style={styles.textInputDark}
                 editable={!loading}
+                autoFocus={!imageUrl}
                 returnKeyType="done"
                 onSubmitEditing={onTextSubmit}
               />

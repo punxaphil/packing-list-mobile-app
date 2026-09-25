@@ -33,6 +33,10 @@ export const TextPromptDialog = ({
   onSubmit,
 }: TextPromptDialogProps) => {
   const inputRef = useRef<TextInput>(null);
+  const attachInput = useCallback((input: TextInput | null) => {
+    inputRef.current = input;
+    input?.focus();
+  }, []);
 
   const focusInput = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 300);
@@ -57,7 +61,7 @@ export const TextPromptDialog = ({
       }
     >
       <TextInput
-        ref={inputRef}
+        ref={attachInput}
         value={value}
         onChangeText={onChange}
         onSubmitEditing={disabled ? undefined : onSubmit}

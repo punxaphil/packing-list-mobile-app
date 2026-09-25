@@ -90,6 +90,7 @@ export const MoveCategoryModal = ({
         accessibilityLabel={addItemCopy.newCategory}
         style={homeStyles.modalInput}
         editable={!submitting}
+        autoFocus={categories.every((category) => category.id === currentCategoryId)}
       />
       {error && <Text style={homeStyles.modalError}>{error}</Text>}
     </>

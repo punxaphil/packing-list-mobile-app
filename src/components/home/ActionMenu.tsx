@@ -24,6 +24,7 @@ type ActionMenuProps = {
   title: string;
   items: ActionMenuItem[];
   onClose: () => void;
+  onSelect: (action?: () => void) => void;
   headerColor?: string;
   headerTextColor?: string;
   headerRight?: ReactNode;
@@ -34,6 +35,7 @@ export const ActionMenu = ({
   title,
   items,
   onClose,
+  onSelect,
   headerColor,
   headerTextColor,
   headerRight,
@@ -60,7 +62,7 @@ export const ActionMenu = ({
                 <MenuItem
                   key={item.text}
                   item={item}
-                  onClose={onClose}
+                  onSelect={onSelect}
                   members={item.space ? (memberInfoBySpaceId[item.space.id] ?? []) : undefined}
                 />
               ))}
@@ -74,17 +76,16 @@ export const ActionMenu = ({
 
 const MenuItem = ({
   item,
-  onClose,
+  onSelect,
   members,
 }: {
   item: ActionMenuItem;
-  onClose: () => void;
+  onSelect: (action?: () => void) => void;
   members?: MemberInfo[];
 }) => {
   const handlePress = () => {
     if (item.disabled) return;
-    onClose();
-    item.onPress?.();
+    onSelect(item.onPress);
   };
   const textStyle = [
     styles.itemText,
