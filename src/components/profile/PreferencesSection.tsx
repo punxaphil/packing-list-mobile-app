@@ -3,6 +3,7 @@ import { useSpace } from "~/providers/SpaceContext.ts";
 import {
   updateProfileAddNewItemsOnTop,
   updateProfileCheckedItemsLast,
+  updateProfileForceSingleColumn,
   updateProfileHideImagePlaceholder,
   updateProfileWrapItemText,
 } from "~/services/spaceDatabase.ts";
@@ -16,6 +17,7 @@ export const PreferencesSection = () => {
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
   const addNewItemsOnTop = profile?.addNewItemsOnTop ?? false;
   const checkedItemsLast = profile?.checkedItemsLast ?? false;
+  const forceSingleColumn = profile?.forceSingleColumn ?? false;
 
   const toggleWrapItemText = (value: boolean) => {
     if (!profile?.id) return;
@@ -35,6 +37,11 @@ export const PreferencesSection = () => {
   const toggleCheckedItemsLast = (value: boolean) => {
     if (!profile?.id) return;
     void updateProfileCheckedItemsLast(profile.id, value);
+  };
+
+  const toggleForceSingleColumn = (value: boolean) => {
+    if (!profile?.id) return;
+    void updateProfileForceSingleColumn(profile.id, value);
   };
 
   return (
@@ -70,6 +77,14 @@ export const PreferencesSection = () => {
         <Switch
           value={checkedItemsLast}
           onValueChange={toggleCheckedItemsLast}
+          trackColor={{ true: homeColors.primary, false: homeColors.border }}
+        />
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{profileCopy.forceSingleColumn}</Text>
+        <Switch
+          value={forceSingleColumn}
+          onValueChange={toggleForceSingleColumn}
           trackColor={{ true: homeColors.primary, false: homeColors.border }}
         />
       </View>

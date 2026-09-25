@@ -347,6 +347,12 @@ export async function updateProfileCheckedItemsLast(userId: string, checkedItems
   });
 }
 
+export async function updateProfileForceSingleColumn(userId: string, forceSingleColumn: boolean) {
+  await updateDoc(doc(firestore, USERS, userId), {
+    forceSingleColumn: forceSingleColumn || deleteField(),
+  });
+}
+
 export async function markAccountForDeletion(userId: string) {
   await updateDoc(doc(firestore, USERS, userId), { pendingDeletion: true });
 }

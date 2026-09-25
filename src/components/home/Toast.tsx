@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { Animated, Text } from "react-native";
 import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
 
-type ToastContextValue = { show: (message: string) => void };
+type ToastContextValue = { show: (message: string, displayDuration?: number) => void };
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 export const useToast = () => {
@@ -19,11 +19,11 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => () => animation.current?.stop(), []);
 
   const show = useCallback(
-    (text: string) => {
+    (text: string, displayDuration?: number) => {
       animation.current?.stop();
       opacity.setValue(0);
       setMessage(text);
-      animation.current = animateToast(opacity, () => setMessage(null));
+      animation.current = animateToast(opacity, () => setMessage(null), displayDuration);
     },
     [opacity]
   );

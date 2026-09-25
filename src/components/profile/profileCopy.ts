@@ -26,6 +26,7 @@ type ProfileCopy = {
   hideImagePlaceholder: string;
   addNewItemsOnTop: string;
   checkedItemsLast: string;
+  forceSingleColumn: string;
   useDeviceLanguage: string;
   language: string;
   selectLanguage: string;

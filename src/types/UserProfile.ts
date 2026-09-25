@@ -10,6 +10,7 @@ export interface UserProfile {
   wrapItemText?: boolean;
   addNewItemsOnTop?: boolean;
   checkedItemsLast?: boolean;
+  forceSingleColumn?: boolean;
   pendingDeletion?: boolean;
 }
 

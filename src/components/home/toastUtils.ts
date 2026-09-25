@@ -24,14 +24,18 @@ export const TOAST_STYLES = StyleSheet.create({
   },
 });
 
-export const animateToast = (opacity: Animated.Value, onComplete: () => void) => {
+export const animateToast = (
+  opacity: Animated.Value,
+  onComplete: () => void,
+  displayDuration = TOAST_DISPLAY_DURATION
+) => {
   const animation = Animated.sequence([
     Animated.timing(opacity, {
       toValue: 1,
       duration: TOAST_ANIMATION_DURATION,
       useNativeDriver: true,
     }),
-    Animated.delay(TOAST_DISPLAY_DURATION),
+    Animated.delay(displayDuration),
     Animated.timing(opacity, {
       toValue: 0,
       duration: TOAST_ANIMATION_DURATION,

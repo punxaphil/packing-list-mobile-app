@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { PackItem } from "~/types/PackItem.ts";
-import { buildSections, getBulkEditTargets, getNextItemRank, getTopItemRank } from "./itemsSectionHelpers.ts";
+import {
+  buildSections,
+  getBulkEditTargets,
+  getItemColumnCount,
+  getNextItemRank,
+  getTopItemRank,
+} from "./itemsSectionHelpers.ts";
 
 const items = [{ rank: 8 }, { rank: 5 }, { rank: 2 }];
 const category = { id: "category", name: "Category", rank: 1 };
@@ -19,6 +25,14 @@ const visibleIds = (items: PackItem[], checkedItemsLast: boolean) =>
     ?.items.map((item) => item.id);
 
 describe("itemsSectionHelpers", () => {
+  it("uses two columns above 800px and three above 1200px unless overridden", () => {
+    expect(getItemColumnCount(800, false)).toBe(1);
+    expect(getItemColumnCount(801, false)).toBe(2);
+    expect(getItemColumnCount(1200, false)).toBe(2);
+    expect(getItemColumnCount(1201, false)).toBe(3);
+    expect(getItemColumnCount(1400, true)).toBe(1);
+  });
+
   it("returns the next bottom rank below the current minimum", () => {
     expect(getNextItemRank(items)).toBe(1);
   });

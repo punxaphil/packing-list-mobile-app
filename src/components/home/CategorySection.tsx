@@ -28,14 +28,17 @@ import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { useToast } from "./Toast.tsx";
-import { CHECKBOX_SIZE, homeColors } from "./theme.ts";
+import { CHECKBOX_SIZE, homeColors, homeRadius, homeSpacing } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "./useDragState.ts";
 import type { SearchState } from "./useSearch.ts";
 
+const DRAG_GUIDANCE_DURATION = 5000;
+
 type CategorySectionProps = {
   section: SectionGroup;
+  columnCount: number;
   allItems: PackItem[];
   color: string;
   members: NamedEntity[];
@@ -77,6 +80,8 @@ type CategorySectionProps = {
 
 type CategoryItemRowProps = {
   item: PackItem;
+  dragDisabled: boolean;
+  columnCount: number;
   color: string;
   checkboxColor: string;
   initialsMap: MemberInitialsMap;
@@ -285,6 +290,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
 };
 
 const areSectionPropsEqual = (prev: CategorySectionProps, next: CategorySectionProps): boolean => {
+  if (prev.columnCount !== next.columnCount) return false;
   if (prev.allItems !== next.allItems) return false;
   if (prev.section.category.id !== next.section.category.id) return false;
   if (prev.section.items.length !== next.section.items.length) return false;
@@ -415,6 +421,7 @@ type CategoryItemsProps = CategorySectionProps & {
 const CategoryItems = (props: CategoryItemsProps) => {
   const {
     section,
+    columnCount,
     lists,
     currentListId,
     search,
@@ -439,13 +446,20 @@ const CategoryItems = (props: CategoryItemsProps) => {
   const { indicatorTargetId, indicatorBelow } = computeIndicator(items, drag, section.category.id, props.layouts);
   return (
     <View
-      style={[homeStyles.categoryBody, { position: "relative" }]}
+      style={[
+        homeStyles.categoryBody,
+        { position: "relative" },
+        columnCount > 1 && columnStyles.body,
+        columnCount > 1 && { backgroundColor: props.color },
+      ]}
       onLayout={(e) => drag.recordBodyLayout(section.category.id, e.nativeEvent.layout)}
     >
       {items.map((item) => (
         <CategoryItemRow
           key={item.id}
           item={item}
+          columnCount={columnCount}
+          dragDisabled={columnCount > 1}
           color={props.color}
           checkboxColor={props.checkboxColor}
           initialsMap={initialsMap}
@@ -472,8 +486,12 @@ const CategoryItems = (props: CategoryItemsProps) => {
           onToggleAllMembers={(checked) => onToggleAllMembers(item, checked)}
         />
       ))}
-      <DropIndicator targetId={indicatorTargetId} layouts={props.layouts} below={indicatorBelow} />
-      <GhostRow items={items} drag={drag.snapshot} layouts={props.layouts} animatedOffsetY={drag.animatedOffsetY} />
+      {columnCount === 1 && (
+        <DropIndicator targetId={indicatorTargetId} layouts={props.layouts} below={indicatorBelow} />
+      )}
+      {columnCount === 1 && (
+        <GhostRow items={items} drag={drag.snapshot} layouts={props.layouts} animatedOffsetY={drag.animatedOffsetY} />
+      )}
     </View>
   );
 };
@@ -515,6 +533,7 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
     prev.item.members.length === next.item.members.length &&
     prev.item.members.every((m, i) => m.checked === next.item.members[i]?.checked) &&
     prev.hidden === next.hidden &&
+    prev.columnCount === next.columnCount &&
     !!prev.highlightOpacity === !!next.highlightOpacity &&
     prev.hasOtherLists === next.hasOtherLists &&
     prev.checkboxDisabled === next.checkboxDisabled &&
@@ -529,6 +548,7 @@ const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemRowProps
 
 const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const { profile } = useSpace();
+  const { show: showToast } = useToast();
   const wrapItemText = profile?.wrapItemText ?? false;
   const dragHandlers = {
     onStart: props.onDragStart,
@@ -568,15 +588,31 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
       { color: props.color, imageUrl: props.itemImage?.url }
     );
   return (
-    <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
-      <Pressable style={rowStyle}>
+    <View
+      style={
+        props.columnCount === 1 ? columnStyles.full : props.columnCount === 2 ? columnStyles.half : columnStyles.third
+      }
+      onLayout={(e) => props.onLayout(e.nativeEvent.layout)}
+    >
+      <Pressable style={[rowStyle, props.dragDisabled && columnStyles.item]}>
         {showHighlight && (
           <Animated.View
             pointerEvents="none"
             style={[homeStyles.itemHighlight, homeStyles.itemHighlightOverlay, { opacity: props.highlightOpacity }]}
           />
         )}
-        {wrap(<DragHandle />)}
+        {props.dragDisabled ? (
+          <Pressable
+            style={columnStyles.disabledHandle}
+            onPress={() => showToast(homeCopy.dragSingleColumnOnly, DRAG_GUIDANCE_DURATION)}
+            accessibilityRole="button"
+            accessibilityLabel={homeCopy.dragSingleColumnOnly}
+          >
+            <DragHandle />
+          </Pressable>
+        ) : (
+          wrap(<DragHandle />)
+        )}
         {hasMembers ? (
           <MultiCheckbox
             item={props.item}
@@ -704,4 +740,13 @@ const DropIndicator = ({ targetId, layouts, below }: DropIndicatorProps) => {
 
 const deleteStyles = StyleSheet.create({
   body: { fontSize: 14, color: homeColors.muted, textAlign: "center" },
+});
+
+const columnStyles = StyleSheet.create({
+  body: { flexDirection: "row", flexWrap: "wrap", columnGap: 0 },
+  item: { backgroundColor: homeStyles.categoryBody.backgroundColor, borderRadius: homeRadius / 2 },
+  full: { width: "100%" },
+  half: { width: "50%", paddingHorizontal: homeSpacing.xs / 2 },
+  third: { width: "33.333%", paddingHorizontal: homeSpacing.xs / 2 },
+  disabledHandle: { opacity: 0.45 },
 });

@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getTranslatedKits, type PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
@@ -15,7 +15,7 @@ import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { CategorySection } from "./CategorySection.tsx";
 import { filterCopy, homeCopy } from "./copy.ts";
 import { useItemOrdering } from "./itemOrdering.ts";
-import { buildSections } from "./itemsSectionHelpers.ts";
+import { buildSections, getItemColumnCount } from "./itemsSectionHelpers.ts";
 import { buildItemCategoryColors } from "./listColors.ts";
 import { addItemCopy } from "./listCopy.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
@@ -67,7 +67,12 @@ type ItemsListProps = {
 
 export const ItemsList = (props: ItemsListProps) => {
   const { profile } = useSpace();
+  const { width } = useWindowDimensions();
+  const columnCount = getItemColumnCount(width, profile?.forceSingleColumn ?? false);
   const drag = useDragState();
+  useEffect(() => {
+    if (columnCount > 1 && drag.snapshot) drag.end();
+  }, [columnCount, drag.snapshot, drag.end]);
   const ordering = useItemOrdering(props.items);
   const sections = buildSections(ordering.items, props.categories, profile?.checkedItemsLast ?? false).filter(
     (section) => section.items.length
@@ -140,6 +145,7 @@ export const ItemsList = (props: ItemsListProps) => {
           <CategorySection
             key={section.category.id || `uncategorized-${i}`}
             section={section}
+            columnCount={columnCount}
             allItems={props.allItems}
             color={colors[section.category.id]}
             members={props.members}

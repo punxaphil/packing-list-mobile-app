@@ -10,6 +10,13 @@ export type SectionGroup = {
 };
 
 const ALL_ITEMS_TITLE = "All items";
+const TWO_COLUMN_WIDTH = 800;
+const THREE_COLUMN_WIDTH = 1200;
+
+export const getItemColumnCount = (width: number, forceSingleColumn: boolean) => {
+  if (forceSingleColumn || width <= TWO_COLUMN_WIDTH) return 1;
+  return width > THREE_COLUMN_WIDTH ? 3 : 2;
+};
 
 const orderItems = (items: PackItem[], checkedItemsLast: boolean) =>
   checkedItemsLast

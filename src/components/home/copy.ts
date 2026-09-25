@@ -70,6 +70,7 @@ type HomeCopy = {
   kitPickerAdd: string;
   kitPickerItemCount: string;
   quickStart: string;
+  dragSingleColumnOnly: string;
 };
 
 export const homeCopy = translatedCopy<HomeCopy>("home");
