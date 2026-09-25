@@ -111,6 +111,7 @@ export const AddItemDialog = ({
           setItemName(text);
           setError(null);
         }}
+        onSubmitEditing={isSubmitDisabled || submitting ? undefined : () => void handleSubmit()}
         accessibilityLabel={HOME_COPY.newItem}
         style={inputStyle}
         editable={!submitting}
