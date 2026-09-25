@@ -12,7 +12,7 @@ export const filterSheetStyles = StyleSheet.create({
   sheet: {
     width: "100%",
     maxWidth: 400,
-    height: "95%",
+    maxHeight: "95%",
     backgroundColor: homeColors.surface,
     borderRadius: homeRadius,
     padding: homeSpacing.md,
@@ -34,7 +34,7 @@ export const filterSheetStyles = StyleSheet.create({
     color: homeColors.muted,
     textAlign: "center",
   },
-  content: { flexGrow: 1, flexShrink: 1, minHeight: 100, gap: homeSpacing.md },
+  content: { flexShrink: 1, minHeight: 100, gap: homeSpacing.md },
   list: { flex: 1, minHeight: 0 },
   listContent: { paddingBottom: homeSpacing.lg },
   section: { minHeight: 0, flexShrink: 1 },
