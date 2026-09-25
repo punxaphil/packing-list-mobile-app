@@ -35,7 +35,7 @@ export const NameEditor = () => {
       <Text style={styles.inputLabel}>{profileCopy.firstName}</Text>
       <TextInput
         autoCapitalize="words"
-        placeholder={profileCopy.firstName}
+        accessibilityLabel={profileCopy.firstName}
         style={styles.input}
         value={firstName}
         onChangeText={setFirstName}
@@ -43,7 +43,7 @@ export const NameEditor = () => {
       <Text style={styles.inputLabel}>{profileCopy.lastName}</Text>
       <TextInput
         autoCapitalize="words"
-        placeholder={profileCopy.lastName}
+        accessibilityLabel={profileCopy.lastName}
         style={styles.input}
         value={lastName}
         onChangeText={setLastName}

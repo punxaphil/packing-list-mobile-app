@@ -8,7 +8,6 @@ type TextPromptDialogProps = {
   title: string;
   confirmLabel: string;
   value: string;
-  placeholder?: string;
   error?: string | null;
   disabled?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
@@ -25,7 +24,6 @@ export const TextPromptDialog = ({
   title,
   confirmLabel,
   value,
-  placeholder,
   error,
   disabled,
   autoCapitalize,
@@ -63,7 +61,6 @@ export const TextPromptDialog = ({
         value={value}
         onChangeText={onChange}
         onSubmitEditing={disabled ? undefined : onSubmit}
-        placeholder={placeholder}
         style={inputStyle}
         autoFocus
         autoCapitalize={autoCapitalize}

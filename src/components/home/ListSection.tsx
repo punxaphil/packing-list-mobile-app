@@ -95,7 +95,6 @@ export const ListSection = (props: ListSectionProps) => {
         title={HOME_COPY.createListPrompt}
         confirmLabel={HOME_COPY.createListConfirm}
         value={creation.value}
-        placeholder={HOME_COPY.createListPlaceholder}
         error={creation.error}
         getError={creation.getError}
         onChange={creation.setValue}

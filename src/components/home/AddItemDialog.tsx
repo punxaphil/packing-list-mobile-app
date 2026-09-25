@@ -101,6 +101,7 @@ export const AddItemDialog = ({
   const inputStyle = [homeStyles.modalInput, error ? homeStyles.modalInputError : null];
   const content = (
     <>
+      <Text style={homeStyles.modalLabel}>{HOME_COPY.newItem}</Text>
       <TextInput
         ref={inputRef}
         value={itemName}
@@ -108,7 +109,7 @@ export const AddItemDialog = ({
           setItemName(text);
           setError(null);
         }}
-        placeholder={HOME_COPY.addItemPlaceholder}
+        accessibilityLabel={HOME_COPY.newItem}
         style={inputStyle}
         editable={!submitting}
         autoFocus
@@ -129,11 +130,11 @@ export const AddItemDialog = ({
       <Text style={homeStyles.modalLabel}>{COPY.newCategory}</Text>
       <TextInput
         value={newCategoryName}
+        accessibilityLabel={COPY.newCategory}
         onChangeText={(text) => {
           setNewCategoryName(text);
           setError(null);
         }}
-        placeholder={COPY.newCategoryPlaceholder}
         style={homeStyles.modalInput}
         editable={!submitting}
       />

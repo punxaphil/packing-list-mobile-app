@@ -25,7 +25,6 @@ type ImageViewerModalProps = {
   showRemove?: boolean;
   loading?: boolean;
   textValue?: string;
-  textPlaceholder?: string;
   textSubmitDisabled?: boolean;
   onTextChange?: (value: string) => void;
   onTextSubmit?: () => void;
@@ -41,7 +40,6 @@ export const ImageViewerModal = ({
   showRemove = true,
   loading = false,
   textValue,
-  textPlaceholder = commonCopy.emojiOrText,
   textSubmitDisabled = false,
   onTextChange,
   onTextSubmit,
@@ -89,8 +87,7 @@ export const ImageViewerModal = ({
               <TextInput
                 value={textValue}
                 onChangeText={onTextChange}
-                placeholder={textPlaceholder}
-                placeholderTextColor="rgba(255,255,255,0.72)"
+                accessibilityLabel={commonCopy.emojiOrText}
                 style={styles.textInputDark}
                 editable={!loading}
                 returnKeyType="done"

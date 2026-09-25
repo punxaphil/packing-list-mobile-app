@@ -25,7 +25,7 @@ type ListCopy = {
   cancel: string;
   listMenu: string;
   title: string;
-  notesPlaceholder: string;
+  notesLabel: string;
   showNotes: string;
 };
 
@@ -36,7 +36,6 @@ type AddItemCopy = {
   duplicateError: string;
   existingCategory: string;
   newCategory: string;
-  newCategoryPlaceholder: string;
   keepOpen: string;
   browseKits: string;
 };

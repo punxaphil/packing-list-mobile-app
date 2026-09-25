@@ -6,7 +6,6 @@ type SpaceCopy = {
   createSpace: string;
   createSpacePrompt: string;
   createSpaceConfirm: string;
-  createSpacePlaceholder: string;
   inviteUser: string;
   pendingInvites: string;
   inviteFrom: string;

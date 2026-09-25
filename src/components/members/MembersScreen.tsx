@@ -113,7 +113,6 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
           title={MEMBER_COPY.createPrompt}
           confirmLabel={MEMBER_COPY.createConfirm}
           value={creation.value}
-          placeholder={MEMBER_COPY.createPlaceholder}
           error={creation.error}
           getError={creation.getError}
           onChange={creation.setValue}

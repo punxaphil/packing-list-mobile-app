@@ -45,7 +45,7 @@ export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
         confirmLabel={HOME_COPY.renameListConfirm}
         value={props.renameItemText}
         error={renameItemError}
-        disabled={!!renameItemError}
+        disabled={!props.renameItemText.trim() || !!renameItemError}
         onChange={props.onChangeItemText}
         onCancel={props.onCancelItem}
         onSubmit={props.onSubmitItem}
@@ -56,7 +56,7 @@ export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
         confirmLabel={HOME_COPY.renameListConfirm}
         value={props.renameCategoryText}
         error={renameCategoryError}
-        disabled={!!renameCategoryError}
+        disabled={!props.renameCategoryText.trim() || !!renameCategoryError}
         onChange={props.onChangeCategoryText}
         onCancel={props.onCancelCategory}
         onSubmit={props.onSubmitCategory}

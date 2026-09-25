@@ -68,7 +68,7 @@ const formatItemCount = (count: number) => {
 
 export const EntityCard = (props: EntityCardProps) => {
   const [renameVisible, setRenameVisible] = useState(false);
-  const [renameValue, setRenameValue] = useState(props.entity.name);
+  const [renameValue, setRenameValue] = useState("");
   const { wrap } = useDraggableRow(
     {
       onStart: props.onDragStart,
@@ -151,7 +151,7 @@ export const EntityCard = (props: EntityCardProps) => {
         confirmLabel={props.copy.renameConfirm}
         value={renameValue}
         error={getRenameError(renameValue)}
-        disabled={!!getRenameError(renameValue)}
+        disabled={!renameValue.trim() || !!getRenameError(renameValue)}
         onChange={setRenameValue}
         onCancel={closeRename}
         onSubmit={() => {

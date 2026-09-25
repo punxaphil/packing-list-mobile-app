@@ -87,7 +87,7 @@ export const MoveCategoryModal = ({
           setNewCategoryName(text);
           setError(null);
         }}
-        placeholder={addItemCopy.newCategoryPlaceholder}
+        accessibilityLabel={addItemCopy.newCategory}
         style={homeStyles.modalInput}
         editable={!submitting}
       />

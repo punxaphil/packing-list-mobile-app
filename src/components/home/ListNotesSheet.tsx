@@ -24,13 +24,13 @@ export const ListNotesSheet = ({ state }: { state: ListNotesState }) => {
           <Text style={styles.toggleLabel}>{listCopy.showNotes}</Text>
           <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
         </View>
+        <Text style={styles.toggleLabel}>{listCopy.notesLabel}</Text>
         <TextInput
           style={styles.textarea}
           value={state.notes}
           onChangeText={state.setNotes}
           onContentSizeChange={scrollToEnd}
-          placeholder={listCopy.notesPlaceholder}
-          placeholderTextColor={homeColors.muted}
+          accessibilityLabel={listCopy.notesLabel}
           multiline
           textAlignVertical="top"
           autoFocus

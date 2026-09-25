@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { StyleSheet, TextInput } from "react-native";
+import { StyleSheet, Text, TextInput } from "react-native";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
 export type EmailFieldsProps = {
@@ -22,28 +22,31 @@ export function EmailFields({ isRegister, pending, onSubmitEditing, ...fields }:
     <>
       {isRegister && (
         <>
+          <Text style={styles.label}>{t("auth.firstNameOptional")}</Text>
           <TextInput
             {...webDisabled}
             autoCapitalize="words"
             editable={!pending}
             onSubmitEditing={onSubmitEditing}
-            placeholder={t("auth.firstNameOptional")}
+            accessibilityLabel={t("auth.firstNameOptional")}
             style={styles.input}
             value={fields.firstName}
             onChangeText={fields.setFirstName}
           />
+          <Text style={styles.label}>{t("auth.lastNameOptional")}</Text>
           <TextInput
             {...webDisabled}
             autoCapitalize="words"
             editable={!pending}
             onSubmitEditing={onSubmitEditing}
-            placeholder={t("auth.lastNameOptional")}
+            accessibilityLabel={t("auth.lastNameOptional")}
             style={styles.input}
             value={fields.lastName}
             onChangeText={fields.setLastName}
           />
         </>
       )}
+      <Text style={styles.label}>{t("auth.email")}</Text>
       <TextInput
         {...webDisabled}
         autoCapitalize="none"
@@ -51,18 +54,19 @@ export function EmailFields({ isRegister, pending, onSubmitEditing, ...fields }:
         editable={!pending}
         keyboardType="email-address"
         onSubmitEditing={onSubmitEditing}
-        placeholder={t("auth.email")}
+        accessibilityLabel={t("auth.email")}
         style={styles.input}
         value={fields.email}
         onChangeText={fields.setEmail}
       />
+      <Text style={styles.label}>{t("auth.password")}</Text>
       <TextInput
         {...webDisabled}
         autoCapitalize="none"
         editable={!pending}
         onSubmitEditing={onSubmitEditing}
         secureTextEntry
-        placeholder={t("auth.password")}
+        accessibilityLabel={t("auth.password")}
         style={styles.input}
         value={fields.password}
         onChangeText={fields.setPassword}
@@ -72,6 +76,7 @@ export function EmailFields({ isRegister, pending, onSubmitEditing, ...fields }:
 }
 
 const styles = StyleSheet.create({
+  label: { fontSize: 14, color: homeColors.text },
   input: {
     width: "100%",
     borderColor: homeColors.border,

@@ -20,7 +20,6 @@ type HomeCopy = {
   listChanges: string;
   addItemPrompt: string;
   addItemConfirm: string;
-  addItemPlaceholder: string;
   deleteItem: string;
   newItem: string;
   listNoItems: string;
@@ -34,7 +33,6 @@ type HomeCopy = {
   cancel: string;
   createListPrompt: string;
   createListConfirm: string;
-  createListPlaceholder: string;
   renameListPrompt: string;
   renameListConfirm: string;
   renameItemPrompt: string;

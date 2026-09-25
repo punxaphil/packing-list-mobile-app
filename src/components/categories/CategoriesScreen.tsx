@@ -91,7 +91,6 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
           title={CATEGORY_COPY.createPrompt}
           confirmLabel={CATEGORY_COPY.createConfirm}
           value={creation.value}
-          placeholder={CATEGORY_COPY.createPlaceholder}
           error={creation.error}
           getError={creation.getError}
           onChange={creation.setValue}

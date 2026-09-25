@@ -116,8 +116,7 @@ const SearchRow = ({
           style={styles.searchInput}
           value={localText}
           onChangeText={onTextChange}
-          placeholder={t("search.placeholder")}
-          placeholderTextColor={homeColors.muted}
+          accessibilityLabel={t("search.placeholder")}
           autoFocus
           returnKeyType="search"
           blurOnSubmit={false}

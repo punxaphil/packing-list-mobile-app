@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { type WriteDb } from "~/services/database.ts";
@@ -250,13 +250,13 @@ const useRenameDialog = (
   rename: (target: NamedEntity, name: string) => void
 ): TextDialogState => {
   const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState(list?.name ?? "");
+  const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => setValue(list?.name ?? ""), [list?.name]);
   const open = useCallback(() => {
+    setValue(list?.name ?? "");
     setError(null);
     setVisible(true);
-  }, []);
+  }, [list?.name]);
   const close = useCallback(() => setVisible(false), []);
   const getError = useCallback(
     (text: string) => {

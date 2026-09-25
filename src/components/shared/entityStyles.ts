@@ -114,7 +114,6 @@ export type EntityCopy = {
   renameConfirm: string;
   createPrompt: string;
   createConfirm: string;
-  createPlaceholder: string;
   delete: string;
   deleteIcon: string;
   deleteConfirmTitle: string;

@@ -122,7 +122,8 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     setRenameItemText(item.name);
   };
   const submitRenameItem = () => {
-    if (renameItem && !renameItemErrorText) props.onRenameItem(renameItem, renameItemText.trim());
+    if (renameItem && renameItemText.trim() && !renameItemErrorText)
+      props.onRenameItem(renameItem, renameItemText.trim());
     setRenameItem(null);
   };
   const openRenameCategory = () => {
@@ -130,7 +131,8 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     setRenameCategoryText(props.section.category.name);
   };
   const submitRenameCategory = () => {
-    if (!renameCategoryErrorText) props.onRenameCategory(props.section.category, renameCategoryText.trim());
+    if (renameCategoryText.trim() && !renameCategoryErrorText)
+      props.onRenameCategory(props.section.category, renameCategoryText.trim());
     setRenameCategoryVisible(false);
   };
   const resolveMoveCategory = async (category: NamedEntity | null, newCategoryName: string | null) => {
