@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text } from "react-native";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
+import { orderLists } from "./listOrdering.ts";
 import { PackingListSummary } from "./types.ts";
 
 type CopyToListModalProps = {
@@ -15,7 +16,7 @@ type CopyToListModalProps = {
 export const CopyToListModal = (props: CopyToListModalProps) => {
   const { visible, lists, currentListId, onClose, onSelect } = props;
   const { t } = useTranslation();
-  const availableLists = lists.filter((list) => list.id !== currentListId && !list.archived);
+  const availableLists = orderLists(lists.filter((list) => list.id !== currentListId && !list.archived));
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {

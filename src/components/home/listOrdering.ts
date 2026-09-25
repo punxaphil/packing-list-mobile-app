@@ -53,8 +53,10 @@ const buildOrderedLists = (orderedIds: string[], lists: PackingListSummary[]) =>
   const ordered = orderedIds
     .map((id) => lists.find((list) => list.id === id))
     .filter((list): list is PackingListSummary => Boolean(list));
-  return sortArchivedLast(sortTemplatesFirst(sortPinnedFirst(ordered)));
+  return orderLists(ordered);
 };
+
+export const orderLists = (lists: PackingListSummary[]) => sortArchivedLast(sortTemplatesFirst(sortPinnedFirst(lists)));
 
 const sortTemplatesFirst = (lists: PackingListSummary[]) => {
   const templates = lists.filter((list) => list.isTemplate);
