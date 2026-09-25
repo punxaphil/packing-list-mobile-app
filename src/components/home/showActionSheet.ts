@@ -10,9 +10,12 @@ export type ActionSheetItem = {
   space?: Space;
 };
 
+export type ActionSheetHeader = { color?: string; imageUrl?: string };
+
 type ActionSheetPayload = {
   title: string;
   items: ActionSheetItem[];
+  header?: ActionSheetHeader;
 };
 
 type ActionSheetListener = (payload: ActionSheetPayload) => void;
@@ -30,10 +33,10 @@ export const removeActionSheetListener = (listener: ActionSheetListener) => {
 
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
-export const showActionSheet = (title: string, items: ActionSheetItem[]) => {
+export const showActionSheet = (title: string, items: ActionSheetItem[], header?: ActionSheetHeader) => {
   const listener = listenerStack[listenerStack.length - 1];
   if (listener) {
-    listener({ title, items });
+    listener({ title, items, header });
     return;
   }
 

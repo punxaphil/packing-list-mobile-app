@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { ActionMenu } from "./ActionMenu.tsx";
-import { ActionSheetItem, pushActionSheetListener, removeActionSheetListener } from "./showActionSheet.ts";
+import {
+  ActionSheetHeader,
+  ActionSheetItem,
+  pushActionSheetListener,
+  removeActionSheetListener,
+} from "./showActionSheet.ts";
 
 type SheetState = {
   title: string;
   items: ActionSheetItem[];
+  header?: ActionSheetHeader;
 };
 
 export const ActionSheetHost = () => {
@@ -25,6 +31,14 @@ export const ActionSheetHost = () => {
   if (!sheet) return null;
 
   return (
-    <ActionMenu visible title={sheet.title} items={sheet.items} onClose={() => setSheet(null)} onSelect={select} />
+    <ActionMenu
+      visible
+      title={sheet.title}
+      items={sheet.items}
+      headerColor={sheet.header?.color}
+      headerImageUrl={sheet.header?.imageUrl}
+      onClose={() => setSheet(null)}
+      onSelect={select}
+    />
   );
 };

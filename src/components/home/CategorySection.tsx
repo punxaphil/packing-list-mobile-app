@@ -77,6 +77,7 @@ type CategorySectionProps = {
 
 type CategoryItemRowProps = {
   item: PackItem;
+  color: string;
   checkboxColor: string;
   initialsMap: MemberInitialsMap;
   memberNames: MemberNamesMap;
@@ -188,6 +189,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     >
       <CategoryHeader
         section={props.section}
+        color={props.color}
         imageUrl={categoryImageUrl}
         checkboxColor={checkboxColor}
         isTemplateList={props.isTemplateList}
@@ -314,6 +316,7 @@ export const CategorySection = memo(CategorySectionImpl, areSectionPropsEqual);
 
 type CategoryHeaderProps = {
   section: SectionGroup;
+  color: string;
   checkboxColor: string;
   imageUrl: string | undefined;
   isTemplateList: boolean;
@@ -328,6 +331,7 @@ type CategoryHeaderProps = {
 
 const CategoryHeader = ({
   section,
+  color,
   checkboxColor,
   imageUrl,
   isTemplateList,
@@ -347,17 +351,21 @@ const CategoryHeader = ({
   const emoji = getEmojiValue(imageUrl);
 
   const openMenu = () =>
-    showActionSheet(section.title, [
-      ...(isUncategorized ? [] : [{ text: HOME_COPY.rename, onPress: onRename }]),
-      { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
-      { text: CATEGORY_COPY.changeCategory, onPress: onMoveCategory },
-      { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
-      {
-        text: HOME_COPY.categoryMenuDeleteItems,
-        style: "destructive",
-        onPress: onDeleteItems,
-      },
-    ]);
+    showActionSheet(
+      section.title,
+      [
+        ...(isUncategorized ? [] : [{ text: HOME_COPY.rename, onPress: onRename }]),
+        { text: HOME_COPY.categoryMenuAddItem, onPress: onAdd },
+        { text: CATEGORY_COPY.changeCategory, onPress: onMoveCategory },
+        { text: HOME_COPY.categoryMenuSortAlpha, onPress: onSortAlpha },
+        {
+          text: HOME_COPY.categoryMenuDeleteItems,
+          style: "destructive",
+          onPress: onDeleteItems,
+        },
+      ],
+      { color, imageUrl }
+    );
 
   return (
     <View style={homeStyles.categoryHeader}>
@@ -438,6 +446,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
         <CategoryItemRow
           key={item.id}
           item={item}
+          color={props.color}
           checkboxColor={props.checkboxColor}
           initialsMap={initialsMap}
           memberNames={props.memberNames}
@@ -539,21 +548,25 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const showHighlight = !!props.highlightOpacity;
   const hasMembers = props.item.members.length > 0;
   const openMenu = () =>
-    showActionSheet(props.item.name, [
-      { text: HOME_COPY.rename, onPress: props.onOpenRename },
-      { text: assignMembersCopy.title, onPress: props.onOpenAssignMembers },
-      { text: CATEGORY_COPY.changeCategory, onPress: props.onOpenMoveCategory },
-      {
-        text: props.itemImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage,
-        onPress: props.onOpenImagePicker,
-      },
-      ...(props.hasOtherLists ? [{ text: copyToListCopy.title, onPress: props.onOpenCopyToList }] : []),
-      {
-        text: homeCopy.deleteItem,
-        style: "destructive",
-        onPress: () => props.onDeleteItem(props.item.id),
-      },
-    ]);
+    showActionSheet(
+      props.item.name,
+      [
+        { text: HOME_COPY.rename, onPress: props.onOpenRename },
+        { text: assignMembersCopy.title, onPress: props.onOpenAssignMembers },
+        { text: CATEGORY_COPY.changeCategory, onPress: props.onOpenMoveCategory },
+        {
+          text: props.itemImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage,
+          onPress: props.onOpenImagePicker,
+        },
+        ...(props.hasOtherLists ? [{ text: copyToListCopy.title, onPress: props.onOpenCopyToList }] : []),
+        {
+          text: homeCopy.deleteItem,
+          style: "destructive",
+          onPress: () => props.onDeleteItem(props.item.id),
+        },
+      ],
+      { color: props.color, imageUrl: props.itemImage?.url }
+    );
   return (
     <View onLayout={(e) => props.onLayout(e.nativeEvent.layout)}>
       <Pressable style={rowStyle}>

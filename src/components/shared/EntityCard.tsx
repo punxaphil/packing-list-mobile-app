@@ -112,7 +112,7 @@ export const EntityCard = (props: EntityCardProps) => {
   const showHighlight = !!props.highlightOpacity;
   const openMenu = () => {
     if (!menuItems.length) return;
-    showActionSheet(props.entity.name, menuItems);
+    showActionSheet(props.entity.name, menuItems, { color: props.color, imageUrl: props.image?.url });
   };
   return (
     <View onLayout={handleLayout}>

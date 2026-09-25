@@ -59,22 +59,31 @@ export const ListCard = (props: ListCardProps) => {
   const isPinned = props.list.pinned === true;
   const isArchived = props.list.archived === true;
   const canMove = props.spaces.length > 1;
+  const menuHeader = { color: props.color, imageUrl: props.image?.url };
 
   const openDeleteConfirm = () =>
-    showActionSheet(listCopy.deleteConfirm.replace("{name}", props.list.name), [
-      {
-        text: listCopy.delete,
-        style: "destructive",
-        onPress: () => void props.actions.onDelete(props.list),
-      },
-    ]);
+    showActionSheet(
+      listCopy.deleteConfirm.replace("{name}", props.list.name),
+      [
+        {
+          text: listCopy.delete,
+          style: "destructive",
+          onPress: () => void props.actions.onDelete(props.list),
+        },
+      ],
+      menuHeader
+    );
   const openUncheckConfirm = () =>
-    showActionSheet(listCopy.uncheckConfirm.replace("{name}", props.list.name), [
-      {
-        text: listCopy.uncheckAll,
-        onPress: () => void props.actions.onUncheckAll(props.list),
-      },
-    ]);
+    showActionSheet(
+      listCopy.uncheckConfirm.replace("{name}", props.list.name),
+      [
+        {
+          text: listCopy.uncheckAll,
+          onPress: () => void props.actions.onUncheckAll(props.list),
+        },
+      ],
+      menuHeader
+    );
   const openMovePicker = () =>
     showActionSheet(
       listCopy.moveToSpace,
@@ -84,7 +93,8 @@ export const ListCard = (props: ListCardProps) => {
           text: s.name,
           space: s,
           onPress: () => props.onMoveToSpace(props.list.id, s.id),
-        }))
+        })),
+      menuHeader
     );
   const openMenu = () =>
     showActionSheet(
@@ -102,7 +112,8 @@ export const ListCard = (props: ListCardProps) => {
         () => props.onImagePress(props.list.id, props.image),
         !!props.image,
         canMove ? openMovePicker : undefined
-      )
+      ),
+      menuHeader
     );
   const cardStyle = getCardStyle(props.isSelected, props.color, isArchived);
   return (

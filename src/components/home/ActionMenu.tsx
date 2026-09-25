@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { Modal, Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
+import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { Space } from "~/types/Space.ts";
 import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
 import { commonCopy } from "./copy.ts";
@@ -26,6 +27,7 @@ type ActionMenuProps = {
   onClose: () => void;
   onSelect: (action?: () => void) => void;
   headerColor?: string;
+  headerImageUrl?: string;
   headerTextColor?: string;
   headerRight?: ReactNode;
 };
@@ -37,6 +39,7 @@ export const ActionMenu = ({
   onClose,
   onSelect,
   headerColor,
+  headerImageUrl,
   headerTextColor,
   headerRight,
 }: ActionMenuProps) => {
@@ -51,7 +54,13 @@ export const ActionMenu = ({
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
           <View style={[styles.titleRow, headerBgStyle]}>
-            <View style={styles.titleSpacer} />
+            <View style={styles.titleSpacer}>
+              {getEmojiValue(headerImageUrl) ? (
+                <Text style={styles.titleEmoji}>{getEmojiValue(headerImageUrl)}</Text>
+              ) : headerImageUrl ? (
+                <RNImage source={{ uri: headerImageUrl }} style={styles.titleImage} />
+              ) : null}
+            </View>
             <Text style={titleTextStyle}>{title}</Text>
             <View style={styles.titleSpacer}>{headerRight}</View>
           </View>
