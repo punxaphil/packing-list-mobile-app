@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { Keyboard, Pressable, Image as RNImage, ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { useRef, useState } from "react";
+import { Keyboard, Modal, Pressable, Image as RNImage, Text, useWindowDimensions, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
-import { getCategoryKey, UNCATEGORIZED } from "~/services/utils.ts";
-import { Image } from "~/types/Image.ts";
-import { NamedEntity } from "~/types/NamedEntity.ts";
-import { homeColors } from "./theme.ts";
+import type { Image } from "~/types/Image.ts";
+import type { NamedEntity } from "~/types/NamedEntity.ts";
+import { CategoryDropdownOptions, getCategoryImageUrl, orderCategories } from "./CategoryDropdownOptions.tsx";
+import { CATEGORY_FIELD_STYLES } from "./CategoryFieldStyles.ts";
+
+export { CATEGORY_FIELD_STYLES } from "./CategoryFieldStyles.ts";
 
 const DROPDOWN_ROW_HEIGHT = 49;
 const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
+const DROPDOWN_MARGIN = 8;
 
 export const CategoryDropdown = ({
   categories,
@@ -25,12 +28,10 @@ export const CategoryDropdown = ({
   usedCategoryIds?: string[];
 }) => {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0, maxHeight: 0 });
+  const dropdownRef = useRef<View>(null);
   const { height } = useWindowDimensions();
-  const usedIds = new Set(usedCategoryIds ?? []);
-  const nonUncategorized = categories.filter((c) => c.id !== UNCATEGORIZED.id);
-  const used = nonUncategorized.filter((c) => usedIds.has(c.id)).sort((a, b) => a.name.localeCompare(b.name));
-  const unused = nonUncategorized.filter((c) => !usedIds.has(c.id)).sort((a, b) => a.name.localeCompare(b.name));
-  const allCategories = [UNCATEGORIZED, ...used, ...unused];
+  const allCategories = orderCategories(categories, usedCategoryIds);
   const dropdownMaxHeight = Math.min(
     allCategories.length * DROPDOWN_ROW_HEIGHT,
     Math.floor(height * DROPDOWN_MAX_SCREEN_RATIO)
@@ -41,7 +42,19 @@ export const CategoryDropdown = ({
   const toggle = () => {
     if (disabled) return;
     Keyboard.dismiss();
-    setOpen((value) => !value);
+    if (open) return setOpen(false);
+    dropdownRef.current?.measureInWindow((left, top, width, buttonHeight) => {
+      const below = height - top - buttonHeight - DROPDOWN_MARGIN;
+      const above = top - DROPDOWN_MARGIN;
+      const showAbove = below < dropdownMaxHeight && above > below;
+      setPosition({
+        top: showAbove ? top - Math.min(dropdownMaxHeight, above) : top + buttonHeight,
+        left,
+        width,
+        maxHeight: Math.min(dropdownMaxHeight, showAbove ? above : below),
+      });
+      setOpen(true);
+    });
   };
 
   const handleSelect = (category: NamedEntity) => {
@@ -50,7 +63,10 @@ export const CategoryDropdown = ({
   };
 
   return (
-    <View style={[CATEGORY_FIELD_STYLES.dropdownContainer, disabled ? CATEGORY_FIELD_STYLES.pickerDisabled : null]}>
+    <View
+      ref={dropdownRef}
+      style={[CATEGORY_FIELD_STYLES.dropdownContainer, disabled ? CATEGORY_FIELD_STYLES.pickerDisabled : null]}
+    >
       <Pressable style={CATEGORY_FIELD_STYLES.dropdownButton} onPress={toggle}>
         <View style={CATEGORY_FIELD_STYLES.dropdownValue}>
           <Text style={CATEGORY_FIELD_STYLES.dropdownText}>{selected.name}</Text>
@@ -65,141 +81,19 @@ export const CategoryDropdown = ({
         <Text style={CATEGORY_FIELD_STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
       </Pressable>
       {open && (
-        <View style={CATEGORY_FIELD_STYLES.dropdownList}>
-          <ScrollView
-            style={[CATEGORY_FIELD_STYLES.dropdownScroll, { maxHeight: dropdownMaxHeight }]}
-            nestedScrollEnabled
-          >
-            {allCategories.map((category, index) => {
-              const imageUrl = getCategoryImageUrl(categoryImages, category.id);
-              const emoji = getEmojiValue(imageUrl);
-
-              return (
-                <Pressable
-                  key={getCategoryKey(category)}
-                  style={[
-                    CATEGORY_FIELD_STYLES.dropdownItem,
-                    index === allCategories.length - 1 ? CATEGORY_FIELD_STYLES.dropdownItemLast : null,
-                  ]}
-                  onPress={() => handleSelect(category)}
-                >
-                  <View style={CATEGORY_FIELD_STYLES.dropdownValue}>
-                    <Text
-                      style={[
-                        CATEGORY_FIELD_STYLES.dropdownItemText,
-                        getCategoryKey(category) === getCategoryKey(selected)
-                          ? CATEGORY_FIELD_STYLES.dropdownItemSelected
-                          : null,
-                      ]}
-                    >
-                      {category.name}
-                    </Text>
-                    <View style={CATEGORY_FIELD_STYLES.dropdownMedia}>
-                      {emoji ? (
-                        <Text style={CATEGORY_FIELD_STYLES.dropdownEmoji}>{emoji}</Text>
-                      ) : imageUrl ? (
-                        <RNImage source={{ uri: imageUrl }} style={CATEGORY_FIELD_STYLES.dropdownImage} />
-                      ) : null}
-                    </View>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
+        <Modal transparent visible onRequestClose={() => setOpen(false)} animationType="none">
+          <Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} />
+          <View style={[CATEGORY_FIELD_STYLES.dropdownList, position]}>
+            <CategoryDropdownOptions
+              categories={allCategories}
+              categoryImages={categoryImages}
+              selected={selected}
+              onSelect={handleSelect}
+              maxHeight={position.maxHeight}
+            />
+          </View>
+        </Modal>
       )}
     </View>
   );
-};
-
-const getCategoryImageUrl = (categoryImages: Image[], categoryId: string) =>
-  categoryImages.find((image) => image.typeId === categoryId)?.url;
-
-export const CATEGORY_FIELD_STYLES = {
-  dropdownContainer: { marginBottom: 12, zIndex: 10 },
-  sheetLabel: {
-    fontSize: 14,
-    fontWeight: "600" as const,
-    color: homeColors.muted,
-  },
-  sheetInput: {
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    fontSize: 16,
-    color: homeColors.text,
-    backgroundColor: "rgba(255,255,255,0.95)",
-  },
-  dropdownButton: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    backgroundColor: homeColors.surface,
-  },
-  sheetDropdownButton: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    backgroundColor: "rgba(255,255,255,0.95)",
-  },
-  dropdownValue: {
-    flex: 1,
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-  },
-  dropdownText: { flex: 1, fontSize: 16, color: homeColors.text },
-  dropdownMedia: {
-    width: 24,
-    alignItems: "flex-end" as const,
-    justifyContent: "center" as const,
-  },
-  dropdownImage: { width: 24, height: 24, borderRadius: 6 },
-  dropdownEmoji: { fontSize: 18, lineHeight: 22 },
-  dropdownArrow: { fontSize: 12, color: homeColors.muted, marginLeft: 12 },
-  dropdownList: {
-    position: "absolute" as const,
-    top: 52,
-    left: 0,
-    right: 0,
-    backgroundColor: homeColors.surface,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 8,
-    zIndex: 20,
-  },
-  dropdownListInline: {
-    position: "relative" as const,
-    top: undefined,
-    left: undefined,
-    right: undefined,
-    marginTop: 4,
-  },
-  sheetDropdownList: { borderRadius: 20 },
-  dropdownScroll: {},
-  dropdownItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: homeColors.border,
-  },
-  dropdownItemLast: { borderBottomWidth: 0 },
-  dropdownItemText: { flex: 1, fontSize: 16, color: homeColors.text },
-  dropdownItemSelected: {
-    fontWeight: "600" as const,
-    color: homeColors.text,
-  },
-  pickerDisabled: { opacity: 0.5 },
 };
