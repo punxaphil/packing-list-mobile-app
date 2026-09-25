@@ -35,6 +35,7 @@ export const ActionSheetHost = () => {
       visible
       title={sheet.title}
       items={sheet.items}
+      previewItems={sheet.header?.previewItems}
       headerColor={sheet.header?.color}
       headerImageUrl={sheet.header?.imageUrl}
       onClose={() => setSheet(null)}

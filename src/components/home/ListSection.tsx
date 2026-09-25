@@ -9,7 +9,9 @@ import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
+import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
+import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
@@ -51,6 +53,15 @@ export const ListSection = (props: ListSectionProps) => {
     [spaceId]
   );
   const actions = useListActions(props.lists, props.selection, templateList, listImages, props.onListSelect);
+  const bulkEdit = useEmptyEntityBulkEdit({
+    entities: props.lists,
+    isEligible: (list) => list.itemCount === 0,
+    hasItem: (list, item) => item.packingList === list.id,
+    onDelete: (list) => actions.onDelete(list, true),
+    copy: listCopy,
+    menuKey: "list.bulkRemoveEmptyCount",
+    confirmKey: "list.bulkConfirm",
+  });
   const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const drag = useDragState();
   const ordering = useListOrdering(props.lists);
@@ -69,6 +80,8 @@ export const ListSection = (props: ListSectionProps) => {
       />
       <ListHeader
         onAdd={creation.open}
+        onBulkEdit={bulkEdit.open}
+        bulkEditing={bulkEdit.busy}
         showArchived={showArchived}
         hasArchived={hasArchived}
         onToggleArchived={() => setShowArchived((v) => !v)}
@@ -122,12 +135,21 @@ export const ListSection = (props: ListSectionProps) => {
 
 type ListHeaderProps = {
   onAdd: () => void;
+  onBulkEdit: () => void;
+  bulkEditing: boolean;
   showArchived: boolean;
   hasArchived: boolean;
   onToggleArchived: () => void;
 };
 
-const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: ListHeaderProps) => (
+const ListHeader = ({
+  onAdd,
+  onBulkEdit,
+  bulkEditing,
+  showArchived,
+  hasArchived,
+  onToggleArchived,
+}: ListHeaderProps) => (
   <View style={localStyles.headerRow}>
     <Pressable
       style={localStyles.createLink}
@@ -139,6 +161,7 @@ const ListHeader = ({ onAdd, showArchived, hasArchived, onToggleArchived }: List
       <Text style={homeStyles.quickAddLabel}>{listCopy.createList}</Text>
     </Pressable>
     <View style={localStyles.spacer} />
+    <MultiEditButton label={listCopy.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
     {hasArchived && (
       <View style={localStyles.archiveToggle}>
         <Text style={localStyles.archiveToggleText}>{listCopy.archivedPlural}</Text>

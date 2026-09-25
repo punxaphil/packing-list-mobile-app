@@ -22,17 +22,21 @@ export const useBulkEdit = (items: PackItem[], writeDb: WriteDb) => {
     }
   };
   const confirm = (title: string, label: string, targets: PackItem[], action: (item: PackItem) => Promise<void>) => {
-    showActionSheet(title, [
-      { text: label, style: "destructive", onPress: () => void run(targets, action) },
-      { text: homeCopy.cancel, style: "cancel" },
-    ]);
+    showActionSheet(
+      title,
+      [
+        { text: label, style: "destructive", onPress: () => void run(targets, action) },
+        { text: homeCopy.cancel, style: "cancel" },
+      ],
+      { previewItems: targets }
+    );
   };
   const open = () => {
     if (busy) return;
     const { tickedItems, assignedItems } = getBulkEditTargets(items);
     showActionSheet(homeCopy.bulkEdit, [
       {
-        text: homeCopy.removeTickedItems,
+        text: i18next.t("home.removeTickedItemsCount", { count: tickedItems.length }),
         disabled: tickedItems.length === 0,
         disabledReason: homeCopy.noTickedItems,
         onPress: () =>
@@ -44,7 +48,7 @@ export const useBulkEdit = (items: PackItem[], writeDb: WriteDb) => {
           ),
       },
       {
-        text: homeCopy.removeAllMembers,
+        text: i18next.t("home.removeAllMembersCount", { count: assignedItems.length }),
         disabled: assignedItems.length === 0,
         disabledReason: homeCopy.noAssignedMembers,
         onPress: () =>

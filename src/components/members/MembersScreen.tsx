@@ -15,7 +15,9 @@ import { useDragState } from "../home/useDragState.ts";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
 import { entityStyles, MEMBER_COPY } from "../shared/entityStyles.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
+import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
+import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
@@ -63,6 +65,15 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   };
 
   const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb, openMoveItems);
+  const bulkEdit = useEmptyEntityBulkEdit({
+    entities: members,
+    isEligible: (member) => !member.userId && (itemCounts[member.id] ?? 0) === 0,
+    hasItem: (member, item) => item.members.some((assigned) => assigned.id === member.id),
+    onDelete: (member) => writeDb.deleteMember(member.id, [], false),
+    copy: MEMBER_COPY,
+    menuKey: "member.bulkRemoveEmptyCount",
+    confirmKey: "member.bulkConfirm",
+  });
   const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
   const drag = useDragState();
   const ordering = useEntityOrdering(members, writeDb.updateMembers);
@@ -85,6 +96,8 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
         />
         <MemberHeader
           onAdd={creation.open}
+          onBulkEdit={bulkEdit.open}
+          bulkEditing={bulkEdit.busy}
           sortByAlpha={sortByAlpha}
           onToggleSort={() => setSortByAlpha(!sortByAlpha)}
         />
@@ -151,11 +164,13 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
 
 type MemberHeaderProps = {
   onAdd: () => void;
+  onBulkEdit: () => void;
+  bulkEditing: boolean;
   sortByAlpha: boolean;
   onToggleSort: () => void;
 };
 
-const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
+const MemberHeader = ({ onAdd, onBulkEdit, bulkEditing, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
   <View style={entityStyles.actions}>
     <Pressable
       style={entityStyles.addLink}
@@ -167,6 +182,7 @@ const MemberHeader = ({ onAdd, sortByAlpha, onToggleSort }: MemberHeaderProps) =
       <Text style={entityStyles.addLinkLabel}>{MEMBER_COPY.addButton}</Text>
     </Pressable>
     <View style={entityStyles.spacer} />
+    <MultiEditButton label={MEMBER_COPY.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
       <Switch

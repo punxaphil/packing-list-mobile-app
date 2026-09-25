@@ -11,7 +11,7 @@ export type ActionSheetItem = {
   space?: Space;
 };
 
-export type ActionSheetHeader = { color?: string; imageUrl?: string };
+export type ActionSheetHeader = { color?: string; imageUrl?: string; previewItems?: { id: string; name: string }[] };
 
 type ActionSheetPayload = {
   title: string;

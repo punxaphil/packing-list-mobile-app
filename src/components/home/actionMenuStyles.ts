@@ -22,6 +22,8 @@ export const actionMenuStyles = StyleSheet.create({
   titleSpacer: { width: 28, alignItems: "center", justifyContent: "center" },
   titleEmoji: { fontSize: 24 },
   titleImage: { width: 28, height: 28, borderRadius: 4 },
+  preview: { paddingHorizontal: homeSpacing.md, paddingVertical: homeSpacing.sm },
+  previewText: { color: homeColors.muted, fontSize: 14, lineHeight: homeSpacing.lg, textAlign: "center" },
   item: { padding: homeSpacing.md, borderBottomWidth: 1, borderBottomColor: homeColors.border },
   disabledItem: { opacity: 0.45, cursor: "auto" },
   itemRow: { flexDirection: "row", alignItems: "center" },

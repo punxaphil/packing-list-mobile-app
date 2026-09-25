@@ -98,9 +98,10 @@ function throwNamedEntityArrayError(type: string, packItems: PackItem[], packing
   ]);
 }
 
-async function deletePackItemsForList(spaceId: string, listId: string, batch: WriteBatch) {
+async function deletePackItemsForList(spaceId: string, listId: string, batch: WriteBatch, onlyIfEmpty = false) {
   const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("packingList", "==", listId));
   const items = fromQueryResult<PackItem>(await getDocs(q));
+  if (onlyIfEmpty && items.length) throw new Error("List is no longer empty");
   for (const item of items) {
     batch.delete(spaceDoc(spaceId, PACK_ITEMS_KEY, item.id));
   }
@@ -201,9 +202,9 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       await batch.commit();
       await logItemDeleted(spaceId, actor, before);
     },
-    deletePackingList: async (id: string) => {
+    deletePackingList: async (id: string, onlyIfEmpty = false) => {
       const batch = writeBatch(firestore);
-      await deletePackItemsForList(spaceId, id, batch);
+      await deletePackItemsForList(spaceId, id, batch, onlyIfEmpty);
       await deleteImagesForEntity(spaceId, id, ["packingList", "packingLists"], batch);
       db.deletePackingListBatch(id, batch);
       await batch.commit();
@@ -306,6 +307,8 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       await batch.commit();
     },
     async deleteMember(id: string, packingLists: NamedEntity[], deleteEvenIfUsed = false) {
+      const member = await getDoc(spaceDoc(spaceId, MEMBERS_KEY, id));
+      if (member.data()?.userId) throw new Error("Real users cannot be deleted");
       const q = query(spaceColl(spaceId, PACK_ITEMS_KEY), where("members", "!=", []));
       let packItems: PackItem[] = fromQueryResult(await getDocs(q));
       packItems = packItems.filter((t) => t.members.find((m) => m.id === id));

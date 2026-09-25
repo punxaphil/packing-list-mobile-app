@@ -1,7 +1,8 @@
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { Modal, Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { Space } from "~/types/Space.ts";
+import { ActionMenuPreview } from "./ActionMenuPreview.tsx";
 import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
 import { commonCopy } from "./copy.ts";
 import type { MemberInfo } from "./memberInfo.ts";
@@ -26,6 +27,7 @@ type ActionMenuProps = {
   visible: boolean;
   title: string;
   items: ActionMenuItem[];
+  previewItems?: { id: string; name: string }[];
   onClose: () => void;
   onSelect: (action?: () => void) => void;
   headerColor?: string;
@@ -38,6 +40,7 @@ export const ActionMenu = ({
   visible,
   title,
   items,
+  previewItems,
   onClose,
   onSelect,
   headerColor,
@@ -47,6 +50,7 @@ export const ActionMenu = ({
 }: ActionMenuProps) => {
   const spaces = useMemo(() => items.flatMap((item) => (item.space ? [item.space] : [])), [items]);
   const { memberInfoBySpaceId } = useSpaceMemberInfo(spaces);
+  const [headerHeight, setHeaderHeight] = useState(0);
   const titleTextStyle = headerColor
     ? [styles.titleText, { color: headerTextColor ?? homeColors.text }]
     : styles.titleText;
@@ -56,7 +60,10 @@ export const ActionMenu = ({
       <ToastProvider>
         <Pressable style={styles.backdrop} onPress={onClose}>
           <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
-            <View style={[styles.titleRow, headerBgStyle]}>
+            <View
+              style={[styles.titleRow, headerBgStyle]}
+              onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
+            >
               <View style={styles.titleSpacer}>
                 {getEmojiValue(headerImageUrl) ? (
                   <Text style={styles.titleEmoji}>{getEmojiValue(headerImageUrl)}</Text>
@@ -67,6 +74,7 @@ export const ActionMenu = ({
               <Text style={titleTextStyle}>{title}</Text>
               <View style={styles.titleSpacer}>{headerRight}</View>
             </View>
+            {previewItems && <ActionMenuPreview items={previewItems} headerHeight={headerHeight} />}
             <ScrollView style={styles.itemsScroll}>
               {items
                 .filter((i) => i.style !== "cancel")

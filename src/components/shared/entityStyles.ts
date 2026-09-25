@@ -118,6 +118,10 @@ export type EntityCopy = {
   deleteIcon: string;
   deleteConfirmTitle: string;
   deleteConfirmMessage: string;
+  bulkEdit: string;
+  bulkRemoveEmpty: string;
+  bulkNone: string;
+  bulkFailed: string;
   deleteBlockedTitle: string;
   deleteBlockedMessage: string;
   cancel: string;

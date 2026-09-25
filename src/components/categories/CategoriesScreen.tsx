@@ -14,7 +14,9 @@ import { useDragState } from "../home/useDragState.ts";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
 import { CATEGORY_COPY, entityStyles } from "../shared/entityStyles.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
+import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
+import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { computeEntityDropIndex, useEntityOrdering } from "../shared/useEntityOrdering.ts";
@@ -46,6 +48,15 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
   };
 
   const actions = useEntityActions(categories, itemCounts, CATEGORY_COPY, categoryDb, setMoveCategory);
+  const bulkEdit = useEmptyEntityBulkEdit({
+    entities: categories,
+    isEligible: (category) => (itemCounts[category.id] ?? 0) === 0,
+    hasItem: (category, item) => item.category === category.id,
+    onDelete: (category) => writeDb.deleteCategory(category.id, [], false),
+    copy: CATEGORY_COPY,
+    menuKey: "category.bulkRemoveEmptyCount",
+    confirmKey: "category.bulkConfirm",
+  });
   const creation = useCreateEntityDialog(actions.onAdd, categories, CATEGORY_COPY.type);
   const drag = useDragState();
   const ordering = useEntityOrdering(categories, writeDb.updateCategories);
@@ -67,6 +78,8 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
         />
         <CategoryHeader
           onAdd={creation.open}
+          onBulkEdit={bulkEdit.open}
+          bulkEditing={bulkEdit.busy}
           sortByAlpha={sortByAlpha}
           onToggleSort={() => setSortByAlpha(!sortByAlpha)}
         />
@@ -129,11 +142,13 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
 
 type CategoryHeaderProps = {
   onAdd: () => void;
+  onBulkEdit: () => void;
+  bulkEditing: boolean;
   sortByAlpha: boolean;
   onToggleSort: () => void;
 };
 
-const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
+const CategoryHeader = ({ onAdd, onBulkEdit, bulkEditing, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
   <View style={entityStyles.actions}>
     <Pressable
       style={entityStyles.addLink}
@@ -145,6 +160,7 @@ const CategoryHeader = ({ onAdd, sortByAlpha, onToggleSort }: CategoryHeaderProp
       <Text style={entityStyles.addLinkLabel}>{CATEGORY_COPY.addButton}</Text>
     </Pressable>
     <View style={entityStyles.spacer} />
+    <MultiEditButton label={CATEGORY_COPY.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
     <View style={entityStyles.sortToggle}>
       <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
       <Switch

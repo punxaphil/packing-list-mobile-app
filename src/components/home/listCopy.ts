@@ -22,6 +22,10 @@ type ListCopy = {
   moveToSpace: string;
   delete: string;
   deleteConfirm: string;
+  bulkEdit: string;
+  bulkRemoveEmpty: string;
+  bulkNone: string;
+  bulkFailed: string;
   cancel: string;
   listMenu: string;
   title: string;

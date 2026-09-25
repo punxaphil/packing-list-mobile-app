@@ -12,7 +12,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export type ListActions = {
   onAdd: (name: string, useTemplate: boolean) => Promise<void>;
   onCopy: (list: PackingListSummary) => Promise<void>;
-  onDelete: (list: PackingListSummary) => Promise<void>;
+  onDelete: (list: PackingListSummary, onlyIfEmpty?: boolean) => Promise<void>;
   onRename: (list: PackingListSummary, name: string) => Promise<void>;
   onSetTemplate: (list: PackingListSummary) => Promise<void>;
   onunsetTemplate: (list: PackingListSummary) => Promise<void>;
@@ -73,10 +73,10 @@ const useAddList = (
 
 const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
   useCallback(
-    async (list: PackingListSummary) => {
+    async (list: PackingListSummary, onlyIfEmpty = false) => {
       const wasSelected = selection.selectedId === list.id;
       animateLayout();
-      await writeDb.deletePackingList(list.id);
+      await writeDb.deletePackingList(list.id, onlyIfEmpty);
       if (wasSelected) selection.clear();
     },
     [selection, writeDb]
