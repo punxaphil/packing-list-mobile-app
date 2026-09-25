@@ -1,9 +1,15 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { Animated, Text } from "react-native";
 import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
 
 type ToastContextValue = { show: (message: string) => void };
 const ToastContext = createContext<ToastContextValue | null>(null);
+
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) throw new Error("ToastProvider is required");
+  return context;
+};
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [message, setMessage] = useState<string | null>(null);

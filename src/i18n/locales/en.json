@@ -318,6 +318,7 @@
     "cancel": "Cancel",
     "confirmTitle": "Copied",
     "confirmMessage": "Item copied to",
+    "copied": "{item} copied to the \"{list}\" list",
     "item": "item",
     "items": "items"
   },

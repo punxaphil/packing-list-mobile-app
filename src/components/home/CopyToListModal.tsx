@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Pressable, ScrollView, Text } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { PackingListSummary } from "./types.ts";
 
@@ -25,7 +25,6 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   const handleSelect = async (list: PackingListSummary) => {
     onClose();
     await onSelect(list);
-    Alert.alert(t("copyToList.confirmTitle"), `${t("copyToList.confirmMessage")} "${list.name}"`);
   };
 
   if (availableLists.length === 0) return null;

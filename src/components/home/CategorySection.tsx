@@ -27,6 +27,7 @@ import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
 import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { useToast } from "./Toast.tsx";
 import { CHECKBOX_SIZE, homeColors } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
 import { DragOffset, useDraggableRow } from "./useDraggableRow.tsx";
@@ -103,6 +104,7 @@ type CategoryItemRowProps = {
 
 const CategorySectionImpl = (props: CategorySectionProps) => {
   const { writeDb } = useSpace();
+  const { show: showToast } = useToast();
   const [assignItem, setAssignItem] = useState<PackItem | null>(null);
   const [moveItem, setMoveItem] = useState<PackItem | null>(null);
   const [moveCategoryVisible, setMoveCategoryVisible] = useState(false);
@@ -150,6 +152,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     if (!copyItem) return;
     try {
       await props.onCopyToList(copyItem, list.id);
+      showToast(i18next.t("copyToList.copied", { item: copyItem.name, list: list.name }));
     } catch (e) {
       if (e instanceof DuplicateNameError) {
         Alert.alert(HOME_COPY.duplicateCopyToListTitle, HOME_COPY.duplicateCopyToList.replace("{name}", copyItem.name));

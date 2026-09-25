@@ -319,6 +319,7 @@
     "cancel": "Avbryt",
     "confirmTitle": "Kopierad",
     "confirmMessage": "Sak kopierad till",
+    "copied": "{item} har kopierats till listan \"{list}\"",
     "item": "sak",
     "items": "saker"
   },
