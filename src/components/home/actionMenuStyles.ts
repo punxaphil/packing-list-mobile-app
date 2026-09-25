@@ -23,6 +23,7 @@ export const actionMenuStyles = StyleSheet.create({
   titleEmoji: { fontSize: 24 },
   titleImage: { width: 28, height: 28, borderRadius: 4 },
   item: { padding: homeSpacing.md, borderBottomWidth: 1, borderBottomColor: homeColors.border },
+  disabledItem: { opacity: 0.45, cursor: "auto" },
   itemRow: { flexDirection: "row", alignItems: "center" },
   itemSpacer: { width: 28, alignItems: "center", justifyContent: "center" },
   itemText: { fontSize: 16, color: homeColors.text, textAlign: "center", flex: 1 },

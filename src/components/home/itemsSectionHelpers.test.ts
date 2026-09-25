@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PackItem } from "~/types/PackItem.ts";
-import { buildSections, getNextItemRank, getTopItemRank } from "./itemsSectionHelpers.ts";
+import { buildSections, getBulkEditTargets, getNextItemRank, getTopItemRank } from "./itemsSectionHelpers.ts";
 
 const items = [{ rank: 8 }, { rank: 5 }, { rank: 2 }];
 const category = { id: "category", name: "Category", rank: 1 };
@@ -49,5 +49,17 @@ describe("itemsSectionHelpers", () => {
     );
     expect(visibleIds(assigned, false)).toEqual(["first", "second", "third"]);
     expect(visibleIds(assigned, true)).toEqual(["second", "third", "first"]);
+  });
+
+  it("selects ticked and assigned items independently from the full list", () => {
+    const fullList = [
+      { ...entries[0], checked: true },
+      { ...entries[1], members: [{ id: "member", checked: true }] },
+      { ...entries[2], members: [{ id: "member", checked: false }] },
+    ];
+    const { tickedItems, assignedItems } = getBulkEditTargets(fullList);
+
+    expect(tickedItems.map((item) => item.id)).toEqual(["first", "second"]);
+    expect(assignedItems.map((item) => item.id)).toEqual(["second", "third"]);
   });
 });

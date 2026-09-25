@@ -76,6 +76,8 @@ type ItemsPanelProps = ItemsSectionProps &
     filterDialog: FilterDialogState;
     search: SearchState;
     notesSheet: ListNotesState;
+    onBulkEdit: () => void;
+    bulkEditing: boolean;
   };
 
 export const ItemsPanel = (props: ItemsPanelProps) => {
@@ -98,6 +100,8 @@ const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
         search={props.search}
         onNotes={props.notesSheet.open}
         hasNotes={!!props.list.notes}
+        onBulkEdit={props.onBulkEdit}
+        bulkEditing={props.bulkEditing}
       />
       <ItemsListView {...props} />
     </KeyboardAvoidingView>

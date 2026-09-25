@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Animated, Text } from "react-native";
 import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
 
@@ -14,11 +14,16 @@ export const useToast = () => {
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [message, setMessage] = useState<string | null>(null);
   const [opacity] = useState(() => new Animated.Value(0));
+  const animation = useRef<Animated.CompositeAnimation | null>(null);
+
+  useEffect(() => () => animation.current?.stop(), []);
 
   const show = useCallback(
     (text: string) => {
+      animation.current?.stop();
+      opacity.setValue(0);
       setMessage(text);
-      animateToast(opacity, () => setMessage(null));
+      animation.current = animateToast(opacity, () => setMessage(null));
     },
     [opacity]
   );

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { getPackItemChecked, normalizePackItem, withPackItemMembers } from "./packItemState.ts";
+import { getPackItemChecked, normalizePackItem, withoutPackItemMembers, withPackItemMembers } from "./packItemState.ts";
 
 const createMember = (id: string, checked: boolean): MemberPackItem => ({
   id,
@@ -57,5 +57,15 @@ describe("packItemState", () => {
 
     expect(nextItem.members).toEqual([createMember("member-1", true), createMember("member-2", true)]);
     expect(getPackItemChecked(nextItem)).toBe(true);
+  });
+
+  it("preserves the visible checked state when clearing all assignments", () => {
+    const packed = withoutPackItemMembers(createItem(false, [createMember("member-1", true)]));
+    const unpacked = withoutPackItemMembers(createItem(true, [createMember("member-1", false)]));
+
+    expect(packed.members).toEqual([]);
+    expect(getPackItemChecked(packed)).toBe(true);
+    expect(unpacked.members).toEqual([]);
+    expect(getPackItemChecked(unpacked)).toBe(false);
   });
 });

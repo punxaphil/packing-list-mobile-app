@@ -43,6 +43,7 @@ export const AddItemDialog = ({
 }: AddItemDialogProps) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastOpacity = useRef(new Animated.Value(0)).current;
+  const toastAnimation = useRef<Animated.CompositeAnimation | null>(null);
   const state = useDialogState(visible, initialCategory);
   const {
     itemName,
@@ -65,9 +66,10 @@ export const AddItemDialog = ({
   const toggleKeepOpen = useCallback(() => setKeepOpen((value) => !value), [setKeepOpen]);
   const showToast = useCallback(
     (message: string) => {
+      toastAnimation.current?.stop();
       setToastMessage(message);
       toastOpacity.setValue(0);
-      animateToast(toastOpacity, () => setToastMessage(null));
+      toastAnimation.current = animateToast(toastOpacity, () => setToastMessage(null));
     },
     [toastOpacity]
   );

@@ -21,6 +21,12 @@ type HomeCopy = {
   addItemPrompt: string;
   addItemConfirm: string;
   deleteItem: string;
+  bulkEdit: string;
+  removeTickedItems: string;
+  removeAllMembers: string;
+  noTickedItems: string;
+  noAssignedMembers: string;
+  bulkEditError: string;
   newItem: string;
   listNoItems: string;
   itemSingular: string;

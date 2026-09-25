@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { homeCopy } from "./copy.ts";
 import type { AddItemDialogState } from "./ItemsPanel.tsx";
 import { listCopy } from "./listCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
@@ -15,9 +16,11 @@ type Props = {
   search: SearchState;
   onNotes: () => void;
   hasNotes: boolean;
+  onBulkEdit: () => void;
+  bulkEditing: boolean;
 };
 
-export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes }: Props) => {
+export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes, onBulkEdit, bulkEditing }: Props) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [localText, setLocalText] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,6 +83,8 @@ export const QuickAddRow = ({ addDialog, filterDialog, search, onNotes, hasNotes
       onSearch={onToggleSearch}
       onNotes={onNotes}
       hasNotes={hasNotes}
+      onBulkEdit={onBulkEdit}
+      bulkEditing={bulkEditing}
     />
   );
 };
@@ -161,9 +166,19 @@ type DefaultRowProps = {
   onSearch: () => void;
   onNotes: () => void;
   hasNotes: boolean;
+  onBulkEdit: () => void;
+  bulkEditing: boolean;
 };
 
-const DefaultRow = ({ addDialog, filterDialog, onSearch, onNotes, hasNotes }: DefaultRowProps) => (
+const DefaultRow = ({
+  addDialog,
+  filterDialog,
+  onSearch,
+  onNotes,
+  hasNotes,
+  onBulkEdit,
+  bulkEditing,
+}: DefaultRowProps) => (
   <View style={styles.row}>
     <Pressable
       style={homeStyles.quickAdd}
@@ -177,13 +192,22 @@ const DefaultRow = ({ addDialog, filterDialog, onSearch, onNotes, hasNotes }: De
     <View style={styles.iconRow}>
       <Pressable style={styles.filterButton} onPress={onNotes} hitSlop={8} accessibilityLabel={listCopy.title}>
         <MaterialCommunityIcons
-          name="note-edit-outline"
+          name="note-text-outline"
           size={20}
           color={hasNotes ? homeColors.primaryStrong : homeColors.muted}
         />
       </Pressable>
       <Pressable style={styles.filterButton} onPress={onSearch} hitSlop={8}>
         <MaterialCommunityIcons name="magnify" size={20} color={homeColors.muted} />
+      </Pressable>
+      <Pressable
+        style={styles.filterButton}
+        onPress={onBulkEdit}
+        disabled={bulkEditing}
+        hitSlop={8}
+        accessibilityLabel={homeCopy.bulkEdit}
+      >
+        <MaterialCommunityIcons name="pencil-box-multiple-outline" size={20} color={homeColors.muted} />
       </Pressable>
       <Pressable style={styles.filterButton} onPress={filterDialog.open} hitSlop={8}>
         <MaterialCommunityIcons

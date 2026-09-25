@@ -30,6 +30,7 @@ import { ListNotesSheet, type ListNotesState } from "./ListNotesSheet.tsx";
 import { animateLayout } from "./layoutAnimation.ts";
 import { HOME_COPY } from "./styles.ts";
 import { ItemsSectionProps } from "./types.ts";
+import { useBulkEdit } from "./useBulkEdit.ts";
 import { useFilterDialog } from "./useFilterDialog.ts";
 import { useOptimisticItems } from "./useOptimisticItems.ts";
 import { useSearch } from "./useSearch.ts";
@@ -113,6 +114,7 @@ export const ItemsSection = (props: ItemsSectionProps) => {
   );
   const renameDialog = useRenameDialog(list, props.lists, renameList);
   const notesSheet = useListNotes(list, writeDb);
+  const bulkEdit = useBulkEdit(optimisticItems, writeDb);
   if (!list) return null;
   const displayName = list.name?.trim() ? list.name : HOME_COPY.detailHeader;
   const listImage = props.imagesState.images.find((img) => img.type === "packingLists" && img.typeId === list.id);
@@ -136,6 +138,8 @@ export const ItemsSection = (props: ItemsSectionProps) => {
         filterDialog={filterDialog}
         search={search}
         notesSheet={notesSheet}
+        onBulkEdit={bulkEdit.open}
+        bulkEditing={bulkEdit.busy}
       />
       <FilterSheet
         visible={filterDialog.visible}

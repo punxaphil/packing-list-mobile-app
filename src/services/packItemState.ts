@@ -39,3 +39,9 @@ export const normalizePackItem = <T extends Pick<PackItem, "checked" | "members"
 
 export const getPackItemChecked = (item: Pick<PackItem, "checked" | "members">) =>
   item.members.length > 0 ? areAllMembersChecked(item.members) : item.checked;
+
+export const withoutPackItemMembers = <T extends Pick<PackItem, "checked" | "members">>(item: T): T => ({
+  ...item,
+  members: [],
+  checked: getPackItemChecked(item),
+});

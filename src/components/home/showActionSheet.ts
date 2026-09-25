@@ -7,6 +7,7 @@ export type ActionSheetItem = {
   style?: "default" | "destructive" | "cancel";
   onPress?: () => void;
   disabled?: boolean;
+  disabledReason?: string;
   space?: Space;
 };
 

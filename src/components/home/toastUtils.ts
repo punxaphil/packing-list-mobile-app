@@ -25,7 +25,7 @@ export const TOAST_STYLES = StyleSheet.create({
 });
 
 export const animateToast = (opacity: Animated.Value, onComplete: () => void) => {
-  Animated.sequence([
+  const animation = Animated.sequence([
     Animated.timing(opacity, {
       toValue: 1,
       duration: TOAST_ANIMATION_DURATION,
@@ -37,5 +37,9 @@ export const animateToast = (opacity: Animated.Value, onComplete: () => void) =>
       duration: TOAST_ANIMATION_DURATION,
       useNativeDriver: true,
     }),
-  ]).start(onComplete);
+  ]);
+  animation.start(({ finished }) => {
+    if (finished) onComplete();
+  });
+  return animation;
 };

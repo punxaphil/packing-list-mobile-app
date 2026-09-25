@@ -75,3 +75,8 @@ export const getNextCategoryRank = (categories: Pick<NamedEntity, "rank">[]) => 
   const ranks = categories.map((c) => c.rank ?? 0).filter((rank) => Number.isFinite(rank));
   return ranks.length ? Math.min(...ranks) - 1 : 0;
 };
+
+export const getBulkEditTargets = (items: PackItem[]) => ({
+  tickedItems: items.filter(getPackItemChecked),
+  assignedItems: items.filter((item) => item.members.length > 0),
+});
