@@ -38,8 +38,8 @@ type DialogActionsProps = {
 
 export const DialogActions = ({ cancelLabel, confirmLabel, onCancel, onConfirm, disabled }: DialogActionsProps) => (
   <View style={styles.actions}>
-    <Pressable style={styles.actionButton} onPress={onCancel} disabled={disabled}>
-      <Text style={[styles.actionLabel, disabled && styles.disabled]}>{cancelLabel}</Text>
+    <Pressable style={styles.actionButton} onPress={onCancel}>
+      <Text style={[styles.actionLabel, styles.actionCancel]}>{cancelLabel}</Text>
     </Pressable>
     <Pressable style={styles.actionButton} onPress={onConfirm} disabled={disabled}>
       <Text style={[styles.actionLabel, styles.actionPrimary, disabled && styles.disabled]}>{confirmLabel}</Text>
@@ -55,7 +55,7 @@ type SingleActionProps = {
 export const DialogSingleAction = ({ label, onPress }: SingleActionProps) => (
   <View style={styles.actions}>
     <Pressable style={styles.actionButton} onPress={onPress}>
-      <Text style={[styles.actionLabel, styles.actionPrimary]}>{label}</Text>
+      <Text style={[styles.actionLabel, styles.actionCancel]}>{label}</Text>
     </Pressable>
   </View>
 );
@@ -92,7 +92,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: homeSpacing.md,
   },
-  actionLabel: { fontSize: 16, color: homeColors.muted },
+  actionLabel: { fontSize: 16 },
+  actionCancel: { fontWeight: "600", color: homeColors.text },
   actionPrimary: { fontWeight: "600", color: homeColors.primaryStrong },
   disabled: { opacity: 0.5 },
 });
