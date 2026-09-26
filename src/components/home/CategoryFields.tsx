@@ -1,14 +1,14 @@
-import { useRef, useState } from "react";
-import { Keyboard, Modal, Pressable, Image as RNImage, Text, useWindowDimensions, View } from "react-native";
-import { getEmojiValue } from "~/services/mediaValue.ts";
+import { useEffect, useRef, useState } from "react";
 import type { Image } from "~/types/Image.ts";
 import type { NamedEntity } from "~/types/NamedEntity.ts";
-import { CategoryDropdownOptions, getCategoryImageUrl, orderCategories } from "./CategoryDropdownOptions.tsx";
-import { CATEGORY_FIELD_STYLES } from "./CategoryFieldStyles.ts";
-
-const DROPDOWN_ROW_HEIGHT = 49;
-const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
-const DROPDOWN_MARGIN = 8;
+import {
+  CategoryDropdownPopover,
+  CategoryMedia,
+  getCategoryImageUrl,
+  orderCategories,
+} from "./CategoryDropdownOptions.tsx";
+import { categoryFieldTheme, getPopoverPosition } from "./CategoryFieldStyles.ts";
+import "./categoryFields.css";
 
 export const CategoryDropdown = ({
   categories,
@@ -27,71 +27,73 @@ export const CategoryDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0, maxHeight: 0 });
-  const dropdownRef = useRef<View>(null);
-  const { height } = useWindowDimensions();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const allCategories = orderCategories(categories, usedCategoryIds);
-  const dropdownMaxHeight = Math.min(
-    allCategories.length * DROPDOWN_ROW_HEIGHT,
-    Math.floor(height * DROPDOWN_MAX_SCREEN_RATIO)
-  );
   const selectedImageUrl = getCategoryImageUrl(categoryImages, selected.id);
-  const selectedEmoji = getEmojiValue(selectedImageUrl);
+
+  useEffect(() => {
+    if (disabled && popoverRef.current?.matches(":popover-open")) popoverRef.current.hidePopover();
+  }, [disabled]);
+
+  useEffect(() => {
+    const dialog = buttonRef.current?.closest("dialog");
+    const closePopover = () => {
+      if (popoverRef.current?.matches(":popover-open")) popoverRef.current.hidePopover();
+    };
+    dialog?.addEventListener("close", closePopover);
+    return () => dialog?.removeEventListener("close", closePopover);
+  }, []);
 
   const toggle = () => {
     if (disabled) return;
-    Keyboard.dismiss();
-    if (open) return setOpen(false);
-    dropdownRef.current?.measureInWindow((left, top, width, buttonHeight) => {
-      const below = height - top - buttonHeight - DROPDOWN_MARGIN;
-      const above = top - DROPDOWN_MARGIN;
-      const showAbove = below < dropdownMaxHeight && above > below;
-      setPosition({
-        top: showAbove ? top - Math.min(dropdownMaxHeight, above) : top + buttonHeight,
-        left,
-        width,
-        maxHeight: Math.min(dropdownMaxHeight, showAbove ? above : below),
-      });
-      setOpen(true);
-    });
+    if (popoverRef.current?.matches(":popover-open")) return popoverRef.current.hidePopover();
+    if (!buttonRef.current) return;
+    setPosition(getPopoverPosition(buttonRef.current, allCategories.length));
+    popoverRef.current?.showPopover();
+    popoverRef.current?.querySelector("button")?.focus();
   };
 
   const handleSelect = (category: NamedEntity) => {
     onSelect(category);
-    setOpen(false);
+    popoverRef.current?.hidePopover();
+    buttonRef.current?.focus();
   };
 
   return (
-    <View
-      ref={dropdownRef}
-      style={[CATEGORY_FIELD_STYLES.dropdownContainer, disabled ? CATEGORY_FIELD_STYLES.pickerDisabled : null]}
-    >
-      <Pressable style={CATEGORY_FIELD_STYLES.dropdownButton} onPress={toggle}>
-        <View style={CATEGORY_FIELD_STYLES.dropdownValue}>
-          <Text style={CATEGORY_FIELD_STYLES.dropdownText}>{selected.name}</Text>
-          <View style={CATEGORY_FIELD_STYLES.dropdownMedia}>
-            {selectedEmoji ? (
-              <Text style={CATEGORY_FIELD_STYLES.dropdownEmoji}>{selectedEmoji}</Text>
-            ) : selectedImageUrl ? (
-              <RNImage source={{ uri: selectedImageUrl }} style={CATEGORY_FIELD_STYLES.dropdownImage} />
-            ) : null}
-          </View>
-        </View>
-        <Text style={CATEGORY_FIELD_STYLES.dropdownArrow}>{open ? "▲" : "▼"}</Text>
-      </Pressable>
-      {open && (
-        <Modal transparent visible onRequestClose={() => setOpen(false)} animationType="none">
-          <Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} />
-          <View style={[CATEGORY_FIELD_STYLES.dropdownList, position]}>
-            <CategoryDropdownOptions
-              categories={allCategories}
-              categoryImages={categoryImages}
-              selected={selected}
-              onSelect={handleSelect}
-              maxHeight={position.maxHeight}
-            />
-          </View>
-        </Modal>
-      )}
-    </View>
+    <div className="category-field" style={categoryFieldTheme}>
+      <button
+        ref={buttonRef}
+        type="button"
+        className="category-field-button"
+        onClick={toggle}
+        disabled={disabled}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+      >
+        <span className="category-field-value">
+          <span className="category-field-name">{selected.name}</span>
+          <span className="category-field-media">
+            <CategoryMedia imageUrl={selectedImageUrl} />
+          </span>
+        </span>
+        <span className="category-field-arrow" aria-hidden="true">
+          {open ? "▲" : "▼"}
+        </span>
+      </button>
+      <CategoryDropdownPopover
+        popoverRef={popoverRef}
+        position={position}
+        categories={allCategories}
+        categoryImages={categoryImages}
+        selected={selected}
+        onSelect={handleSelect}
+        onToggle={() => setOpen(popoverRef.current?.matches(":popover-open") ?? false)}
+        onEscape={() => {
+          popoverRef.current?.hidePopover();
+          buttonRef.current?.focus();
+        }}
+      />
+    </div>
   );
 };

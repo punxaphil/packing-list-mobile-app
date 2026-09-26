@@ -1,12 +1,12 @@
 import i18next from "i18next";
-import { useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { type CSSProperties, useCallback, useId, useState } from "react";
+import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
 import { getTranslatedKits, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { commonCopy, homeCopy } from "./copy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
+import "./kitPickerModal.css";
 
 type KitPickerModalProps = {
   visible: boolean;
@@ -30,8 +30,8 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
   }, []);
 
   const handleAdd = useCallback(() => {
-    const selected_kits = kits.filter((k) => selected.has(k.id));
-    if (selected_kits.length > 0) onAdd(selected_kits);
+    const selectedKits = kits.filter((kit) => selected.has(kit.id));
+    if (selectedKits.length > 0) onAdd(selectedKits);
     setSelected(new Set());
     onClose();
   }, [kits, selected, onAdd, onClose]);
@@ -56,49 +56,43 @@ export const KitPickerModal = ({ visible, onClose, onAdd }: KitPickerModalProps)
         />
       }
     >
-      <Text style={styles.subtitle}>{homeCopy.kitPickerSubtitle}</Text>
-      <ScrollView style={styles.list}>
+      <p className="kit-picker-subtitle" style={{ color: homeColors.muted, marginBottom: homeSpacing.md }}>
+        {homeCopy.kitPickerSubtitle}
+      </p>
+      <div
+        className="kit-picker-list"
+        style={{ marginBottom: homeSpacing.md, "--kit-picker-gap": `${homeSpacing.sm}px` } as CSSProperties}
+      >
         {kits.map((kit) => (
           <KitRow key={kit.id} kit={kit} checked={selected.has(kit.id)} onToggle={() => toggle(kit.id)} />
         ))}
-      </ScrollView>
+      </div>
     </DialogShell>
   );
 };
 
-type KitRowProps = {
-  kit: PackingKit;
-  checked: boolean;
-  onToggle: () => void;
+type KitRowProps = { kit: PackingKit; checked: boolean; onToggle: () => void };
+
+const KitRow = ({ kit, checked, onToggle }: KitRowProps) => {
+  const checkboxId = useId();
+  return (
+    <label className="kit-picker-row" htmlFor={checkboxId} style={{ borderColor: homeColors.border }}>
+      <AppCheckbox id={checkboxId} checked={checked} label={kit.name} onToggle={onToggle} size={16} />
+      <span
+        className="web-button-icon kit-picker-icon"
+        style={{ color: checked ? homeColors.primaryStrong : homeColors.muted }}
+        aria-hidden="true"
+      >
+        {String.fromCodePoint(glyphs[kit.icon as keyof typeof glyphs])}
+      </span>
+      <span className="kit-picker-info">
+        <span className="kit-picker-name" style={{ color: homeColors.text }}>
+          {kit.name}
+        </span>
+        <span className="kit-picker-count" style={{ color: homeColors.muted }}>
+          {kitItemCount(kit.items.length)}
+        </span>
+      </span>
+    </label>
+  );
 };
-
-const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
-  <Pressable style={styles.row} onPress={onToggle}>
-    <AppCheckbox checked={checked} label={kit.name} onToggle={onToggle} size={16} />
-    <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primaryStrong : homeColors.muted} />
-    <View style={styles.kitInfo}>
-      <Text style={styles.kitName}>{kit.name}</Text>
-      <Text style={styles.kitCount}>{kitItemCount(kit.items.length)}</Text>
-    </View>
-  </Pressable>
-);
-
-const styles = StyleSheet.create({
-  subtitle: {
-    fontSize: 14,
-    color: homeColors.muted,
-    marginBottom: homeSpacing.md,
-  },
-  list: { marginBottom: homeSpacing.md },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: homeSpacing.sm,
-    paddingVertical: homeSpacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: homeColors.border,
-  },
-  kitInfo: { flex: 1 },
-  kitName: { fontSize: 16, fontWeight: "600", color: homeColors.text },
-  kitCount: { fontSize: 12, color: homeColors.muted },
-});

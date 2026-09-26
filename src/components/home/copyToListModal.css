@@ -1,0 +1,34 @@
+.copy-to-list-options {
+  min-height: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.copy-to-list-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--copy-spacing);
+  padding: 14px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--copy-border);
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.copy-to-list-option:focus-visible {
+  outline: 2px solid var(--copy-text);
+  outline-offset: -2px;
+}
+.copy-to-list-name {
+  min-width: 0;
+  font-size: 16px;
+  color: var(--copy-text);
+  overflow-wrap: anywhere;
+}
+.copy-to-list-count {
+  flex: none;
+  font-size: 14px;
+  color: var(--copy-muted);
+}

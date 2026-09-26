@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, Text } from "react-native";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { orderLists } from "./listOrdering.ts";
+import { homeColors, homeSpacing } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
+import "./copyToListModal.css";
 
 type CopyToListModalProps = {
   visible: boolean;
@@ -17,11 +18,6 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
   const { visible, lists, currentListId, onClose, onSelect } = props;
   const { t } = useTranslation();
   const availableLists = orderLists(lists.filter((list) => list.id !== currentListId && !list.archived));
-  const scrollRef = useRef<ScrollView>(null);
-
-  useEffect(() => {
-    if (visible) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
-  }, [visible]);
 
   const handleSelect = async (list: PackingListSummary) => {
     onClose();
@@ -37,11 +33,22 @@ export const CopyToListModal = (props: CopyToListModalProps) => {
       onClose={onClose}
       actions={<DialogSingleAction label={t("copyToList.cancel")} onPress={onClose} />}
     >
-      <ScrollView ref={scrollRef} style={STYLES.list}>
+      <div
+        className="copy-to-list-options"
+        style={
+          {
+            marginBottom: homeSpacing.sm,
+            "--copy-border": homeColors.border,
+            "--copy-text": homeColors.text,
+            "--copy-muted": homeColors.muted,
+            "--copy-spacing": `${homeSpacing.sm}px`,
+          } as CSSProperties
+        }
+      >
         {availableLists.map((list) => (
           <ListOption key={list.id} list={list} onSelect={handleSelect} />
         ))}
-      </ScrollView>
+      </div>
     </DialogShell>
   );
 };
@@ -56,26 +63,11 @@ const ListOption = ({ list, onSelect }: ListOptionProps) => {
   const count = list.itemCount ?? 0;
   const label = count === 1 ? t("copyToList.item") : t("copyToList.items");
   return (
-    <Pressable style={STYLES.option} onPress={() => onSelect(list)}>
-      <Text style={STYLES.optionText}>{list.name}</Text>
-      <Text style={STYLES.countText}>
+    <button type="button" className="copy-to-list-option" onClick={() => onSelect(list)}>
+      <span className="copy-to-list-name">{list.name}</span>
+      <span className="copy-to-list-count">
         {count} {label}
-      </Text>
-    </Pressable>
+      </span>
+    </button>
   );
-};
-
-const STYLES = {
-  list: { maxHeight: 300, marginBottom: 12 },
-  option: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    paddingVertical: 14,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-  },
-  optionText: { fontSize: 16, color: "#111827" },
-  countText: { fontSize: 14, color: "#6b7280" },
 };

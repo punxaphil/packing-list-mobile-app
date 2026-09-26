@@ -1,6 +1,7 @@
-import { Modal, Pressable, ScrollView, Text } from "react-native";
+import { useEffect, useState } from "react";
 import { UserList } from "../space/UserList.tsx";
 import { ActionSheetHost } from "./ActionSheetHost.tsx";
+import { SpaceSheetDialog } from "./SpaceSheetDialog.tsx";
 import { SpaceSheetDialogs } from "./SpaceSheetDialogs.tsx";
 import {
   CreateSpaceButton,
@@ -11,7 +12,7 @@ import {
   SpaceSheetHeader,
 } from "./SpaceSheetParts.tsx";
 import { spaceCopy } from "./spaceCopy.ts";
-import { spaceModalStyles, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
+import { homeColors } from "./theme.ts";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
 
 export type SpaceSheetSubDialog = "none" | "create" | "rename" | "invite";
@@ -22,13 +23,18 @@ type Props = {
   sheet: ReturnType<typeof useSpaceSheet>;
 };
 
-export const SpaceSheetContent = ({ visible, onClose, sheet: s }: Props) => (
-  <>
-    <Modal visible={visible && !s.creatingSpace} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={spaceModalStyles.backdrop} onPress={onClose}>
-        <Pressable style={spaceModalStyles.sheet} onPress={(e) => e.stopPropagation()}>
+export const SpaceSheetContent = ({ visible, onClose, sheet: s }: Props) => {
+  const [actionSheetOpen, setActionSheetOpen] = useState(false);
+  useEffect(() => {
+    if (!visible) setActionSheetOpen(false);
+  }, [visible]);
+
+  return (
+    <>
+      <SpaceSheetDialog visible={visible && !s.creatingSpace && !actionSheetOpen} onClose={onClose}>
+        <div className="space-sheet-dialog-content">
           <SpaceSheetHeader title={spaceCopy.spacesTitle} onClose={onClose} />
-          <ScrollView style={styles.modalList} contentContainerStyle={styles.sheetListContent}>
+          <div className="space-sheet-dialog-scroll">
             <SpaceNameRow name={s.activeSpace?.name ?? ""} onRename={s.handleRename} />
             {s.activeSpace && (
               <UserList
@@ -50,7 +56,9 @@ export const SpaceSheetContent = ({ visible, onClose, sheet: s }: Props) => (
             <InviteSection invites={s.pendingInvites} onAccept={s.handleAccept} />
             {s.otherSpaces.length > 0 && (
               <>
-                <Text style={styles.sectionTitle}>{spaceCopy.switchSpace}</Text>
+                <h3 className="space-sheet-section-title" style={{ color: homeColors.muted }}>
+                  {spaceCopy.switchSpace}
+                </h3>
                 {s.otherSpaces.map((space) => (
                   <SpaceRow
                     key={space.id}
@@ -65,11 +73,11 @@ export const SpaceSheetContent = ({ visible, onClose, sheet: s }: Props) => (
               </>
             )}
             <CreateSpaceButton onPress={() => s.setSubDialog("create")} />
-          </ScrollView>
-        </Pressable>
-      </Pressable>
-      <ActionSheetHost />
-    </Modal>
-    <SpaceSheetDialogs sheet={s} />
-  </>
-);
+          </div>
+        </div>
+      </SpaceSheetDialog>
+      {visible && <ActionSheetHost onVisibilityChange={setActionSheetOpen} />}
+      <SpaceSheetDialogs sheet={s} />
+    </>
+  );
+};

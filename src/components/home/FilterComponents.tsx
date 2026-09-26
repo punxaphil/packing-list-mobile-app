@@ -1,10 +1,9 @@
-import { type RefObject } from "react";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
 import { getEmojiValue } from "~/services/mediaValue.ts";
-import { NamedEntity } from "~/types/NamedEntity.ts";
+import type { NamedEntity } from "~/types/NamedEntity.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
-import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
+import "./filterSheet.css";
 
 type MemberSectionProps = {
   members: NamedEntity[];
@@ -16,7 +15,6 @@ type CategorySectionProps = {
   categories: NamedEntity[];
   selectedCategories: string[];
   onToggle: (id: string) => void;
-  scrollRef: RefObject<ScrollView | null>;
 };
 
 type EntitySectionProps = {
@@ -25,11 +23,9 @@ type EntitySectionProps = {
   entities: NamedEntity[];
   selectedIds: string[];
   onToggle: (id: string) => void;
-  scrollRef: RefObject<ScrollView | null>;
-  containerStyle: object;
 };
 
-export const CategorySection = ({ categories, selectedCategories, onToggle, scrollRef }: CategorySectionProps) => {
+export const CategorySection = ({ categories, selectedCategories, onToggle }: CategorySectionProps) => {
   const { t } = useTranslation();
   return (
     <EntitySection
@@ -38,18 +34,11 @@ export const CategorySection = ({ categories, selectedCategories, onToggle, scro
       entities={categories}
       selectedIds={selectedCategories}
       onToggle={onToggle}
-      scrollRef={scrollRef}
-      containerStyle={styles.categorySection}
     />
   );
 };
 
-export const MemberSection = ({
-  members,
-  selectedMembers,
-  onToggle,
-  scrollRef,
-}: MemberSectionProps & { scrollRef: RefObject<ScrollView | null> }) => {
+export const MemberSection = ({ members, selectedMembers, onToggle }: MemberSectionProps) => {
   const { t } = useTranslation();
   return (
     <EntitySection
@@ -58,58 +47,46 @@ export const MemberSection = ({
       entities={members}
       selectedIds={selectedMembers}
       onToggle={onToggle}
-      scrollRef={scrollRef}
-      containerStyle={styles.memberSection}
     />
   );
 };
 
-const EntitySection = ({
-  title,
-  emptyText,
-  entities,
-  selectedIds,
-  onToggle,
-  scrollRef,
-  containerStyle,
-}: EntitySectionProps) => (
-  <View style={[styles.section, containerStyle]}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    <ScrollView
-      ref={scrollRef}
-      style={styles.sectionList}
-      contentContainerStyle={styles.sectionListContent}
-      nestedScrollEnabled
-    >
-      {entities.map((entity, index) => (
+const EntitySection = ({ title, emptyText, entities, selectedIds, onToggle }: EntitySectionProps) => (
+  <section className="filter-section">
+    <h3 className="filter-section-title">{title}</h3>
+    <div className="filter-section-list">
+      {entities.map((entity) => (
         <FilterRow
           key={entity.id}
           item={entity}
           selected={selectedIds.includes(entity.id)}
           onToggle={() => onToggle(entity.id)}
-          isLast={index === entities.length - 1}
         />
       ))}
-      {entities.length === 0 && <Text style={styles.empty}>{emptyText}</Text>}
-    </ScrollView>
-  </View>
+      {entities.length === 0 && <p className="filter-empty">{emptyText}</p>}
+    </div>
+  </section>
 );
 
 type FilterRowProps = {
   item: NamedEntity;
   selected: boolean;
   onToggle: () => void;
-  isLast?: boolean;
 };
 
-const FilterRow = ({ item, selected, onToggle, isLast = false }: FilterRowProps) => (
-  <Pressable style={[styles.row, isLast ? styles.rowLast : null]} onPress={onToggle}>
-    <AppCheckbox checked={selected} label={item.name} onToggle={onToggle} size={16} />
-    <Text style={styles.rowText}>{item.name}</Text>
-    {getEmojiValue(item.image) ? (
-      <Text style={styles.rowAvatarEmoji}>{getEmojiValue(item.image)}</Text>
-    ) : item.image ? (
-      <RNImage source={{ uri: item.image }} style={styles.rowAvatarImage} />
-    ) : null}
-  </Pressable>
-);
+const FilterRow = ({ item, selected, onToggle }: FilterRowProps) => {
+  const inputId = useId();
+  return (
+    <label className="filter-row" htmlFor={inputId}>
+      <AppCheckbox id={inputId} checked={selected} label={item.name} onToggle={onToggle} size={16} />
+      <span className="filter-row-name">{item.name}</span>
+      {getEmojiValue(item.image) ? (
+        <span className="filter-row-emoji" aria-hidden="true">
+          {getEmojiValue(item.image)}
+        </span>
+      ) : item.image ? (
+        <img className="filter-row-image" src={item.image} alt="" />
+      ) : null}
+    </label>
+  );
+};

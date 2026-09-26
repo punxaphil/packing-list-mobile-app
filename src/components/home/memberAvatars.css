@@ -1,0 +1,28 @@
+.space-member-avatars {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+}
+.space-member-avatar {
+  box-sizing: border-box;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: -6px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  overflow: hidden;
+}
+.space-member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.space-member-emoji {
+  font-size: 15px;
+  line-height: 18px;
+}

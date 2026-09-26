@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Text, TextInput } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { CategoryDropdown } from "./CategoryFields.tsx";
 import { commonCopy, homeCopy } from "./copy.ts";
-import { addItemCopy, moveCategoryCopy } from "./listCopy.ts";
-import { homeStyles } from "./styles.ts";
+import { moveCategoryCopy } from "./listCopy.ts";
+import { MoveCategoryFields } from "./MoveCategoryFields.tsx";
 
 type MoveCategoryModalProps = {
   visible: boolean;
@@ -19,15 +17,9 @@ type MoveCategoryModalProps = {
   onSubmit: (category: NamedEntity | null, newCategoryName: string | null) => Promise<void>;
 };
 
-export const MoveCategoryModal = ({
-  visible,
-  categories,
-  categoryImages,
-  currentCategoryId,
-  onClose,
-  onSubmit,
-}: MoveCategoryModalProps) => {
-  const inputRef = useRef<TextInput>(null);
+export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
+  const { visible, categories, categoryImages, currentCategoryId, onClose, onSubmit } = props;
+  const inputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +37,7 @@ export const MoveCategoryModal = ({
     setError(null);
   }, [categories, currentCategoryId, visible]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     if (isSubmitDisabled) return;
     setSubmitting(true);
     try {
@@ -64,43 +56,16 @@ export const MoveCategoryModal = ({
     } finally {
       setSubmitting(false);
     }
-  }, [existingCategory, isSubmitDisabled, onClose, onSubmit, selectedCategory, trimmedName]);
-
-  const content = (
-    <>
-      <Text style={homeStyles.modalLabel}>{addItemCopy.existingCategory}</Text>
-      <CategoryDropdown
-        categories={categories}
-        categoryImages={categoryImages}
-        selected={selectedCategory}
-        onSelect={(category) => {
-          setSelectedCategory(category);
-          setError(null);
-        }}
-        disabled={submitting || hasNewCategory}
-      />
-      <Text style={homeStyles.modalLabel}>{addItemCopy.newCategory}</Text>
-      <TextInput
-        ref={inputRef}
-        value={newCategoryName}
-        onChangeText={(text) => {
-          setNewCategoryName(text);
-          setError(null);
-        }}
-        accessibilityLabel={addItemCopy.newCategory}
-        style={homeStyles.modalInput}
-        editable={!submitting}
-        autoFocus={categories.every((category) => category.id === currentCategoryId)}
-      />
-      {error && <Text style={homeStyles.modalError}>{error}</Text>}
-    </>
-  );
+  };
 
   return (
     <DialogShell
       visible={visible}
       title={moveCategoryCopy.title}
       onClose={onClose}
+      onShow={() => {
+        if (categories.every((category) => category.id === currentCategoryId)) inputRef.current?.focus();
+      }}
       actions={
         <DialogActions
           cancelLabel={commonCopy.cancel}
@@ -111,7 +76,24 @@ export const MoveCategoryModal = ({
         />
       }
     >
-      {content}
+      <MoveCategoryFields
+        categories={categories}
+        categoryImages={categoryImages}
+        selected={selectedCategory}
+        disabled={submitting || hasNewCategory}
+        submitting={submitting}
+        name={newCategoryName}
+        error={error}
+        inputRef={inputRef}
+        onSelect={(category) => {
+          setSelectedCategory(category);
+          setError(null);
+        }}
+        onNameChange={(name) => {
+          setNewCategoryName(name);
+          setError(null);
+        }}
+      />
     </DialogShell>
   );
 };

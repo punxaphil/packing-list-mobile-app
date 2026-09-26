@@ -1,0 +1,67 @@
+.assign-members-subtitle {
+  margin: 0 0 var(--assign-space);
+  font-size: 14px;
+  color: var(--assign-muted);
+}
+.assign-members-list {
+  max-height: min(300px, 42dvh);
+  margin-bottom: var(--assign-space);
+  overflow-y: auto;
+}
+.assign-members-row {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: var(--assign-gap);
+  padding: var(--assign-gap) 0;
+  border-bottom: 1px solid var(--assign-border);
+  cursor: pointer;
+}
+.assign-members-row:last-child {
+  border-bottom: 0;
+}
+.assign-members-row:focus-within {
+  outline: 2px solid var(--assign-text);
+  outline-offset: -2px;
+}
+.assign-members-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  color: var(--assign-text);
+  overflow-wrap: anywhere;
+}
+.assign-members-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.assign-members-emoji {
+  font-size: 22px;
+  line-height: 26px;
+}
+.assign-members-empty {
+  min-height: 72px;
+  margin: 0;
+  padding: var(--assign-space);
+  text-align: center;
+  font-size: 14px;
+  color: var(--assign-muted);
+}
+.assign-members-manage {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--assign-space);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--assign-muted);
+  text-align: center;
+  cursor: pointer;
+}
+.assign-members-manage:focus-visible {
+  outline: 2px solid var(--assign-text);
+}

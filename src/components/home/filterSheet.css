@@ -1,0 +1,67 @@
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dialog-sm);
+  color: var(--dialog-text);
+  font-size: 13px;
+}
+.filter-header button {
+  flex: none;
+  border: 0;
+  background: none;
+  color: var(--dialog-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filter-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dialog-md);
+}
+.filter-section {
+  min-height: 0;
+}
+.filter-section-title {
+  margin: 0 0 var(--dialog-xs);
+  font-size: 14px;
+  font-weight: 600;
+}
+.filter-section-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-bottom: var(--dialog-sm);
+}
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--dialog-sm);
+  padding-block: var(--dialog-sm);
+  border-bottom: 1px solid var(--dialog-border);
+  cursor: pointer;
+}
+.filter-row:last-child {
+  border-bottom: 0;
+}
+.filter-row-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.filter-row-emoji {
+  font-size: 18px;
+  line-height: 22px;
+}
+.filter-row-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.filter-empty {
+  margin: 0;
+  padding-block: var(--dialog-md);
+  text-align: center;
+  font-size: 14px;
+}

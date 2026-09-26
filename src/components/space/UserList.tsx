@@ -1,9 +1,8 @@
-import { useTranslation } from "react-i18next";
-import { Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
-import { getEmojiValue } from "~/services/mediaValue.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { SPACE_MGMT_COPY } from "./spaceMgmtCopy.ts";
+import { UserRow } from "./UserRow.tsx";
+import "./userList.css";
 
 type UserListProps = {
   emails: string[];
@@ -19,14 +18,13 @@ export const UserList = ({ emails, currentEmail, ownerEmail, onRemove, imagesByE
   const otherEmails = lowerOwner ? emails.filter((e) => e.toLowerCase() !== lowerOwner) : emails;
 
   return (
-    <View style={styles.section}>
+    <div className="space-user-list" style={{ gap: homeSpacing.sm }}>
       {ownerEmail && (
         <UserSection title={SPACE_MGMT_COPY.owner}>
           <UserRow
             email={ownerEmail}
             isSelf={lowerOwner === currentEmail.toLowerCase()}
             imageUrl={imagesByEmail[lowerOwner ?? ""]}
-            onRemove={() => {}}
             canRemove={false}
           />
         </UserSection>
@@ -44,47 +42,23 @@ export const UserList = ({ emails, currentEmail, ownerEmail, onRemove, imagesByE
             />
           ))
         ) : (
-          <Text style={styles.emptyText}>{SPACE_MGMT_COPY.noOtherUsers}</Text>
+          <span className="space-user-empty" style={{ color: homeColors.muted, paddingBlock: homeSpacing.xs }}>
+            {SPACE_MGMT_COPY.noOtherUsers}
+          </span>
         )}
       </UserSection>
-    </View>
+    </div>
   );
 };
 
 const UserSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <>
-    <Text style={styles.sectionTitle}>{title}</Text>
+    <h3 className="space-user-section-title" style={{ color: homeColors.text }}>
+      {title}
+    </h3>
     {children}
   </>
 );
-
-type UserRowProps = { email: string; isSelf: boolean; imageUrl?: string; onRemove: () => void; canRemove: boolean };
-
-const UserRow = ({ email, isSelf, imageUrl, onRemove, canRemove }: UserRowProps) => {
-  const { t } = useTranslation();
-  return (
-    <View style={styles.row}>
-      <View style={styles.avatar}>
-        {getEmojiValue(imageUrl) ? (
-          <Text style={styles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
-        ) : imageUrl ? (
-          <RNImage source={{ uri: imageUrl }} style={styles.avatarImage} />
-        ) : (
-          <Text style={styles.avatarText}>{email[0]?.toUpperCase() ?? "?"}</Text>
-        )}
-      </View>
-      <Text style={styles.email} numberOfLines={1}>
-        {email}
-        {isSelf ? t("userList.youSuffix") : ""}
-      </Text>
-      {canRemove && !isSelf && (
-        <Pressable onPress={() => onRemove()} hitSlop={8}>
-          <Text style={styles.removeText}>{SPACE_MGMT_COPY.remove}</Text>
-        </Pressable>
-      )}
-    </View>
-  );
-};
 
 const confirmRemove = (email: string, onRemove: (email: string) => void) => {
   showActionSheet(SPACE_MGMT_COPY.confirmRemove, [
@@ -96,23 +70,3 @@ const confirmRemove = (email: string, onRemove: (email: string) => void) => {
     { text: SPACE_MGMT_COPY.cancel, style: "cancel" },
   ]);
 };
-
-const styles = StyleSheet.create({
-  section: { gap: homeSpacing.sm },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: homeColors.text },
-  row: { flexDirection: "row", alignItems: "center", gap: homeSpacing.sm, paddingVertical: homeSpacing.xs },
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: { color: homeColors.primaryForeground, fontSize: 14, fontWeight: "700" },
-  avatarEmoji: { fontSize: 18, lineHeight: 22 },
-  avatarImage: { width: 32, height: 32, borderRadius: 16 },
-  email: { flex: 1, fontSize: 14, color: homeColors.text },
-  removeText: { fontSize: 14, fontWeight: "600", color: homeColors.danger },
-  emptyText: { fontSize: 14, color: homeColors.muted, paddingVertical: homeSpacing.xs },
-});

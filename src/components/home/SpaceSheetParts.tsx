@@ -1,22 +1,34 @@
-import { Pressable, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import type { CSSProperties } from "react";
+import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import { Button } from "../shared/Button.tsx";
 import { MemberAvatars } from "./MemberAvatars.tsx";
 import type { MemberInfo } from "./memberInfo.ts";
 import { spaceCopy } from "./spaceCopy.ts";
-import { ICON_SIZE_MD, ICON_SIZE_SM, spaceModalStyles, spaceSheetStyles as styles } from "./spaceSheetStyles.ts";
 import { homeColors } from "./theme.ts";
 
+export { SpaceSheetHeader } from "./SpaceSheetHeader.tsx";
+
+import "./spaceSheetParts.css";
+
 export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () => void }) => (
-  <View style={styles.nameRow}>
-    <Text style={styles.spaceName} numberOfLines={1}>
+  <div className="space-name-row">
+    <span title={name} style={{ color: homeColors.text }}>
       {name}
-    </Text>
-    <Pressable onPress={onRename} hitSlop={8}>
-      <MaterialCommunityIcons name="pencil-outline" size={ICON_SIZE_SM} color={homeColors.muted} />
-    </Pressable>
-  </View>
+    </span>
+    <button
+      type="button"
+      className="space-sheet-icon"
+      onClick={onRename}
+      aria-label={spaceCopy.renamePrompt}
+      title={spaceCopy.renamePrompt}
+      style={{ color: homeColors.muted }}
+    >
+      <span className="web-button-icon" aria-hidden="true">
+        {String.fromCodePoint(glyphs["pencil-outline"])}
+      </span>
+    </button>
+  </div>
 );
 
 type SpaceActionsProps = {
@@ -28,11 +40,11 @@ type SpaceActionsProps = {
 };
 
 export const SpaceActions = ({ onInvite, onLeave, onDelete, isPersonal, isOwner }: SpaceActionsProps) => (
-  <View style={styles.actions}>
+  <div className="space-sheet-actions">
     {isOwner && <Button label={spaceCopy.inviteUser} onPress={onInvite} />}
     {!isPersonal && !isOwner && <Button label={spaceCopy.leaveSpace} onPress={onLeave} variant="danger" />}
     {!isPersonal && isOwner && <Button label={spaceCopy.deleteSpace} onPress={onDelete} variant="danger" />}
-  </View>
+  </div>
 );
 
 export const CreateSpaceButton = ({ onPress }: { onPress: () => void }) => (
@@ -49,7 +61,9 @@ export const InviteSection = ({
   if (!invites.length) return null;
   return (
     <>
-      <Text style={styles.sectionTitle}>{spaceCopy.pendingInvites}</Text>
+      <h3 className="space-sheet-section-title" style={{ color: homeColors.muted }}>
+        {spaceCopy.pendingInvites}
+      </h3>
       {invites.map((inv) => (
         <SpaceRow
           key={`${inv.spaceId}-${inv.fromEmail}`}
@@ -62,10 +76,21 @@ export const InviteSection = ({
 };
 
 export const SpaceRow = ({ label, onPress, members }: SpaceRowProps) => (
-  <Pressable style={({ pressed }) => [styles.rowMain, pressed && styles.rowPressed]} onPress={onPress}>
-    <Text style={styles.rowLabel}>{label}</Text>
+  <button
+    type="button"
+    className="space-sheet-row"
+    style={
+      {
+        color: homeColors.text,
+        "--space-row-background": homeColors.rowBg,
+        "--space-row-pressed": homeColors.rowPressed,
+      } as CSSProperties
+    }
+    onClick={onPress}
+  >
+    <span className="space-sheet-row-label">{label}</span>
     {members && <MemberAvatars members={members} />}
-  </Pressable>
+  </button>
 );
 
 type SpaceRowProps = {
@@ -73,12 +98,3 @@ type SpaceRowProps = {
   onPress: () => void;
   members?: MemberInfo[];
 };
-
-export const SpaceSheetHeader = ({ title, onClose }: { title: string; onClose: () => void }) => (
-  <View style={spaceModalStyles.header}>
-    <Text style={spaceModalStyles.headerTitle}>{title}</Text>
-    <Pressable onPress={onClose} hitSlop={8}>
-      <MaterialCommunityIcons name="close" size={ICON_SIZE_MD} color={homeColors.muted} />
-    </Pressable>
-  </View>
-);

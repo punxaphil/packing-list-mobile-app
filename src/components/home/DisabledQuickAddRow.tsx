@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import "@mdi/font/css/materialdesignicons.css";
 import { HOME_COPY } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 
@@ -12,9 +12,12 @@ export const DisabledQuickAddRow = () => (
     </div>
     <div style={{ display: "flex", alignItems: "center", gap: homeSpacing.xs }}>
       {DISABLED_ICONS.map((name) => (
-        <span key={name} style={{ padding: homeSpacing.xs }} aria-hidden="true">
-          <MaterialCommunityIcons name={name} size={20} color={DISABLED_COLOR} />
-        </span>
+        <span
+          key={name}
+          className={`mdi mdi-${name}`}
+          style={{ padding: homeSpacing.xs, fontSize: 20, color: DISABLED_COLOR }}
+          aria-hidden="true"
+        />
       ))}
     </div>
   </div>

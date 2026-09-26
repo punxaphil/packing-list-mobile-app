@@ -1,3 +1,9 @@
+.add-item-field-label {
+  display: block;
+  margin: 0 0 var(--dialog-xs);
+  font-size: 14px;
+  font-weight: 500;
+}
 .add-item-keep-open {
   display: flex;
   align-items: center;

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, Switch, Text, View } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
-import { commonCopy } from "../home/copy.ts";
-import { homeColors } from "../home/theme.ts";
-import { DialogActions, DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
-import { entityStyles } from "../shared/entityStyles.ts";
-import { MOVE_COPY, moveStyles } from "./styles.ts";
+import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
+import { MoveCategoryActions, MoveCategoryContent } from "./MoveCategoryItemsContent.tsx";
+import { MOVE_COPY, moveTheme } from "./styles.ts";
+import "./moveCategoryItems.css";
 
 type MoveCategoryItemsModalProps = {
   visible: boolean;
@@ -63,7 +61,9 @@ export const MoveCategoryItemsModal = ({
         onClose={onClose}
         actions={<DialogSingleAction label={MOVE_COPY.close} onPress={onClose} />}
       >
-        <Text style={moveStyles.empty}>{MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}</Text>
+        <p className="move-category-empty" style={moveTheme}>
+          {MOVE_COPY.noItems.replace("{name}", sourceCategory.name)}
+        </p>
       </DialogShell>
     );
   }
@@ -73,86 +73,20 @@ export const MoveCategoryItemsModal = ({
       visible={visible}
       title={MOVE_COPY.title}
       onClose={onClose}
-      actions={<ActionButtons selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />}
+      actions={<MoveCategoryActions selectedId={selectedId} targets={targets} onMove={handleMove} onClose={onClose} />}
     >
-      <Text style={moveStyles.subtitle}>
-        {MOVE_COPY.subtitle.replace("{name}", sourceCategory.name).replace("{count}", String(items.length))}
-      </Text>
-      <ItemsList items={items} />
-      <SortToggle sortByAlpha={sortByAlpha} onToggle={() => setSortByAlpha(!sortByAlpha)} />
-      <CategoryPicker targets={targets} selectedId={selectedId} onSelect={setSelectedId} />
+      <div className="move-category-content" style={moveTheme}>
+        <MoveCategoryContent
+          sourceName={sourceCategory.name}
+          items={items}
+          targets={targets}
+          selectedId={selectedId}
+          sortByAlpha={sortByAlpha}
+          onSort={() => setSortByAlpha(!sortByAlpha)}
+          onSelect={setSelectedId}
+        />
+      </div>
     </DialogShell>
-  );
-};
-
-const ItemsList = ({ items }: { items: PackItem[] }) => (
-  <ScrollView style={moveStyles.itemsList}>
-    {items.map((item) => (
-      <Text key={item.id} style={moveStyles.itemText}>
-        • {item.name}
-      </Text>
-    ))}
-  </ScrollView>
-);
-
-const SortToggle = ({ sortByAlpha, onToggle }: { sortByAlpha: boolean; onToggle: () => void }) => (
-  <View style={moveStyles.sortRow}>
-    <Text style={moveStyles.sortLabel}>{MOVE_COPY.selectTarget}</Text>
-    <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
-      <Switch
-        value={sortByAlpha}
-        onValueChange={onToggle}
-        trackColor={{ true: homeColors.primary, false: homeColors.border }}
-      />
-    </View>
-  </View>
-);
-
-const CategoryPicker = ({
-  targets,
-  selectedId,
-  onSelect,
-}: {
-  targets: NamedEntity[];
-  selectedId: string | null;
-  onSelect: (id: string) => void;
-}) => (
-  <ScrollView style={moveStyles.categoryList}>
-    {targets.map((cat) => (
-      <Pressable
-        key={cat.id}
-        style={[moveStyles.categoryItem, selectedId === cat.id && moveStyles.categorySelected]}
-        onPress={() => onSelect(cat.id)}
-      >
-        <Text style={moveStyles.categoryName}>{cat.name}</Text>
-      </Pressable>
-    ))}
-    {targets.length === 0 && <Text style={moveStyles.empty}>{MOVE_COPY.noCategories}</Text>}
-  </ScrollView>
-);
-
-const ActionButtons = ({
-  selectedId,
-  targets,
-  onMove,
-  onClose,
-}: {
-  selectedId: string | null;
-  targets: NamedEntity[];
-  onMove: () => void;
-  onClose: () => void;
-}) => {
-  const targetName = targets.find((c) => c.id === selectedId)?.name;
-  const confirmLabel = selectedId ? MOVE_COPY.moveTo.replace("{name}", targetName ?? "") : MOVE_COPY.selectCategory;
-  return (
-    <DialogActions
-      cancelLabel={MOVE_COPY.cancel}
-      confirmLabel={confirmLabel}
-      onCancel={onClose}
-      onConfirm={onMove}
-      disabled={!selectedId}
-    />
   );
 };
 

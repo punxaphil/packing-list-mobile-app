@@ -1,13 +1,11 @@
 import i18next from "i18next";
-import { useEffect, useRef } from "react";
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { NamedEntity } from "~/types/NamedEntity.ts";
-import { Button } from "../shared/Button.tsx";
+import type { NamedEntity } from "~/types/NamedEntity.ts";
+import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
 import { filterCopy } from "./copy.ts";
 import { CategorySection, MemberSection } from "./FilterComponents.tsx";
-import { filterSheetStyles as styles } from "./filterSheetStyles.ts";
 import { StatusSection } from "./StatusSection.tsx";
 import type { StatusFilter } from "./useFilterDialog.ts";
+import "./filterSheet.css";
 
 type FilterSheetProps = {
   visible: boolean;
@@ -26,93 +24,37 @@ type FilterSheetProps = {
 };
 
 export const FilterSheet = (props: FilterSheetProps) => {
-  const totalCount =
-    props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
-  const categoryScrollRef = useRef<ScrollView>(null);
-  const memberScrollRef = useRef<ScrollView>(null);
-
-  useEffect(() => {
-    if (props.visible) {
-      setTimeout(() => {
-        categoryScrollRef.current?.flashScrollIndicators();
-        memberScrollRef.current?.flashScrollIndicators();
-      }, 100);
-    }
-  }, [props.visible]);
-
+  const count = props.selectedCategories.length + props.selectedMembers.length + (props.statusFilter !== "all" ? 1 : 0);
   return (
-    <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
-      <Pressable style={styles.backdrop} onPress={props.onClose}>
-        <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-          <SheetHeader
-            count={totalCount}
-            onClear={props.onClear}
-            shownCount={props.shownCount}
-            totalItemCount={props.totalItemCount}
-          />
-          <FilterContent
-            {...props}
-            categoryScrollRef={categoryScrollRef}
-            memberScrollRef={memberScrollRef}
-            sortedCategories={props.categories}
-            sortedMembers={props.members}
-          />
-          <DoneButton onPress={props.onClose} />
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <DialogShell
+      visible={props.visible}
+      title={i18next.t("filter.title")}
+      onClose={props.onClose}
+      actions={<DialogSingleAction label={filterCopy.done} onPress={props.onClose} />}
+    >
+      <div className="filter-header">
+        <span>
+          {i18next.t("filter.itemsShowing", { shownCount: props.shownCount, totalItemCount: props.totalItemCount })}
+        </span>
+        {count > 0 && (
+          <button type="button" onClick={props.onClear}>
+            {i18next.t("filter.clear", { count })}
+          </button>
+        )}
+      </div>
+      <div className="filter-content">
+        <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
+        <CategorySection
+          categories={props.categories}
+          selectedCategories={props.selectedCategories}
+          onToggle={props.onToggleCategory}
+        />
+        <MemberSection
+          members={props.members}
+          selectedMembers={props.selectedMembers}
+          onToggle={props.onToggleMember}
+        />
+      </div>
+    </DialogShell>
   );
 };
-
-type SheetHeaderProps = {
-  count: number;
-  onClear: () => void;
-  shownCount: number;
-  totalItemCount: number;
-};
-
-const SheetHeader = ({ count, onClear, shownCount, totalItemCount }: SheetHeaderProps) => (
-  <View style={styles.header}>
-    <Text style={styles.itemCount}>{i18next.t("filter.itemsShowing", { shownCount, totalItemCount })}</Text>
-    {count > 0 && (
-      <Pressable onPress={onClear} hitSlop={8}>
-        <Text style={styles.clearText}>{i18next.t("filter.clear", { count })}</Text>
-      </Pressable>
-    )}
-  </View>
-);
-
-type FilterContentProps = FilterSheetProps & {
-  categoryScrollRef: React.RefObject<ScrollView | null>;
-  memberScrollRef: React.RefObject<ScrollView | null>;
-  sortedCategories: NamedEntity[];
-  sortedMembers: NamedEntity[];
-};
-
-const FilterContent = ({
-  categoryScrollRef,
-  memberScrollRef,
-  sortedCategories,
-  sortedMembers,
-  ...props
-}: FilterContentProps) => (
-  <View style={styles.content}>
-    <StatusSection statusFilter={props.statusFilter} onSetStatus={props.onSetStatus} />
-    <CategorySection
-      categories={sortedCategories}
-      selectedCategories={props.selectedCategories}
-      onToggle={props.onToggleCategory}
-      scrollRef={categoryScrollRef}
-    />
-    <MemberSection
-      members={sortedMembers}
-      selectedMembers={props.selectedMembers}
-      onToggle={props.onToggleMember}
-      scrollRef={memberScrollRef}
-    />
-  </View>
-);
-
-const DoneButton = ({ onPress }: { onPress: () => void }) => (
-  <Button variant="primary" label={filterCopy.done} onPress={onPress} />
-);

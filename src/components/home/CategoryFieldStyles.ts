@@ -1,78 +1,24 @@
+import type { CSSProperties } from "react";
 import { homeColors } from "./theme.ts";
 
-export const CATEGORY_FIELD_STYLES = {
-  dropdownContainer: { marginBottom: 12, zIndex: 10 },
-  sheetLabel: {
-    fontSize: 14,
-    fontWeight: "600" as const,
-    color: homeColors.muted,
-  },
-  sheetInput: {
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    fontSize: 16,
-    color: homeColors.text,
-    backgroundColor: "rgba(255,255,255,0.95)",
-  },
-  dropdownButton: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    backgroundColor: homeColors.surface,
-  },
-  sheetDropdownButton: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    backgroundColor: "rgba(255,255,255,0.95)",
-  },
-  dropdownValue: {
-    flex: 1,
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-  },
-  dropdownText: { flex: 1, fontSize: 16, color: homeColors.text },
-  dropdownMedia: {
-    width: 24,
-    alignItems: "flex-end" as const,
-    justifyContent: "center" as const,
-  },
-  dropdownImage: { width: 24, height: 24, borderRadius: 6 },
-  dropdownEmoji: { fontSize: 18, lineHeight: 22 },
-  dropdownArrow: { fontSize: 12, color: homeColors.muted, marginLeft: 12 },
-  dropdownList: {
-    position: "absolute" as const,
-    backgroundColor: homeColors.surface,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 8,
-    zIndex: 20,
-  },
-  dropdownItem: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: homeColors.border,
-  },
-  dropdownItemLast: { borderBottomWidth: 0 },
-  dropdownItemText: { flex: 1, fontSize: 16, color: homeColors.text },
-  dropdownItemSelected: {
-    fontWeight: "600" as const,
-    color: homeColors.text,
-  },
-  pickerDisabled: { opacity: 0.5 },
+export const categoryFieldTheme = {
+  "--category-text": homeColors.text,
+  "--category-muted": homeColors.muted,
+  "--category-border": homeColors.border,
+  "--category-surface": homeColors.surface,
+  "--category-selected": homeColors.primaryLight,
+} as CSSProperties;
+
+const DROPDOWN_ROW_HEIGHT = 49;
+const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
+const DROPDOWN_MARGIN = 8;
+
+export const getPopoverPosition = (button: HTMLButtonElement, count: number) => {
+  const { top, bottom, left, width } = button.getBoundingClientRect();
+  const maxHeight = Math.min(count * DROPDOWN_ROW_HEIGHT, window.innerHeight * DROPDOWN_MAX_SCREEN_RATIO);
+  const below = window.innerHeight - bottom - DROPDOWN_MARGIN;
+  const above = top - DROPDOWN_MARGIN;
+  const showAbove = below < maxHeight && above > below;
+  const height = Math.min(maxHeight, showAbove ? above : below);
+  return { top: showAbove ? top - height : bottom, left, width, maxHeight: height };
 };

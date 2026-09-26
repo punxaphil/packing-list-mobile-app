@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { Alert } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout, animateListEntry } from "../home/layoutAnimation.ts";
+import { showActionSheet } from "../home/showActionSheet.ts";
 import { EntityActions } from "./EntityCard.tsx";
 import { EntityCopy } from "./entityStyles.ts";
 
@@ -54,46 +54,28 @@ const useDeleteEntity = (
     async (entity: NamedEntity) => {
       const count = itemCounts[entity.id] ?? 0;
       if (count > 0 && onMoveItems) {
-        const action = await showHasItemsAlert(entity.name, count, copy);
-        if (action === "move") onMoveItems(entity);
+        showActionSheet(
+          `${copy.deleteBlockedTitle}\n${copy.deleteBlockedMessage.replace("{name}", entity.name).replace("{count}", String(count))}`,
+          [{ text: copy.moveItems, onPress: () => onMoveItems(entity) }]
+        );
         return;
       }
       const label = entity.name?.trim() ? entity.name : copy.delete;
-      const confirmed = await confirmDelete(label, copy);
-      if (!confirmed) return;
-      animateLayout();
-      await db.delete(entity.id, [], true);
+      showActionSheet(`${copy.deleteConfirmTitle}\n${copy.deleteConfirmMessage.replace("{name}", label)}`, [
+        {
+          text: copy.deleteAction,
+          style: "destructive",
+          onPress: async () => {
+            animateLayout();
+            await db.delete(entity.id, [], true);
+          },
+        },
+      ]);
     },
     [itemCounts, copy, db, onMoveItems]
   );
-
-const showHasItemsAlert = (name: string, count: number, copy: EntityCopy): Promise<"move" | "cancel"> =>
-  new Promise((resolve) => {
-    Alert.alert(
-      copy.deleteBlockedTitle,
-      copy.deleteBlockedMessage.replace("{name}", name).replace("{count}", String(count)),
-      [
-        { text: copy.cancel, style: "cancel", onPress: () => resolve("cancel") },
-        { text: copy.moveItems, onPress: () => resolve("move") },
-      ],
-      { cancelable: true, onDismiss: () => resolve("cancel") }
-    );
-  });
 
 const getNextRank = (entities: NamedEntity[]) => {
   const ranks = entities.map((e) => e.rank ?? 0);
   return ranks.length ? Math.min(...ranks) - 1 : 0;
 };
-
-const confirmDelete = (name: string, copy: EntityCopy) =>
-  new Promise<boolean>((resolve) => {
-    Alert.alert(
-      copy.deleteConfirmTitle,
-      copy.deleteConfirmMessage.replace("{name}", name),
-      [
-        { text: copy.cancel, style: "cancel", onPress: () => resolve(false) },
-        { text: copy.deleteAction, style: "destructive", onPress: () => resolve(true) },
-      ],
-      { cancelable: true, onDismiss: () => resolve(false) }
-    );
-  });

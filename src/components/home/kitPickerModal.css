@@ -1,0 +1,33 @@
+.kit-picker-subtitle {
+  margin-top: 0;
+  font-size: 14px;
+}
+.kit-picker-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+.kit-picker-row {
+  display: flex;
+  align-items: center;
+  gap: var(--kit-picker-gap);
+  padding-block: var(--kit-picker-gap);
+  border-bottom: 1px solid;
+  cursor: pointer;
+}
+.kit-picker-icon {
+  flex: none;
+  font-size: 22px;
+}
+.kit-picker-info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.kit-picker-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.kit-picker-count {
+  font-size: 12px;
+}

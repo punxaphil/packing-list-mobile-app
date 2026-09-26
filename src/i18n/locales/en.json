@@ -272,7 +272,11 @@
   },
   "search": {
     "placeholder": "Search items by name...",
-    "noMatches": "No matches"
+    "noMatches": "No matches",
+    "previous": "Previous match",
+    "next": "Next match",
+    "clear": "Clear search",
+    "close": "Close search"
   },
   "navigation": {
     "items": "Items",

@@ -272,7 +272,11 @@
   },
   "search": {
     "placeholder": "Sök saker efter namn...",
-    "noMatches": "Inga träffar"
+    "noMatches": "Inga träffar",
+    "previous": "Föregående träff",
+    "next": "Nästa träff",
+    "clear": "Rensa sökning",
+    "close": "Stäng sökning"
   },
   "navigation": {
     "items": "Saker",

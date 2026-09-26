@@ -14,7 +14,7 @@ type SheetState = {
   header?: ActionSheetHeader;
 };
 
-export const ActionSheetHost = () => {
+export const ActionSheetHost = ({ onVisibilityChange }: { onVisibilityChange?: (visible: boolean) => void } = {}) => {
   const [sheet, setSheet] = useState<SheetState | null>(null);
   const select = (action?: () => void) => {
     flushSync(() => setSheet(null));
@@ -27,6 +27,8 @@ export const ActionSheetHost = () => {
       removeActionSheetListener(setSheet);
     };
   }, []);
+
+  useEffect(() => onVisibilityChange?.(sheet !== null), [sheet, onVisibilityChange]);
 
   if (!sheet) return null;
 

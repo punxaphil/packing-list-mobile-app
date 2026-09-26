@@ -1,0 +1,26 @@
+.space-sheet-dialog {
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--space-outer));
+  max-width: 480px;
+  max-height: 90dvh;
+  padding: var(--space-spacing);
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.space-sheet-dialog::backdrop {
+  background: var(--space-overlay);
+}
+.space-sheet-dialog-content {
+  display: flex;
+  max-height: calc(90dvh - 2 * var(--space-spacing));
+  flex-direction: column;
+}
+.space-sheet-dialog-scroll {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  padding-bottom: var(--space-small);
+  gap: var(--space-small);
+  overflow-y: auto;
+}
