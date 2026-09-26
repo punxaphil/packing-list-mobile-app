@@ -30,7 +30,8 @@
 - Never commit build files (dist/, node_modules/, etc.). Only commit source files.
 - Use the Vite dev server for local web development.
 - Boy scout rule: fix pre-existing issues (formatting, lint, etc.) when touching nearby code.
-- After each change:
+- For migration work, group related components into a cohesive user-visible slice (for example, a complete screen or workflow). Do not request verification after each small component; ask once per slice.
+- After each cohesive change or migration slice:
   1. Run `npm run prebuild` (typecheck + lint) and fix any errors
   2. Ask me to verify the change works
   3. If I approve, ALWAYS perform thorough code review WITHOUT being asked. Re-read each and every changed file and check for:

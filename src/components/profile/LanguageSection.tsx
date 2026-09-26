@@ -1,7 +1,5 @@
 import i18next from "i18next";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   getDeviceLanguage,
   type LanguagePreference,
@@ -11,7 +9,7 @@ import {
   saveLanguagePreference,
 } from "~/services/languagePreference.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
-import { homeColors, homeSpacing } from "../home/theme.ts";
+import { PreferenceToggle } from "./PreferenceToggle.tsx";
 import { profileCopy } from "./profileCopy.ts";
 
 export const LanguageSection = () => {
@@ -43,29 +41,21 @@ export const LanguageSection = () => {
   const currentLabel = SUPPORTED_LANGUAGES.find((l) => l.code === resolveLanguage(pref))?.label ?? "";
 
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.useDeviceLanguage}</Text>
-        <Switch
-          value={pref.useDeviceLanguage}
-          onValueChange={(v) => void apply({ ...pref, useDeviceLanguage: v })}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
+    <div className="profile-language">
+      <PreferenceToggle
+        label={profileCopy.useDeviceLanguage}
+        checked={pref.useDeviceLanguage}
+        onChange={(value) => void apply({ ...pref, useDeviceLanguage: value })}
+      />
       {!pref.useDeviceLanguage && (
-        <Pressable style={styles.row} onPress={openLanguagePicker}>
-          <Text style={styles.label}>{profileCopy.language}</Text>
-          <Text style={styles.value}>{currentLabel}</Text>
-          <MaterialCommunityIcons name="chevron-right" size={20} color={homeColors.muted} />
-        </Pressable>
+        <button className="profile-preference-row profile-language-picker" type="button" onClick={openLanguagePicker}>
+          <span className="profile-preference-label">{profileCopy.language}</span>
+          <span className="profile-language-value">{currentLabel}</span>
+          <span className="profile-language-chevron" aria-hidden="true">
+            &#xF0142;
+          </span>
+        </button>
       )}
-    </View>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { gap: homeSpacing.sm },
-  row: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  label: { flex: 1, fontSize: 16, color: homeColors.text, marginRight: homeSpacing.sm },
-  value: { fontSize: 16, color: homeColors.muted },
-});

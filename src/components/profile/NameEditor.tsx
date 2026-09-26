@@ -1,14 +1,27 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { type CSSProperties, useEffect, useId, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { updateProfileName } from "~/services/spaceDatabase.ts";
 import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { profileCopy } from "./profileCopy.ts";
+import "./nameEditor.css";
+
+const theme = {
+  "--name-text": homeColors.text,
+  "--name-muted": homeColors.muted,
+  "--name-border": homeColors.border,
+  "--name-focus": homeColors.primaryStrong,
+  "--name-sm": `${homeSpacing.sm}px`,
+  "--name-md": `${homeSpacing.md}px`,
+  "--name-lg": `${homeSpacing.lg}px`,
+  "--name-radius": `${homeRadius}px`,
+} as CSSProperties;
 
 export const NameEditor = () => {
   const { profile } = useSpace();
+  const firstNameId = useId();
+  const lastNameId = useId();
   const [firstName, setFirstName] = useState(profile?.firstName ?? "");
   const [lastName, setLastName] = useState(profile?.lastName ?? "");
   const currentFirstName = profile?.firstName ?? "";
@@ -31,24 +44,28 @@ export const NameEditor = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.inputLabel}>{profileCopy.firstName}</Text>
-      <TextInput
+    <div className="profile-name-editor" style={theme}>
+      <label className="profile-name-label" htmlFor={firstNameId}>
+        {profileCopy.firstName}
+      </label>
+      <input
+        id={firstNameId}
         autoCapitalize="words"
-        accessibilityLabel={profileCopy.firstName}
-        style={styles.input}
+        className="profile-name-input"
         value={firstName}
-        onChangeText={setFirstName}
+        onChange={(event) => setFirstName(event.currentTarget.value)}
       />
-      <Text style={styles.inputLabel}>{profileCopy.lastName}</Text>
-      <TextInput
+      <label className="profile-name-label" htmlFor={lastNameId}>
+        {profileCopy.lastName}
+      </label>
+      <input
+        id={lastNameId}
         autoCapitalize="words"
-        accessibilityLabel={profileCopy.lastName}
-        style={styles.input}
+        className="profile-name-input"
         value={lastName}
-        onChangeText={setLastName}
+        onChange={(event) => setLastName(event.currentTarget.value)}
       />
-      <View style={styles.actions}>
+      <div className="profile-name-actions">
         <Button label={commonCopy.cancel} onPress={restore} disabled={!hasChanges} flex />
         <Button
           variant="primary"
@@ -57,27 +74,7 @@ export const NameEditor = () => {
           disabled={!hasChanges}
           flex
         />
-      </View>
-    </View>
+      </div>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    paddingHorizontal: homeSpacing.lg,
-    gap: homeSpacing.sm,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: homeSpacing.sm,
-  },
-  inputLabel: { fontSize: 12, fontWeight: "600", color: homeColors.muted },
-  input: {
-    borderColor: homeColors.border,
-    borderWidth: 1,
-    borderRadius: homeRadius,
-    paddingVertical: 12,
-    paddingHorizontal: homeSpacing.md,
-  },
-});

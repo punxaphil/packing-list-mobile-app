@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
 import { homeColors } from "../home/theme.ts";
 import { profileCopy } from "./profileCopy.ts";
 
@@ -7,6 +6,7 @@ declare const __COMMIT_SHA__: string;
 
 const COMMIT_PATH = "/__commit";
 const SHA_PATTERN = /^[a-f0-9]{7,40}$/;
+const VERSION_FONT_SIZE = 12;
 
 export const CommitVersion = () => {
   const [checkoutSha, setCheckoutSha] = useState<string | null>(null);
@@ -26,20 +26,15 @@ export const CommitVersion = () => {
   }, []);
 
   return (
-    <View style={styles.version}>
-      <Text style={styles.text}>
+    <div style={{ textAlign: "center", fontSize: VERSION_FONT_SIZE, color: homeColors.muted }}>
+      <div>
         {profileCopy.commit}: {checkoutSha ?? __COMMIT_SHA__}
-      </Text>
+      </div>
       {checkoutSha && checkoutSha !== __COMMIT_SHA__ && (
-        <Text style={styles.text}>
+        <div>
           {profileCopy.runningBuild}: {__COMMIT_SHA__}
-        </Text>
+        </div>
       )}
-    </View>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  version: { alignItems: "center" },
-  text: { fontSize: 12, color: homeColors.muted },
-});

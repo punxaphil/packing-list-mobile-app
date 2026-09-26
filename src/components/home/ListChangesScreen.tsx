@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { type CSSProperties, useMemo } from "react";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useChanges } from "~/hooks/useChanges.ts";
 import { useImages } from "~/hooks/useImages.ts";
@@ -8,6 +7,7 @@ import { UNCATEGORIZED } from "~/services/utils.ts";
 import { ChangeRow } from "./ChangeRow.tsx";
 import { changeCopy } from "./changeCopy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
+import "./listChanges.css";
 
 type Props = { spaceId: string; packingListId: string; onBack: () => void };
 
@@ -39,27 +39,41 @@ const useUserImages = (spaceId: string) => {
 };
 
 const Header = ({ onBack }: { onBack: () => void }) => (
-  <View style={styles.header}>
-    <Pressable style={styles.backButton} onPress={onBack} hitSlop={8}>
-      <Text style={styles.backArrow}>←</Text>
-      <Text style={styles.backLabel}>{changeCopy.back}</Text>
-    </Pressable>
-    <Text style={styles.title}>{changeCopy.title}</Text>
-    <View style={styles.placeholder} />
-  </View>
+  <header className="list-changes-header">
+    <button className="list-changes-back" type="button" onClick={onBack}>
+      <span className="list-changes-back-arrow" aria-hidden="true">
+        ←
+      </span>
+      {changeCopy.back}
+    </button>
+    <h1 className="list-changes-title">{changeCopy.title}</h1>
+    <span aria-hidden="true" />
+  </header>
 );
+
+const theme = {
+  "--changes-surface": homeColors.surface,
+  "--changes-text": homeColors.text,
+  "--changes-muted": homeColors.muted,
+  "--changes-primary": homeColors.primary,
+  "--changes-primary-strong": homeColors.primaryStrong,
+  "--changes-primary-foreground": homeColors.primaryForeground,
+  "--changes-sm": `${homeSpacing.sm}px`,
+  "--changes-md": `${homeSpacing.md}px`,
+  "--changes-lg": `${homeSpacing.lg}px`,
+} as CSSProperties;
 
 export const ListChangesScreen = ({ spaceId, packingListId, onBack }: Props) => {
   const { changes } = useChanges(spaceId, packingListId);
   const categoryNames = useCategoryNames(spaceId);
   const memberImages = useUserImages(spaceId);
   return (
-    <View style={styles.container}>
+    <main className="list-changes" style={theme}>
       <Header onBack={onBack} />
       {changes.length === 0 ? (
-        <Text style={styles.empty}>{changeCopy.empty}</Text>
+        <p className="list-changes-empty">{changeCopy.empty}</p>
       ) : (
-        <ScrollView contentContainerStyle={styles.content}>
+        <ul className="list-changes-scroll">
           {changes.map((entry) => (
             <ChangeRow
               key={entry.id}
@@ -73,26 +87,8 @@ export const ListChangesScreen = ({ spaceId, packingListId, onBack }: Props) => 
               imageUrl={memberImages.get(entry.userId)}
             />
           ))}
-        </ScrollView>
+        </ul>
       )}
-    </View>
+    </main>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: homeColors.surface },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: homeSpacing.lg,
-    paddingVertical: homeSpacing.md,
-  },
-  backButton: { minWidth: 60, flexDirection: "row", alignItems: "center", gap: 4 },
-  backArrow: { color: homeColors.muted, fontWeight: "600", fontSize: 18, lineHeight: 20 },
-  backLabel: { color: homeColors.muted, fontWeight: "600", fontSize: 16 },
-  title: { fontSize: 20, fontWeight: "700", color: homeColors.text },
-  placeholder: { minWidth: 60 },
-  content: { paddingVertical: homeSpacing.sm },
-  empty: { textAlign: "center", color: homeColors.muted, marginTop: homeSpacing.lg * 2 },
-});

@@ -1,4 +1,4 @@
-import { StyleSheet, Switch, Text, View } from "react-native";
+import type { CSSProperties } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import {
   updateProfileAddNewItemsOnTop,
@@ -9,7 +9,19 @@ import {
 } from "~/services/spaceDatabase.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import { LanguageSection } from "./LanguageSection.tsx";
+import { PreferenceToggle } from "./PreferenceToggle.tsx";
 import { profileCopy } from "./profileCopy.ts";
+import "./preferences.css";
+
+const theme = {
+  "--preference-text": homeColors.text,
+  "--preference-muted": homeColors.muted,
+  "--preference-primary": homeColors.primaryStrong,
+  "--preference-focus": homeColors.primaryStrong,
+  "--preference-surface": homeColors.surface,
+  "--preference-sm": `${homeSpacing.sm}px`,
+  "--preference-lg": `${homeSpacing.lg}px`,
+} as CSSProperties;
 
 export const PreferencesSection = () => {
   const { profile } = useSpace();
@@ -45,69 +57,32 @@ export const PreferencesSection = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{profileCopy.preferencesTitle}</Text>
+    <section className="profile-preferences" style={theme} aria-labelledby="profile-preferences-title">
+      <h2 className="profile-preferences-title" id="profile-preferences-title">
+        {profileCopy.preferencesTitle}
+      </h2>
       <LanguageSection />
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.wrapItemText}</Text>
-        <Switch
-          value={wrapItemText}
-          onValueChange={toggleWrapItemText}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.hideImagePlaceholder}</Text>
-        <Switch
-          value={hideImagePlaceholder}
-          onValueChange={toggleHideImagePlaceholder}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.addNewItemsOnTop}</Text>
-        <Switch
-          value={addNewItemsOnTop}
-          onValueChange={toggleAddNewItemsOnTop}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.checkedItemsLast}</Text>
-        <Switch
-          value={checkedItemsLast}
-          onValueChange={toggleCheckedItemsLast}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>{profileCopy.forceSingleColumn}</Text>
-        <Switch
-          value={forceSingleColumn}
-          onValueChange={toggleForceSingleColumn}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-    </View>
+      <PreferenceToggle label={profileCopy.wrapItemText} checked={wrapItemText} onChange={toggleWrapItemText} />
+      <PreferenceToggle
+        label={profileCopy.hideImagePlaceholder}
+        checked={hideImagePlaceholder}
+        onChange={toggleHideImagePlaceholder}
+      />
+      <PreferenceToggle
+        label={profileCopy.addNewItemsOnTop}
+        checked={addNewItemsOnTop}
+        onChange={toggleAddNewItemsOnTop}
+      />
+      <PreferenceToggle
+        label={profileCopy.checkedItemsLast}
+        checked={checkedItemsLast}
+        onChange={toggleCheckedItemsLast}
+      />
+      <PreferenceToggle
+        label={profileCopy.forceSingleColumn}
+        checked={forceSingleColumn}
+        onChange={toggleForceSingleColumn}
+      />
+    </section>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    paddingHorizontal: homeSpacing.lg,
-    gap: homeSpacing.sm,
-  },
-  title: { fontSize: 16, fontWeight: "600", color: homeColors.muted },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  label: {
-    flex: 1,
-    fontSize: 16,
-    color: homeColors.text,
-    marginRight: homeSpacing.sm,
-  },
-});

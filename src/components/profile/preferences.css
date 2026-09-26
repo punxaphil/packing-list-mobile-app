@@ -1,0 +1,94 @@
+.profile-preferences {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--preference-sm);
+  padding-inline: var(--preference-lg);
+}
+
+.profile-preferences-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--preference-muted);
+}
+
+.profile-language {
+  display: flex;
+  flex-direction: column;
+  gap: var(--preference-sm);
+}
+
+.profile-preference-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 20px;
+  gap: var(--preference-sm);
+  color: var(--preference-text);
+  cursor: pointer;
+}
+
+.profile-preference-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+}
+
+.profile-preference-switch {
+  appearance: none;
+  position: relative;
+  width: 40px;
+  height: 20px;
+  flex: none;
+  margin: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--preference-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.profile-preference-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--preference-surface);
+  transition: transform 160ms ease;
+}
+
+.profile-preference-switch:checked {
+  background: var(--preference-primary);
+}
+.profile-preference-switch:checked::before {
+  transform: translateX(20px);
+}
+.profile-preference-switch:focus-visible,
+.profile-language-picker:focus-visible {
+  outline: 2px solid var(--preference-focus);
+  outline-offset: 2px;
+}
+
+.profile-language-picker {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-language-value {
+  font-size: 16px;
+  color: var(--preference-muted);
+}
+.profile-language-chevron {
+  font-family: MaterialCommunityIcons, sans-serif;
+  font-size: 20px;
+  color: var(--preference-muted);
+}

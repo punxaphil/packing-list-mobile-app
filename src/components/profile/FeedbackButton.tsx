@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { submitFeedback, validateFeedback } from "~/services/feedbackDatabase.ts";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { useToast } from "../home/Toast.tsx";
 import { Button } from "../shared/Button.tsx";
+import { showProfileAlert } from "./profileAlerts.ts";
 import { profileCopy } from "./profileCopy.ts";
 
 export const FeedbackButton = () => {
@@ -22,7 +22,7 @@ export const FeedbackButton = () => {
       setVisible(false);
       showToast(profileCopy.feedbackSentMessage);
     } catch {
-      Alert.alert(profileCopy.feedbackErrorTitle, profileCopy.feedbackErrorMessage);
+      showProfileAlert(profileCopy.feedbackErrorTitle, profileCopy.feedbackErrorMessage);
     }
   };
 
@@ -43,10 +43,8 @@ export const FeedbackButton = () => {
         value={text}
         error={error}
         disabled={!!error}
-        getError={getError}
         onChange={setText}
         onCancel={close}
-        onSubmitText={(value) => void send(value)}
         onSubmit={() => void send(text)}
       />
     </>

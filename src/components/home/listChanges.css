@@ -1,0 +1,100 @@
+.list-changes {
+  flex: 1;
+  min-height: 0;
+  background: var(--changes-surface);
+  color: var(--changes-text);
+  display: flex;
+  flex-direction: column;
+}
+.list-changes-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: var(--changes-sm) var(--changes-lg);
+}
+
+.list-changes-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--changes-muted);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.list-changes-back:focus-visible {
+  outline: 2px solid var(--changes-primary-strong);
+  outline-offset: 4px;
+}
+
+.list-changes-back-arrow {
+  font-size: 18px;
+  line-height: 20px;
+}
+.list-changes-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+.list-changes-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--changes-sm) 0;
+  margin: 0;
+  list-style: none;
+}
+.list-changes-empty {
+  margin: calc(var(--changes-lg) * 2) 0 0;
+  color: var(--changes-muted);
+  text-align: center;
+}
+
+.list-changes-row {
+  display: flex;
+  align-items: center;
+  gap: var(--changes-sm);
+  padding: var(--changes-sm) var(--changes-lg);
+}
+
+.list-changes-avatar {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--changes-primary);
+  object-fit: cover;
+}
+
+.list-changes-emoji {
+  font-size: 20px;
+  line-height: 24px;
+}
+.list-changes-initial {
+  color: var(--changes-primary-foreground);
+  font-size: 15px;
+  font-weight: 700;
+}
+.list-changes-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+}
+.list-changes-name {
+  font-weight: 700;
+}
+.list-changes-item {
+  font-weight: 600;
+}

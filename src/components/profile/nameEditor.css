@@ -1,0 +1,35 @@
+.profile-name-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-inline: var(--name-lg);
+  gap: var(--name-sm);
+}
+
+.profile-name-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--name-muted);
+}
+
+.profile-name-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 12px var(--name-md);
+  border: 1px solid var(--name-border);
+  border-radius: var(--name-radius);
+  background: transparent;
+  color: var(--name-text);
+  font: inherit;
+}
+
+.profile-name-input:focus-visible {
+  outline: 2px solid var(--name-focus);
+  outline-offset: 2px;
+}
+
+.profile-name-actions {
+  display: flex;
+  gap: var(--name-sm);
+}
