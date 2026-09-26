@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { type CSSProperties, useCallback, useId, useState } from "react";
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
+import "@mdi/font/css/materialdesignicons.css";
 import { getTranslatedKits, PackingKit } from "~/data/packingKits.ts";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
@@ -79,12 +79,10 @@ const KitRow = ({ kit, checked, onToggle }: KitRowProps) => {
     <label className="kit-picker-row" htmlFor={checkboxId} style={{ borderColor: homeColors.border }}>
       <AppCheckbox id={checkboxId} checked={checked} label={kit.name} onToggle={onToggle} size={16} />
       <span
-        className="web-button-icon kit-picker-icon"
+        className={`mdi mdi-${kit.icon} kit-picker-icon`}
         style={{ color: checked ? homeColors.primaryStrong : homeColors.muted }}
         aria-hidden="true"
-      >
-        {String.fromCodePoint(glyphs[kit.icon as keyof typeof glyphs])}
-      </span>
+      />
       <span className="kit-picker-info">
         <span className="kit-picker-name" style={{ color: homeColors.text }}>
           {kit.name}

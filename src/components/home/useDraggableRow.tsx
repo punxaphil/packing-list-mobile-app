@@ -1,14 +1,7 @@
-import type { ReactNode } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { Animated } from "react-native";
-import {
-  LongPressGestureHandler,
-  LongPressGestureHandlerStateChangeEvent,
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  PanGestureHandlerStateChangeEvent,
-  State,
-} from "react-native-gesture-handler";
+import { type KeyboardEvent, type PointerEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { homeCopy } from "./copy.ts";
+import { homeSpacing } from "./theme.ts";
+import "./dragHandle.css";
 
 export type DragOffset = { x: number; y: number; absoluteY: number };
 
@@ -18,99 +11,88 @@ type DragCallbacks = {
   onEnd?: () => void;
 };
 
-type DragOptions = {
-  applyTranslation?: boolean;
-};
+type DragOptions = { applyTranslation?: boolean };
+type PointerPosition = { id: number; x: number; y: number };
+const LONG_PRESS_MS = 250;
 
 export const useDraggableRow = (callbacks: DragCallbacks = {}, options: DragOptions = {}) => {
-  const position = useRef(new Animated.ValueXY()).current;
   const [active, setActive] = useState(false);
-  const dragStarted = useRef(false);
-  const longPressRef = useRef<LongPressGestureHandler>(null);
-  const panRef = useRef<PanGestureHandler>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const startPosition = useRef<PointerPosition | null>(null);
+  const currentOffset = useRef({ x: 0, y: 0 });
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dragging = useRef(false);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    []
+  );
 
-  const reset = useCallback(() => {
-    if (!dragStarted.current) return;
-    dragStarted.current = false;
+  const finish = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    startPosition.current = null;
+    if (!dragging.current) return;
+    dragging.current = false;
     setActive(false);
+    setOffset({ x: 0, y: 0 });
+    currentOffset.current = { x: 0, y: 0 };
     callbacks.onEnd?.();
-    Animated.spring(position, {
-      toValue: { x: 0, y: 0 },
-      useNativeDriver: true,
-    }).start();
-  }, [position, callbacks]);
+  }, [callbacks]);
 
-  const handleLongPressChange = useCallback(
-    ({ nativeEvent }: LongPressGestureHandlerStateChangeEvent) => {
-      if (nativeEvent.state === State.ACTIVE) {
-        dragStarted.current = true;
+  const onPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.button !== 0) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    startPosition.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    timer.current = setTimeout(() => {
+      dragging.current = true;
+      setActive(true);
+      callbacks.onStart?.();
+    }, LONG_PRESS_MS);
+  };
+  const onPointerMove = (event: PointerEvent<HTMLButtonElement>) => {
+    const start = startPosition.current;
+    if (!dragging.current || !start || event.pointerId !== start.id) return;
+    const next = { x: event.clientX - start.x, y: event.clientY - start.y };
+    currentOffset.current = next;
+    if (options.applyTranslation !== false) setOffset(next);
+    callbacks.onMove?.({ ...next, absoluteY: event.clientY });
+  };
+  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Escape" && dragging.current) {
+      callbacks.onMove?.({ x: 0, y: 0, absoluteY: event.currentTarget.getBoundingClientRect().top });
+      finish();
+    } else if (dragging.current && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+      const y = currentOffset.current.y + (event.key === "ArrowDown" ? homeSpacing.lg * 2 : -homeSpacing.lg * 2);
+      currentOffset.current = { x: 0, y };
+      if (options.applyTranslation !== false) setOffset(currentOffset.current);
+      callbacks.onMove?.({ x: 0, y, absoluteY: event.currentTarget.getBoundingClientRect().top + y });
+    } else if (event.key === " " || event.key === "Enter") {
+      if (dragging.current) finish();
+      else {
+        dragging.current = true;
         setActive(true);
         callbacks.onStart?.();
-        return;
       }
-      if (
-        nativeEvent.state === State.END ||
-        nativeEvent.state === State.CANCELLED ||
-        nativeEvent.state === State.FAILED
-      ) {
-        reset();
-      }
-    },
-    [callbacks, reset]
+    } else return;
+    event.preventDefault();
+  };
+  const wrap = (node: ReactNode) => (
+    <button
+      type="button"
+      className="dom-drag-handle"
+      aria-label={homeCopy.dragHandleLabel}
+      aria-pressed={active}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={finish}
+      onPointerCancel={finish}
+      onKeyDown={onKeyDown}
+      style={options.applyTranslation === false ? undefined : { transform: `translate(${offset.x}px, ${offset.y}px)` }}
+    >
+      {node}
+    </button>
   );
-
-  const handlePanChange = useCallback(
-    ({ nativeEvent }: PanGestureHandlerStateChangeEvent) => {
-      const { state } = nativeEvent;
-      if (state === State.END || state === State.CANCELLED || state === State.FAILED) {
-        reset();
-      }
-    },
-    [reset]
-  );
-
-  const handlePanMove = useCallback(
-    (event: PanGestureHandlerGestureEvent) => {
-      if (!dragStarted.current) return;
-      const { translationX, translationY, absoluteY } = event.nativeEvent;
-      position.setValue({ x: translationX, y: translationY });
-      callbacks.onMove?.({ x: translationX, y: translationY, absoluteY });
-    },
-    [position, callbacks]
-  );
-
-  const applyTranslation = options.applyTranslation ?? true;
-  const style = useMemo(
-    () => (applyTranslation ? [{ transform: position.getTranslateTransform() }] : undefined),
-    [applyTranslation, position]
-  );
-
-  const wrap = useCallback(
-    (node: ReactNode) => (
-      <LongPressGestureHandler
-        ref={longPressRef}
-        simultaneousHandlers={panRef}
-        minDurationMs={250}
-        maxDist={Number.MAX_SAFE_INTEGER}
-        shouldCancelWhenOutside={false}
-        onHandlerStateChange={handleLongPressChange}
-      >
-        <Animated.View>
-          <PanGestureHandler
-            ref={panRef}
-            simultaneousHandlers={longPressRef}
-            activeOffsetY={[-5, 5]}
-            failOffsetX={[-20, 20]}
-            onGestureEvent={handlePanMove}
-            onHandlerStateChange={handlePanChange}
-          >
-            <Animated.View style={style}>{node}</Animated.View>
-          </PanGestureHandler>
-        </Animated.View>
-      </LongPressGestureHandler>
-    ),
-    [handleLongPressChange, handlePanChange, handlePanMove, style]
-  );
-
   return { wrap, dragging: active } as const;
 };

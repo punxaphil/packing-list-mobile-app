@@ -1,5 +1,5 @@
+import "@mdi/font/css/materialdesignicons.css";
 import type { CSSProperties } from "react";
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
 import { homeColors } from "../home/theme.ts";
 import "./button.css";
 
@@ -31,7 +31,6 @@ const theme = {
 
 export const Button = ({ label, onPress, variant = "default", icon, centered, disabled, flex }: ButtonProps) => {
   const iconName = variant === "apple" ? "apple" : icon;
-  const codePoint = iconName ? glyphs[iconName as keyof typeof glyphs] : undefined;
 
   return (
     <button
@@ -41,11 +40,7 @@ export const Button = ({ label, onPress, variant = "default", icon, centered, di
       onClick={onPress}
       disabled={disabled}
     >
-      {codePoint && (
-        <span className="web-button-icon" aria-hidden="true">
-          {String.fromCodePoint(codePoint)}
-        </span>
-      )}
+      {iconName && <span className={`web-button-icon mdi mdi-${iconName}`} aria-hidden="true" />}
       <span>{label}</span>
     </button>
   );

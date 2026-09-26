@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
+import "@mdi/font/css/materialdesignicons.css";
 import { commonCopy } from "../home/copy.ts";
 import { ImageViewerControls } from "./ImageViewerControls.tsx";
 import { ImageViewerPreview } from "./ImageViewerPreview.tsx";
@@ -68,9 +68,7 @@ export const ImageViewerModal = ({
       }}
     >
       <button type="button" className="image-viewer-close" onClick={onClose} aria-label={commonCopy.cancel}>
-        <span className="web-button-icon" aria-hidden="true">
-          {String.fromCodePoint(glyphs.close)}
-        </span>
+        <span className="mdi mdi-close" aria-hidden="true" />
       </button>
       <button type="button" className="image-viewer-stage" onClick={onClose} aria-label={commonCopy.cancel}>
         <ImageViewerPreview imageUrl={imageUrl} placeholderLabel={placeholderLabel} />

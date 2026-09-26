@@ -1,0 +1,56 @@
+.list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--list-header-gap);
+}
+.list-header-create {
+  padding: calc(var(--list-header-xs) / 2) 0;
+  border: 0;
+  background: none;
+  color: var(--list-header-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.list-header-spacer {
+  flex: 1;
+}
+.list-header-archive {
+  display: flex;
+  align-items: center;
+  gap: var(--list-header-xs);
+  color: var(--list-header-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.list-header-archive input {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  appearance: none;
+  border-radius: 10px;
+  background: var(--list-header-off);
+  cursor: pointer;
+}
+.list-header-archive input:checked {
+  background: var(--list-header-on);
+}
+.list-header-archive input::before {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--list-header-knob);
+  content: "";
+}
+.list-header-archive input:checked::before {
+  transform: translateX(16px);
+}
+.list-header-archive input:focus-visible {
+  outline: 2px solid var(--list-header-muted);
+  outline-offset: 2px;
+}

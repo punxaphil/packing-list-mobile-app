@@ -1,27 +1,13 @@
-import { type ReactNode, useMemo, useState } from "react";
-import { Modal, Pressable, Image as RNImage, ScrollView, Text, View } from "react-native";
-import { getEmojiValue } from "~/services/mediaValue.ts";
-import type { Space } from "~/types/Space.ts";
+import { type ReactNode, useMemo } from "react";
+import { ActionMenuHeader } from "./ActionMenuHeader.tsx";
+import { type ActionMenuItem, MenuItem } from "./ActionMenuItem.tsx";
 import { ActionMenuPreview } from "./ActionMenuPreview.tsx";
-import { actionMenuStyles as styles } from "./actionMenuStyles.ts";
+import { actionMenuTheme } from "./actionMenuTheme.ts";
 import { commonCopy } from "./copy.ts";
-import type { MemberInfo } from "./memberInfo.ts";
-import { SpaceRow } from "./SpaceSheetParts.tsx";
-import { ToastProvider, useToast } from "./Toast.tsx";
-import { homeColors } from "./theme.ts";
+import { ToastProvider } from "./Toast.tsx";
+import { useActionMenuDialog } from "./useActionMenuDialog.ts";
 import { useSpaceMemberInfo } from "./useSpaceMemberInfo.ts";
-
-type ActionMenuItem = {
-  text: string;
-  style?: "default" | "destructive" | "cancel";
-  onPress?: () => void;
-  disabled?: boolean;
-  disabledReason?: string;
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
-  onRightPress?: () => void;
-  space?: Space;
-};
+import "./actionMenu.css";
 
 type ActionMenuProps = {
   visible: boolean;
@@ -36,113 +22,68 @@ type ActionMenuProps = {
   headerRight?: ReactNode;
 };
 
-export const ActionMenu = ({
-  visible,
-  title,
-  items,
-  previewItems,
-  onClose,
-  onSelect,
-  headerColor,
-  headerImageUrl,
-  headerTextColor,
-  headerRight,
-}: ActionMenuProps) => {
+export const ActionMenu = (props: ActionMenuProps) => {
+  const {
+    visible,
+    title,
+    items,
+    previewItems,
+    onClose,
+    onSelect,
+    headerColor,
+    headerImageUrl,
+    headerTextColor,
+    headerRight,
+  } = props;
   const spaces = useMemo(() => items.flatMap((item) => (item.space ? [item.space] : [])), [items]);
   const { memberInfoBySpaceId } = useSpaceMemberInfo(spaces);
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const titleTextStyle = headerColor
-    ? [styles.titleText, { color: headerTextColor ?? homeColors.text }]
-    : styles.titleText;
-  const headerBgStyle = headerColor ? { backgroundColor: headerColor } : undefined;
+  const { dialogRef, headerRef, headerHeight } = useActionMenuDialog(visible);
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <dialog
+      ref={dialogRef}
+      className="action-menu"
+      style={actionMenuTheme}
+      aria-label={title}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          onClose();
+        }
+      }}
+    >
       <ToastProvider>
-        <Pressable style={styles.backdrop} onPress={onClose}>
-          <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
-            <View
-              style={[styles.titleRow, headerBgStyle]}
-              onLayout={(event) => setHeaderHeight(event.nativeEvent.layout.height)}
-            >
-              <View style={styles.titleSpacer}>
-                {getEmojiValue(headerImageUrl) ? (
-                  <Text style={styles.titleEmoji}>{getEmojiValue(headerImageUrl)}</Text>
-                ) : headerImageUrl ? (
-                  <RNImage source={{ uri: headerImageUrl }} style={styles.titleImage} />
-                ) : null}
-              </View>
-              <Text style={titleTextStyle}>{title}</Text>
-              <View style={styles.titleSpacer}>{headerRight}</View>
-            </View>
-            {previewItems && <ActionMenuPreview items={previewItems} headerHeight={headerHeight} />}
-            <ScrollView style={styles.itemsScroll}>
-              {items
-                .filter((i) => i.style !== "cancel")
-                .map((item) => (
-                  <MenuItem
-                    key={item.text}
-                    item={item}
-                    onSelect={onSelect}
-                    members={item.space ? (memberInfoBySpaceId[item.space.id] ?? []) : undefined}
-                  />
-                ))}
-            </ScrollView>
-            <CancelButton label={items.find((i) => i.style === "cancel")?.text} onPress={onClose} />
-          </Pressable>
-        </Pressable>
+        <ActionMenuHeader
+          title={title}
+          headerRef={headerRef}
+          color={headerColor}
+          imageUrl={headerImageUrl}
+          textColor={headerTextColor}
+          right={headerRight}
+        />
+        {previewItems && <ActionMenuPreview items={previewItems} headerHeight={headerHeight} />}
+        <div className="action-menu-list">
+          {items
+            .filter((item) => item.style !== "cancel")
+            .map((item) => (
+              <MenuItem
+                key={item.text}
+                item={item}
+                onSelect={onSelect}
+                members={item.space ? (memberInfoBySpaceId[item.space.id] ?? []) : undefined}
+              />
+            ))}
+        </div>
+        <button type="button" className="action-menu-cancel" onClick={onClose}>
+          {items.find((item) => item.style === "cancel")?.text ?? commonCopy.cancel}
+        </button>
       </ToastProvider>
-    </Modal>
+    </dialog>
   );
 };
-
-const MenuItem = ({
-  item,
-  onSelect,
-  members,
-}: {
-  item: ActionMenuItem;
-  onSelect: (action?: () => void) => void;
-  members?: MemberInfo[];
-}) => {
-  const { show: showToast } = useToast();
-  const handlePress = () => {
-    if (item.disabled) {
-      if (item.disabledReason) showToast(item.disabledReason);
-      return;
-    }
-    onSelect(item.onPress);
-  };
-  const textStyle = [
-    styles.itemText,
-    item.style === "destructive" && styles.destructive,
-    item.disabled && styles.disabled,
-  ];
-  if (members) return <SpaceRow label={item.text} members={members} onPress={handlePress} />;
-  return (
-    <div title={item.disabled ? item.disabledReason : undefined}>
-      <Pressable
-        style={[styles.item, item.disabled && styles.disabledItem]}
-        onPress={handlePress}
-        accessibilityHint={item.disabled ? item.disabledReason : undefined}
-      >
-        <View style={styles.itemRow}>
-          <View style={styles.itemSpacer}>{item.leftIcon}</View>
-          <Text style={textStyle}>{item.text}</Text>
-          <View style={styles.itemSpacer}>
-            {item.rightIcon && (
-              <Pressable onPress={item.onRightPress} hitSlop={8}>
-                {item.rightIcon}
-              </Pressable>
-            )}
-          </View>
-        </View>
-      </Pressable>
-    </div>
-  );
-};
-
-const CancelButton = ({ label, onPress }: { label?: string; onPress: () => void }) => (
-  <Pressable style={styles.cancelItem} onPress={onPress}>
-    <Text style={styles.cancelText}>{label ?? commonCopy.cancel}</Text>
-  </Pressable>
-);

@@ -31,13 +31,6 @@ export const homeStyles = StyleSheet.create({
     gap: spacing.sm,
   },
   panelBody: { flex: 1, minHeight: 0, gap: spacing.md },
-  panelTitleWrapper: { flex: 1 },
-  panelTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.text,
-    textAlign: "center",
-  },
   quickAdd: { paddingVertical: spacing.xs / 2 },
   quickAddLabel: { fontSize: 14, fontWeight: "500", color: colors.muted },
   backButton: {
@@ -48,7 +41,6 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
   },
   backPlaceholder: { width: spacing.lg, height: spacing.lg },
-  backText: { color: colors.muted, fontWeight: "600" },
   avatar: {
     width: spacing.lg,
     height: spacing.lg,

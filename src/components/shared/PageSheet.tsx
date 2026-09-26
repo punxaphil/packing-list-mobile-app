@@ -1,5 +1,5 @@
 import { type CSSProperties, type PropsWithChildren, type RefObject, useEffect, useId, useRef } from "react";
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
+import "@mdi/font/css/materialdesignicons.css";
 import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeSpacing } from "../home/theme.ts";
 import "./pageSheet.css";
@@ -56,9 +56,7 @@ export const PageSheet = ({ visible, title, onClose, scrollViewRef, onShow, chil
     >
       <header className="page-sheet-header">
         <button type="button" className="page-sheet-close" onClick={onClose} aria-label={commonCopy.cancel}>
-          <span className="web-button-icon" aria-hidden="true">
-            {String.fromCodePoint(glyphs.close)}
-          </span>
+          <span className="mdi mdi-close" aria-hidden="true" />
         </button>
         <h2 id={titleId}>{title}</h2>
         <span className="page-sheet-spacer" />

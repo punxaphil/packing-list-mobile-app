@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
+import "@mdi/font/css/materialdesignicons.css";
 import type { SpaceInvite } from "~/types/SpaceInvite.ts";
 import { Button } from "../shared/Button.tsx";
 import { MemberAvatars } from "./MemberAvatars.tsx";
@@ -24,9 +24,7 @@ export const SpaceNameRow = ({ name, onRename }: { name: string; onRename: () =>
       title={spaceCopy.renamePrompt}
       style={{ color: homeColors.muted }}
     >
-      <span className="web-button-icon" aria-hidden="true">
-        {String.fromCodePoint(glyphs["pencil-outline"])}
-      </span>
+      <span className="mdi mdi-pencil-outline" aria-hidden="true" />
     </button>
   </div>
 );

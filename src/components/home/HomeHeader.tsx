@@ -1,15 +1,20 @@
-import { useState } from "react";
-import { ActivityIndicator, Pressable, Image as RNImage, StyleSheet, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useInvites } from "~/providers/InviteContext.ts";
-import { useSpace } from "~/providers/SpaceContext.ts";
-import { getEmojiValue } from "~/services/mediaValue.ts";
+import { type CSSProperties, useState } from "react";
+import { AvatarButton, BackButton } from "./HeaderSides.tsx";
+import { SpaceTitle, StackedTitle } from "./HeaderTitles.tsx";
 import { SpaceSheet } from "./SpaceSheet.tsx";
-import { spaceCopy } from "./spaceCopy.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
+import "./homeHeader.css";
 
-const AVATAR_SIZE = homeSpacing.lg * 2;
+const headerTheme = {
+  "--header-avatar": `${homeSpacing.lg * 2}px`,
+  "--header-sm": `${homeSpacing.sm}px`,
+  "--header-xs": `${homeSpacing.xs}px`,
+  "--header-muted": homeColors.muted,
+  "--header-text": homeColors.text,
+  "--header-border": homeColors.border,
+  "--header-primary": homeColors.primary,
+  "--header-primary-text": homeColors.primaryForeground,
+} as CSSProperties;
 
 type HeaderProps = {
   title: string;
@@ -25,79 +30,6 @@ type HeaderProps = {
   onProfile?: () => void;
   useSpaceAsTitle?: boolean;
 };
-
-const BackButton = ({
-  onBack,
-  leftImageUrl,
-  leftImageLoading,
-  hideLeftImagePlaceholder,
-  onPressLeftImage,
-}: {
-  onBack?: () => void;
-  leftImageUrl?: string;
-  leftImageLoading?: boolean;
-  hideLeftImagePlaceholder?: boolean;
-  onPressLeftImage?: () => void;
-}) => (
-  <View style={headerLocalStyles.sideSlot}>
-    {onBack ? (
-      <Pressable style={headerLocalStyles.backButton} onPress={onBack} accessibilityRole="button" hitSlop={8}>
-        <Text style={homeStyles.backText}>{HOME_COPY.back}</Text>
-      </Pressable>
-    ) : onPressLeftImage && (leftImageUrl || !hideLeftImagePlaceholder) ? (
-      <Pressable
-        style={[headerLocalStyles.leftImageButton, !leftImageUrl && headerLocalStyles.leftImagePlaceholder]}
-        onPress={onPressLeftImage}
-        disabled={leftImageLoading}
-        accessibilityRole="button"
-        accessibilityLabel="List image"
-      >
-        {leftImageLoading ? (
-          <ActivityIndicator size="small" color={homeColors.muted} />
-        ) : getEmojiValue(leftImageUrl) ? (
-          <Text style={headerLocalStyles.avatarEmoji}>{getEmojiValue(leftImageUrl)}</Text>
-        ) : leftImageUrl ? (
-          <RNImage source={{ uri: leftImageUrl }} style={headerLocalStyles.avatarImage} />
-        ) : (
-          <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.muted} />
-        )}
-      </Pressable>
-    ) : null}
-  </View>
-);
-
-const AvatarButton = ({ email, imageUrl, onProfile }: { email: string; imageUrl?: string; onProfile?: () => void }) => (
-  <View style={headerLocalStyles.avatarSlot}>
-    <Pressable style={headerLocalStyles.avatarButton} onPress={onProfile} accessibilityRole="button" hitSlop={8}>
-      {getEmojiValue(imageUrl) ? (
-        <Text style={headerLocalStyles.avatarEmoji}>{getEmojiValue(imageUrl)}</Text>
-      ) : imageUrl ? (
-        <RNImage source={{ uri: imageUrl }} style={headerLocalStyles.avatarImage} />
-      ) : (
-        <Text style={headerLocalStyles.avatarLabel}>{buildInitial(email)}</Text>
-      )}
-    </Pressable>
-  </View>
-);
-
-const buildInitial = (email: string) => {
-  const trimmed = email.trim();
-  if (!trimmed) return HOME_COPY.avatarFallback;
-  return trimmed[0]?.toUpperCase() ?? HOME_COPY.avatarFallback;
-};
-
-const Title = ({ title, onPress }: { title: string; onPress?: () => void }) =>
-  onPress ? (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={homeStyles.panelTitleWrapper}>
-      <Text style={homeStyles.panelTitle} numberOfLines={1}>
-        {title}
-      </Text>
-    </Pressable>
-  ) : (
-    <Text style={homeStyles.panelTitle} numberOfLines={1}>
-      {title}
-    </Text>
-  );
 
 export const HomeHeader = ({
   title,
@@ -116,8 +48,8 @@ export const HomeHeader = ({
   const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
 
   return (
-    <View style={headerLocalStyles.wrapper}>
-      <View style={headerLocalStyles.header}>
+    <div className="home-header" style={headerTheme}>
+      <div className="home-header-row">
         <BackButton
           onBack={onBack}
           leftImageUrl={leftImageUrl}
@@ -125,184 +57,16 @@ export const HomeHeader = ({
           hideLeftImagePlaceholder={hideLeftImagePlaceholder}
           onPressLeftImage={onPressLeftImage}
         />
-        <View style={headerLocalStyles.titleStack}>
+        <div className="home-header-title-stack">
           {useSpaceAsTitle ? (
             <SpaceTitle onPress={() => setSpaceSheetVisible(true)} />
           ) : (
             <StackedTitle title={title} onPress={onPressTitle} onSpacePress={onSpacePress} />
           )}
-        </View>
+        </div>
         <AvatarButton email={email} imageUrl={profileImageUrl} onProfile={onProfile} />
-      </View>
+      </div>
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-    </View>
+    </div>
   );
 };
-
-const StackedTitle = ({
-  title,
-  onPress,
-  onSpacePress,
-}: {
-  title: string;
-  onPress?: () => void;
-  onSpacePress?: () => void;
-}) => (
-  <>
-    <SpaceBar onPress={onSpacePress} />
-    <Title title={title} onPress={onPress} />
-  </>
-);
-
-const SpaceTitle = ({ onPress }: { onPress: () => void }) => {
-  const { activeSpace } = useSpace();
-  return (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={headerLocalStyles.spaceTitlePressable}>
-      <View style={headerLocalStyles.spaceTitleRow}>
-        <Text style={homeStyles.panelTitle} numberOfLines={1}>
-          {activeSpace?.name ?? ""}
-        </Text>
-        <Text style={headerLocalStyles.spaceTitleChevron}>{spaceCopy.chevron}</Text>
-      </View>
-    </Pressable>
-  );
-};
-
-const SpaceBar = ({ onPress }: { onPress?: () => void }) => {
-  const { activeSpace } = useSpace();
-  const { pendingInvites } = useInvites();
-  const content = (
-    <>
-      <Text style={headerLocalStyles.spaceName} numberOfLines={1}>
-        {activeSpace?.name ?? ""}
-      </Text>
-      {onPress && <Text style={headerLocalStyles.spaceBarChevron}>{spaceCopy.chevron}</Text>}
-      {pendingInvites.length > 0 && (
-        <View style={headerLocalStyles.inviteBadge}>
-          <Text style={headerLocalStyles.inviteBadgeText}>{pendingInvites.length}</Text>
-        </View>
-      )}
-    </>
-  );
-  return onPress ? (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={headerLocalStyles.spaceBar}>
-      {content}
-    </Pressable>
-  ) : (
-    <View style={headerLocalStyles.spaceBar}>{content}</View>
-  );
-};
-
-const headerLocalStyles = StyleSheet.create({
-  wrapper: { paddingTop: homeSpacing.sm },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: homeSpacing.sm,
-  },
-  titleStack: {
-    flex: 1,
-    minHeight: AVATAR_SIZE,
-    justifyContent: "center",
-    gap: 2,
-  },
-  sideSlot: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    justifyContent: "center",
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    paddingVertical: homeSpacing.xs,
-    paddingHorizontal: homeSpacing.sm,
-    justifyContent: "center",
-  },
-  leftImageButton: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: homeSpacing.lg,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  leftImagePlaceholder: {
-    backgroundColor: homeColors.border,
-  },
-  avatarSlot: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-  avatarButton: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: homeSpacing.lg,
-    backgroundColor: homeColors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  avatarLabel: {
-    color: homeColors.primaryForeground,
-    fontWeight: "700",
-    fontSize: 18,
-  },
-  avatarImage: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: homeSpacing.lg,
-  },
-  avatarEmoji: {
-    fontSize: 24,
-    lineHeight: 28,
-  },
-  spaceTitlePressable: {
-    alignSelf: "stretch",
-    justifyContent: "center",
-  },
-  spaceTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  spaceTitleChevron: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: homeColors.text,
-    marginLeft: 4,
-  },
-  spaceBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: homeSpacing.xs,
-    paddingBottom: 2,
-  },
-  spaceName: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: homeColors.muted,
-    textAlign: "center",
-  },
-  spaceBarChevron: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: homeColors.muted,
-  },
-  inviteBadge: {
-    backgroundColor: homeColors.primary,
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 4,
-  },
-  inviteBadgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: homeColors.primaryForeground,
-  },
-});

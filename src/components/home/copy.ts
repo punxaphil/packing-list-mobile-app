@@ -14,6 +14,7 @@ type HomeCopy = {
   listHeader: string;
   detailHeader: string;
   back: string;
+  listImage: string;
   avatarFallback: string;
   addItem: string;
   addItemQuick: string;

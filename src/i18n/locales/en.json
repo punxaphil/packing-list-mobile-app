@@ -13,6 +13,7 @@
     "listHeader": "Your Packing Lists",
     "detailHeader": "Packing Items",
     "back": "< Back",
+    "listImage": "List image",
     "avatarFallback": "?",
     "addItem": "Add",
     "addItemQuick": "Add...",

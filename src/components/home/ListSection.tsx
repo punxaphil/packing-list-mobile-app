@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Animated, LayoutChangeEvent, LayoutRectangle, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Animated, LayoutChangeEvent, LayoutRectangle, StyleSheet, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -9,13 +9,13 @@ import type { Space } from "~/types/Space.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
 import { FadeScrollView } from "../shared/FadeScrollView.tsx";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
-import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
 import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
+import { ListHeader } from "./ListHeader.tsx";
 import { buildListColors } from "./listColors.ts";
 import { listCopy } from "./listCopy.ts";
 import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
@@ -132,48 +132,6 @@ export const ListSection = (props: ListSectionProps) => {
     </View>
   );
 };
-
-type ListHeaderProps = {
-  onAdd: () => void;
-  onBulkEdit: () => void;
-  bulkEditing: boolean;
-  showArchived: boolean;
-  hasArchived: boolean;
-  onToggleArchived: () => void;
-};
-
-const ListHeader = ({
-  onAdd,
-  onBulkEdit,
-  bulkEditing,
-  showArchived,
-  hasArchived,
-  onToggleArchived,
-}: ListHeaderProps) => (
-  <View style={localStyles.headerRow}>
-    <Pressable
-      style={localStyles.createLink}
-      onPress={onAdd}
-      accessibilityRole="button"
-      accessibilityLabel={HOME_COPY.createList}
-      hitSlop={8}
-    >
-      <Text style={homeStyles.quickAddLabel}>{listCopy.createList}</Text>
-    </Pressable>
-    <View style={localStyles.spacer} />
-    <MultiEditButton label={listCopy.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
-    {hasArchived && (
-      <View style={localStyles.archiveToggle}>
-        <Text style={localStyles.archiveToggleText}>{listCopy.archivedPlural}</Text>
-        <Switch
-          value={showArchived}
-          onValueChange={onToggleArchived}
-          trackColor={{ true: homeColors.primary, false: homeColors.border }}
-        />
-      </View>
-    )}
-  </View>
-);
 
 type ScrollProps = {
   lists: PackingListSummary[];
@@ -393,18 +351,5 @@ const dragStyles = StyleSheet.create({
 });
 
 const localStyles = StyleSheet.create({
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: homeSpacing.sm,
-  },
-  createLink: { paddingVertical: homeSpacing.xs / 2 },
-  archiveToggle: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: homeSpacing.xs,
-  },
-  archiveToggleText: { fontSize: 12, color: homeColors.muted },
-  spacer: { flex: 1 },
   sectionSeparator: { marginBottom: homeSpacing.sm },
 });

@@ -1,0 +1,56 @@
+.home-header-side,
+.home-header-avatar-slot {
+  display: flex;
+  flex: none;
+  width: var(--header-avatar);
+  height: var(--header-avatar);
+  align-items: center;
+}
+.home-header-avatar-slot {
+  justify-content: flex-end;
+}
+.home-header-side-back {
+  width: auto;
+}
+.home-header-back {
+  padding: var(--header-xs) var(--header-sm);
+  border: 0;
+  background: none;
+  color: var(--header-muted);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.home-header-image-button,
+.home-header-avatar {
+  display: flex;
+  width: var(--header-avatar);
+  height: var(--header-avatar);
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+.home-header-placeholder {
+  background: var(--header-border);
+  color: var(--header-muted);
+}
+.home-header-avatar {
+  background: var(--header-primary);
+}
+.home-header-initial {
+  color: var(--header-primary-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+.home-header-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

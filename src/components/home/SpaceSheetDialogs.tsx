@@ -1,4 +1,4 @@
-import { Modal } from "react-native";
+import { useEffect, useRef } from "react";
 import { AppLoadingState } from "../shared/AppLoadingState.tsx";
 import { SPACE_MGMT_COPY } from "../space/spaceMgmtCopy.ts";
 import { commonCopy } from "./copy.ts";
@@ -6,6 +6,7 @@ import { showActionSheet } from "./showActionSheet.ts";
 import { spaceCopy } from "./spaceCopy.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import type { useSpaceSheet } from "./useSpaceSheet.ts";
+import "./spaceCreationLoading.css";
 
 type Props = { sheet: ReturnType<typeof useSpaceSheet> };
 
@@ -60,9 +61,26 @@ export const SpaceSheetDialogs = ({ sheet: s }: Props) => {
         onSubmitText={async () => submitInvite()}
         onSubmit={() => void submitInvite()}
       />
-      <Modal visible={s.creatingSpace} transparent animationType="fade">
-        <AppLoadingState />
-      </Modal>
+      <SpaceCreationLoading visible={s.creatingSpace} />
     </>
+  );
+};
+
+const SpaceCreationLoading = ({ visible }: { visible: boolean }) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (visible && !dialog?.open) dialog?.showModal();
+    else if (!visible && dialog?.open) dialog.close();
+  }, [visible]);
+  return (
+    <dialog
+      ref={dialogRef}
+      className="space-creation-loading"
+      aria-label={spaceCopy.createSpacePrompt}
+      onCancel={(event) => event.preventDefault()}
+    >
+      <AppLoadingState />
+    </dialog>
   );
 };

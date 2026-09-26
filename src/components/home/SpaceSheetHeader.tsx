@@ -1,4 +1,4 @@
-import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
+import "@mdi/font/css/materialdesignicons.css";
 import { commonCopy } from "./copy.ts";
 import { homeColors } from "./theme.ts";
 
@@ -13,9 +13,7 @@ export const SpaceSheetHeader = ({ title, onClose }: { title: string; onClose: (
       title={commonCopy.cancel}
       style={{ color: homeColors.muted }}
     >
-      <span className="web-button-icon" aria-hidden="true">
-        {String.fromCodePoint(glyphs.close)}
-      </span>
+      <span className="mdi mdi-close" aria-hidden="true" />
     </button>
   </div>
 );

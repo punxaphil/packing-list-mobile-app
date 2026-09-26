@@ -1,0 +1,11 @@
+.dom-drag-handle {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.dom-drag-handle[aria-pressed="true"] {
+  cursor: grabbing;
+}
