@@ -22,7 +22,7 @@ import { getNextCategoryRank, SectionGroup } from "./itemsSectionHelpers.ts";
 import { getItemCheckboxColor } from "./listColors.ts";
 import { MoveCategoryModal } from "./MoveCategoryModal.tsx";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HOME_COPY } from "./styles.ts";
 import { useToast } from "./Toast.tsx";
 import { homeColors, homeRadius, homeSpacing } from "./theme.ts";
 import { PackingListSummary } from "./types.ts";
@@ -352,7 +352,7 @@ const CategoryItems = (props: CategoryItemsProps) => {
         columnGap: 0,
         padding: homeSpacing.xs,
         borderRadius: homeRadius / 2,
-        backgroundColor: columnCount > 1 ? props.color : homeStyles.categoryBody.backgroundColor,
+        backgroundColor: columnCount > 1 ? props.color : homeColors.categoryBody,
       }}
     >
       {items.map((item) => (

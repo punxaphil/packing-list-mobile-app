@@ -1,19 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-vi.mock("@react-native-async-storage/async-storage", () => ({
-  default: {
-    getItem: vi.fn().mockResolvedValue(null),
-    setItem: vi.fn().mockResolvedValue(undefined),
-    removeItem: vi.fn().mockResolvedValue(undefined),
-  },
-}));
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { addSpaceListener, clearSpaceState, getActiveSpaceId, initSpaceState, setActiveSpaceId } from "./spaceState.ts";
 
 describe("spaceState", () => {
   beforeEach(async () => {
+    vi.stubGlobal("localStorage", { getItem: vi.fn(() => null), setItem: vi.fn(), removeItem: vi.fn() });
     await clearSpaceState();
   });
+
+  afterEach(() => vi.unstubAllGlobals());
 
   it("returns empty string initially", () => {
     expect(getActiveSpaceId()).toBe("");
@@ -54,8 +49,7 @@ describe("spaceState", () => {
   });
 
   it("restores from storage on init", async () => {
-    const AsyncStorage = (await import("@react-native-async-storage/async-storage")).default;
-    vi.mocked(AsyncStorage.getItem).mockResolvedValueOnce("stored-space");
+    vi.mocked(localStorage.getItem).mockReturnValueOnce("stored-space");
     const result = await initSpaceState();
     expect(result).toBe("stored-space");
     expect(getActiveSpaceId()).toBe("stored-space");

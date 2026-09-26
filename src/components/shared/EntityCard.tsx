@@ -28,7 +28,7 @@ export const EntityCard = (props: EntityCardProps) => {
       ? homeCopy.listNoItems
       : `${props.itemCount} ${props.itemCount === 1 ? homeCopy.itemSingular : homeCopy.itemPlural}`;
   return (
-    <div ref={rowRef}>
+    <div ref={rowRef} className="entry-card-row">
       <div
         className="entity-card"
         style={

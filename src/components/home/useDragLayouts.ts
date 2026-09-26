@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
-import type { LayoutRectangle } from "react-native";
+import type { RowLayout } from "./itemRowProps.ts";
 
 export const useDragLayouts = () => {
-  const [layouts, setLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const [sectionLayouts, setSectionLayouts] = useState<Record<string, LayoutRectangle>>({});
-  const [bodyLayouts, setBodyLayouts] = useState<Record<string, LayoutRectangle>>({});
+  const [layouts, setLayouts] = useState<Record<string, RowLayout>>({});
+  const [sectionLayouts, setSectionLayouts] = useState<Record<string, RowLayout>>({});
+  const [bodyLayouts, setBodyLayouts] = useState<Record<string, RowLayout>>({});
 
-  const recordLayout = useCallback((id: string, layout: LayoutRectangle) => {
+  const recordLayout = useCallback((id: string, layout: RowLayout) => {
     setLayouts((current) => {
       const previous = current[id];
       if (previous && previous.height === layout.height && previous.y === layout.y) return current;
@@ -14,7 +14,7 @@ export const useDragLayouts = () => {
     });
   }, []);
 
-  const recordSectionLayout = useCallback((id: string, layout: LayoutRectangle) => {
+  const recordSectionLayout = useCallback((id: string, layout: RowLayout) => {
     setSectionLayouts((current) => {
       const previous = current[id];
       if (previous && previous.height === layout.height && previous.y === layout.y) return current;
@@ -22,7 +22,7 @@ export const useDragLayouts = () => {
     });
   }, []);
 
-  const recordBodyLayout = useCallback((id: string, layout: LayoutRectangle) => {
+  const recordBodyLayout = useCallback((id: string, layout: RowLayout) => {
     setBodyLayouts((current) => {
       const previous = current[id];
       if (previous && previous.height === layout.height && previous.y === layout.y) return current;

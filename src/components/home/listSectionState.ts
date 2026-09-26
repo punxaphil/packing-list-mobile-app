@@ -3,7 +3,7 @@ import { useSpace } from "~/providers/SpaceContext.ts";
 import type { WriteDb } from "~/services/database.ts";
 import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { animateLayout, animateListEntry } from "./layoutAnimation.ts";
+import { animateLayout } from "./layoutAnimation.ts";
 import { listCopy } from "./listCopy.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
 
@@ -57,7 +57,6 @@ const useAddList = (
     async (name: string, useTemplate: boolean) => {
       const trimmed = name.trim();
       if (!trimmed) return;
-      animateListEntry();
       const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
       if (useTemplate && templateList) {
         await writeDb.copyPackItemsToList(templateList.id, id);
@@ -93,7 +92,6 @@ const useCopyList = (
     async (list: PackingListSummary) => {
       const name = buildCopiedListName(list.name, lists);
       const rank = getNextListRank(lists);
-      animateListEntry();
       const id = await writeDb.addPackingList(name, rank);
       await Promise.all([
         writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),

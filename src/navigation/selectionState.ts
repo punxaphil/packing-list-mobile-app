@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const STORAGE_KEY = "selectedListId";
 type Listener = (id: string) => void;
 
@@ -7,7 +5,7 @@ let currentSelectedId = "";
 const listeners = new Set<Listener>();
 
 export async function initSelection() {
-  const id = await AsyncStorage.getItem(STORAGE_KEY);
+  const id = localStorage.getItem(STORAGE_KEY);
   if (id) {
     currentSelectedId = id;
     notifyListeners();
@@ -24,13 +22,13 @@ export function getSelectedId() {
 
 export function setSelectedId(id: string) {
   currentSelectedId = id;
-  AsyncStorage.setItem(STORAGE_KEY, id);
+  localStorage.setItem(STORAGE_KEY, id);
   notifyListeners();
 }
 
 export function clearSelectedId() {
   currentSelectedId = "";
-  AsyncStorage.setItem(STORAGE_KEY, "");
+  localStorage.setItem(STORAGE_KEY, "");
   notifyListeners();
 }
 

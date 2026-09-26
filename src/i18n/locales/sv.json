@@ -409,6 +409,8 @@
     "youSuffix": " (du)"
   },
   "common": {
+    "pendingDeletionTitle": "Konto väntar på borttagning",
+    "pendingDeletionBody": "Det här kontot har markerats för borttagning. Vill du återaktivera det?",
     "sortAlphabetically": "Sortera alfabetiskt",
     "menu": "Meny",
     "duplicateEntityName": "{{type}} med det här namnet finns redan",

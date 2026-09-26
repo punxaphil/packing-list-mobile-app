@@ -1,8 +1,8 @@
+import "@mdi/font/css/materialdesignicons.css";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import i18next from "i18next";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { homeSpacing } from "~/components/home/theme.ts";
+import { homeColors, homeSpacing } from "~/components/home/theme.ts";
 import { CategoriesScreen } from "./CategoriesScreen";
 import { ItemsScreen } from "./ItemsScreen";
 import { ListChangesScreen } from "./ListChangesScreen";
@@ -27,7 +27,6 @@ const ListsStack = createNativeStackNavigator<ListsStackParamList>();
 const CategoriesStack = createNativeStackNavigator<CategoriesStackParamList>();
 const MembersStack = createNativeStackNavigator<MembersStackParamList>();
 
-const MUTED_COLOR = "#6b7280";
 const WEB_TAB_INSET = 26;
 const TAB_ICON_SIZE = 24;
 
@@ -105,15 +104,15 @@ function MainTabsNavigator() {
         return {
           title: label,
           tabBarIcon: ({ focused }: { focused: boolean }) => (
-            <MaterialCommunityIcons
-              name={icon}
-              size={TAB_ICON_SIZE}
-              color={focused ? TAB_SELECTED_TEXT_COLOR : MUTED_COLOR}
+            <span
+              className={`mdi mdi-${icon}`}
+              aria-hidden="true"
+              style={{ fontSize: TAB_ICON_SIZE, color: focused ? TAB_SELECTED_TEXT_COLOR : homeColors.muted }}
             />
           ),
           tabBarLabel: label,
           tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
-          tabBarInactiveTintColor: MUTED_COLOR,
+          tabBarInactiveTintColor: homeColors.muted,
           tabBarLabelStyle: { fontSize: 10 },
           tabBarIconStyle: { flexGrow: 0, flexShrink: 0, flexBasis: TAB_ICON_SIZE },
           tabBarItemStyle: { justifyContent: "center" },

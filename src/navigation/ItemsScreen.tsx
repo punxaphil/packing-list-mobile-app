@@ -1,7 +1,5 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ItemsSection } from "~/components/home/ItemsSection";
 import { NoSelectionPanel } from "~/components/home/NoSelectionPanel.tsx";
-import { homeStyles } from "~/components/home/styles";
 import { useCategories } from "~/hooks/useCategories";
 import { useImages } from "~/hooks/useImages";
 import { useMembers } from "~/hooks/useMembers";
@@ -9,6 +7,7 @@ import { usePackingItems } from "~/hooks/usePackingItems";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushListChanges, pushProfile, switchToListsTab } from "./navigation";
+import { ScreenFrame } from "./ScreenFrame.tsx";
 
 function ItemsContent() {
   const { email, spaceId, lists, hasLists, listsLoading, selection } = useApp();
@@ -22,14 +21,14 @@ function ItemsContent() {
 
   if (!hasLists || !selection.hasSelection) {
     return (
-      <SafeAreaView edges={[]} style={homeStyles.home}>
+      <ScreenFrame>
         <NoSelectionPanel email={email} onProfile={pushProfile} onShowLists={switchToListsTab} />
-      </SafeAreaView>
+      </ScreenFrame>
     );
   }
 
   return (
-    <SafeAreaView edges={[]} style={homeStyles.home}>
+    <ScreenFrame>
       <ItemsSection
         selection={selection}
         categoriesState={categoriesState}
@@ -41,17 +40,17 @@ function ItemsContent() {
         onProfile={pushProfile}
         onShowChanges={() => pushListChanges(selection.selectedId)}
       />
-    </SafeAreaView>
+    </ScreenFrame>
   );
 }
 
 export function ItemsScreen() {
   const { userId, email } = getAppState();
   return (
-    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+    <ScreenFrame top>
       <AppProvider userId={userId} email={email}>
         <ItemsContent />
       </AppProvider>
-    </SafeAreaView>
+    </ScreenFrame>
   );
 }

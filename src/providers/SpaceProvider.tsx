@@ -1,5 +1,4 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert } from "react-native";
 import { SPACE_MGMT_COPY } from "~/components/space/spaceMgmtCopy.ts";
 import { useActiveSpaceId, useSpaceActions, useUserProfile } from "~/hooks/useSpaces.ts";
 import { createWriteDb } from "~/services/database.ts";
@@ -34,7 +33,7 @@ export function SpaceProvider({ userId, email, children }: Props) {
       if (suppressRemovalAlert.current) {
         suppressRemovalAlert.current = false;
       } else if (name) {
-        Alert.alert(SPACE_MGMT_COPY.removedTitle, SPACE_MGMT_COPY.removedMessage(name));
+        window.alert(`${SPACE_MGMT_COPY.removedTitle}\n${SPACE_MGMT_COPY.removedMessage(name)}`);
       }
     },
     [switchSpace]

@@ -25,7 +25,7 @@ export const ListRow = ({ id, separated, onLayout, children }: ListRowProps) => 
     return () => observer.disconnect();
   }, [id, onLayout]);
   return (
-    <div ref={ref} style={{ marginBottom: separated ? homeSpacing.sm : undefined }}>
+    <div ref={ref} className="entry-card-row" style={{ marginBottom: separated ? homeSpacing.sm : undefined }}>
       {children}
     </div>
   );

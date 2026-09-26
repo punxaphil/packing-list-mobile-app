@@ -1,9 +1,9 @@
-import type { LayoutRectangle } from "react-native";
+import type { RowLayout } from "../home/itemRowProps.ts";
 import { homeSpacing } from "../home/theme.ts";
 
 export const orderEntityLayouts = (
   ids: string[],
-  layouts: Record<string, LayoutRectangle>,
+  layouts: Record<string, RowLayout>,
   initialY = 0,
   separatorIndices: ReadonlySet<number> = new Set()
 ) => {
@@ -15,5 +15,5 @@ export const orderEntityLayouts = (
       y += layout.height + homeSpacing.xs + (separatorIndices.has(index) ? homeSpacing.sm : 0);
       return [id, layout];
     })
-  ) as Record<string, LayoutRectangle>;
+  ) as Record<string, RowLayout>;
 };

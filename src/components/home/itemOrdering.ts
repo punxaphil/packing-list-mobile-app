@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
-import { LayoutAnimation, LayoutRectangle } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { WriteDb } from "~/services/database.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import type { RowLayout } from "./itemRowProps.ts";
+import { animateLayout } from "./layoutAnimation.ts";
 import { DragSnapshot } from "./useDragState.ts";
 
-type LayoutMap = Record<string, LayoutRectangle>;
+type LayoutMap = Record<string, RowLayout>;
 type RankUpdate = Pick<PackItem, "id" | "rank"> & { category?: string };
 
 type DropHandler = (
@@ -45,7 +46,7 @@ const useDropHandler = (
       const preview = buildDropPreview(orderedIds, snapshot, layouts, sectionLayouts, bodyLayouts, items);
       if (!preview.changed) return;
 
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      animateLayout();
       setOrderedIds(preview.ids);
       persistRanks(preview.ids, items, snapshot.id, writeDb, preview.targetCategoryId);
     },
@@ -208,7 +209,7 @@ const getCategoryAtY = (y: number, sectionLayouts: LayoutMap, _bodyLayouts: Layo
 const _resolveTargetIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {
@@ -220,7 +221,7 @@ const _resolveTargetIndex = (
 const resolveDownwardIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {
@@ -242,7 +243,7 @@ const resolveDownwardIndex = (
 const resolveUpwardIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {

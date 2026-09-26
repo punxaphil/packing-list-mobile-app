@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { LayoutRectangle } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { findMatchingItemIds } from "./filterUtils.ts";
+import type { RowLayout } from "./itemRowProps.ts";
 
-type LayoutMap = Record<string, LayoutRectangle>;
+type LayoutMap = Record<string, RowLayout>;
 
 const SCROLL_PADDING = 100;
 

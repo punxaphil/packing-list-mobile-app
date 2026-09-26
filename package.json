@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
-    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.19.2",
     "@react-navigation/native": "^7.4.1",
     "@react-navigation/native-stack": "^7.19.2",
@@ -32,7 +31,6 @@
     "react-native": "0.81.5",
     "react-native-safe-area-context": "~5.10.0",
     "react-native-screens": "~4.0.0",
-    "react-native-vector-icons": "^10.3.0",
     "react-native-web": "^0.21.2"
   },
   "devDependencies": {
@@ -43,7 +41,6 @@
     "@types/prop-types": "^15.7.15",
     "@types/react": "~19.3.0",
     "@types/react-dom": "~19.3",
-    "@types/react-native-vector-icons": "^6.4.18",
     "@vitejs/plugin-react": "^4.3.0",
     "firebase-admin": "^13.6.1",
     "knip": "^5.82.1",

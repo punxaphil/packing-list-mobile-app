@@ -17,6 +17,7 @@ export const homeColors = {
   highlight: "rgba(191, 219, 254, 0.45)",
   highlightSubtle: "rgba(219, 234, 254, 0.5)",
   rowBg: "rgba(255,255,255,0.9)",
+  categoryBody: "rgba(255,255,255,0.65)",
   rowPressed: "rgba(219,234,254,0.95)",
   templateBadge: "#9333ea",
 } as const;

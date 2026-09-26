@@ -12,7 +12,6 @@ import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections, getItemColumnCount } from "./itemsSectionHelpers.ts";
 import { buildItemCategoryColors } from "./listColors.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
-import { homeStyles } from "./styles.ts";
 import { useDragState } from "./useDragState.ts";
 import { useItemsListNavigation } from "./useItemsListNavigation.ts";
 import type { SearchState } from "./useSearch.ts";
@@ -76,7 +75,7 @@ export const ItemsList = (props: ItemsListProps) => {
   return (
     <FadeScrollView
       ref={props.search.scrollRef as React.RefObject<FadeScrollViewRef>}
-      style={homeStyles.scroll}
+      style={{ flex: 1 }}
       scrollEnabled={!drag.snapshot}
       drag={drag}
     >

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { Animated, type LayoutRectangle } from "react-native";
+import type { RowLayout } from "./itemRowProps.ts";
 import { DragOffset } from "./useDraggableRow.tsx";
 import { useDragLayouts } from "./useDragLayouts.ts";
 
@@ -16,7 +16,6 @@ export const useDragState = () => {
   const pointerY = useRef<number | null>(null);
   const translationY = useRef(0);
   const scrollDistance = useRef(0);
-  const animatedOffsetY = useRef(new Animated.Value(0)).current;
   const dragLayouts = useDragLayouts();
 
   // Sync ref with state synchronously
@@ -28,13 +27,12 @@ export const useDragState = () => {
 
   const start = useCallback(
     (id: string, categoryId: string) => {
-      animatedOffsetY.setValue(0);
       pointerY.current = null;
       translationY.current = 0;
       scrollDistance.current = 0;
       setSnapshot({ id, categoryId, offsetY: 0 });
     },
-    [setSnapshot, animatedOffsetY]
+    [setSnapshot]
   );
 
   const move = useCallback(
@@ -42,24 +40,22 @@ export const useDragState = () => {
       pointerY.current = offset.absoluteY;
       translationY.current = offset.y;
       const offsetY = offset.y + scrollDistance.current;
-      animatedOffsetY.setValue(offsetY);
       setSnapshot((current) => (current && current.id === id ? { ...current, offsetY } : current));
     },
-    [setSnapshot, animatedOffsetY]
+    [setSnapshot]
   );
 
   const scrollBy = useCallback(
     (distance: number) => {
       scrollDistance.current += distance;
       const offsetY = translationY.current + scrollDistance.current;
-      animatedOffsetY.setValue(offsetY);
       setSnapshot((current) => (current ? { ...current, offsetY } : current));
     },
-    [setSnapshot, animatedOffsetY]
+    [setSnapshot]
   );
 
   const end = useCallback(
-    (onComplete?: (value: DragSnapshot) => void, layouts?: Record<string, LayoutRectangle>) => {
+    (onComplete?: (value: DragSnapshot) => void, layouts?: Record<string, RowLayout>) => {
       // Read from ref to avoid dependency on 'snapshot' state which would break memoization
       const current = snapshotRef.current;
       pointerY.current = null;
@@ -91,7 +87,6 @@ export const useDragState = () => {
     snapshot,
     pointerY,
     scrollBy,
-    animatedOffsetY,
     ...dragLayouts,
     start,
     move,

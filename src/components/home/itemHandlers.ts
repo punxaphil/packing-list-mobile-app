@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { Alert } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { WriteDb } from "~/services/database.ts";
 import { withPackItemMembers } from "~/services/packItemState.ts";
@@ -7,6 +6,7 @@ import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { animateLayout } from "./layoutAnimation.ts";
+import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY } from "./styles.ts";
 
 export const useItemRename = () => {
@@ -48,17 +48,17 @@ const shouldDeleteCategory = async (writeDb: WriteDb, items: PackItem[], categor
 };
 
 const confirmDeleteCategory = (name: string) =>
-  new Promise<boolean>((resolve) => {
-    Alert.alert(
-      HOME_COPY.deleteCategoryQuestionTitle,
-      HOME_COPY.deleteCategoryQuestionMessage.replace("{name}", name),
+  new Promise<boolean>((resolve) =>
+    showActionSheet(
+      `${HOME_COPY.deleteCategoryQuestionTitle}\n${HOME_COPY.deleteCategoryQuestionMessage.replace("{name}", name)}`,
       [
-        { text: HOME_COPY.keepCategory, style: "cancel", onPress: () => resolve(false) },
         { text: HOME_COPY.deleteCategoryAction, style: "destructive", onPress: () => resolve(true) },
+        { text: HOME_COPY.keepCategory, style: "cancel" },
       ],
-      { cancelable: true, onDismiss: () => resolve(false) }
-    );
-  });
+      undefined,
+      () => resolve(false)
+    )
+  );
 
 export const useCategoryRename = () => {
   const { writeDb } = useSpace();

@@ -12,6 +12,7 @@ type SheetState = {
   title: string;
   items: ActionSheetItem[];
   header?: ActionSheetHeader;
+  onDismiss?: () => void;
 };
 
 export const ActionSheetHost = ({ onVisibilityChange }: { onVisibilityChange?: (visible: boolean) => void } = {}) => {
@@ -40,7 +41,10 @@ export const ActionSheetHost = ({ onVisibilityChange }: { onVisibilityChange?: (
       previewItems={sheet.header?.previewItems}
       headerColor={sheet.header?.color}
       headerImageUrl={sheet.header?.imageUrl}
-      onClose={() => setSheet(null)}
+      onClose={() => {
+        sheet.onDismiss?.();
+        setSheet(null);
+      }}
       onSelect={select}
     />
   );

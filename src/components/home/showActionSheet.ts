@@ -1,5 +1,3 @@
-import i18next from "i18next";
-import { Alert } from "react-native";
 import type { Space } from "~/types/Space.ts";
 
 export type ActionSheetItem = {
@@ -17,6 +15,7 @@ type ActionSheetPayload = {
   title: string;
   items: ActionSheetItem[];
   header?: ActionSheetHeader;
+  onDismiss?: () => void;
 };
 
 type ActionSheetListener = (payload: ActionSheetPayload) => void;
@@ -34,16 +33,21 @@ export const removeActionSheetListener = (listener: ActionSheetListener) => {
 
 const getActionItems = (items: ActionSheetItem[]) => items.filter((item) => item.style !== "cancel");
 
-export const showActionSheet = (title: string, items: ActionSheetItem[], header?: ActionSheetHeader) => {
+export const showActionSheet = (
+  title: string,
+  items: ActionSheetItem[],
+  header?: ActionSheetHeader,
+  onDismiss?: () => void
+) => {
   const listener = listenerStack[listenerStack.length - 1];
   if (listener) {
-    listener({ title, items, header });
+    listener({ title, items, header, onDismiss });
     return;
   }
 
-  const buttons = [
-    ...getActionItems(items).filter((item) => !item.disabled),
-    { text: i18next.t("common.cancel"), style: "cancel" as const },
-  ];
-  Alert.alert(title, undefined, buttons, { cancelable: true });
+  const actions = getActionItems(items).filter((item) => !item.disabled);
+  const choice = window.prompt(`${title}\n${actions.map((item, index) => `${index + 1}. ${item.text}`).join("\n")}`);
+  const action = choice === null ? undefined : actions[Number(choice) - 1];
+  if (action) action.onPress?.();
+  else onDismiss?.();
 };

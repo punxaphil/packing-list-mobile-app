@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const STORAGE_KEY = "@language_pref";
 
 export type LanguageCode = "en" | "sv";
@@ -20,13 +18,13 @@ export const getDeviceLanguage = (): LanguageCode => {
 };
 
 export const loadLanguagePreference = async (): Promise<LanguagePreference> => {
-  const raw = await AsyncStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return { useDeviceLanguage: true, language: getDeviceLanguage() };
   return JSON.parse(raw) as LanguagePreference;
 };
 
 export const saveLanguagePreference = async (pref: LanguagePreference): Promise<void> => {
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
 };
 
 export const resolveLanguage = (pref: LanguagePreference): LanguageCode =>

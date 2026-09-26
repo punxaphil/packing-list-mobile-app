@@ -1,9 +1,8 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ListSection } from "~/components/home/ListSection";
-import { homeStyles } from "~/components/home/styles";
 import { AppProvider, useApp } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushProfile, switchToItemsTab } from "./navigation";
+import { ScreenFrame } from "./ScreenFrame.tsx";
 
 function ListsContent() {
   const { email, lists, listsLoading, selection } = useApp();
@@ -29,10 +28,10 @@ function ListsContent() {
 export function ListsScreen() {
   const { userId, email } = getAppState();
   return (
-    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+    <ScreenFrame top>
       <AppProvider userId={userId} email={email}>
         <ListsContent />
       </AppProvider>
-    </SafeAreaView>
+    </ScreenFrame>
   );
 }

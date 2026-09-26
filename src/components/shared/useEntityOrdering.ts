@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
-import { LayoutRectangle } from "react-native";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import type { RowLayout } from "../home/itemRowProps.ts";
 import { DragSnapshot } from "../home/useDragState.ts";
 
-type LayoutMap = Record<string, LayoutRectangle>;
+type LayoutMap = Record<string, RowLayout>;
 type DropHandler = (snapshot: DragSnapshot, layouts: LayoutMap) => void;
 type OrderedIdsState = [string[], Dispatch<SetStateAction<string[]>>];
 type PersistFn = (updates: NamedEntity[]) => Promise<void>;
@@ -57,7 +57,7 @@ const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: La
 const resolveTargetIndex = (
   ids: string[],
   fromIndex: number,
-  layout: LayoutRectangle,
+  layout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {

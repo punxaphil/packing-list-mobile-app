@@ -1,11 +1,21 @@
-@font-face {
-  font-family: MaterialCommunityIcons;
-  src: url("../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf") format("truetype");
-  font-display: block;
-}
-
 * {
   box-sizing: border-box;
+}
+
+.entry-card-row {
+  transition: opacity 520ms ease-in-out;
+}
+
+@starting-style {
+  .entry-card-row {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-card-row {
+    transition: none;
+  }
 }
 
 html,

@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
@@ -45,13 +44,13 @@ const parseStatus = (raw: string | null): StatusFilter => {
 };
 
 const persistCategories = (listId: string, values: string[]) =>
-  AsyncStorage.setItem(getStorageKey(CATEGORY_KEY, listId), JSON.stringify(values));
+  localStorage.setItem(getStorageKey(CATEGORY_KEY, listId), JSON.stringify(values));
 
 const persistMembers = (listId: string, values: string[]) =>
-  AsyncStorage.setItem(getStorageKey(MEMBER_KEY, listId), JSON.stringify(values));
+  localStorage.setItem(getStorageKey(MEMBER_KEY, listId), JSON.stringify(values));
 
 const persistStatus = (listId: string, status: StatusFilter) =>
-  AsyncStorage.setItem(getStorageKey(STATUS_KEY, listId), status);
+  localStorage.setItem(getStorageKey(STATUS_KEY, listId), status);
 
 const WITHOUT_MEMBERS: NamedEntity = { id: WITHOUT_MEMBERS_ID, name: homeCopy.withoutMembers, rank: Infinity };
 
@@ -83,21 +82,9 @@ export const useFilterDialog = (
       setStatusFilter("all");
       return;
     }
-    let active = true;
-    void (async () => {
-      const [rawCategories, rawMembers, rawStatus] = await Promise.all([
-        AsyncStorage.getItem(getStorageKey(CATEGORY_KEY, listId)),
-        AsyncStorage.getItem(getStorageKey(MEMBER_KEY, listId)),
-        AsyncStorage.getItem(getStorageKey(STATUS_KEY, listId)),
-      ]);
-      if (!active) return;
-      setSelectedCategories(parseStringArray(rawCategories));
-      setSelectedMembers(parseStringArray(rawMembers));
-      setStatusFilter(parseStatus(rawStatus));
-    })();
-    return () => {
-      active = false;
-    };
+    setSelectedCategories(parseStringArray(localStorage.getItem(getStorageKey(CATEGORY_KEY, listId))));
+    setSelectedMembers(parseStringArray(localStorage.getItem(getStorageKey(MEMBER_KEY, listId))));
+    setStatusFilter(parseStatus(localStorage.getItem(getStorageKey(STATUS_KEY, listId))));
   }, [listId]);
 
   const open = useCallback(() => setVisible(true), []);

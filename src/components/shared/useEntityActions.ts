@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { animateLayout, animateListEntry } from "../home/layoutAnimation.ts";
+import { animateLayout } from "../home/layoutAnimation.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
 import { EntityActions } from "./EntityCard.tsx";
 import { EntityCopy } from "./entityStyles.ts";
@@ -38,7 +38,6 @@ const useAddEntity = (entities: NamedEntity[], db: DbOperations) =>
     async (name: string) => {
       const trimmed = name.trim();
       if (!trimmed) return;
-      animateListEntry();
       await db.add(trimmed, getNextRank(entities));
     },
     [entities, db]

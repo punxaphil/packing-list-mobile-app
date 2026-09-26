@@ -23,7 +23,7 @@ import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
 import { ListActions, useListActions } from "./listSectionState.ts";
 import { PanelShell } from "./PanelShell.tsx";
 import { showActionSheet } from "./showActionSheet.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HOME_COPY } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeColors, homeSpacing } from "./theme.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
@@ -180,7 +180,7 @@ const ListScroll = ({
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   const isDropping = drag.snapshot?.frozenY !== undefined;
   return (
-    <FadeScrollView style={homeStyles.scroll} drag={drag}>
+    <FadeScrollView style={{ flex: 1 }} drag={drag}>
       <div className="list-ordering" style={{ gap: homeSpacing.xs, paddingTop: homeSpacing.xs }}>
         {lists.map((list, index) => (
           <ListRow key={list.id} id={list.id} separated={separatorIndices.has(index)} onLayout={drag.recordLayout}>

@@ -9,7 +9,6 @@ import { ItemRowDetails } from "./ItemRowDetails.tsx";
 import { ItemRowHighlight } from "./ItemRowHighlight.tsx";
 import { areRowPropsEqual, type CategoryItemRowProps } from "./itemRowProps.ts";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
-import { homeStyles } from "./styles.ts";
 import { useToast } from "./Toast.tsx";
 import { CHECKBOX_SIZE, homeColors, homeSpacing } from "./theme.ts";
 import { useDraggableRow } from "./useDraggableRow.tsx";
@@ -45,7 +44,7 @@ export const CategoryItemRow = memo((props: CategoryItemRowProps) => {
             backgroundColor: props.isCurrentMatch
               ? homeColors.highlight
               : props.dragDisabled
-                ? homeStyles.categoryBody.backgroundColor
+                ? homeColors.categoryBody
                 : undefined,
             "--item-highlight": homeColors.highlight,
           } as CSSProperties

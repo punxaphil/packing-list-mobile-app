@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const STORAGE_KEY = "activeSpaceId";
 type Listener = (id: string) => void;
 
@@ -11,7 +9,7 @@ function notifyListeners() {
 }
 
 export async function initSpaceState(): Promise<string> {
-  const id = await AsyncStorage.getItem(STORAGE_KEY);
+  const id = localStorage.getItem(STORAGE_KEY);
   if (id) {
     currentSpaceId = id;
     notifyListeners();
@@ -25,13 +23,13 @@ export function getActiveSpaceId(): string {
 
 export function setActiveSpaceId(id: string) {
   currentSpaceId = id;
-  AsyncStorage.setItem(STORAGE_KEY, id);
+  localStorage.setItem(STORAGE_KEY, id);
   notifyListeners();
 }
 
 export async function clearSpaceState() {
   currentSpaceId = "";
-  await AsyncStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY);
   notifyListeners();
 }
 

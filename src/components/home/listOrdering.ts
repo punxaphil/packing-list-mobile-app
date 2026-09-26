@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
-import { LayoutRectangle } from "react-native";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import type { WriteDb } from "~/services/database.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
+import type { RowLayout } from "./itemRowProps.ts";
 import { PackingListSummary } from "./types.ts";
 
 import { DragSnapshot } from "./useDragState.ts";
 
-type LayoutMap = Record<string, LayoutRectangle>;
+type LayoutMap = Record<string, RowLayout>;
 type RankUpdate = Pick<NamedEntity, "id" | "name" | "rank"> & Partial<Pick<NamedEntity, "image" | "color">>;
 
 type DropHandler = (snapshot: DragSnapshot, layouts: LayoutMap) => void;
@@ -98,7 +98,7 @@ const buildDropPreview = (current: string[], snapshot: DragSnapshot, layouts: La
 const resolveTargetIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {
@@ -110,7 +110,7 @@ const resolveTargetIndex = (
 const resolveDownwardIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {
@@ -132,7 +132,7 @@ const resolveDownwardIndex = (
 const resolveUpwardIndex = (
   ids: string[],
   fromIndex: number,
-  draggedLayout: LayoutRectangle,
+  draggedLayout: RowLayout,
   offsetY: number,
   layouts: LayoutMap
 ) => {

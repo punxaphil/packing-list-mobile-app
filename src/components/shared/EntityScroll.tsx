@@ -7,7 +7,7 @@ import { DragOffset } from "../home/useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "../home/useDragState.ts";
 import { EntityActions, EntityCard, EntityMenuAction } from "./EntityCard.tsx";
 import { EntityCardPreview } from "./EntityCardPreview.tsx";
-import { EntityCopy, entityStyles } from "./entityStyles.ts";
+import { EntityCopy } from "./entityStyles.ts";
 import { FadeScrollView, FadeScrollViewRef } from "./FadeScrollView.tsx";
 import { orderEntityLayouts } from "./orderEntityLayouts.ts";
 import { useFlashHighlight } from "./useFlashHighlight.ts";
@@ -74,7 +74,7 @@ export const EntityScroll = (props: EntityScrollProps) => {
   }, [entities, flash]);
 
   return (
-    <FadeScrollView ref={scrollRef} style={entityStyles.scroll} drag={drag}>
+    <FadeScrollView ref={scrollRef} style={{ flex: 1 }} drag={drag}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: homeSpacing.xs }}>
         {entities.map((entity) => {
           const image = images.find((img) => img.typeId === entity.id);

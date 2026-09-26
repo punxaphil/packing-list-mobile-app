@@ -51,9 +51,7 @@ export const LanguageSection = () => {
         <button className="profile-preference-row profile-language-picker" type="button" onClick={openLanguagePicker}>
           <span className="profile-preference-label">{profileCopy.language}</span>
           <span className="profile-language-value">{currentLabel}</span>
-          <span className="profile-language-chevron" aria-hidden="true">
-            &#xF0142;
-          </span>
+          <span className="profile-language-chevron mdi mdi-chevron-right" aria-hidden="true" />
         </button>
       )}
     </div>

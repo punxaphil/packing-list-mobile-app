@@ -408,6 +408,8 @@
     "youSuffix": " (you)"
   },
   "common": {
+    "pendingDeletionTitle": "Account pending deletion",
+    "pendingDeletionBody": "This account has been marked for deletion. Would you like to reactivate it?",
     "sortAlphabetically": "Sort alphabetically",
     "menu": "Menu",
     "duplicateEntityName": "{{type}} with this name already exists",

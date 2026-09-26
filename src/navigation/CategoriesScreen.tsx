@@ -1,18 +1,17 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { CategoriesScreen as CategoriesScreenComponent } from "~/components/categories/CategoriesScreen";
-import { homeStyles } from "~/components/home/styles";
 import { AppProvider } from "~/providers/AppProvider";
 import { getAppState } from "./appState";
 import { pushProfile } from "./navigation";
+import { ScreenFrame } from "./ScreenFrame.tsx";
 
 export function CategoriesScreen() {
   const { userId, email } = getAppState();
 
   return (
-    <SafeAreaView edges={["top"]} style={homeStyles.home}>
+    <ScreenFrame top>
       <AppProvider userId={userId} email={email}>
         <CategoriesScreenComponent email={email} onProfile={pushProfile} />
       </AppProvider>
-    </SafeAreaView>
+    </ScreenFrame>
   );
 }

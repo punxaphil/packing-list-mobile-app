@@ -1,9 +1,8 @@
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin, transformWithEsbuild } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
-const UNTRANSPILED_JSX_MODULES = /node_modules\/react-native-vector-icons\/.*\.js$/;
 const commitSha = () => execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { encoding: "utf8" }).trim();
 
 const currentCommit = (): Plugin => {
@@ -27,17 +26,8 @@ const currentCommit = (): Plugin => {
   };
 };
 
-const untranspiledJsx = (): Plugin => ({
-  name: "untranspiled-jsx",
-  enforce: "pre",
-  transform(code, id) {
-    if (!UNTRANSPILED_JSX_MODULES.test(id)) return null;
-    return transformWithEsbuild(code, id, { loader: "jsx", jsx: "automatic" });
-  },
-});
-
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), untranspiledJsx(), currentCommit()],
+  plugins: [react(), currentCommit()],
   define: {
     __DEV__: JSON.stringify(mode !== "production"),
     __COMMIT_SHA__: JSON.stringify(commitSha()),
