@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -10,10 +9,12 @@ import { AddItemDialog } from "./AddItemDialog.tsx";
 import { HomeHeader } from "./HomeHeader.tsx";
 import { ItemsList } from "./ItemsList.tsx";
 import type { ListNotesState } from "./ListNotesSheet.tsx";
+import { PanelShell } from "./PanelShell.tsx";
 import { QuickAddRow } from "./QuickAddRow.tsx";
 import { SpaceSheet } from "./SpaceSheet.tsx";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HOME_COPY } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
+import { homeSpacing } from "./theme.ts";
 import { ItemsSectionProps } from "./types.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
 import type { SearchState } from "./useSearch.ts";
@@ -85,17 +86,17 @@ type ItemsPanelProps = ItemsSectionProps &
 export const ItemsPanel = (props: ItemsPanelProps) => {
   const [spaceSheetVisible, setSpaceSheetVisible] = useState(false);
   return (
-    <View style={homeStyles.swipeWrapper}>
+    <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
       <PanelCard {...props} onSpacePress={() => setSpaceSheetVisible(true)} />
       <SpaceSheet visible={spaceSheetVisible} onClose={() => setSpaceSheetVisible(false)} />
-    </View>
+    </div>
   );
 };
 
 const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
-  <View style={homeStyles.panel}>
+  <PanelShell>
     <HeaderRow {...props} />
-    <KeyboardAvoidingView style={homeStyles.panelBody}>
+    <div style={{ display: "flex", flex: 1, minHeight: 0, flexDirection: "column", gap: homeSpacing.md }}>
       <QuickAddRow
         addDialog={props.addItemDialog}
         filterDialog={props.filterDialog}
@@ -108,10 +109,10 @@ const PanelCard = (props: ItemsPanelProps & { onSpacePress: () => void }) => (
         canUndo={props.canUndo}
       />
       <ItemsListView {...props} />
-    </KeyboardAvoidingView>
+    </div>
     <RenameDialog dialog={props.renameDialog} />
     <AddItemDialogView {...props} />
-  </View>
+  </PanelShell>
 );
 
 const HeaderRow = ({

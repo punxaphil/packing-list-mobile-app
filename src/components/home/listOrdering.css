@@ -1,0 +1,20 @@
+.list-ordering {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.list-ordering-ghost {
+  position: absolute;
+  z-index: 10;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.list-ordering-indicator {
+  position: absolute;
+  right: -12px;
+  left: -12px;
+  height: 2px;
+  border-radius: 1px;
+  z-index: 15;
+  pointer-events: none;
+}

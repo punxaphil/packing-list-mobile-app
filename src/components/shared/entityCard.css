@@ -1,0 +1,56 @@
+.entity-card {
+  position: relative;
+  padding: 8px 16px;
+  border: 1px solid var(--entity-border);
+  border-radius: 8px;
+}
+.entity-card .item-row-highlight {
+  inset: 0;
+  box-sizing: border-box;
+  border: 2px solid var(--entity-primary);
+  border-radius: 8px;
+}
+.entity-card-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.entity-card-static-drag {
+  opacity: 0.45;
+}
+.entity-card-body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.entity-card-name {
+  overflow: hidden;
+  color: var(--entity-text);
+  font-size: 16px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.entity-card-rename {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.entity-card-count {
+  font-size: 14px;
+}
+.entity-card-menu {
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.entity-card-menu:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

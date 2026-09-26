@@ -1,21 +1,20 @@
 import i18next from "i18next";
 import { useMemo, useState } from "react";
-import { Alert, Pressable, Switch, Text, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { commonCopy } from "../home/copy.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildEntityColors } from "../home/listColors.ts";
+import { PanelShell } from "../home/PanelShell.tsx";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
-import { homeColors } from "../home/theme.ts";
+import { useToast } from "../home/Toast.tsx";
 import { useDragState } from "../home/useDragState.ts";
+import { EntityHeader } from "../shared/EntityHeader.tsx";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
-import { entityStyles, MEMBER_COPY } from "../shared/entityStyles.ts";
+import { MEMBER_COPY } from "../shared/entityStyles.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
-import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
@@ -30,6 +29,7 @@ type MembersScreenProps = {
 };
 
 export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
+  const { show: showToast } = useToast();
   const { spaceId, writeDb, profile } = useSpace();
   const { members } = useMembers(spaceId);
   const { images } = useImages(spaceId);
@@ -52,7 +52,7 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
 
   const openMoveItems = (member: NamedEntity) => {
     if (members.length < 2) {
-      Alert.alert(MEMBER_COPY.moveItems, i18next.t("member.moveItemsNeedMore"));
+      showToast(i18next.t("member.moveItemsNeedMore"));
       return;
     }
     setMoveSource(member);
@@ -86,15 +86,17 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   const moveTargets = moveSource ? sorted.filter((member) => member.id !== moveSource.id) : [];
 
   return (
-    <View style={entityStyles.container}>
-      <View style={entityStyles.panel}>
+    <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+      <PanelShell>
         <HomeHeader
           title={MEMBER_COPY.header}
           email={email}
           profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
         />
-        <MemberHeader
+        <EntityHeader
+          addLabel={MEMBER_COPY.addButton}
+          bulkEditLabel={MEMBER_COPY.bulkEdit}
           onAdd={creation.open}
           onBulkEdit={bulkEdit.open}
           bulkEditing={bulkEdit.busy}
@@ -157,39 +159,7 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
           onClose={() => setMoveSource(null)}
           onSubmit={moveItems}
         />
-      </View>
-    </View>
+      </PanelShell>
+    </div>
   );
 };
-
-type MemberHeaderProps = {
-  onAdd: () => void;
-  onBulkEdit: () => void;
-  bulkEditing: boolean;
-  sortByAlpha: boolean;
-  onToggleSort: () => void;
-};
-
-const MemberHeader = ({ onAdd, onBulkEdit, bulkEditing, sortByAlpha, onToggleSort }: MemberHeaderProps) => (
-  <View style={entityStyles.actions}>
-    <Pressable
-      style={entityStyles.addLink}
-      onPress={onAdd}
-      accessibilityRole="button"
-      accessibilityLabel={MEMBER_COPY.addButton}
-      hitSlop={8}
-    >
-      <Text style={entityStyles.addLinkLabel}>{MEMBER_COPY.addButton}</Text>
-    </Pressable>
-    <View style={entityStyles.spacer} />
-    <MultiEditButton label={MEMBER_COPY.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
-    <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
-      <Switch
-        value={sortByAlpha}
-        onValueChange={onToggleSort}
-        trackColor={{ true: homeColors.primary, false: homeColors.border }}
-      />
-    </View>
-  </View>
-);

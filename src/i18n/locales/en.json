@@ -1,5 +1,6 @@
 {
   "home": {
+    "itemMenu": "Item menu",
     "rename": "Rename",
     "unknownUser": "Unknown user",
     "signOutTitle": "Sign out?",
@@ -115,6 +116,7 @@
     "removedMessage": "You were removed from \"{name}\"."
   },
   "category": {
+    "menu": "Category menu",
     "uncategorized": "Uncategorized",
     "type": "Category",
     "header": "Categories",
@@ -406,6 +408,9 @@
     "youSuffix": " (you)"
   },
   "common": {
+    "sortAlphabetically": "Sort alphabetically",
+    "menu": "Menu",
+    "duplicateEntityName": "{{type}} with this name already exists",
     "cancel": "Cancel",
     "undo": "Undo tick",
     "emoji": "Emoji",

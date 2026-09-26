@@ -1,254 +1,99 @@
 import i18next from "i18next";
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Animated,
-  LayoutChangeEvent,
-  LayoutRectangle,
-  Pressable,
-  Image as RNImage,
-  Text,
-  View,
-} from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { getEmojiValue } from "~/services/mediaValue.ts";
-import { Image } from "~/types/Image.ts";
-import { NamedEntity } from "~/types/NamedEntity.ts";
-import { showActionSheet } from "../home/showActionSheet.ts";
-import { HOME_COPY } from "../home/styles.ts";
+import type { CSSProperties } from "react";
+import { homeCopy } from "../home/copy.ts";
+import { ItemRowHighlight } from "../home/ItemRowHighlight.tsx";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
 import { homeColors } from "../home/theme.ts";
-import { DragOffset, useDraggableRow } from "../home/useDraggableRow.tsx";
-import { EntityCopy, entityStyles } from "./entityStyles.ts";
-import { hasDuplicateEntityName } from "./entityValidation.ts";
+import { useDraggableRow } from "../home/useDraggableRow.tsx";
+import { useMeasuredItemRow } from "../home/useMeasuredItemRow.ts";
+import { createEntityCardMenu } from "./createEntityCardMenu.ts";
+import { EntityDragGlyph, EntityMenuGlyph } from "./EntityCardPreview.tsx";
+import { EntityImage } from "./EntityImage.tsx";
+import type { EntityCardProps } from "./entityCardTypes.ts";
+import { useEntityRenameDialog } from "./useEntityRenameDialog.ts";
+import "./entityCard.css";
 
-const DRAG_HANDLE_ICON = "≡";
-const MENU_ICON = "⋮";
-
-export type EntityActions = {
-  onAdd: (name: string) => Promise<void>;
-  onDelete: (entity: NamedEntity) => Promise<void>;
-  onRename: (entity: NamedEntity, name: string) => Promise<void>;
-};
-
-export type EntityMenuAction = {
-  text: string;
-  onPress: () => void;
-  style?: "destructive";
-  disabled?: boolean;
-};
-
-type EntityCardProps = {
-  entity: NamedEntity;
-  entities: NamedEntity[];
-  actions: EntityActions;
-  copy: EntityCopy;
-  color: string;
-  hidden?: boolean;
-  highlightOpacity?: Animated.Value;
-  dragEnabled?: boolean;
-  readOnly?: boolean;
-  itemCount: number;
-  image?: Image;
-  imageLoading?: boolean;
-  hideImagePlaceholder?: boolean;
-  showImageMenuAction?: boolean;
-  menuItems?: EntityMenuAction[];
-  onImagePress: () => void;
-  onLayout?: (layout: LayoutRectangle) => void;
-  onDragStart?: () => void;
-  onDragMove?: (offset: DragOffset) => void;
-  onDragEnd?: () => void;
-};
-
-const formatItemCount = (count: number) => {
-  if (count === 0) return "No items";
-  return `${count} ${count === 1 ? "item" : "items"}`;
-};
+export type { EntityActions, EntityMenuAction } from "./entityCardTypes.ts";
 
 export const EntityCard = (props: EntityCardProps) => {
-  const [renameVisible, setRenameVisible] = useState(false);
-  const [renameValue, setRenameValue] = useState("");
+  const rename = useEntityRenameDialog(props);
+  const menu = createEntityCardMenu(props, rename.open);
+  const rowRef = useMeasuredItemRow(props.onLayout);
   const { wrap } = useDraggableRow(
-    {
-      onStart: props.onDragStart,
-      onMove: props.onDragMove,
-      onEnd: props.onDragEnd,
-    },
+    { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd },
     { applyTranslation: false }
   );
-  const handleLayout = (event: LayoutChangeEvent) => props.onLayout?.(event.nativeEvent.layout);
-  const handleRename = (name: string) => props.actions.onRename(props.entity, name);
-  const getRenameError = (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed || trimmed === props.entity.name) return null;
-    return hasDuplicateEntityName(trimmed, props.entities, props.entity.id)
-      ? `${props.copy.type} with this name already exists`
-      : null;
-  };
-  const submitRename = (name: string) => {
-    const trimmed = name.trim();
-    if (!trimmed || trimmed === props.entity.name) return;
-    void handleRename(trimmed);
-  };
-  const openRename = () => {
-    setRenameValue(props.entity.name);
-    setRenameVisible(true);
-  };
-  const closeRename = () => {
-    setRenameVisible(false);
-    setRenameValue(props.entity.name);
-  };
-  const isReadOnly = props.readOnly ?? false;
-  const menuItems = buildMenuItems(
-    props,
-    props.copy,
-    isReadOnly,
-    openRename,
-    () => void props.actions.onDelete(props.entity),
-    !!props.image
-  );
-  const cardStyle = [entityStyles.card, { backgroundColor: props.color }, props.hidden ? { opacity: 0 } : null];
-  const showHighlight = !!props.highlightOpacity;
-  const openMenu = () => {
-    if (!menuItems.length) return;
-    showActionSheet(props.entity.name, menuItems, { color: props.color, imageUrl: props.image?.url });
-  };
+  const count =
+    props.itemCount === 0
+      ? homeCopy.listNoItems
+      : `${props.itemCount} ${props.itemCount === 1 ? homeCopy.itemSingular : homeCopy.itemPlural}`;
   return (
-    <View onLayout={handleLayout}>
-      <Pressable style={cardStyle} accessibilityRole="button" accessibilityLabel={props.entity.name}>
-        {showHighlight && (
-          <Animated.View
-            pointerEvents="none"
-            style={[entityStyles.cardHighlight, { opacity: props.highlightOpacity }]}
-          />
-        )}
-        <View style={entityStyles.cardInner}>
-          {wrap(<DragHandle disabled={!props.dragEnabled} />)}
+    <div ref={rowRef}>
+      <div
+        className="entity-card"
+        style={
+          {
+            backgroundColor: props.color,
+            opacity: props.hidden ? 0 : 1,
+            "--item-highlight": homeColors.highlightSubtle,
+            "--entity-border": homeColors.border,
+            "--entity-primary": homeColors.primary,
+            "--entity-text": homeColors.text,
+          } as CSSProperties
+        }
+      >
+        <ItemRowHighlight opacity={props.highlightOpacity} />
+        <div className="entity-card-inner">
+          {props.dragEnabled ? (
+            wrap(<EntityDragGlyph />)
+          ) : (
+            <span className="entity-card-static-drag">
+              <EntityDragGlyph />
+            </span>
+          )}
           <EntityImage
             imageUrl={props.image?.url}
             loading={props.imageLoading}
             hidePlaceholder={props.hideImagePlaceholder}
-            onPress={isReadOnly ? () => {} : props.onImagePress}
+            disabled={props.readOnly}
+            onPress={props.onImagePress}
             copy={props.copy}
           />
-          <View style={entityStyles.cardBody}>
-            {isReadOnly ? (
-              <Text style={entityStyles.cardName}>{props.entity.name}</Text>
+          <div className="entity-card-body">
+            {props.readOnly ? (
+              <span className="entity-card-name">{props.entity.name}</span>
             ) : (
-              <Pressable onPress={openRename}>
-                <Text style={entityStyles.cardName}>{props.entity.name}</Text>
-              </Pressable>
+              <button type="button" className="entity-card-name entity-card-rename" onClick={rename.open}>
+                {props.entity.name}
+              </button>
             )}
-            <Text style={entityStyles.itemSummary}>{formatItemCount(props.itemCount)}</Text>
-          </View>
-          <MenuButton onPress={openMenu} disabled={menuItems.length === 0} />
-        </View>
-      </Pressable>
+            <span className="entity-card-count" style={{ color: homeColors.muted }}>
+              {count}
+            </span>
+          </div>
+          <button
+            type="button"
+            className="entity-card-menu"
+            onClick={menu.open}
+            disabled={menu.disabled}
+            aria-label={i18next.t("common.menu")}
+            title={i18next.t("common.menu")}
+          >
+            <EntityMenuGlyph />
+          </button>
+        </div>
+      </div>
       <TextPromptDialog
-        visible={renameVisible}
+        visible={rename.visible}
         title={props.copy.renamePrompt}
         confirmLabel={props.copy.renameConfirm}
-        value={renameValue}
-        error={getRenameError(renameValue)}
-        disabled={!renameValue.trim() || !!getRenameError(renameValue)}
-        onChange={setRenameValue}
-        onCancel={closeRename}
-        onSubmit={() => {
-          submitRename(renameValue);
-          closeRename();
-        }}
+        value={rename.value}
+        error={rename.getError(rename.value)}
+        disabled={!rename.value.trim() || !!rename.getError(rename.value)}
+        onChange={rename.setValue}
+        onCancel={rename.close}
+        onSubmit={rename.submit}
       />
-    </View>
+    </div>
   );
 };
-
-type EntityImageProps = {
-  imageUrl?: string;
-  loading?: boolean;
-  hidePlaceholder?: boolean;
-  onPress: () => void;
-  copy: EntityCopy;
-};
-
-const EntityImage = ({ imageUrl, loading, hidePlaceholder, onPress, copy }: EntityImageProps) => {
-  if (!imageUrl && hidePlaceholder) return null;
-  const emoji = getEmojiValue(imageUrl);
-  return (
-    <Pressable
-      style={[entityStyles.imageContainer, !imageUrl && entityStyles.imagePlaceholder]}
-      onPress={onPress}
-      disabled={loading}
-      accessibilityRole="button"
-      accessibilityLabel={copy.imageTitle}
-    >
-      {loading ? (
-        <ActivityIndicator size="small" color={homeColors.surface} />
-      ) : emoji ? (
-        <Text style={{ fontSize: 18 }}>{emoji}</Text>
-      ) : imageUrl ? (
-        <RNImage source={{ uri: imageUrl }} style={entityStyles.image} />
-      ) : (
-        <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={homeColors.surface} />
-      )}
-    </Pressable>
-  );
-};
-
-const buildMenuItems = (
-  props: Pick<EntityCardProps, "menuItems" | "showImageMenuAction" | "onImagePress">,
-  copy: EntityCopy,
-  isReadOnly: boolean,
-  openRename: () => void,
-  onDelete: () => void,
-  hasImage: boolean
-) => {
-  const items = [...(props.menuItems ?? [])];
-  if (!isReadOnly) {
-    items.unshift({ text: HOME_COPY.rename, onPress: openRename });
-  }
-  if (!isReadOnly && props.showImageMenuAction) {
-    items.push({
-      text: hasImage ? i18next.t("category.updateImage") : i18next.t("category.addImage"),
-      onPress: props.onImagePress,
-    });
-  }
-  if (!isReadOnly) {
-    items.push({ text: copy.deleteAction, style: "destructive" as const, onPress: onDelete });
-  }
-  return items;
-};
-
-const DragHandle = ({ disabled }: { disabled?: boolean }) => (
-  <View style={entityStyles.dragHandle}>
-    <Text style={[entityStyles.dragHandleIcon, disabled && entityStyles.dragHandleDisabled]}>{DRAG_HANDLE_ICON}</Text>
-  </View>
-);
-
-const MenuButton = ({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) => (
-  <Pressable
-    style={entityStyles.menuButton}
-    onPress={onPress}
-    disabled={disabled}
-    accessibilityRole="button"
-    accessibilityLabel="Menu"
-  >
-    <Text style={[entityStyles.menuIcon, disabled && entityStyles.dragHandleDisabled]}>{MENU_ICON}</Text>
-  </Pressable>
-);
-
-export const EntityCardPreview = ({ entity }: { entity: NamedEntity }) => (
-  <View style={[entityStyles.card, { flex: 1 }]}>
-    <View style={entityStyles.cardInner}>
-      <View style={entityStyles.dragHandle}>
-        <Text style={entityStyles.dragHandleIcon}>{DRAG_HANDLE_ICON}</Text>
-      </View>
-      <View style={entityStyles.cardBody}>
-        <Text style={entityStyles.cardName}>{entity.name}</Text>
-      </View>
-      <View style={entityStyles.menuButton}>
-        <Text style={entityStyles.menuIcon}>{MENU_ICON}</Text>
-      </View>
-    </View>
-  </View>
-);

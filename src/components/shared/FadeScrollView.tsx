@@ -1,25 +1,16 @@
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import {
-  Keyboard,
-  LayoutChangeEvent,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
+import { type CSSProperties, forwardRef, type ReactNode, type UIEvent, useImperativeHandle, useRef } from "react";
 import { TAB_BAR_HEIGHT } from "~/components/home/theme.ts";
 import type { useDragState } from "../home/useDragState.ts";
 import { useDragEdgeScroll } from "./useDragEdgeScroll.ts";
+import "./fadeScrollView.css";
 
-type FlashScrollViewProps = {
+type FadeScrollViewProps = {
   children: ReactNode;
-  style?: ViewStyle;
-  contentContainerStyle?: ViewStyle;
+  style?: CSSProperties;
+  contentContainerStyle?: CSSProperties;
   scrollEnabled?: boolean;
   drag?: ReturnType<typeof useDragState>;
-  onScroll?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScroll?: (event: UIEvent<HTMLDivElement>) => void;
 };
 
 export type FadeScrollViewRef = {
@@ -27,69 +18,34 @@ export type FadeScrollViewRef = {
   scrollToEnd: (options?: { animated?: boolean }) => void;
 };
 
-const SCROLL_THRESHOLD = 4;
-
-export const FadeScrollView = forwardRef<FadeScrollViewRef, FlashScrollViewProps>(
+export const FadeScrollView = forwardRef<FadeScrollViewRef, FadeScrollViewProps>(
   ({ children, style, contentContainerStyle, scrollEnabled = true, onScroll, drag }, ref) => {
-    const scrollRef = useRef<ScrollView>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
     useDragEdgeScroll(scrollRef, drag);
-    const [containerHeight, setContainerHeight] = useState(0);
-    const [contentHeight, setContentHeight] = useState(0);
-    const [keyboardHeight, setKeyboardHeight] = useState(0);
-    const isScrollable = containerHeight > 0 && contentHeight > containerHeight + SCROLL_THRESHOLD;
-
     useImperativeHandle(
       ref,
       () => ({
-        scrollTo: (options) => scrollRef.current?.scrollTo(options),
-        scrollToEnd: (options) => scrollRef.current?.scrollToEnd(options),
+        scrollTo: ({ y, animated }) =>
+          scrollRef.current?.scrollTo({ top: y, behavior: animated ? "smooth" : "instant" }),
+        scrollToEnd: ({ animated } = {}) =>
+          scrollRef.current?.scrollTo({
+            top: scrollRef.current.scrollHeight,
+            behavior: animated ? "smooth" : "instant",
+          }),
       }),
       []
     );
-
-    useEffect(() => {
-      if (isScrollable) setTimeout(() => scrollRef.current?.flashScrollIndicators(), 100);
-    }, [isScrollable]);
-
-    useEffect(() => {
-      const show = Keyboard.addListener("keyboardDidShow", (event) => setKeyboardHeight(event.endCoordinates.height));
-      const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardHeight(0));
-      return () => {
-        show.remove();
-        hide.remove();
-      };
-    }, []);
-
-    const handleScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => onScroll?.(e), [onScroll]);
-
-    const handleLayout = (e: LayoutChangeEvent) => setContainerHeight(e.nativeEvent.layout.height);
-
-    const handleContentSizeChange = (_w: number, h: number) => setContentHeight(h);
-
     return (
-      <View style={[styles.container, style]} onLayout={handleLayout}>
-        <ScrollView
+      <div className="fade-scroll" style={style}>
+        <div
+          className="fade-scroll-viewport"
           ref={scrollRef}
-          style={styles.scroll}
-          automaticallyAdjustContentInsets={false}
-          contentInsetAdjustmentBehavior="never"
-          contentContainerStyle={[
-            { paddingBottom: Math.max(TAB_BAR_HEIGHT, keyboardHeight + 16) },
-            contentContainerStyle,
-          ]}
-          onScroll={handleScroll}
-          onContentSizeChange={handleContentSizeChange}
-          scrollEventThrottle={16}
-          scrollEnabled={scrollEnabled}
+          onScroll={onScroll}
+          style={{ overflowY: scrollEnabled ? "auto" : "hidden" }}
         >
-          {children}
-        </ScrollView>
-      </View>
+          <div style={{ paddingBottom: TAB_BAR_HEIGHT, ...contentContainerStyle }}>{children}</div>
+        </div>
+      </div>
     );
   }
 );
-
-const styles = StyleSheet.create({
-  container: { flex: 1, position: "relative" },
-  scroll: { flex: 1 },
-});

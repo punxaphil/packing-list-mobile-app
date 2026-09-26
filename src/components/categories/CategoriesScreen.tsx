@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { Pressable, Switch, Text, View } from "react-native";
 import { useCategories } from "~/hooks/useCategories.ts";
 import { useCategoryItemCounts } from "~/hooks/useCategoryItemCounts.ts";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
-import { commonCopy } from "../home/copy.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildEntityColors } from "../home/listColors.ts";
+import { PanelShell } from "../home/PanelShell.tsx";
 import { TextPromptDialog } from "../home/TextPromptDialog.tsx";
-import { homeColors } from "../home/theme.ts";
 import { useDragState } from "../home/useDragState.ts";
+import { EntityHeader } from "../shared/EntityHeader.tsx";
 import { EntityScroll } from "../shared/EntityScroll.tsx";
-import { CATEGORY_COPY, entityStyles } from "../shared/entityStyles.ts";
+import { CATEGORY_COPY } from "../shared/entityStyles.ts";
 import { ImageViewerModal } from "../shared/ImageViewerModal.tsx";
-import { MultiEditButton } from "../shared/MultiEditButton.tsx";
 import { useCreateEntityDialog } from "../shared/useCreateEntityDialog.ts";
 import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityActions } from "../shared/useEntityActions.ts";
@@ -68,15 +66,17 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
   const hideImagePlaceholder = profile?.hideImagePlaceholder ?? false;
 
   return (
-    <View style={entityStyles.container}>
-      <View style={entityStyles.panel}>
+    <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+      <PanelShell>
         <HomeHeader
           title={CATEGORY_COPY.header}
           email={email}
           profileImageUrl={profile?.imageUrl}
           onProfile={onProfile}
         />
-        <CategoryHeader
+        <EntityHeader
+          addLabel={CATEGORY_COPY.addButton}
+          bulkEditLabel={CATEGORY_COPY.bulkEdit}
           onAdd={creation.open}
           onBulkEdit={bulkEdit.open}
           bulkEditing={bulkEdit.busy}
@@ -135,39 +135,7 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
             onRemove={imageActions.handleRemove}
           />
         )}
-      </View>
-    </View>
+      </PanelShell>
+    </div>
   );
 };
-
-type CategoryHeaderProps = {
-  onAdd: () => void;
-  onBulkEdit: () => void;
-  bulkEditing: boolean;
-  sortByAlpha: boolean;
-  onToggleSort: () => void;
-};
-
-const CategoryHeader = ({ onAdd, onBulkEdit, bulkEditing, sortByAlpha, onToggleSort }: CategoryHeaderProps) => (
-  <View style={entityStyles.actions}>
-    <Pressable
-      style={entityStyles.addLink}
-      onPress={onAdd}
-      accessibilityRole="button"
-      accessibilityLabel={CATEGORY_COPY.addButton}
-      hitSlop={8}
-    >
-      <Text style={entityStyles.addLinkLabel}>{CATEGORY_COPY.addButton}</Text>
-    </Pressable>
-    <View style={entityStyles.spacer} />
-    <MultiEditButton label={CATEGORY_COPY.bulkEdit} onPress={onBulkEdit} disabled={bulkEditing} />
-    <View style={entityStyles.sortToggle}>
-      <Text style={entityStyles.sortLabel}>{sortByAlpha ? "A-Z" : commonCopy.rank}</Text>
-      <Switch
-        value={sortByAlpha}
-        onValueChange={onToggleSort}
-        trackColor={{ true: homeColors.primary, false: homeColors.border }}
-      />
-    </View>
-  </View>
-);

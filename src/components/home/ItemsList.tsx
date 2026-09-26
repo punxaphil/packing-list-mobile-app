@@ -1,33 +1,24 @@
-import i18next from "i18next";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { getTranslatedKits, type PackingKit } from "~/data/packingKits.ts";
+import { useEffect } from "react";
+import type { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { Image } from "~/types/Image.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { FadeScrollView, FadeScrollViewRef } from "../shared/FadeScrollView.tsx";
-import { orderEntityLayouts } from "../shared/orderEntityLayouts.ts";
-import { useFlashHighlight } from "../shared/useFlashHighlight.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
-import { CategorySection } from "./CategorySection.tsx";
-import { filterCopy, homeCopy } from "./copy.ts";
+import { ItemsListContents } from "./ItemsListContents.tsx";
 import { useItemOrdering } from "./itemOrdering.ts";
 import { buildSections, getItemColumnCount } from "./itemsSectionHelpers.ts";
 import { buildItemCategoryColors } from "./listColors.ts";
-import { addItemCopy } from "./listCopy.ts";
 import { MemberInitialsMap, MemberNamesMap } from "./memberInitialsUtils.ts";
-import { HOME_COPY, homeStyles } from "./styles.ts";
-import { homeColors, homeSpacing } from "./theme.ts";
+import { homeStyles } from "./styles.ts";
 import { useDragState } from "./useDragState.ts";
+import { useItemsListNavigation } from "./useItemsListNavigation.ts";
 import type { SearchState } from "./useSearch.ts";
+import { useViewportWidth } from "./useViewportWidth.ts";
 
-const SCROLL_PADDING = 100;
-const HIGHLIGHT_DELAY_MS = 300;
-
-type ItemsListProps = {
+export type ItemsListProps = {
   loading: boolean;
   hasItems: boolean;
   filteredEmpty: boolean;
@@ -67,8 +58,7 @@ type ItemsListProps = {
 
 export const ItemsList = (props: ItemsListProps) => {
   const { profile } = useSpace();
-  const { width } = useWindowDimensions();
-  const columnCount = getItemColumnCount(width, profile?.forceSingleColumn ?? false);
+  const columnCount = getItemColumnCount(useViewportWidth(), profile?.forceSingleColumn ?? false);
   const drag = useDragState();
   useEffect(() => {
     if (columnCount > 1 && drag.snapshot) drag.end();
@@ -77,58 +67,11 @@ export const ItemsList = (props: ItemsListProps) => {
   const sections = buildSections(ordering.items, props.categories, profile?.checkedItemsLast ?? false).filter(
     (section) => section.items.length
   );
-  const layouts = { ...drag.layouts };
-  for (const section of sections) {
-    Object.assign(
-      layouts,
-      orderEntityLayouts(
-        section.items.map((item) => item.id),
-        drag.layouts,
-        homeSpacing.xs
-      )
-    );
-  }
   const colors = useRevisitOrderedColors(
     sections.map((s) => s.category),
     buildItemCategoryColors
   );
-  const itemCategoryMap = buildItemCategoryMap(props.items);
-  const prevItemIds = useRef(new Set(props.items.map((i) => i.id)));
-  const pendingScrollId = useRef<string | null>(null);
-  const { highlightId, highlightOpacity, flash } = useFlashHighlight();
-
-  useEffect(() => {
-    const currentIds = new Set(props.items.map((i) => i.id));
-    const newItem = props.items.find((i) => !prevItemIds.current.has(i.id));
-    prevItemIds.current = currentIds;
-    if (newItem) pendingScrollId.current = newItem.id;
-  }, [props.items]);
-
-  useEffect(() => {
-    const id = pendingScrollId.current;
-    if (!id) return;
-    const categoryId = itemCategoryMap[id];
-    if (categoryId === undefined) return;
-    const itemLayout = drag.layouts[id];
-    const sectionLayout = drag.sectionLayouts[categoryId];
-    const bodyLayout = drag.bodyLayouts[categoryId];
-    if (!itemLayout || !sectionLayout || !bodyLayout) return;
-    pendingScrollId.current = null;
-    const absoluteY = sectionLayout.y + bodyLayout.y + itemLayout.y;
-    props.search.scrollRef.current?.scrollTo({
-      y: Math.max(0, absoluteY - SCROLL_PADDING),
-      animated: true,
-    });
-    setTimeout(() => flash(id), HIGHLIGHT_DELAY_MS);
-  }, [drag.layouts, drag.sectionLayouts, drag.bodyLayouts, itemCategoryMap, props.search.scrollRef, flash]);
-
-  useEffect(() => {
-    const { currentMatchId, scrollToMatch } = props.search;
-    if (!currentMatchId) return;
-    const categoryId = itemCategoryMap[currentMatchId];
-    if (categoryId === undefined) return;
-    scrollToMatch(currentMatchId, categoryId, drag.layouts, drag.sectionLayouts, drag.bodyLayouts);
-  }, [props.search, itemCategoryMap, drag.layouts, drag.sectionLayouts, drag.bodyLayouts]);
+  const { highlightId, highlightOpacity } = useItemsListNavigation(props.items, props.search, drag);
 
   return (
     <FadeScrollView
@@ -137,186 +80,16 @@ export const ItemsList = (props: ItemsListProps) => {
       scrollEnabled={!drag.snapshot}
       drag={drag}
     >
-      <View style={homeStyles.list}>
-        {props.notes ? <NotesBanner notes={props.notes} onPress={props.onNotesPress} /> : null}
-        {!props.hasItems && <EmptyItems onBrowseKits={props.onBrowseKits} onAddKit={props.onAddKit} />}
-        {props.filteredEmpty && <FilteredEmpty />}
-        {sections.map((section, i) => (
-          <CategorySection
-            key={section.category.id || `uncategorized-${i}`}
-            section={section}
-            columnCount={columnCount}
-            allItems={props.allItems}
-            color={colors[section.category.id]}
-            members={props.members}
-            memberImages={props.memberImages}
-            categoryImages={props.categoryImages}
-            itemImages={props.itemImages}
-            initialsMap={props.memberInitials}
-            memberNames={props.memberNames}
-            categories={props.categories}
-            lists={props.lists}
-            currentListId={props.currentListId}
-            isTemplateList={props.isTemplateList}
-            search={props.search}
-            drag={drag}
-            layouts={layouts}
-            highlightId={highlightId}
-            highlightOpacity={highlightOpacity}
-            onDrop={ordering.drop}
-            onToggle={props.onToggle}
-            onRenameItem={props.onRenameItem}
-            onDeleteItem={props.onDeleteItem}
-            onAddItem={props.onOpenAddDialog}
-            onRenameCategory={props.onRenameCategory}
-            onToggleCategory={props.onToggleCategory}
-            onAssignMembers={props.onAssignMembers}
-            onToggleMemberPacked={props.onToggleMemberPacked}
-            onToggleAllMembers={props.onToggleAllMembers}
-            onMoveCategory={props.onMoveCategory}
-            onMoveItemsToCategory={props.onMoveItemsToCategory}
-            onCopyToList={props.onCopyToList}
-            onSortCategoryAlpha={props.onSortCategoryAlpha}
-            onItemImagePress={props.onItemImagePress}
-          />
-        ))}
-        {props.hasItems && (
-          // add some margin and place it in center horizontally
-          <View style={{ marginTop: homeSpacing.md, alignItems: "center" }}>
-            <Pressable
-              style={homeStyles.quickAdd}
-              onPress={props.onShowChanges}
-              accessibilityRole="button"
-              accessibilityLabel={homeCopy.listChanges}
-              hitSlop={8}
-            >
-              <Text style={homeStyles.quickAddLabel}>{homeCopy.listChanges}</Text>
-            </Pressable>
-          </View>
-        )}
-      </View>
+      <ItemsListContents
+        props={props}
+        sections={sections}
+        columnCount={columnCount}
+        colors={colors}
+        drag={drag}
+        highlightId={highlightId}
+        highlightOpacity={highlightOpacity}
+        onDrop={ordering.drop}
+      />
     </FadeScrollView>
   );
 };
-
-const buildItemCategoryMap = (items: PackItem[]): Record<string, string> => {
-  const map: Record<string, string> = {};
-  for (const item of items) map[item.id] = item.category;
-  return map;
-};
-
-const EmptyItems = ({
-  onBrowseKits,
-  onAddKit,
-}: {
-  onBrowseKits: () => void;
-  onAddKit: (kits: PackingKit[]) => Promise<void>;
-}) => {
-  const [addingKitId, setAddingKitId] = useState<string | null>(null);
-  const handleAddKit = useCallback(
-    async (kit: PackingKit) => {
-      if (addingKitId) return;
-      setAddingKitId(kit.id);
-      try {
-        await onAddKit([kit]);
-      } finally {
-        setAddingKitId(null);
-      }
-    },
-    [addingKitId, onAddKit]
-  );
-
-  return (
-    <View style={homeStyles.empty}>
-      <Text style={homeStyles.emptyText}>{HOME_COPY.emptyItems}</Text>
-      <View style={emptyStyles.kitsSection}>
-        <Text style={emptyStyles.kitsTitle}>{homeCopy.quickStart}</Text>
-        <View style={emptyStyles.kitsList}>
-          {getTranslatedKits().map((kit) => (
-            <Pressable
-              key={kit.id}
-              style={[emptyStyles.kitChip, addingKitId ? emptyStyles.kitChipDisabled : null]}
-              onPress={() => void handleAddKit(kit)}
-              disabled={addingKitId !== null}
-            >
-              <MaterialCommunityIcons name={kit.icon} size={18} color={homeColors.primary} />
-              <View style={emptyStyles.kitChipContent}>
-                <Text style={emptyStyles.kitChipText}>{kit.name}</Text>
-                <Text style={emptyStyles.kitChipCount}>
-                  {i18next.t("home.kitPickerItemCount", { count: kit.items.length })}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-        <Pressable onPress={onBrowseKits} disabled={addingKitId !== null}>
-          <Text style={emptyStyles.browseLink}>{addItemCopy.browseKits}</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-};
-const FilteredEmpty = () => (
-  <View style={homeStyles.empty}>
-    <Text style={homeStyles.emptyText}>{filterCopy.noMatch}</Text>
-  </View>
-);
-
-const emptyStyles = StyleSheet.create({
-  kitsSection: {
-    marginTop: homeSpacing.md,
-    alignItems: "center",
-    gap: homeSpacing.sm,
-  },
-  kitsTitle: { fontSize: 14, color: homeColors.muted },
-  kitsList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: homeSpacing.xs,
-  },
-  kitChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: homeSpacing.xs,
-    paddingHorizontal: homeSpacing.md,
-    paddingVertical: homeSpacing.sm,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    backgroundColor: homeColors.surface,
-  },
-  kitChipContent: {
-    alignItems: "flex-start",
-  },
-  kitChipDisabled: { opacity: 0.6 },
-  kitChipText: { fontSize: 14, color: homeColors.text },
-  kitChipCount: { fontSize: 12, color: homeColors.muted },
-  browseLink: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: homeColors.muted,
-    marginTop: homeSpacing.xs,
-  },
-});
-
-const NotesBanner = ({ notes, onPress }: { notes: string; onPress?: () => void }) => (
-  <Pressable style={notesBannerStyles.banner} onPress={onPress}>
-    <Text style={notesBannerStyles.text}>{notes}</Text>
-  </Pressable>
-);
-
-const notesBannerStyles = StyleSheet.create({
-  banner: {
-    marginHorizontal: homeSpacing.xs,
-    marginBottom: homeSpacing.xs,
-    padding: homeSpacing.sm,
-    backgroundColor: homeColors.primaryLight,
-    borderRadius: 8,
-  },
-  text: {
-    fontSize: 14,
-    color: homeColors.primaryForeground,
-    lineHeight: 20,
-  },
-});

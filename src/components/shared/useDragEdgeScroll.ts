@@ -1,5 +1,4 @@
 import { type RefObject, useEffect } from "react";
-import type { ScrollView } from "react-native";
 import type { useDragState } from "../home/useDragState.ts";
 
 type Drag = Pick<ReturnType<typeof useDragState>, "snapshot" | "pointerY" | "scrollBy">;
@@ -7,7 +6,7 @@ type Drag = Pick<ReturnType<typeof useDragState>, "snapshot" | "pointerY" | "scr
 const EDGE_SIZE = 64;
 const MAX_SCROLL_STEP = 18;
 
-export const useDragEdgeScroll = (scrollRef: RefObject<ScrollView | null>, drag?: Drag) => {
+export const useDragEdgeScroll = (scrollRef: RefObject<HTMLDivElement | null>, drag?: Drag) => {
   const activeId = drag?.snapshot?.id;
   const pointerY = drag?.pointerY;
   const scrollBy = drag?.scrollBy;
@@ -16,7 +15,7 @@ export const useDragEdgeScroll = (scrollRef: RefObject<ScrollView | null>, drag?
     if (!activeId || !pointerY || !scrollBy) return;
     let frame: number;
     const scroll = () => {
-      const node = scrollRef.current?.getScrollableNode() as HTMLElement | undefined;
+      const node = scrollRef.current;
       const pointer = pointerY.current;
       if (node && pointer !== null) {
         const bounds = node.getBoundingClientRect();

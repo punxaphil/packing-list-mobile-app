@@ -1,0 +1,82 @@
+.item-row {
+  box-sizing: border-box;
+}
+.item-row-main {
+  position: relative;
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-radius: 6px;
+}
+.item-row-match {
+  margin-inline: -4px;
+  padding-inline: 4px;
+}
+.item-row-disabled-handle {
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0.45;
+  cursor: pointer;
+}
+.item-row-drag {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.item-row-body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+.item-row-image {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.item-row-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+.item-row-name {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--item-text);
+  font-size: 16px;
+  line-height: 18px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.item-row-name-checked {
+  color: var(--item-muted);
+  text-decoration: line-through;
+}
+.item-row-name-wrap {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.item-row-menu {
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}

@@ -1,0 +1,18 @@
+.items-list {
+  display: flex;
+  flex-direction: column;
+}
+.items-list-changes {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+.items-list-changes button {
+  padding: 2px 8px;
+  border: 0;
+  background: none;
+  color: var(--items-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}

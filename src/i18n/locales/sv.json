@@ -1,5 +1,6 @@
 {
   "home": {
+    "itemMenu": "Sakmeny",
     "rename": "Byt namn",
     "unknownUser": "Okänd användare",
     "signOutTitle": "Logga ut?",
@@ -115,6 +116,7 @@
     "removedMessage": "Du togs bort från \"{name}\"."
   },
   "category": {
+    "menu": "Kategorimeny",
     "uncategorized": "Okategoriserad",
     "type": "Kategori",
     "header": "Kategorier",
@@ -407,6 +409,9 @@
     "youSuffix": " (du)"
   },
   "common": {
+    "sortAlphabetically": "Sortera alfabetiskt",
+    "menu": "Meny",
+    "duplicateEntityName": "{{type}} med det här namnet finns redan",
     "cancel": "Avbryt",
     "undo": "Ångra bockning",
     "emoji": "Emoji",

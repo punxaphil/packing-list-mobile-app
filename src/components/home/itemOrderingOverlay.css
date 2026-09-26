@@ -1,0 +1,33 @@
+.item-ordering-ghost {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.item-ordering-checkbox {
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-right: 8px;
+  border: 1px solid;
+  border-radius: 4px;
+}
+.item-ordering-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.item-ordering-indicator {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 15;
+  height: 2px;
+  border-radius: 1px;
+  pointer-events: none;
+}

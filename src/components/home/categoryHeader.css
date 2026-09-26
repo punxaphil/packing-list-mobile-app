@@ -1,0 +1,49 @@
+.category-header {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 4px 4px;
+}
+.category-header > .app-checkbox {
+  flex: none;
+}
+.category-header-image {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.category-header-title {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--category-text);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.category-header span.category-header-title {
+  cursor: default;
+}
+.category-header-menu {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--category-muted);
+  font-size: 20px;
+  cursor: pointer;
+}

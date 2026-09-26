@@ -1,0 +1,12 @@
+.fade-scroll {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
+.fade-scroll-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+}

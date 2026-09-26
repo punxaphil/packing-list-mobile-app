@@ -1,0 +1,22 @@
+.item-row-highlight {
+  position: absolute;
+  inset: 0 -4px;
+  border-radius: 6px;
+  background: var(--item-highlight);
+  opacity: 0;
+  pointer-events: none;
+  animation: item-highlight-flash 1700ms ease-in-out both;
+}
+
+@keyframes item-highlight-flash {
+  0% {
+    opacity: 0;
+  }
+  18%,
+  65% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

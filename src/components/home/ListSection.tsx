@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import { Animated, LayoutChangeEvent, LayoutRectangle, StyleSheet, View } from "react-native";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
@@ -14,12 +13,15 @@ import { useEmptyEntityBulkEdit } from "../shared/useEmptyEntityBulkEdit.ts";
 import { useEntityImageActions } from "../shared/useEntityImageActions.ts";
 import { useRevisitOrderedColors } from "../shared/useRevisitOrderedColors.ts";
 import { HomeHeader } from "./HomeHeader.tsx";
+import type { RowLayout } from "./itemRowProps.ts";
 import { ListCard, ListCardPreview } from "./ListCard.tsx";
 import { ListHeader } from "./ListHeader.tsx";
+import { ListRow } from "./ListRow.tsx";
 import { buildListColors } from "./listColors.ts";
 import { listCopy } from "./listCopy.ts";
 import { computeDropIndex, useListOrdering } from "./listOrdering.ts";
 import { ListActions, useListActions } from "./listSectionState.ts";
+import { PanelShell } from "./PanelShell.tsx";
 import { showActionSheet } from "./showActionSheet.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
@@ -27,6 +29,7 @@ import { homeColors, homeSpacing } from "./theme.ts";
 import { PackingListSummary, SelectionState } from "./types.ts";
 import { DragOffset } from "./useDraggableRow.tsx";
 import { DragSnapshot, useDragState } from "./useDragState.ts";
+import "./listOrdering.css";
 
 type ListSectionProps = {
   lists: PackingListSummary[];
@@ -70,7 +73,7 @@ export const ListSection = (props: ListSectionProps) => {
   const filteredLists = showArchived ? ordering.lists : ordering.lists.filter((list) => !list.archived);
   const colors = useRevisitOrderedColors(filteredLists, buildListColors);
   return (
-    <View style={homeStyles.panel}>
+    <PanelShell>
       <HomeHeader
         title={HOME_COPY.listHeader}
         email={props.email}
@@ -129,7 +132,7 @@ export const ListSection = (props: ListSectionProps) => {
           onRemove={imgActions.handleRemove}
         />
       )}
-    </View>
+    </PanelShell>
   );
 };
 
@@ -147,7 +150,7 @@ type ScrollProps = {
   hideImagePlaceholder: boolean;
   onImagePress: (entityId: string, image?: Image) => void;
   drag: ReturnType<typeof useDragState>;
-  onDrop: (snapshot: DragSnapshot, layouts: Record<string, LayoutRectangle>) => void;
+  onDrop: (snapshot: DragSnapshot, layouts: Record<string, RowLayout>) => void;
   onListSelect: (id: string) => void;
 };
 
@@ -176,16 +179,11 @@ const ListScroll = ({
   const wouldMove = dropIndex !== null && dropIndex !== originalIndex;
   const showBelow = wouldMove && (drag.snapshot?.offsetY ?? 0) > 0;
   const isDropping = drag.snapshot?.frozenY !== undefined;
-  const handleLayout = (id: string, e: LayoutChangeEvent) => drag.recordLayout(id, e.nativeEvent.layout);
   return (
     <FadeScrollView style={homeStyles.scroll} drag={drag}>
-      <View style={[homeStyles.list, dragStyles.relative]}>
+      <div className="list-ordering" style={{ gap: homeSpacing.xs, paddingTop: homeSpacing.xs }}>
         {lists.map((list, index) => (
-          <View
-            key={list.id}
-            style={separatorIndices.has(index) ? localStyles.sectionSeparator : null}
-            onLayout={(e) => handleLayout(list.id, e)}
-          >
+          <ListRow key={list.id} id={list.id} separated={separatorIndices.has(index)} onLayout={drag.recordLayout}>
             <ListCard
               list={list}
               lists={allLists}
@@ -206,11 +204,11 @@ const ListScroll = ({
               onDragEnd={() => drag.end((snapshot) => snapshot && onDrop(snapshot, layouts), layouts)}
               onSelect={onListSelect}
             />
-          </View>
+          </ListRow>
         ))}
         {!isDropping && <DropIndicator dropIndex={dropIndex} lists={lists} layouts={layouts} below={showBelow} />}
         <GhostRow lists={lists} colors={colors} drag={drag.snapshot} layouts={layouts} />
-      </View>
+      </div>
     </FadeScrollView>
   );
 };
@@ -297,7 +295,7 @@ type GhostProps = {
   lists: PackingListSummary[];
   colors: Record<string, string>;
   drag: DragSnapshot;
-  layouts: Record<string, LayoutRectangle>;
+  layouts: Record<string, RowLayout>;
 };
 
 const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
@@ -308,16 +306,16 @@ const GhostRow = ({ lists, colors, drag, layouts }: GhostProps) => {
   if (!list) return null;
   const top = drag.frozenY ?? layout.y + drag.offsetY;
   return (
-    <Animated.View pointerEvents="none" style={[dragStyles.ghost, { top, height: layout.height, width: layout.width }]}>
+    <div className="list-ordering-ghost" style={{ top, height: layout.height, width: layout.width }}>
       <ListCardPreview list={list} color={colors[list.id]} />
-    </Animated.View>
+    </div>
   );
 };
 
 type DropIndicatorProps = {
   dropIndex: number | null;
   lists: PackingListSummary[];
-  layouts: Record<string, LayoutRectangle>;
+  layouts: Record<string, RowLayout>;
   below: boolean;
 };
 
@@ -328,28 +326,5 @@ const DropIndicator = ({ dropIndex, lists, layouts, below }: DropIndicatorProps)
   const layout = layouts[targetId];
   if (!layout) return null;
   const top = below ? layout.y + layout.height - 2 : layout.y - 2;
-  return <View style={[dragStyles.indicator, { top }]} />;
+  return <div className="list-ordering-indicator" style={{ top, backgroundColor: homeColors.dropIndicator }} />;
 };
-
-const dragStyles = StyleSheet.create({
-  relative: { position: "relative" },
-  ghost: {
-    position: "absolute",
-    zIndex: 10,
-    elevation: 5,
-    opacity: 0.85,
-  },
-  indicator: {
-    position: "absolute",
-    left: -12,
-    right: -12,
-    height: 2,
-    backgroundColor: homeColors.dropIndicator,
-    borderRadius: 1,
-    zIndex: 15,
-  },
-});
-
-const localStyles = StyleSheet.create({
-  sectionSeparator: { marginBottom: homeSpacing.sm },
-});
