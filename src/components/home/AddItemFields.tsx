@@ -13,7 +13,6 @@ import "./addItemDialog.css";
 import "./textPromptDialog.css";
 
 const mutedLabel = { color: homeColors.muted };
-
 type AddItemFieldsProps = {
   state: ReturnType<typeof useAddItemDialogState>;
   inputRef: RefObject<HTMLInputElement | null>;

@@ -194,7 +194,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
         checkboxDisabled={props.isTemplateList}
       />
       {pendingToggle !== null && (
-        <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(255,255,255,0.5)" }} />
+        <div style={{ position: "absolute", inset: 0, backgroundColor: homeColors.categoryPending }} />
       )}
       <AssignMembersModal
         visible={!!assignItem}

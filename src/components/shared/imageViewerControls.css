@@ -15,9 +15,9 @@
   flex: 1;
   min-width: 0;
   padding: var(--viewer-sm) var(--viewer-md);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--viewer-input-border);
   border-radius: var(--viewer-md);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--viewer-input-background);
   color: var(--viewer-white);
   font: inherit;
   font-size: 16px;

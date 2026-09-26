@@ -7,7 +7,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--viewer-backdrop);
   color: var(--viewer-white);
 }
 
@@ -16,7 +16,7 @@
   flex-direction: column;
 }
 .image-viewer::backdrop {
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--viewer-backdrop);
 }
 .image-viewer-close {
   position: absolute;
@@ -60,7 +60,7 @@
   height: 160px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--viewer-placeholder);
   color: var(--viewer-white);
   font-size: 64px;
   font-weight: 700;
@@ -70,7 +70,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.28);
+  background: var(--viewer-loading);
   pointer-events: none;
 }
 .image-viewer-spinner {
