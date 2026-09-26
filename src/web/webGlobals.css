@@ -41,8 +41,3 @@ body {
   background: #ffffff;
   color: #000000;
 }
-
-/* Fix for modal/overlay rendering */
-.react-native-modal {
-  z-index: 1000;
-}

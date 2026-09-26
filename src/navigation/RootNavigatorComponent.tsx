@@ -1,177 +1,34 @@
-import "@mdi/font/css/materialdesignicons.css";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import i18next from "i18next";
-import { homeColors, homeSpacing } from "~/components/home/theme.ts";
-import { CategoriesScreen } from "./CategoriesScreen";
-import { ItemsScreen } from "./ItemsScreen";
-import { ListChangesScreen } from "./ListChangesScreen";
-import { ListsScreen } from "./ListsScreen";
-import { MembersScreen } from "./MembersScreen";
-import { ProfileScreen } from "./ProfileScreen";
-import type {
-  CategoriesStackParamList,
-  ItemsStackParamList,
-  ListsStackParamList,
-  MainTabsParamList,
-  MembersStackParamList,
-  RootStackParamList,
-} from "./RootNavigator";
-import { getSelectedId } from "./selectionState";
-import { TAB_SELECTED_TEXT_COLOR, type TabIconName } from "./tabIcons";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { CategoriesScreen } from "./CategoriesScreen.tsx";
+import { ItemsScreen } from "./ItemsScreen.tsx";
+import { ListChangesScreen } from "./ListChangesScreen.tsx";
+import { ListsScreen } from "./ListsScreen.tsx";
+import { MainTabs } from "./MainTabs.tsx";
+import { MembersScreen } from "./MembersScreen.tsx";
+import { registerNavigator } from "./navigation.ts";
+import { ProfileScreen } from "./ProfileScreen.tsx";
+import { getSelectedId } from "./selectionState.ts";
 
-const RootStack = createNativeStackNavigator<RootStackParamList>();
-const MainTabs = createBottomTabNavigator<MainTabsParamList>();
-const ItemsStack = createNativeStackNavigator<ItemsStackParamList>();
-const ListsStack = createNativeStackNavigator<ListsStackParamList>();
-const CategoriesStack = createNativeStackNavigator<CategoriesStackParamList>();
-const MembersStack = createNativeStackNavigator<MembersStackParamList>();
+const initialTab = () => (getSelectedId() ? "/MainTabs/ItemsStack" : "/MainTabs/ListsStack");
+const InitialTabRedirect = () => <Navigate to={initialTab()} replace />;
 
-const WEB_TAB_INSET = 26;
-const TAB_ICON_SIZE = 24;
+const router = createBrowserRouter([
+  { path: "/", element: <InitialTabRedirect /> },
+  {
+    path: "/MainTabs",
+    element: <MainTabs />,
+    children: [
+      { index: true, element: <InitialTabRedirect /> },
+      { path: "ItemsStack", element: <ItemsScreen /> },
+      { path: "ListsStack", element: <ListsScreen /> },
+      { path: "CategoriesStack", element: <CategoriesScreen /> },
+      { path: "MembersStack", element: <MembersScreen /> },
+    ],
+  },
+  { path: "/ProfileScreen", element: <ProfileScreen /> },
+  { path: "/ListChanges/:packingListId", element: <ListChangesScreen /> },
+]);
 
-function ItemsStackNavigator() {
-  return (
-    <ItemsStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <ItemsStack.Screen name="Items" component={ItemsScreen} />
-    </ItemsStack.Navigator>
-  );
-}
+registerNavigator(router);
 
-function ListsStackNavigator() {
-  return (
-    <ListsStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <ListsStack.Screen name="Lists" component={ListsScreen} />
-    </ListsStack.Navigator>
-  );
-}
-
-function CategoriesStackNavigator() {
-  return (
-    <CategoriesStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <CategoriesStack.Screen name="Categories" component={CategoriesScreen} />
-    </CategoriesStack.Navigator>
-  );
-}
-
-function MembersStackNavigator() {
-  return (
-    <MembersStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <MembersStack.Screen name="Members" component={MembersScreen} />
-    </MembersStack.Navigator>
-  );
-}
-
-function MainTabsNavigator() {
-  const bottomInset = window.matchMedia("(pointer: coarse)").matches ? WEB_TAB_INSET : 0;
-  return (
-    <MainTabs.Navigator
-      initialRouteName={getSelectedId() ? "ItemsStack" : "ListsStack"}
-      safeAreaInsets={{ bottom: bottomInset }}
-      screenOptions={({ route }) => {
-        const labels: Record<keyof MainTabsParamList, string> = {
-          ItemsStack: i18next.t("navigation.items"),
-          ListsStack: i18next.t("navigation.lists"),
-          CategoriesStack: i18next.t("navigation.categories"),
-          MembersStack: i18next.t("navigation.members"),
-        };
-
-        const icons: Record<keyof MainTabsParamList, TabIconName> = {
-          ItemsStack: "checkbox-marked-outline",
-          ListsStack: "format-list-bulleted",
-          CategoriesStack: "view-grid-outline",
-          MembersStack: "heart-outline",
-        };
-
-        const label = labels[route.name as keyof MainTabsParamList];
-        const icon = icons[route.name as keyof MainTabsParamList];
-        return {
-          title: label,
-          tabBarIcon: ({ focused }: { focused: boolean }) => (
-            <span
-              className={`mdi mdi-${icon}`}
-              aria-hidden="true"
-              style={{ fontSize: TAB_ICON_SIZE, color: focused ? TAB_SELECTED_TEXT_COLOR : homeColors.muted }}
-            />
-          ),
-          tabBarLabel: label,
-          tabBarActiveTintColor: TAB_SELECTED_TEXT_COLOR,
-          tabBarInactiveTintColor: homeColors.muted,
-          tabBarLabelStyle: { fontSize: 10 },
-          tabBarIconStyle: { flexGrow: 0, flexShrink: 0, flexBasis: TAB_ICON_SIZE },
-          tabBarItemStyle: { justifyContent: "center" },
-          tabBarStyle: {
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            paddingHorizontal: homeSpacing.md,
-            paddingTop: bottomInset / 2,
-            paddingBottom: bottomInset / 2,
-          },
-        };
-      }}
-    >
-      <MainTabs.Screen
-        name="ItemsStack"
-        component={ItemsStackNavigator}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <MainTabs.Screen
-        name="ListsStack"
-        component={ListsStackNavigator}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <MainTabs.Screen
-        name="CategoriesStack"
-        component={CategoriesStackNavigator}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <MainTabs.Screen
-        name="MembersStack"
-        component={MembersStackNavigator}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </MainTabs.Navigator>
-  );
-}
-
-export function RootNavigator() {
-  return (
-    <RootStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <RootStack.Screen name="MainTabs" component={MainTabsNavigator} />
-      <RootStack.Group screenOptions={{ presentation: "card", headerShown: false }}>
-        <RootStack.Screen name="ProfileScreen" component={ProfileScreen} />
-        <RootStack.Screen name="ListChanges" component={ListChangesScreen} />
-      </RootStack.Group>
-    </RootStack.Navigator>
-  );
-}
+export const RootNavigator = () => <RouterProvider router={router} />;

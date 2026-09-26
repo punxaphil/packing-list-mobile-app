@@ -13,9 +13,7 @@ updates:
           - "@types/react-dom"
       navigation:
         patterns:
-          - "@react-navigation/native"
-          - "@react-navigation/bottom-tabs"
-          - "@react-navigation/native-stack"
+          - react-router-dom
       i18n:
         patterns:
           - i18next

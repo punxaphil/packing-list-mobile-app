@@ -1,11 +1,15 @@
-import { createNavigationContainerRef } from "@react-navigation/native";
-import type { MainTabsParamList, RootStackParamList } from "./RootNavigator";
+import type { createBrowserRouter } from "react-router-dom";
+import { getSelectedId } from "./selectionState.ts";
 
-export const navigationRef = createNavigationContainerRef<RootStackParamList>();
+type Router = ReturnType<typeof createBrowserRouter>;
+let navigator: Router | null = null;
 
-function switchToTab(screen: keyof MainTabsParamList) {
-  if (!navigationRef.isReady()) return;
-  navigationRef.navigate("MainTabs", { screen });
+export const registerNavigator = (router: Router) => {
+  navigator = router;
+};
+
+function switchToTab(screen: string) {
+  void navigator?.navigate(`/MainTabs/${screen}`);
 }
 
 export function switchToItemsTab() {
@@ -21,15 +25,14 @@ export function switchToMembersTab() {
 }
 
 export function popScreen() {
-  if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+  if (window.history.state?.idx > 0) void navigator?.navigate(-1);
+  else switchToTab(getSelectedId() ? "ItemsStack" : "ListsStack");
 }
 
 export function pushProfile() {
-  if (!navigationRef.isReady()) return;
-  navigationRef.navigate("ProfileScreen");
+  void navigator?.navigate("/ProfileScreen");
 }
 
 export function pushListChanges(packingListId: string) {
-  if (!navigationRef.isReady()) return;
-  navigationRef.navigate("ListChanges", { packingListId });
+  void navigator?.navigate(`/ListChanges/${encodeURIComponent(packingListId)}`);
 }

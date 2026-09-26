@@ -1,5 +1,4 @@
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Entity = { id: string };
 type BuildColors<T extends Entity> = (entities: T[]) => Record<string, string>;
@@ -7,12 +6,7 @@ type BuildColors<T extends Entity> = (entities: T[]) => Record<string, string>;
 const snapshotColors = <T extends Entity>(entities: T[], buildColors: BuildColors<T>) => buildColors([...entities]);
 
 export const useRevisitOrderedColors = <T extends Entity>(entities: T[], buildColors: BuildColors<T>) => {
-  const entitiesRef = useRef(entities);
-  const buildColorsRef = useRef(buildColors);
   const [colors, setColors] = useState(() => snapshotColors(entities, buildColors));
-
-  entitiesRef.current = entities;
-  buildColorsRef.current = buildColors;
 
   useEffect(() => {
     if (entities.length === 0) return;
@@ -27,12 +21,6 @@ export const useRevisitOrderedColors = <T extends Entity>(entities: T[], buildCo
       return merged;
     });
   }, [entities, buildColors, colors]);
-
-  useFocusEffect(
-    useCallback(() => {
-      setColors(snapshotColors(entitiesRef.current, buildColorsRef.current));
-    }, [])
-  );
 
   return colors;
 };

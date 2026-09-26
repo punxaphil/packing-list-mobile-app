@@ -39,10 +39,6 @@ export default defineConfig(({ mode }) => ({
         find: "~",
         replacement: resolve(__dirname, "./src"),
       },
-      {
-        find: /^react-native$/,
-        replacement: resolve(__dirname, "./node_modules/react-native-web"),
-      },
     ],
     extensions: [".web.ts", ".web.tsx", ".web.js", ".web.jsx", ".ts", ".tsx", ".js", ".jsx", ".mjs"],
   },
