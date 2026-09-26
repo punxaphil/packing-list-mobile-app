@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, TextInput } from "react-native";
-import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import { AuthInput } from "./AuthInput.tsx";
 
 export type EmailFieldsProps = {
   email: string;
@@ -17,72 +16,49 @@ type Props = EmailFieldsProps & { isRegister: boolean; pending: boolean; onSubmi
 
 export function EmailFields({ isRegister, pending, onSubmitEditing, ...fields }: Props) {
   const { t } = useTranslation();
-  const webDisabled = { disabled: pending };
   return (
     <>
       {isRegister && (
         <>
-          <Text style={styles.label}>{t("auth.firstNameOptional")}</Text>
-          <TextInput
-            {...webDisabled}
-            autoCapitalize="words"
-            editable={!pending}
-            onSubmitEditing={onSubmitEditing}
-            accessibilityLabel={t("auth.firstNameOptional")}
-            style={styles.input}
+          <AuthInput
+            label={t("auth.firstNameOptional")}
             value={fields.firstName}
-            onChangeText={fields.setFirstName}
-          />
-          <Text style={styles.label}>{t("auth.lastNameOptional")}</Text>
-          <TextInput
-            {...webDisabled}
+            onChange={fields.setFirstName}
+            disabled={pending}
+            onSubmit={onSubmitEditing}
+            autoComplete="given-name"
             autoCapitalize="words"
-            editable={!pending}
-            onSubmitEditing={onSubmitEditing}
-            accessibilityLabel={t("auth.lastNameOptional")}
-            style={styles.input}
+          />
+          <AuthInput
+            label={t("auth.lastNameOptional")}
             value={fields.lastName}
-            onChangeText={fields.setLastName}
+            onChange={fields.setLastName}
+            disabled={pending}
+            onSubmit={onSubmitEditing}
+            autoComplete="family-name"
+            autoCapitalize="words"
           />
         </>
       )}
-      <Text style={styles.label}>{t("auth.email")}</Text>
-      <TextInput
-        {...webDisabled}
-        autoCapitalize="none"
-        autoCorrect={false}
-        editable={!pending}
-        keyboardType="email-address"
-        onSubmitEditing={onSubmitEditing}
-        accessibilityLabel={t("auth.email")}
-        style={styles.input}
+      <AuthInput
+        label={t("auth.email")}
         value={fields.email}
-        onChangeText={fields.setEmail}
-      />
-      <Text style={styles.label}>{t("auth.password")}</Text>
-      <TextInput
-        {...webDisabled}
+        onChange={fields.setEmail}
+        disabled={pending}
+        onSubmit={onSubmitEditing}
+        autoComplete="email"
+        type="email"
         autoCapitalize="none"
-        editable={!pending}
-        onSubmitEditing={onSubmitEditing}
-        secureTextEntry
-        accessibilityLabel={t("auth.password")}
-        style={styles.input}
+      />
+      <AuthInput
+        label={t("auth.password")}
         value={fields.password}
-        onChangeText={fields.setPassword}
+        onChange={fields.setPassword}
+        disabled={pending}
+        onSubmit={onSubmitEditing}
+        type="password"
+        autoComplete={isRegister ? "new-password" : "current-password"}
       />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  label: { fontSize: 14, color: homeColors.text },
-  input: {
-    width: "100%",
-    borderColor: homeColors.border,
-    borderWidth: 1,
-    borderRadius: homeRadius,
-    paddingVertical: 12,
-    paddingHorizontal: homeSpacing.md,
-  },
-});

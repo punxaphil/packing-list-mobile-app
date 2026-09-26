@@ -74,7 +74,7 @@ type KitRowProps = {
 
 const KitRow = ({ kit, checked, onToggle }: KitRowProps) => (
   <Pressable style={styles.row} onPress={onToggle}>
-    <AppCheckbox checked={checked} onToggle={onToggle} size={16} />
+    <AppCheckbox checked={checked} label={kit.name} onToggle={onToggle} size={16} />
     <MaterialCommunityIcons name={kit.icon} size={22} color={checked ? homeColors.primaryStrong : homeColors.muted} />
     <View style={styles.kitInfo}>
       <Text style={styles.kitName}>{kit.name}</Text>

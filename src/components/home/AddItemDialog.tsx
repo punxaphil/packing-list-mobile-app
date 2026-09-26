@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Pressable, Text, TextInput, View } from "react-native";
+import { Text, TextInput } from "react-native";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import type { Image } from "~/types/Image.ts";
@@ -8,12 +8,14 @@ import { PackItem } from "~/types/PackItem.ts";
 import { Button } from "../shared/Button.tsx";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
-import { CATEGORY_FIELD_STYLES, CategoryDropdown } from "./CategoryFields.tsx";
+import { CategoryDropdown } from "./CategoryFields.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { addItemCopy } from "./listCopy.ts";
 import { HOME_COPY, homeStyles } from "./styles.ts";
+import { useToastMessage } from "./Toast.tsx";
+import { ToastMessage } from "./ToastMessage.tsx";
 import { homeColors } from "./theme.ts";
-import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
+import "./addItemDialog.css";
 
 type AddItemDialogProps = {
   visible: boolean;
@@ -41,9 +43,7 @@ export const AddItemDialog = ({
   onSubmit,
   onBrowseKits,
 }: AddItemDialogProps) => {
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const toastOpacity = useRef(new Animated.Value(0)).current;
-  const toastAnimation = useRef<Animated.CompositeAnimation | null>(null);
+  const { toast, show: showToast, dismiss } = useToastMessage();
   const state = useDialogState(visible, initialCategory);
   const {
     itemName,
@@ -64,15 +64,6 @@ export const AddItemDialog = ({
   const hasNewCategory = newCategoryName.trim().length > 0;
   const targetCategoryId = hasNewCategory ? "" : selectedCategory.id;
   const toggleKeepOpen = useCallback(() => setKeepOpen((value) => !value), [setKeepOpen]);
-  const showToast = useCallback(
-    (message: string) => {
-      toastAnimation.current?.stop();
-      setToastMessage(message);
-      toastOpacity.setValue(0);
-      toastAnimation.current = animateToast(toastOpacity, () => setToastMessage(null));
-    },
-    [toastOpacity]
-  );
   const submit = useSubmitHandler(
     itemName,
     selectedCategory,
@@ -141,18 +132,17 @@ export const AddItemDialog = ({
         style={homeStyles.modalInput}
         editable={!submitting}
       />
-      <Pressable
-        style={STYLES.keepOpenRow}
-        onPress={toggleKeepOpen}
-        disabled={submitting}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: keepOpen }}
-      >
-        <View pointerEvents="none">
-          <AppCheckbox checked={keepOpen} onToggle={toggleKeepOpen} size={24} />
-        </View>
-        <Text style={STYLES.keepOpenText}>{COPY.keepOpen}</Text>
-      </Pressable>
+      <label className="add-item-keep-open" htmlFor="add-item-keep-open" style={{ color: homeColors.text }}>
+        <AppCheckbox
+          id="add-item-keep-open"
+          checked={keepOpen}
+          label={COPY.keepOpen}
+          onToggle={toggleKeepOpen}
+          size={24}
+          disabled={submitting}
+        />
+        <span>{COPY.keepOpen}</span>
+      </label>
       <Button label={COPY.browseKits} onPress={onBrowseKits} disabled={submitting} />
     </>
   );
@@ -172,11 +162,7 @@ export const AddItemDialog = ({
       }
     >
       {content}
-      {toastMessage && (
-        <Animated.View style={[TOAST_STYLES.container, { opacity: toastOpacity }]}>
-          <Text style={TOAST_STYLES.text}>{toastMessage}</Text>
-        </Animated.View>
-      )}
+      {toast && <ToastMessage key={toast.id} toast={toast} onDone={dismiss} />}
     </DialogShell>
   );
 };
@@ -274,13 +260,3 @@ const useSubmitHandler = (
   ]);
 
 const COPY = addItemCopy;
-const STYLES = {
-  ...CATEGORY_FIELD_STYLES,
-  keepOpenRow: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    gap: 12,
-    marginBottom: 12,
-  },
-  keepOpenText: { fontSize: 15, color: homeColors.text },
-};

@@ -1,23 +1,15 @@
-import { StyleSheet } from "react-native";
-import { homeColors, homeSpacing } from "../home/theme.ts";
+import type { CSSProperties } from "react";
+import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 
-export const authStyles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: homeColors.background },
-  container: {
-    flex: 1,
-    width: "100%",
-    maxWidth: 400,
-    alignSelf: "center",
-    paddingHorizontal: homeSpacing.lg,
-    paddingVertical: 32,
-    gap: homeSpacing.md,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-    color: homeColors.text,
-    marginBottom: homeSpacing.md,
-  },
-  error: { color: homeColors.danger, textAlign: "center", fontSize: 14 },
-});
+export const authTheme = {
+  "--auth-background": homeColors.background,
+  "--auth-text": homeColors.text,
+  "--auth-danger": homeColors.danger,
+  "--auth-muted": homeColors.muted,
+  "--auth-primary": homeColors.primaryStrong,
+  "--auth-border": homeColors.border,
+  "--auth-radius": `${homeRadius}px`,
+  "--auth-sm": `${homeSpacing.sm}px`,
+  "--auth-md": `${homeSpacing.md}px`,
+  "--auth-lg": `${homeSpacing.lg}px`,
+} as CSSProperties;

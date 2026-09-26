@@ -104,7 +104,7 @@ type FilterRowProps = {
 
 const FilterRow = ({ item, selected, onToggle, isLast = false }: FilterRowProps) => (
   <Pressable style={[styles.row, isLast ? styles.rowLast : null]} onPress={onToggle}>
-    <AppCheckbox checked={selected} onToggle={onToggle} size={16} />
+    <AppCheckbox checked={selected} label={item.name} onToggle={onToggle} size={16} />
     <Text style={styles.rowText}>{item.name}</Text>
     {getEmojiValue(item.image) ? (
       <Text style={styles.rowAvatarEmoji}>{getEmojiValue(item.image)}</Text>

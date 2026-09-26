@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { type CSSProperties } from "react";
+import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
 import { homeColors, homeSpacing } from "../home/theme.ts";
+import "./multiEditButton.css";
 
 type Props = {
   label: string;
@@ -9,16 +10,14 @@ type Props = {
 };
 
 export const MultiEditButton = ({ label, onPress, disabled }: Props) => (
-  <Pressable
-    style={styles.button}
-    onPress={onPress}
+  <button
+    className="multi-edit-button"
+    type="button"
+    style={{ color: homeColors.muted, padding: homeSpacing.xs } as CSSProperties}
+    onClick={onPress}
     disabled={disabled}
-    hitSlop={8}
-    accessibilityRole="button"
-    accessibilityLabel={label}
+    aria-label={label}
   >
-    <MaterialCommunityIcons name="pencil-box-multiple-outline" size={20} color={homeColors.muted} />
-  </Pressable>
+    {String.fromCodePoint(glyphs["pencil-box-multiple-outline"])}
+  </button>
 );
-
-const styles = StyleSheet.create({ button: { padding: homeSpacing.xs } });

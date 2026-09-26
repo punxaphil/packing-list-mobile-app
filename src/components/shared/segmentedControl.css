@@ -1,0 +1,31 @@
+.segmented-control {
+  display: flex;
+  min-width: 0;
+  gap: var(--segment-xs);
+  margin: 0;
+  padding: var(--segment-xs);
+  border: 0;
+  border-radius: var(--segment-radius);
+  background: var(--segment-background);
+}
+.segmented-control-option {
+  flex: 1;
+  min-width: 0;
+  padding: var(--segment-sm);
+  border: 0;
+  border-radius: var(--segment-radius);
+  background: none;
+  color: var(--segment-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.segmented-control-selected {
+  background: var(--segment-surface);
+  color: var(--segment-text);
+  font-weight: 600;
+}
+.segmented-control-option:focus-visible {
+  outline: 2px solid var(--segment-text);
+  outline-offset: -2px;
+}

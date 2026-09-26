@@ -1,5 +1,5 @@
 declare module "*.gif" {
-  const source: number;
+  const source: string;
   export default source;
 }
 

@@ -1,8 +1,7 @@
-import { useRef } from "react";
-import { Animated, Pressable, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import type { CSSProperties } from "react";
+import glyphs from "react-native-vector-icons/glyphmaps/MaterialCommunityIcons.json";
 import { homeColors } from "../home/theme.ts";
-import { ICON_COLORS, buttonStyles as styles } from "./buttonStyles.ts";
+import "./button.css";
 
 type Variant = "default" | "danger" | "primary" | "apple" | "ghost";
 
@@ -16,84 +15,38 @@ type ButtonProps = {
   flex?: boolean;
 };
 
-const PRESS_IN_DURATION = 140;
-const PRESS_OUT_DURATION = 220;
-const BACKGROUND_COLORS = {
-  apple: ["#000000", "#1f2937"],
-  ghost: ["transparent", homeColors.highlightSubtle],
-  primary: [homeColors.primaryStrong, "#7dbcfb"],
-  danger: [homeColors.surface, "#fef2f2"],
-  default: [homeColors.surface, homeColors.primaryLight],
-} as const;
-
-const VARIANT_STYLES = {
-  apple: styles.filledApple,
-  ghost: styles.ghost,
-  primary: styles.filledPrimary,
-  danger: styles.outlineDanger,
-  default: styles.outlineNeutral,
-};
-
-const TEXT_STYLES = {
-  apple: styles.textApple,
-  ghost: styles.textGhost,
-  primary: styles.textPrimary,
-  danger: styles.textDanger,
-  default: styles.textNeutral,
-};
+const theme = {
+  "--button-surface": homeColors.surface,
+  "--button-border": homeColors.border,
+  "--button-primary": homeColors.primaryStrong,
+  "--button-primary-foreground": homeColors.primaryForeground,
+  "--button-primary-light": homeColors.primaryLight,
+  "--button-text": homeColors.text,
+  "--button-muted": homeColors.muted,
+  "--button-white": homeColors.buttonText,
+  "--button-danger": homeColors.danger,
+  "--button-black": homeColors.dropIndicator,
+  "--button-ghost-hover": homeColors.highlightSubtle,
+} as CSSProperties;
 
 export const Button = ({ label, onPress, variant = "default", icon, centered, disabled, flex }: ButtonProps) => {
-  const press = useRef(new Animated.Value(0)).current;
-
-  const animate = (toValue: number) => {
-    Animated.timing(press, {
-      toValue,
-      duration: toValue === 1 ? PRESS_IN_DURATION : PRESS_OUT_DURATION,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const scale = press.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.98],
-  });
-  const [idleColor, pressedColor] = BACKGROUND_COLORS[variant];
-  const backgroundColor = press.interpolate({
-    inputRange: [0, 1],
-    outputRange: [idleColor, pressedColor],
-  });
-
-  const textEl = <Text style={[styles.text, TEXT_STYLES[variant], disabled && styles.disabledText]}>{label}</Text>;
-  const appleIcon = variant === "apple" ? "apple" : icon;
+  const iconName = variant === "apple" ? "apple" : icon;
+  const codePoint = iconName ? glyphs[iconName as keyof typeof glyphs] : undefined;
 
   return (
-    <Pressable
-      style={[centered && styles.centered, flex && styles.flex]}
-      onPress={onPress}
+    <button
+      type="button"
+      className={`web-button web-button-${variant}${centered ? " web-button-centered" : ""}${flex ? " web-button-flex" : ""}`}
+      style={theme}
+      onClick={onPress}
       disabled={disabled}
-      onPressIn={() => animate(1)}
-      onPressOut={() => animate(0)}
     >
-      <Animated.View
-        style={[
-          styles.base,
-          VARIANT_STYLES[variant],
-          disabled && styles.disabled,
-          {
-            backgroundColor: disabled ? BACKGROUND_COLORS[variant][0] : backgroundColor,
-            transform: [{ scale }],
-          },
-        ]}
-      >
-        {appleIcon ? (
-          <View style={styles.row}>
-            <MaterialCommunityIcons name={appleIcon} size={18} color={ICON_COLORS[variant]} />
-            {textEl}
-          </View>
-        ) : (
-          textEl
-        )}
-      </Animated.View>
-    </Pressable>
+      {codePoint && (
+        <span className="web-button-icon" aria-hidden="true">
+          {String.fromCodePoint(codePoint)}
+        </span>
+      )}
+      <span>{label}</span>
+    </button>
   );
 };

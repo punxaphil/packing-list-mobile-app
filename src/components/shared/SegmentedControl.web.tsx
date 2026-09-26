@@ -1,22 +1,36 @@
-import { Pressable, Text, View } from "react-native";
-import { segmentedControlStyles as styles } from "./segmentedControlStyles.ts";
+import { type CSSProperties } from "react";
+import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import "./segmentedControl.css";
 
 type SegmentedControlProps = {
+  label: string;
   values: string[];
   selectedIndex: number;
   onChange: (index: number) => void;
 };
 
-export const SegmentedControl = ({ values, selectedIndex, onChange }: SegmentedControlProps) => (
-  <View style={styles.container}>
+const theme = {
+  "--segment-surface": homeColors.surface,
+  "--segment-background": homeColors.primaryLight,
+  "--segment-text": homeColors.text,
+  "--segment-muted": homeColors.muted,
+  "--segment-radius": `${homeRadius}px`,
+  "--segment-xs": `${homeSpacing.xs}px`,
+  "--segment-sm": `${homeSpacing.sm}px`,
+} as CSSProperties;
+
+export const SegmentedControl = ({ label, values, selectedIndex, onChange }: SegmentedControlProps) => (
+  <fieldset className="segmented-control" style={theme} aria-label={label}>
     {values.map((value, index) => (
-      <Pressable
+      <button
         key={value}
-        style={[styles.segment, index === selectedIndex && styles.segmentSelected]}
-        onPress={() => onChange(index)}
+        type="button"
+        className={`segmented-control-option${index === selectedIndex ? " segmented-control-selected" : ""}`}
+        aria-pressed={index === selectedIndex}
+        onClick={() => onChange(index)}
       >
-        <Text style={[styles.label, index === selectedIndex && styles.labelSelected]}>{value}</Text>
-      </Pressable>
+        {value}
+      </button>
     ))}
-  </View>
+  </fieldset>
 );

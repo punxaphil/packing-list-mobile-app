@@ -1,8 +1,7 @@
 import { useRef } from "react";
-import { type ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { listCopy } from "./listCopy.ts";
-import { homeColors, homeSpacing } from "./theme.ts";
+import "./listNotesSheet.css";
 
 export type ListNotesState = {
   visible: boolean;
@@ -15,55 +14,52 @@ export type ListNotesState = {
 };
 
 export const ListNotesSheet = ({ state }: { state: ListNotesState }) => {
-  const scrollRef = useRef<ScrollView>(null);
-  const scrollToEnd = () => scrollRef.current?.scrollToEnd({ animated: true });
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const expandInput = (input: HTMLTextAreaElement) => {
+    const previousHeight = input.clientHeight;
+    input.style.height = "auto";
+    input.style.height = `${input.scrollHeight}px`;
+    if (input.clientHeight > previousHeight)
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  };
+
   return (
-    <PageSheet visible={state.visible} title={listCopy.title} onClose={state.close} scrollViewRef={scrollRef}>
-      <View style={styles.content}>
-        <View style={styles.toggleRow}>
-          <Text style={styles.toggleLabel}>{listCopy.showNotes}</Text>
-          <Switch value={state.showNotes} onValueChange={state.setShowNotes} />
-        </View>
-        <Text style={styles.toggleLabel}>{listCopy.notesLabel}</Text>
-        <TextInput
-          style={styles.textarea}
+    <PageSheet
+      visible={state.visible}
+      title={listCopy.title}
+      onClose={state.close}
+      scrollViewRef={scrollRef}
+      onShow={() => {
+        if (inputRef.current) {
+          expandInput(inputRef.current);
+          inputRef.current.focus();
+        }
+      }}
+    >
+      <div className="list-notes-content">
+        <label className="list-notes-toggle">
+          <span>{listCopy.showNotes}</span>
+          <input
+            type="checkbox"
+            role="switch"
+            aria-checked={state.showNotes}
+            checked={state.showNotes}
+            onChange={(event) => state.setShowNotes(event.target.checked)}
+          />
+        </label>
+        <label className="list-notes-label" htmlFor="list-notes-input">
+          {listCopy.notesLabel}
+        </label>
+        <textarea
+          id="list-notes-input"
+          ref={inputRef}
+          className="list-notes-input"
           value={state.notes}
-          onChangeText={state.setNotes}
-          onContentSizeChange={scrollToEnd}
-          accessibilityLabel={listCopy.notesLabel}
-          multiline
-          textAlignVertical="top"
-          autoFocus
+          onChange={(event) => state.setNotes(event.target.value)}
+          onInput={(event) => expandInput(event.currentTarget)}
         />
-      </View>
+      </div>
     </PageSheet>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    gap: homeSpacing.md,
-    paddingTop: homeSpacing.sm,
-  },
-  textarea: {
-    minHeight: 200,
-    borderWidth: 1,
-    borderColor: homeColors.border,
-    borderRadius: 10,
-    padding: homeSpacing.md,
-    fontSize: 15,
-    color: homeColors.text,
-    backgroundColor: homeColors.background,
-  },
-  toggleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: homeSpacing.xs,
-  },
-  toggleLabel: {
-    fontSize: 15,
-    color: homeColors.text,
-  },
-});

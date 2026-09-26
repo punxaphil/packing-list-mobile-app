@@ -1,0 +1,21 @@
+.no-selection-wrapper,
+.no-selection-panel,
+.no-selection-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.no-selection-panel {
+  border-radius: 16px;
+}
+.no-selection-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.no-selection-message {
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}

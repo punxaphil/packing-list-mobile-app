@@ -378,14 +378,13 @@ const CategoryHeader = ({
       <View style={homeStyles.categoryCheckboxWrapper}>
         <AppCheckbox
           checked={displayChecked}
+          indeterminate={indeterminate && pendingToggle === null}
+          label={section.title}
           onToggle={() => onToggleCategory(!displayChecked)}
           disabled={isTemplateList || pendingToggle !== null}
           size={CHECKBOX_SIZE}
           checkedColor={checkboxColor}
         />
-        {indeterminate && pendingToggle === null && (
-          <View pointerEvents="none" style={homeStyles.categoryCheckboxIndicator} />
-        )}
       </View>
       {emoji ? (
         <Text style={homeStyles.categoryImage}>{emoji}</Text>
@@ -624,6 +623,7 @@ const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         ) : (
           <AppCheckbox
             checked={checked}
+            label={props.item.name}
             onToggle={() => props.onToggle(props.item)}
             disabled={props.checkboxDisabled}
             size={CHECKBOX_SIZE}

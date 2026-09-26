@@ -1,9 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Animated, Text } from "react-native";
-import { animateToast, TOAST_STYLES } from "./toastUtils.ts";
+import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { ToastMessage } from "./ToastMessage.tsx";
 
 type ToastContextValue = { show: (message: string, displayDuration?: number) => void };
+type ToastState = { id: number; message: string; displayDuration: number };
 const ToastContext = createContext<ToastContextValue | null>(null);
+const DEFAULT_DISPLAY_DURATION = 2000;
 
 export const useToast = () => {
   const context = useContext(ToastContext);
@@ -11,31 +12,23 @@ export const useToast = () => {
   return context;
 };
 
+export const useToastMessage = () => {
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const nextId = useRef(0);
+  const show = useCallback((message: string, displayDuration = DEFAULT_DISPLAY_DURATION) => {
+    setToast({ id: ++nextId.current, message, displayDuration });
+  }, []);
+  const dismiss = useCallback((id: number) => setToast((current) => (current?.id === id ? null : current)), []);
+  return { toast, show, dismiss };
+};
+
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [message, setMessage] = useState<string | null>(null);
-  const [opacity] = useState(() => new Animated.Value(0));
-  const animation = useRef<Animated.CompositeAnimation | null>(null);
-
-  useEffect(() => () => animation.current?.stop(), []);
-
-  const show = useCallback(
-    (text: string, displayDuration?: number) => {
-      animation.current?.stop();
-      opacity.setValue(0);
-      setMessage(text);
-      animation.current = animateToast(opacity, () => setMessage(null), displayDuration);
-    },
-    [opacity]
-  );
+  const { toast, show, dismiss } = useToastMessage();
 
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
-      {message && (
-        <Animated.View style={[TOAST_STYLES.container, { opacity }]}>
-          <Text style={TOAST_STYLES.text}>{message}</Text>
-        </Animated.View>
-      )}
+      {toast && <ToastMessage key={toast.id} toast={toast} onDone={dismiss} />}
     </ToastContext.Provider>
   );
 };

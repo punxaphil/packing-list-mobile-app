@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { homeColors, homeSpacing } from "~/components/home/theme.ts";
 import { getLoadingMessages } from "~/components/shared/loadingMessages.ts";
 import { SquirrelLoader } from "~/components/shared/SquirrelLoader.tsx";
+import "./appLoadingState.css";
 
 type AppLoadingStateProps = {
   message?: string;
@@ -10,16 +10,15 @@ type AppLoadingStateProps = {
 
 const MESSAGE_SWAP_MS = 1000;
 export function AppLoadingState({ message }: AppLoadingStateProps) {
-  const { height } = useWindowDimensions();
   const currentMessage = useLoadingMessage(message);
 
   return (
-    <View style={styles.host}>
-      <View style={[styles.container, { height }]}>
-        <SquirrelLoader />
-        <Text style={styles.label}>{currentMessage}</Text>
-      </View>
-    </View>
+    <div className="app-loading-state" style={{ backgroundColor: homeColors.surface }}>
+      <SquirrelLoader />
+      <span className="app-loading-message" style={{ color: homeColors.muted, marginTop: homeSpacing.sm }}>
+        {currentMessage}
+      </span>
+    </div>
   );
 }
 
@@ -43,25 +42,3 @@ function useLoadingMessage(message?: string) {
   }, [message]);
   return message ?? shuffled.current[index];
 }
-
-const styles = StyleSheet.create({
-  host: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  container: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  label: {
-    minHeight: 24,
-    marginTop: homeSpacing.sm,
-    fontSize: 16,
-    fontWeight: "500",
-    color: homeColors.muted,
-  },
-});

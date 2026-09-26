@@ -1,0 +1,29 @@
+.app-toast {
+  --toast-transition-duration: 200ms;
+  position: absolute;
+  bottom: 100px;
+  z-index: 1;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  animation:
+    toast-enter var(--toast-transition-duration) ease-out,
+    toast-exit var(--toast-transition-duration) ease-in
+    calc(var(--toast-display-duration) + var(--toast-transition-duration)) forwards;
+}
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

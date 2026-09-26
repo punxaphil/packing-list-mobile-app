@@ -9,10 +9,9 @@ import {
 import i18next from "i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { authStyles } from "./authStyles.ts";
+import { authTheme } from "./authStyles.ts";
 import { EmailForm } from "./EmailForm.tsx";
+import "./auth.css";
 
 const AUTH_ERROR_KEYS: Record<string, string> = {
   "auth/invalid-credential": "auth.errors.invalidCredential",
@@ -65,17 +64,21 @@ export function Login() {
   };
 
   return (
-    <SafeAreaView style={authStyles.safeArea}>
-      <View style={authStyles.container}>
-        <Text style={authStyles.title}>{t("auth.welcome")}</Text>
-        {error ? <Text style={authStyles.error}>{error}</Text> : null}
+    <main className="auth-page" style={authTheme}>
+      <div className="auth-container">
+        <h1 className="auth-title">{t("auth.welcome")}</h1>
+        {error ? (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        ) : null}
         <EmailForm
           mode={emailMode}
           onSubmit={emailMode === "login" ? handleLogin : handleRegister}
           onToggleMode={() => setEmailMode(emailMode === "login" ? "register" : "login")}
           {...{ email, setEmail, password, setPassword, firstName, setFirstName, lastName, setLastName }}
         />
-      </View>
-    </SafeAreaView>
+      </div>
+    </main>
   );
 }

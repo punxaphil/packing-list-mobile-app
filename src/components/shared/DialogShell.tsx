@@ -1,6 +1,8 @@
-import { type PropsWithChildren } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { type CSSProperties, type PropsWithChildren, useEffect, useId, useRef } from "react";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
+import "./dialogShell.css";
+
+export { DialogActions, DialogSingleAction } from "./DialogActions.tsx";
 
 type DialogShellProps = PropsWithChildren<{
   visible: boolean;
@@ -10,90 +12,62 @@ type DialogShellProps = PropsWithChildren<{
   onShow?: () => void;
 }>;
 
+const theme = {
+  "--dialog-surface": homeColors.surface,
+  "--dialog-text": homeColors.text,
+  "--dialog-primary": homeColors.primaryStrong,
+  "--dialog-border": homeColors.border,
+  "--dialog-danger": homeColors.danger,
+  "--dialog-overlay": homeColors.overlayMuted,
+  "--dialog-radius": `${homeRadius}px`,
+  "--dialog-sm": `${homeSpacing.sm}px`,
+  "--dialog-xs": `${homeSpacing.xs}px`,
+  "--dialog-md": `${homeSpacing.md}px`,
+  "--dialog-lg": `${homeSpacing.lg}px`,
+} as CSSProperties;
+
 export const DialogShell = ({ visible, title, onClose, children, actions, onShow }: DialogShellProps) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (visible && !dialog.open) {
+      dialog.showModal();
+      onShow?.();
+    } else if (!visible && dialog.open) dialog.close();
+  }, [visible, onShow]);
+
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose} onShow={onShow}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <View style={styles.card}>
-          <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled">
-            <Pressable style={styles.content} onPress={(event) => event.stopPropagation()}>
-              <Text style={styles.title}>{title}</Text>
-              {children}
-            </Pressable>
-          </ScrollView>
-          {actions}
-        </View>
-      </Pressable>
-    </Modal>
+    <dialog
+      ref={dialogRef}
+      className="web-dialog"
+      style={theme}
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          onClose();
+        }
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="web-dialog-content">
+        <div className="web-dialog-scroll">
+          <h2 className="web-dialog-title" id={titleId}>
+            {title}
+          </h2>
+          {children}
+        </div>
+        {actions}
+      </div>
+    </dialog>
   );
 };
-
-type DialogActionsProps = {
-  cancelLabel: string;
-  confirmLabel: string;
-  onCancel: () => void;
-  onConfirm: () => void;
-  disabled?: boolean;
-};
-
-export const DialogActions = ({ cancelLabel, confirmLabel, onCancel, onConfirm, disabled }: DialogActionsProps) => (
-  <View style={styles.actions}>
-    <Pressable style={styles.actionButton} onPress={onCancel}>
-      <Text style={[styles.actionLabel, styles.actionCancel]}>{cancelLabel}</Text>
-    </Pressable>
-    <Pressable style={styles.actionButton} onPress={onConfirm} disabled={disabled}>
-      <Text style={[styles.actionLabel, styles.actionPrimary, disabled && styles.disabled]}>{confirmLabel}</Text>
-    </Pressable>
-  </View>
-);
-
-type SingleActionProps = {
-  label: string;
-  onPress: () => void;
-};
-
-export const DialogSingleAction = ({ label, onPress }: SingleActionProps) => (
-  <View style={styles.actions}>
-    <Pressable style={styles.actionButton} onPress={onPress}>
-      <Text style={[styles.actionLabel, styles.actionCancel]}>{label}</Text>
-    </Pressable>
-  </View>
-);
-
-const MAX_WIDTH = 400;
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(17,24,39,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: homeSpacing.lg,
-  },
-  card: {
-    width: "100%",
-    maxWidth: MAX_WIDTH,
-    maxHeight: "80%",
-    backgroundColor: homeColors.surface,
-    borderRadius: homeRadius,
-    overflow: "hidden",
-  },
-  scroll: { flexGrow: 0 },
-  content: { gap: homeSpacing.md, padding: homeSpacing.lg },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: homeColors.text,
-    textAlign: "center",
-  },
-  actions: { flexDirection: "row" },
-  actionButton: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: homeSpacing.md,
-  },
-  actionLabel: { fontSize: 16 },
-  actionCancel: { fontWeight: "600", color: homeColors.text },
-  actionPrimary: { fontWeight: "600", color: homeColors.primaryStrong },
-  disabled: { opacity: 0.5 },
-});

@@ -135,7 +135,7 @@ type MemberRowProps = {
 
 const MemberRow = ({ member, imageUrl, checked, onToggle, isLast = false }: MemberRowProps) => (
   <Pressable style={[styles.row, isLast ? styles.lastRow : null]} onPress={onToggle}>
-    <AppCheckbox checked={checked} onToggle={onToggle} size={16} />
+    <AppCheckbox checked={checked} label={member.name} onToggle={onToggle} size={16} />
     <Text style={styles.memberName}>{member.name}</Text>
     <View style={styles.rowSpacer} />
     {getEmojiValue(imageUrl) ? (

@@ -185,15 +185,6 @@ export const homeStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  categoryCheckboxIndicator: {
-    position: "absolute",
-    width: CHECKBOX_SIZE * 0.6,
-    height: 2,
-    backgroundColor: colors.text,
-    borderRadius: 2,
-    top: CHECKBOX_SIZE / 2 - 1,
-    left: CHECKBOX_SIZE * 0.2,
-  },
   categoryImage: { width: 24, height: 24, borderRadius: 4 },
   categoryTitleWrapper: { flex: 1 },
   categoryTitle: {

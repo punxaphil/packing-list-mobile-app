@@ -6,8 +6,6 @@ import type { NamedEntity } from "~/types/NamedEntity.ts";
 import { CategoryDropdownOptions, getCategoryImageUrl, orderCategories } from "./CategoryDropdownOptions.tsx";
 import { CATEGORY_FIELD_STYLES } from "./CategoryFieldStyles.ts";
 
-export { CATEGORY_FIELD_STYLES } from "./CategoryFieldStyles.ts";
-
 const DROPDOWN_ROW_HEIGHT = 49;
 const DROPDOWN_MAX_SCREEN_RATIO = 0.4;
 const DROPDOWN_MARGIN = 8;

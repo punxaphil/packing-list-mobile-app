@@ -1,0 +1,20 @@
+.text-prompt-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--dialog-sm) var(--dialog-md);
+  border: 1px solid var(--dialog-border);
+  border-radius: calc(var(--dialog-radius) / 2);
+  background: var(--dialog-surface);
+  color: var(--dialog-text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.text-prompt-input-error {
+  border-color: var(--dialog-danger);
+}
+.text-prompt-error {
+  margin-top: calc(-1 * var(--dialog-xs));
+  color: var(--dialog-danger);
+  font-size: 12px;
+}

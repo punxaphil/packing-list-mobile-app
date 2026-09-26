@@ -1,0 +1,97 @@
+.web-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 0;
+  padding: 12px 18px;
+  gap: 6px;
+  border: 1px solid var(--button-border);
+  border-radius: 18px;
+  background: var(--button-surface);
+  color: var(--button-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    transform 140ms ease;
+}
+
+.web-button:hover {
+  background: var(--button-primary-light);
+}
+.web-button:active {
+  transform: scale(0.98);
+}
+.web-button:focus-visible {
+  outline: 2px solid var(--button-primary);
+  outline-offset: 2px;
+}
+.web-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.web-button:disabled:hover {
+  background: var(--button-surface);
+}
+.web-button-centered {
+  align-self: center;
+}
+.web-button-flex {
+  flex: 1;
+}
+.web-button-icon {
+  font-family: MaterialCommunityIcons, sans-serif;
+  font-size: 18px;
+}
+
+.web-button-danger {
+  border-color: var(--button-danger);
+  color: var(--button-danger);
+}
+.web-button-danger:hover {
+  background: color-mix(in srgb, var(--button-danger) 6%, var(--button-surface));
+}
+.web-button-primary {
+  border-color: var(--button-primary);
+  background: var(--button-primary);
+  color: var(--button-white);
+}
+.web-button-primary:hover {
+  background: color-mix(in srgb, var(--button-primary) 75%, var(--button-white));
+}
+.web-button-primary .web-button-icon {
+  color: var(--button-primary-foreground);
+}
+.web-button-primary:disabled:hover {
+  background: var(--button-primary);
+}
+.web-button-apple {
+  border-color: var(--button-black);
+  border-radius: 12px;
+  background: var(--button-black);
+  color: var(--button-white);
+  font-size: 18px;
+}
+.web-button-apple:hover {
+  background: var(--button-text);
+}
+.web-button-apple:disabled:hover {
+  background: var(--button-black);
+}
+.web-button-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--button-muted);
+  font-size: 14px;
+}
+.web-button-ghost:hover {
+  background: var(--button-ghost-hover);
+}
+.web-button-ghost:disabled:hover {
+  background: transparent;
+}

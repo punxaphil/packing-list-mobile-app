@@ -1,10 +1,7 @@
 import { type AuthError, getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
-import { homeColors, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
-import { authStyles } from "./authStyles.ts";
 
 const resetErrorKey = (error: unknown) => {
   const code = (error as AuthError)?.code;
@@ -40,7 +37,7 @@ export function PasswordResetButton({ email, disabled = false }: { email: string
   };
 
   return (
-    <View style={styles.container}>
+    <div className="auth-form">
       <Button
         label={t("auth.forgotPassword")}
         variant="ghost"
@@ -48,13 +45,10 @@ export function PasswordResetButton({ email, disabled = false }: { email: string
         onPress={() => void handleReset()}
       />
       {feedback.email === email && feedback.key ? (
-        <Text style={feedback.key === "auth.resetSent" ? styles.success : authStyles.error}>{t(feedback.key)}</Text>
+        <p className={feedback.key === "auth.resetSent" ? "auth-success" : "auth-error"} role="status">
+          {t(feedback.key)}
+        </p>
       ) : null}
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { gap: homeSpacing.sm },
-  success: { color: homeColors.muted, textAlign: "center", fontSize: 14 },
-});

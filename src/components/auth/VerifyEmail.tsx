@@ -1,13 +1,13 @@
 import { getAuth, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { signOutUser } from "~/navigation/signOut.ts";
-import { homeColors } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
-import { authStyles } from "./authStyles.ts";
+import { authTheme } from "./authStyles.ts";
+import "./auth.css";
 
 export function VerifyEmail({ recheckUser }: { recheckUser: () => void }) {
+  const { t } = useTranslation();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const user = getAuth().currentUser;
@@ -18,9 +18,9 @@ export function VerifyEmail({ recheckUser }: { recheckUser: () => void }) {
     if (!user) return;
     try {
       await sendEmailVerification(user);
-      setMessage("Verification email sent!");
+      setMessage(t("auth.verificationSent"));
     } catch {
-      setError("Failed to send email. Try again later.");
+      setError(t("auth.verificationSendFailed"));
     }
   };
 
@@ -32,38 +32,29 @@ export function VerifyEmail({ recheckUser }: { recheckUser: () => void }) {
     if (getAuth().currentUser?.emailVerified) {
       recheckUser();
     } else {
-      setError("Email not yet verified. Check your inbox.");
+      setError(t("auth.verificationPending"));
     }
   };
 
   return (
-    <SafeAreaView style={authStyles.safeArea}>
-      <View style={authStyles.container}>
-        <Text style={authStyles.title}>Verify your email</Text>
-        <Text style={styles.subtitle}>
-          We sent a verification link to {user?.email}.{"\n"}
-          Check your inbox (and spam folder) and tap the link.
-        </Text>
-        {error ? <Text style={authStyles.error}>{error}</Text> : null}
-        {message ? <Text style={styles.success}>{message}</Text> : null}
-        <Button label="I've verified my email" variant="primary" onPress={() => void handleCheck()} />
-        <Button label="Resend verification email" onPress={() => void handleResend()} />
-        <Button label="Sign out" variant="ghost" onPress={() => void signOutUser()} />
-      </View>
-    </SafeAreaView>
+    <main className="auth-page" style={authTheme}>
+      <div className="auth-container">
+        <h1 className="auth-title">{t("auth.verifyEmail")}</h1>
+        <p className="auth-subtitle">{t("auth.verificationIntro", { email: user?.email })}</p>
+        {error ? (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {message ? (
+          <p className="auth-success" role="status">
+            {message}
+          </p>
+        ) : null}
+        <Button label={t("auth.verifiedEmail")} variant="primary" onPress={() => void handleCheck()} />
+        <Button label={t("auth.resendVerification")} onPress={() => void handleResend()} />
+        <Button label={t("profile.signOut")} variant="ghost" onPress={() => void signOutUser()} />
+      </div>
+    </main>
   );
 }
-
-const styles = StyleSheet.create({
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
-    color: homeColors.muted,
-    lineHeight: 22,
-  },
-  success: {
-    color: homeColors.primaryStrong,
-    textAlign: "center",
-    fontSize: 14,
-  },
-});

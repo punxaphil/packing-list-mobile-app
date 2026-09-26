@@ -1,7 +1,7 @@
-import { useCallback, useRef } from "react";
-import { KeyboardTypeOptions, Text, TextInput } from "react-native";
+import { useRef } from "react";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HOME_COPY } from "./styles.ts";
+import "./textPromptDialog.css";
 
 type TextPromptDialogProps = {
   visible: boolean;
@@ -12,7 +12,7 @@ type TextPromptDialogProps = {
   disabled?: boolean;
   editable?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
-  keyboardType?: KeyboardTypeOptions;
+  keyboardType?: "email-address" | "default";
   getError?: (text: string) => string | null;
   onChange: (text: string) => void;
   onSubmitText?: (text: string) => void | Promise<void>;
@@ -34,24 +34,14 @@ export const TextPromptDialog = ({
   onCancel,
   onSubmit,
 }: TextPromptDialogProps) => {
-  const inputRef = useRef<TextInput>(null);
-  const attachInput = useCallback((input: TextInput | null) => {
-    inputRef.current = input;
-    input?.focus();
-  }, []);
-
-  const focusInput = useCallback(() => {
-    setTimeout(() => inputRef.current?.focus(), 300);
-  }, []);
-
-  const inputStyle = error ? [homeStyles.modalInput, homeStyles.modalInputError] : homeStyles.modalInput;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <DialogShell
       visible={visible}
       title={title}
       onClose={onCancel}
-      onShow={focusInput}
+      onShow={() => inputRef.current?.focus()}
       actions={
         <DialogActions
           cancelLabel={HOME_COPY.cancel}
@@ -62,19 +52,27 @@ export const TextPromptDialog = ({
         />
       }
     >
-      <TextInput
-        ref={attachInput}
+      <input
+        ref={inputRef}
+        className={`text-prompt-input${error ? " text-prompt-input-error" : ""}`}
+        type={keyboardType === "email-address" ? "email" : "text"}
         value={value}
-        onChangeText={onChange}
-        onSubmitEditing={disabled ? undefined : onSubmit}
-        style={inputStyle}
-        autoFocus
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && !disabled && editable) {
+            event.preventDefault();
+            onSubmit();
+          }
+        }}
         autoCapitalize={autoCapitalize}
-        keyboardType={keyboardType}
-        accessibilityLabel={title}
-        editable={editable}
+        aria-label={title}
+        readOnly={!editable}
       />
-      {error && <Text style={homeStyles.modalError}>{error}</Text>}
+      {error && (
+        <span className="text-prompt-error" role="alert">
+          {error}
+        </span>
+      )}
     </DialogShell>
   );
 };

@@ -1,0 +1,24 @@
+.image-viewer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viewer-md);
+  padding: 0 var(--viewer-lg) 50px;
+}
+.image-viewer-text-row {
+  display: flex;
+  width: 100%;
+  gap: var(--viewer-sm);
+  align-items: center;
+  margin-bottom: var(--viewer-sm);
+}
+.image-viewer-input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--viewer-sm) var(--viewer-md);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--viewer-md);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--viewer-white);
+  font: inherit;
+  font-size: 16px;
+}

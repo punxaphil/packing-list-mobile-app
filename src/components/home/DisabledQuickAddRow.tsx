@@ -1,36 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { HOME_COPY, homeStyles } from "./styles.ts";
+import { HOME_COPY } from "./styles.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 
 const DISABLED_COLOR = homeColors.border;
+const DISABLED_ICONS = ["information-outline", "magnify", "filter-variant"] as const;
 
 export const DisabledQuickAddRow = () => (
-  <View style={styles.row}>
-    <View style={homeStyles.quickAdd}>
-      <Text style={styles.label}>{HOME_COPY.addItemQuick}</Text>
-    </View>
-    <View style={styles.iconRow}>
-      <View style={styles.iconButton}>
-        <MaterialCommunityIcons name="information-outline" size={20} color={DISABLED_COLOR} />
-      </View>
-      <View style={styles.iconButton}>
-        <MaterialCommunityIcons name="magnify" size={20} color={DISABLED_COLOR} />
-      </View>
-      <View style={styles.iconButton}>
-        <MaterialCommunityIcons name="filter-variant" size={20} color={DISABLED_COLOR} />
-      </View>
-    </View>
-  </View>
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div style={{ paddingBlock: homeSpacing.xs / 2 }}>
+      <span style={{ fontSize: 14, fontWeight: 500, color: DISABLED_COLOR }}>{HOME_COPY.addItemQuick}</span>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: homeSpacing.xs }}>
+      {DISABLED_ICONS.map((name) => (
+        <span key={name} style={{ padding: homeSpacing.xs }} aria-hidden="true">
+          <MaterialCommunityIcons name={name} size={20} color={DISABLED_COLOR} />
+        </span>
+      ))}
+    </div>
+  </div>
 );
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  iconRow: { flexDirection: "row", alignItems: "center", gap: homeSpacing.xs },
-  iconButton: { padding: homeSpacing.xs },
-  label: { fontSize: 14, fontWeight: "500", color: DISABLED_COLOR },
-});

@@ -1,0 +1,11 @@
+.multi-edit-button {
+  border: 0;
+  background: none;
+  font-family: MaterialCommunityIcons, sans-serif;
+  font-size: 20px;
+  cursor: pointer;
+}
+.multi-edit-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

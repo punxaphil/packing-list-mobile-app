@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, View } from "react-native";
-import { homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
 import { EmailFields, type EmailFieldsProps } from "./EmailFields.tsx";
 import { PasswordResetButton } from "./PasswordResetButton.tsx";
@@ -37,7 +35,7 @@ export function EmailForm(props: EmailFormProps) {
       : "auth.login";
 
   return (
-    <View style={styles.section}>
+    <div className="auth-form">
       <EmailFields {...props} isRegister={isRegister} pending={pending} onSubmitEditing={submitFromInput} />
       <Button label={t(submitLabel)} onPress={submitFromInput} disabled={pending} />
       {!isRegister && <PasswordResetButton email={email} disabled={pending} />}
@@ -47,10 +45,6 @@ export function EmailForm(props: EmailFormProps) {
         onPress={onToggleMode}
         variant="ghost"
       />
-    </View>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  section: { gap: homeSpacing.sm },
-});
