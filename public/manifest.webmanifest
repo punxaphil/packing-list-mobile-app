@@ -1,0 +1,7 @@
+{
+  "name": "FastPack",
+  "short_name": "FastPack",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone"
+}

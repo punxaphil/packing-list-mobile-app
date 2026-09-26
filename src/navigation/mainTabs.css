@@ -16,7 +16,8 @@
   display: flex;
   flex-shrink: 0;
   min-height: 49px;
-  padding: 0 var(--tabs-padding) env(safe-area-inset-bottom);
+  padding: min(var(--tabs-padding), env(safe-area-inset-bottom)) var(--tabs-padding)
+    max(0px, calc(env(safe-area-inset-bottom) - var(--tabs-padding)));
   border-top: 1px solid var(--tabs-border);
   background: var(--tabs-surface);
 }
