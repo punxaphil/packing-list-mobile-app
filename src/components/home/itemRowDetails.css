@@ -29,6 +29,16 @@
   justify-content: center;
   font-size: 18px;
 }
+.item-row-check-target {
+  display: flex;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-inline: -8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 .item-row-body {
   display: flex;
   flex: 1;

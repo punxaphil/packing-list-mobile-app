@@ -27,6 +27,12 @@ export const CategoryItemRow = memo((props: CategoryItemRowProps) => {
   const dragHandlers = { onStart: props.onDragStart, onMove: props.onDragMove, onEnd: props.onDragEnd };
   const { wrap, dragging } = useDraggableRow(dragHandlers, { applyTranslation: false });
   const checked = getPackItemChecked(props.item);
+  const checkboxProps = {
+    id: `item-check-${props.item.id}`,
+    disabled: props.checkboxDisabled,
+    size: CHECKBOX_SIZE,
+    checkedColor: props.checkboxColor,
+  };
   return (
     <div
       ref={rowRef}
@@ -63,24 +69,18 @@ export const CategoryItemRow = memo((props: CategoryItemRowProps) => {
         ) : (
           wrap(<DragHandle />)
         )}
-        {props.item.members.length > 0 ? (
-          <MultiCheckbox
-            item={props.item}
-            disabled={props.checkboxDisabled}
-            onToggle={props.onToggleAllMembers}
-            checkedColor={props.checkboxColor}
-            size={CHECKBOX_SIZE}
-          />
-        ) : (
-          <AppCheckbox
-            checked={checked}
-            label={props.item.name}
-            onToggle={() => props.onToggle(props.item)}
-            disabled={props.checkboxDisabled}
-            size={CHECKBOX_SIZE}
-            checkedColor={props.checkboxColor}
-          />
-        )}
+        <label className="item-row-check-target" htmlFor={checkboxProps.id}>
+          {props.item.members.length > 0 ? (
+            <MultiCheckbox {...checkboxProps} item={props.item} onToggle={props.onToggleAllMembers} />
+          ) : (
+            <AppCheckbox
+              {...checkboxProps}
+              checked={checked}
+              label={props.item.name}
+              onToggle={() => props.onToggle(props.item)}
+            />
+          )}
+        </label>
         <ItemRowDetails {...props} checked={checked} wrapItemText={profile?.wrapItemText ?? false} />
         <button
           type="button"
