@@ -11,6 +11,7 @@ import { MoveCategoryFields } from "./MoveCategoryFields.tsx";
 type MoveCategoryModalProps = {
   visible: boolean;
   categories: NamedEntity[];
+  usedCategoryIds: string[];
   categoryImages: Image[];
   currentCategoryId: string;
   onClose: () => void;
@@ -18,7 +19,7 @@ type MoveCategoryModalProps = {
 };
 
 export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
-  const { visible, categories, categoryImages, currentCategoryId, onClose, onSubmit } = props;
+  const { visible, categories, usedCategoryIds, categoryImages, currentCategoryId, onClose, onSubmit } = props;
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -78,6 +79,7 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
     >
       <MoveCategoryFields
         categories={categories}
+        usedCategoryIds={usedCategoryIds}
         categoryImages={categoryImages}
         selected={selectedCategory}
         disabled={submitting || hasNewCategory}

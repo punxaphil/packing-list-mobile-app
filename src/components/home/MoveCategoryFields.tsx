@@ -16,6 +16,7 @@ const labelStyle = {
 
 type MoveCategoryFieldsProps = {
   categories: NamedEntity[];
+  usedCategoryIds: string[];
   categoryImages: Image[];
   selected: NamedEntity;
   disabled: boolean;
@@ -32,6 +33,7 @@ export const MoveCategoryFields = (props: MoveCategoryFieldsProps) => (
     <p style={labelStyle}>{addItemCopy.existingCategory}</p>
     <CategoryDropdown
       categories={props.categories}
+      usedCategoryIds={props.usedCategoryIds}
       categoryImages={props.categoryImages}
       selected={props.selected}
       onSelect={props.onSelect}

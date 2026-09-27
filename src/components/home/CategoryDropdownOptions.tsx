@@ -56,8 +56,9 @@ export const orderCategories = (categories: NamedEntity[], usedCategoryIds: stri
   const remaining = categories.filter((category) => category.id !== UNCATEGORIZED.id);
   const sorted = remaining.sort((first, second) => first.name.localeCompare(second.name));
   return [
-    UNCATEGORIZED,
+    ...(usedIds.has(UNCATEGORIZED.id) ? [UNCATEGORIZED] : []),
     ...sorted.filter((category) => usedIds.has(category.id)),
+    ...(!usedIds.has(UNCATEGORIZED.id) ? [UNCATEGORIZED] : []),
     ...sorted.filter((category) => !usedIds.has(category.id)),
   ];
 };

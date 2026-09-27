@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PackItem } from "~/types/PackItem.ts";
+import { orderCategories } from "./CategoryDropdownOptions.tsx";
 import {
   buildSections,
   getBulkEditTargets,
@@ -75,5 +76,14 @@ describe("itemsSectionHelpers", () => {
 
     expect(tickedItems.map((item) => item.id)).toEqual(["first", "second"]);
     expect(assignedItems.map((item) => item.id)).toEqual(["second", "third"]);
+  });
+
+  it("puts categories used in the list ahead of unused categories", () => {
+    const categories = [
+      { id: "alpha", name: "Alpha", rank: 1 },
+      { id: "beta", name: "Beta", rank: 2 },
+    ];
+    expect(orderCategories(categories, ["beta"]).map((entry) => entry.id)).toEqual(["beta", "", "alpha"]);
+    expect(orderCategories(categories, ["", "beta"]).map((entry) => entry.id)).toEqual(["", "beta", "alpha"]);
   });
 });

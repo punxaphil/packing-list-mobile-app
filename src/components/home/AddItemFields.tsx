@@ -63,7 +63,7 @@ export const AddItemFields = ({
     <CategoryDropdown
       categories={categories}
       categoryImages={categoryImages}
-      usedCategoryIds={items.map((item) => item.category).filter(Boolean)}
+      usedCategoryIds={items.map((item) => item.category)}
       selected={state.selectedCategory}
       onSelect={(category) => {
         state.setSelectedCategory(category);

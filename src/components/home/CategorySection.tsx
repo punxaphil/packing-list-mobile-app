@@ -85,6 +85,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
   const [renameItemText, setRenameItemText] = useState("");
   const [renameCategoryVisible, setRenameCategoryVisible] = useState(false);
   const [renameCategoryText, setRenameCategoryText] = useState("");
+  const usedCategoryIds = props.allItems.map((item) => item.category);
   const renameItemErrorText = getRenameItemError(renameItem, renameItemText, props.allItems);
   const renameCategoryErrorText = getRenameCategoryError(props.section.category, renameCategoryText, props.categories);
 
@@ -207,6 +208,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       <MoveCategoryModal
         visible={!!moveItem}
         categories={props.categories}
+        usedCategoryIds={usedCategoryIds}
         categoryImages={props.categoryImages}
         currentCategoryId={moveItem?.category ?? ""}
         onClose={() => setMoveItem(null)}
@@ -215,6 +217,7 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
       <MoveCategoryModal
         visible={moveCategoryVisible}
         categories={props.categories}
+        usedCategoryIds={usedCategoryIds}
         categoryImages={props.categoryImages}
         currentCategoryId={props.section.category.id}
         onClose={() => setMoveCategoryVisible(false)}
