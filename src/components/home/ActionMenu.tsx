@@ -42,6 +42,7 @@ export const ActionMenu = (props: ActionMenuProps) => {
     <dialog
       ref={dialogRef}
       className="action-menu"
+      tabIndex={-1}
       style={actionMenuTheme}
       aria-label={title}
       onCancel={(event) => {

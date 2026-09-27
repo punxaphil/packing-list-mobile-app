@@ -6,8 +6,10 @@ export const useActionMenuDialog = (visible: boolean) => {
   const headerRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (visible && !dialog?.open) dialog?.showModal();
-    else if (!visible && dialog?.open) dialog.close();
+    if (visible && dialog && !dialog.open) {
+      dialog.showModal();
+      dialog.focus();
+    } else if (!visible && dialog?.open) dialog.close();
   }, [visible]);
   useEffect(() => {
     const header = headerRef.current;
