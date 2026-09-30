@@ -7,8 +7,11 @@
   min-height: 24px;
   align-items: center;
   gap: 8px;
-  padding: 4px 0;
+  padding: 2px 0;
   border-radius: 6px;
+}
+.item-row-main-no-members {
+  padding-block: 0;
 }
 .item-row-match {
   margin-inline: -4px;
@@ -32,8 +35,8 @@
 .item-row-check-target {
   display: flex;
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 30px;
+  height: 30px;
   margin-inline: -8px;
   align-items: center;
   justify-content: center;

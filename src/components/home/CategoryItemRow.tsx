@@ -43,7 +43,7 @@ export const CategoryItemRow = memo((props: CategoryItemRowProps) => {
       }}
     >
       <div
-        className={`item-row-main${props.isCurrentMatch ? " item-row-match" : ""}`}
+        className={`item-row-main${props.item.members.length === 0 ? " item-row-main-no-members" : ""}${props.isCurrentMatch ? " item-row-match" : ""}`}
         style={
           {
             opacity: props.hidden ? 0 : dragging ? 0.5 : 1,
