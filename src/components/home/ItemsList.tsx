@@ -70,7 +70,11 @@ export const ItemsList = (props: ItemsListProps) => {
     sections.map((s) => s.category),
     buildItemCategoryColors
   );
-  const { highlightId, highlightOpacity } = useItemsListNavigation(props.items, props.search, drag);
+  const { highlightId, highlightOpacity, scrollToMovedItem, recordMovedItemLayout } = useItemsListNavigation(
+    props.items,
+    props.search,
+    drag
+  );
 
   return (
     <FadeScrollView
@@ -87,6 +91,11 @@ export const ItemsList = (props: ItemsListProps) => {
         drag={drag}
         highlightId={highlightId}
         highlightOpacity={highlightOpacity}
+        onItemLayout={recordMovedItemLayout}
+        onMoveCategory={(item, categoryId) => {
+          scrollToMovedItem(item.id, categoryId);
+          props.onMoveCategory(item, categoryId);
+        }}
         onDrop={ordering.drop}
       />
     </FadeScrollView>

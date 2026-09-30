@@ -38,14 +38,11 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
     setError(null);
   }, [categories, currentCategoryId, visible]);
 
-  const handleSubmit = async () => {
-    if (isSubmitDisabled) return;
+  const submitCategory = async (category: NamedEntity | null, name: string | null) => {
+    if (submitting || (!name && category?.id === currentCategoryId)) return;
     setSubmitting(true);
     try {
-      await onSubmit(
-        existingCategory ?? (trimmedName ? null : selectedCategory),
-        trimmedName && !existingCategory ? trimmedName : null
-      );
+      await onSubmit(category, name);
       onClose();
     } catch (cause) {
       if (cause instanceof DuplicateNameError) {
@@ -58,6 +55,11 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
       setSubmitting(false);
     }
   };
+  const handleSubmit = () =>
+    submitCategory(
+      existingCategory ?? (trimmedName ? null : selectedCategory),
+      trimmedName && !existingCategory ? trimmedName : null
+    );
 
   return (
     <DialogShell
@@ -90,6 +92,7 @@ export const MoveCategoryModal = (props: MoveCategoryModalProps) => {
         onSelect={(category) => {
           setSelectedCategory(category);
           setError(null);
+          void submitCategory(category, null);
         }}
         onNameChange={(name) => {
           setNewCategoryName(name);

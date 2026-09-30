@@ -50,6 +50,7 @@ type CategorySectionProps = {
   layouts: Record<string, RowLayout>;
   highlightId: string | null;
   highlightOpacity: ReturnType<typeof useFlashHighlight>["highlightOpacity"];
+  onItemLayout: (id: string, categoryId: string, layout: RowLayout) => void;
   onDrop: (
     snapshot: DragSnapshot,
     layouts: Record<string, RowLayout>,
@@ -375,7 +376,10 @@ const CategoryItems = (props: CategoryItemsProps) => {
           checkboxDisabled={checkboxDisabled}
           isCurrentMatch={search.currentMatchId === item.id}
           highlightOpacity={props.highlightId === item.id ? props.highlightOpacity : undefined}
-          onLayout={(layout) => drag.recordLayout(item.id, layout)}
+          onLayout={(layout) => {
+            drag.recordLayout(item.id, layout);
+            props.onItemLayout(item.id, item.category, layout);
+          }}
           onDragStart={() => drag.start(item.id, item.category)}
           onDragMove={(offset) => drag.move(item.id, offset)}
           onDragEnd={() => drag.end((s) => s && onDrop(s, props.layouts, drag.sectionLayouts, drag.bodyLayouts))}

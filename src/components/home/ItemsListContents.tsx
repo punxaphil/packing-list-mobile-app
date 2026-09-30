@@ -18,6 +18,8 @@ type ContentsProps = {
   drag: ReturnType<typeof useDragState>;
   highlightId: ReturnType<typeof useItemsListNavigation>["highlightId"];
   highlightOpacity: ReturnType<typeof useItemsListNavigation>["highlightOpacity"];
+  onItemLayout: ReturnType<typeof useItemsListNavigation>["recordMovedItemLayout"];
+  onMoveCategory: ItemsListProps["onMoveCategory"];
   onDrop: ReturnType<typeof useItemOrdering>["drop"];
 };
 
@@ -29,6 +31,8 @@ export const ItemsListContents = ({
   drag,
   highlightId,
   highlightOpacity,
+  onItemLayout,
+  onMoveCategory,
   onDrop,
 }: ContentsProps) => {
   const layouts = { ...drag.layouts };
@@ -73,6 +77,8 @@ export const ItemsListContents = ({
           layouts={layouts}
           highlightId={highlightId}
           highlightOpacity={highlightOpacity}
+          onItemLayout={onItemLayout}
+          onMoveCategory={onMoveCategory}
           onDrop={onDrop}
           onAddItem={props.onOpenAddDialog}
         />
