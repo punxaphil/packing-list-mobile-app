@@ -1,3 +1,5 @@
+import { FormField } from "../shared/FormField.tsx";
+
 type AuthInputProps = {
   label: string;
   value: string;
@@ -19,8 +21,7 @@ export const AuthInput = ({
   autoComplete,
   autoCapitalize,
 }: AuthInputProps) => (
-  <label className="auth-field">
-    <span>{label}</span>
+  <FormField label={label}>
     <input
       className="auth-input"
       type={type}
@@ -36,5 +37,5 @@ export const AuthInput = ({
         }
       }}
     />
-  </label>
+  </FormField>
 );

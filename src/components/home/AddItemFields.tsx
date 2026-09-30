@@ -3,8 +3,9 @@ import type { Image } from "~/types/Image.ts";
 import type { NamedEntity } from "~/types/NamedEntity.ts";
 import type { PackItem } from "~/types/PackItem.ts";
 import { Button } from "../shared/Button.tsx";
+import { FormField } from "../shared/FormField.tsx";
 import { AppCheckbox } from "./AppCheckbox.tsx";
-import { CategoryDropdown } from "./CategoryFields.tsx";
+import { CategorySelectionFields } from "./CategorySelectionFields.tsx";
 import { addItemCopy } from "./listCopy.ts";
 import { HOME_COPY } from "./styles.ts";
 import { homeColors } from "./theme.ts";
@@ -12,7 +13,6 @@ import type { useAddItemDialogState } from "./useAddItemDialogState.ts";
 import "./addItemDialog.css";
 import "./textPromptDialog.css";
 
-const mutedLabel = { color: homeColors.muted };
 type AddItemFieldsProps = {
   state: ReturnType<typeof useAddItemDialogState>;
   inputRef: RefObject<HTMLInputElement | null>;
@@ -35,8 +35,7 @@ export const AddItemFields = ({
   onBrowseKits,
 }: AddItemFieldsProps) => (
   <>
-    <label className="add-item-field-label" style={mutedLabel}>
-      {HOME_COPY.newItem}
+    <FormField label={HOME_COPY.newItem}>
       <input
         ref={inputRef}
         className={`text-prompt-input${state.error ? " text-prompt-input-error" : ""}`}
@@ -51,39 +50,29 @@ export const AddItemFields = ({
         }}
         disabled={submitting}
       />
-    </label>
+    </FormField>
     {state.error && (
       <span className="text-prompt-error" role="alert">
         {state.error}
       </span>
     )}
-    <p className="add-item-field-label" style={mutedLabel}>
-      {addItemCopy.existingCategory}
-    </p>
-    <CategoryDropdown
+    <CategorySelectionFields
       categories={categories}
       categoryImages={categoryImages}
       usedCategoryIds={items.map((item) => item.category)}
       selected={state.selectedCategory}
+      name={state.newCategoryName}
+      disabled={submitting || Boolean(state.newCategoryName.trim())}
+      submitting={submitting}
       onSelect={(category) => {
         state.setSelectedCategory(category);
         state.setError(null);
       }}
-      disabled={submitting || Boolean(state.newCategoryName.trim())}
+      onNameChange={(name) => {
+        state.setNewCategoryName(name);
+        state.setError(null);
+      }}
     />
-    <label className="add-item-field-label" style={mutedLabel}>
-      {addItemCopy.newCategory}
-      <input
-        className="text-prompt-input"
-        type="text"
-        value={state.newCategoryName}
-        onChange={(event) => {
-          state.setNewCategoryName(event.target.value);
-          state.setError(null);
-        }}
-        disabled={submitting}
-      />
-    </label>
     <label className="add-item-keep-open" htmlFor="add-item-keep-open" style={{ color: homeColors.text }}>
       <AppCheckbox
         id="add-item-keep-open"

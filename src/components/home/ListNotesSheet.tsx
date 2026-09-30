@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { FormField } from "../shared/FormField.tsx";
 import { PageSheet } from "../shared/PageSheet.tsx";
 import { listCopy } from "./listCopy.ts";
 import "./listNotesSheet.css";
@@ -48,17 +49,15 @@ export const ListNotesSheet = ({ state }: { state: ListNotesState }) => {
             onChange={(event) => state.setShowNotes(event.target.checked)}
           />
         </label>
-        <label className="list-notes-label" htmlFor="list-notes-input">
-          {listCopy.notesLabel}
-        </label>
-        <textarea
-          id="list-notes-input"
-          ref={inputRef}
-          className="list-notes-input"
-          value={state.notes}
-          onChange={(event) => state.setNotes(event.target.value)}
-          onInput={(event) => expandInput(event.currentTarget)}
-        />
+        <FormField label={listCopy.notesLabel}>
+          <textarea
+            ref={inputRef}
+            className="list-notes-input"
+            value={state.notes}
+            onChange={(event) => state.setNotes(event.target.value)}
+            onInput={(event) => expandInput(event.currentTarget)}
+          />
+        </FormField>
       </div>
     </PageSheet>
   );

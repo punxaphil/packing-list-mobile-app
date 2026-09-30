@@ -29,13 +29,7 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: var(--auth-sm);
-}
-.auth-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--auth-sm);
-  font-size: 14px;
+  gap: var(--auth-md);
 }
 .auth-input {
   box-sizing: border-box;

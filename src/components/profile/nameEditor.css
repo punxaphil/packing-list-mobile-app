@@ -3,13 +3,7 @@
   flex-direction: column;
   width: 100%;
   padding-inline: var(--name-lg);
-  gap: var(--name-sm);
-}
-
-.profile-name-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--name-muted);
+  gap: var(--name-md);
 }
 
 .profile-name-input {

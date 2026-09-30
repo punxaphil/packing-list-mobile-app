@@ -1,15 +1,15 @@
-import { type CSSProperties, useEffect, useId, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { updateProfileName } from "~/services/spaceDatabase.ts";
 import { commonCopy } from "../home/copy.ts";
 import { homeColors, homeRadius, homeSpacing } from "../home/theme.ts";
 import { Button } from "../shared/Button.tsx";
+import { FormField } from "../shared/FormField.tsx";
 import { profileCopy } from "./profileCopy.ts";
 import "./nameEditor.css";
 
 const theme = {
   "--name-text": homeColors.text,
-  "--name-muted": homeColors.muted,
   "--name-border": homeColors.border,
   "--name-focus": homeColors.primaryStrong,
   "--name-sm": `${homeSpacing.sm}px`,
@@ -20,8 +20,6 @@ const theme = {
 
 export const NameEditor = () => {
   const { profile } = useSpace();
-  const firstNameId = useId();
-  const lastNameId = useId();
   const [firstName, setFirstName] = useState(profile?.firstName ?? "");
   const [lastName, setLastName] = useState(profile?.lastName ?? "");
   const currentFirstName = profile?.firstName ?? "";
@@ -45,26 +43,22 @@ export const NameEditor = () => {
 
   return (
     <div className="profile-name-editor" style={theme}>
-      <label className="profile-name-label" htmlFor={firstNameId}>
-        {profileCopy.firstName}
-      </label>
-      <input
-        id={firstNameId}
-        autoCapitalize="words"
-        className="profile-name-input"
-        value={firstName}
-        onChange={(event) => setFirstName(event.currentTarget.value)}
-      />
-      <label className="profile-name-label" htmlFor={lastNameId}>
-        {profileCopy.lastName}
-      </label>
-      <input
-        id={lastNameId}
-        autoCapitalize="words"
-        className="profile-name-input"
-        value={lastName}
-        onChange={(event) => setLastName(event.currentTarget.value)}
-      />
+      <FormField label={profileCopy.firstName}>
+        <input
+          autoCapitalize="words"
+          className="profile-name-input"
+          value={firstName}
+          onChange={(event) => setFirstName(event.currentTarget.value)}
+        />
+      </FormField>
+      <FormField label={profileCopy.lastName}>
+        <input
+          autoCapitalize="words"
+          className="profile-name-input"
+          value={lastName}
+          onChange={(event) => setLastName(event.currentTarget.value)}
+        />
+      </FormField>
       <div className="profile-name-actions">
         <Button label={commonCopy.cancel} onPress={restore} disabled={!hasChanges} flex />
         <Button

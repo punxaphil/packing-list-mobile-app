@@ -12,9 +12,6 @@
   padding: var(--sheet-xs) 0;
   font-size: 15px;
 }
-.list-notes-label {
-  font-size: 15px;
-}
 .list-notes-input {
   box-sizing: border-box;
   width: 100%;
