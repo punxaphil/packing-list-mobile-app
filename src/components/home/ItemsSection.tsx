@@ -429,12 +429,26 @@ const useListNotes = (list: NamedEntity | null, writeDb: WriteDb): ListNotesStat
     await writeDb.updatePackingListInfo(list.id, notes, showNotes, list.dueAt ?? null);
   }, [list, notes, showNotes, writeDb]);
 
+  const updateNotes = useCallback(
+    (value: string) => {
+      setNotes(value);
+      if (list) void writeDb.updatePackingListInfo(list.id, value, showNotes, list.dueAt ?? null);
+    },
+    [list, showNotes, writeDb]
+  );
+
   const close = useCallback(() => {
     setVisible(false);
     void persist();
   }, [persist]);
 
-  const setShowNotes = useCallback((v: boolean) => setShowNotesLocal(v), []);
+  const setShowNotes = useCallback(
+    (value: boolean) => {
+      setShowNotesLocal(value);
+      if (list) void writeDb.updatePackingListInfo(list.id, notes, value, list.dueAt ?? null);
+    },
+    [list, notes, writeDb]
+  );
 
-  return { visible, notes, showNotes, open, close, setNotes, setShowNotes };
+  return { visible, notes, showNotes, open, close, setNotes: updateNotes, setShowNotes };
 };
