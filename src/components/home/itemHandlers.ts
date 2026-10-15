@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import type { WriteDb } from "~/services/database.ts";
 import { withPackItemMembers } from "~/services/packItemState.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
@@ -107,11 +108,12 @@ export const useMoveCategory = () => {
 export const useMoveItemsToCategory = () => {
   const { writeDb } = useSpace();
   return useCallback(
-    async (items: PackItem[], categoryId: string) => {
-      animateLayout();
-      const updatedItems = items.map((item) => ({ ...item, category: categoryId }));
-      await writeDb.updatePackItemsBatched(updatedItems);
-    },
+    (items: PackItem[], categoryId: string) =>
+      runBusyOperation(async () => {
+        animateLayout();
+        const updatedItems = items.map((item) => ({ ...item, category: categoryId }));
+        await writeDb.updatePackItemsBatched(updatedItems);
+      }),
     [writeDb]
   );
 };
@@ -129,14 +131,15 @@ export const useCopyToList = () => {
 export const useSortCategoryAlpha = () => {
   const { writeDb } = useSpace();
   return useCallback(
-    async (items: PackItem[]) => {
-      const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, navigator.language));
-      const updates = sorted.map((item, index) => ({
-        ...item,
-        rank: sorted.length - index,
-      }));
-      await writeDb.updatePackItemsBatched(updates);
-    },
+    (items: PackItem[]) =>
+      runBusyOperation(async () => {
+        const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, navigator.language));
+        const updates = sorted.map((item, index) => ({
+          ...item,
+          rank: sorted.length - index,
+        }));
+        await writeDb.updatePackItemsBatched(updates);
+      }),
     [writeDb]
   );
 };

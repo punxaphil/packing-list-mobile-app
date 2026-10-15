@@ -1,6 +1,7 @@
 import i18next from "i18next";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { getPackItemChecked } from "~/services/packItemState.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { Image } from "~/types/Image.ts";
@@ -145,10 +146,11 @@ const CategorySectionImpl = (props: CategorySectionProps) => {
     }
   }, [allChecked, pendingToggle]);
 
-  const handleMoveSection = async (category: NamedEntity | null, newCategoryName: string | null) => {
-    const nextCategory = await resolveMoveCategory(category, newCategoryName);
-    await props.onMoveItemsToCategory(props.section.items, nextCategory.id);
-  };
+  const handleMoveSection = (category: NamedEntity | null, newCategoryName: string | null) =>
+    runBusyOperation(async () => {
+      const nextCategory = await resolveMoveCategory(category, newCategoryName);
+      await props.onMoveItemsToCategory(props.section.items, nextCategory.id);
+    });
 
   const categoryImageUrl = props.categoryImages.find((img) => img.typeId === props.section.category.id)?.url;
   const checkboxColor = getItemCheckboxColor(props.color);

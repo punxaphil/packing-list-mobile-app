@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { animateLayout } from "../home/layoutAnimation.ts";
 import { showActionSheet } from "../home/showActionSheet.ts";
@@ -64,10 +65,11 @@ const useDeleteEntity = (
         {
           text: copy.deleteAction,
           style: "destructive",
-          onPress: async () => {
-            animateLayout();
-            await db.delete(entity.id, [], true);
-          },
+          onPress: () =>
+            runBusyOperation(async () => {
+              animateLayout();
+              await db.delete(entity.id, [], true);
+            }),
         },
       ]);
     },

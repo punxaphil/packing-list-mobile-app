@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useImages } from "~/hooks/useImages.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { useTemplate } from "~/providers/TemplateContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { moveListToSpace } from "~/services/spaceDatabase.ts";
 import type { Image } from "~/types/Image.ts";
 import type { Space } from "~/types/Space.ts";
@@ -50,9 +51,10 @@ export const ListSection = (props: ListSectionProps) => {
   const imgActions = useEntityImageActions("packingLists", imageDb);
   const listImages = useMemo(() => images.filter((img) => img.type === "packingLists"), [images]);
   const handleMoveToSpace = useCallback(
-    async (listId: string, targetSpaceId: string) => {
-      await moveListToSpace(spaceId, targetSpaceId, listId);
-    },
+    (listId: string, targetSpaceId: string) =>
+      runBusyOperation(async () => {
+        await moveListToSpace(spaceId, targetSpaceId, listId);
+      }),
     [spaceId]
   );
   const actions = useListActions(props.lists, props.selection, templateList, listImages, props.onListSelect);

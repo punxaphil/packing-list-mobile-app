@@ -1,4 +1,5 @@
-import { type CSSProperties, type PropsWithChildren, useEffect, useRef } from "react";
+import { type CSSProperties, type PropsWithChildren, useEffect, useRef, useSyncExternalStore } from "react";
+import { busyOperation } from "~/services/busyOperation.ts";
 import { spaceCopy } from "./spaceCopy.ts";
 import { homeColors, homeSpacing } from "./theme.ts";
 import "./spaceSheetDialog.css";
@@ -6,13 +7,14 @@ import "./spaceSheetDialog.css";
 type Props = PropsWithChildren<{ visible: boolean; onClose: () => void }>;
 
 export const SpaceSheetDialog = ({ visible, onClose, children }: Props) => {
+  const { busy } = useSyncExternalStore(busyOperation.subscribe, busyOperation.getSnapshot);
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (visible && !dialog.open) dialog.showModal();
-    else if (!visible && dialog.open) dialog.close();
-  }, [visible]);
+    if (visible && !busy && !dialog.open) dialog.showModal();
+    else if ((!visible || busy) && dialog.open) dialog.close();
+  }, [visible, busy]);
 
   return (
     <dialog
