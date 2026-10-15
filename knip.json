@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["scripts/**"],
-  "entry": ["src/**/*.test.ts"],
+  "entry": ["src/**/*.test.{ts,tsx}"],
   "ignoreBinaries": ["lsof", "awk"],
   "ignoreDependencies": ["@babel/core", "@types/hoist-non-react-statics", "@types/lodash", "@types/prop-types"]
 }

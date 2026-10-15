@@ -66,10 +66,13 @@ const useDeleteEntity = (
           text: copy.deleteAction,
           style: "destructive",
           onPress: () =>
-            runBusyOperation(async () => {
-              animateLayout();
-              await db.delete(entity.id, [], true);
-            }),
+            runBusyOperation(
+              async () => {
+                animateLayout();
+                await db.delete(entity.id, [], true);
+              },
+              { message: "deletingEntity" }
+            ),
         },
       ]);
     },

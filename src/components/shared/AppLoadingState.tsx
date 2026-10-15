@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { homeColors, homeSpacing } from "~/components/home/theme.ts";
 import { getLoadingMessages } from "~/components/shared/loadingMessages.ts";
 import { SquirrelLoader } from "~/components/shared/SquirrelLoader.tsx";
@@ -6,10 +6,11 @@ import "./appLoadingState.css";
 
 type AppLoadingStateProps = {
   message?: string;
+  children?: ReactNode;
 };
 
 const MESSAGE_SWAP_MS = 1000;
-export function AppLoadingState({ message }: AppLoadingStateProps) {
+export function AppLoadingState({ message, children }: AppLoadingStateProps) {
   const currentMessage = useLoadingMessage(message);
 
   return (
@@ -18,6 +19,7 @@ export function AppLoadingState({ message }: AppLoadingStateProps) {
       <span className="app-loading-message" style={{ color: homeColors.muted, marginTop: homeSpacing.sm }}>
         {currentMessage}
       </span>
+      {children}
     </div>
   );
 }

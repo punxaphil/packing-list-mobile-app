@@ -40,16 +40,19 @@ export function useSpaceManagement(onBack: () => void) {
 
   const removeUser = useCallback(
     (email: string) =>
-      runBusyOperation(async () => {
-        if (!activeSpace) return;
-        const userId = await findUserIdByEmail(email);
-        if (!userId) {
-          await removeEmailFromSpace(spaceId, email);
-          return;
-        }
-        await unassignUserFromPackItems(spaceId, userId);
-        await finalizeUserRemoval(spaceId, userId, email);
-      }),
+      runBusyOperation(
+        async () => {
+          if (!activeSpace) return;
+          const userId = await findUserIdByEmail(email);
+          if (!userId) {
+            await removeEmailFromSpace(spaceId, email);
+            return;
+          }
+          await unassignUserFromPackItems(spaceId, userId);
+          await finalizeUserRemoval(spaceId, userId, email);
+        },
+        { message: "removingUser" }
+      ),
     [activeSpace, spaceId]
   );
 
@@ -61,14 +64,17 @@ export function useSpaceManagement(onBack: () => void) {
 
   const leave = useCallback(
     () =>
-      runBusyOperation(async () => {
-        const userId = getUserId();
-        suppressRemovalAlert.current = true;
-        await unassignUserFromPackItems(spaceId, userId);
-        await finalizeUserRemoval(spaceId, userId, currentEmail);
-        switchToFallbackSpace();
-        onBack();
-      }),
+      runBusyOperation(
+        async () => {
+          const userId = getUserId();
+          suppressRemovalAlert.current = true;
+          await unassignUserFromPackItems(spaceId, userId);
+          await finalizeUserRemoval(spaceId, userId, currentEmail);
+          switchToFallbackSpace();
+          onBack();
+        },
+        { message: "leavingSpace" }
+      ),
     [spaceId, currentEmail, onBack, switchToFallbackSpace, suppressRemovalAlert]
   );
 
@@ -79,14 +85,21 @@ export function useSpaceManagement(onBack: () => void) {
     }
   }, [activeSpace]);
 
-  const deleteCurrentSpace = useCallback(async () => {
-    const userId = getUserId();
-    suppressRemovalAlert.current = true;
-    await deleteSpace(spaceId);
-    await removeSpaceFromProfile(userId, spaceId);
-    switchToFallbackSpace();
-    onBack();
-  }, [spaceId, onBack, switchToFallbackSpace, suppressRemovalAlert]);
+  const deleteCurrentSpace = useCallback(
+    () =>
+      runBusyOperation(
+        async () => {
+          const userId = getUserId();
+          suppressRemovalAlert.current = true;
+          await deleteSpace(spaceId);
+          await removeSpaceFromProfile(userId, spaceId);
+          switchToFallbackSpace();
+          onBack();
+        },
+        { message: "deletingSpace" }
+      ),
+    [spaceId, onBack, switchToFallbackSpace, suppressRemovalAlert]
+  );
 
   const confirmDelete = useCallback(() => {
     const error = getDeleteError();

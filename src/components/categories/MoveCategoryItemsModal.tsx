@@ -41,19 +41,22 @@ export const MoveCategoryItemsModal = ({
   }, [categories, sourceCategory.id, sortByAlpha]);
 
   const handleMove = () =>
-    runBusyOperation(async () => {
-      if (!selectedId || items.length === 0) return;
-      const targetItems = await writeDb.getPackItemsForAllPackingLists();
-      const bottomRank = getBottomRank(targetItems, selectedId);
-      const batch = writeDb.initBatch();
-      let rank = bottomRank;
-      for (const item of items) {
-        writeDb.updatePackItemBatch({ ...item, category: selectedId, rank }, batch);
-        rank--;
-      }
-      await batch.commit();
-      onClose();
-    });
+    runBusyOperation(
+      async () => {
+        if (!selectedId || items.length === 0) return;
+        const targetItems = await writeDb.getPackItemsForAllPackingLists();
+        const bottomRank = getBottomRank(targetItems, selectedId);
+        const batch = writeDb.initBatch();
+        let rank = bottomRank;
+        for (const item of items) {
+          writeDb.updatePackItemBatch({ ...item, category: selectedId, rank }, batch);
+          rank--;
+        }
+        await batch.commit();
+        onClose();
+      },
+      { message: "movingItems" }
+    );
 
   if (items.length === 0 && visible) {
     return (
