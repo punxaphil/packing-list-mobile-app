@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ActionSheetHost } from "~/components/home/ActionSheetHost.tsx";
 import { AppLoadingState } from "~/components/shared/AppLoadingState.tsx";
+import { BusyOverlay } from "~/components/shared/BusyOverlay.tsx";
 import { applyStoredLanguage } from "~/i18n";
 import "~/services/database";
 import { AppRoot } from "./AppRoot";
@@ -36,6 +37,7 @@ export function App() {
             <RootNavigator />
           </AppRoot>
           <ActionSheetHost />
+          <BusyOverlay />
         </>
       ) : (
         <AppLoadingState />

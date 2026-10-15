@@ -4,6 +4,7 @@ import { useImages } from "~/hooks/useImages.ts";
 import { useMemberItemCounts } from "~/hooks/useMemberItemCounts.ts";
 import { useMembers } from "~/hooks/useMembers.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { HomeHeader } from "../home/HomeHeader.tsx";
 import { buildEntityColors } from "../home/listColors.ts";
@@ -58,11 +59,12 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
     setMoveSource(member);
   };
 
-  const moveItems = async (target: NamedEntity) => {
-    if (!moveSource) return;
-    await writeDb.moveMemberAssignments(moveSource.id, target.id);
-    setMoveSource(null);
-  };
+  const moveItems = (target: NamedEntity) =>
+    runBusyOperation(async () => {
+      if (!moveSource) return;
+      await writeDb.moveMemberAssignments(moveSource.id, target.id);
+      setMoveSource(null);
+    });
 
   const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb, openMoveItems);
   const bulkEdit = useEmptyEntityBulkEdit({

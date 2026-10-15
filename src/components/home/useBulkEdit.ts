@@ -1,5 +1,6 @@
 import i18next from "i18next";
 import { useState } from "react";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import type { WriteDb } from "~/services/database.ts";
 import { withoutPackItemMembers } from "~/services/packItemState.ts";
 import type { PackItem } from "~/types/PackItem.ts";
@@ -11,16 +12,17 @@ import { useToast } from "./Toast.tsx";
 export const useBulkEdit = (items: PackItem[], writeDb: WriteDb) => {
   const [busy, setBusy] = useState(false);
   const { show: showToast } = useToast();
-  const run = async (targets: PackItem[], action: (item: PackItem) => Promise<void>) => {
-    setBusy(true);
-    try {
-      for (const item of targets) await action(item);
-    } catch {
-      showToast(homeCopy.bulkEditError);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const run = (targets: PackItem[], action: (item: PackItem) => Promise<void>) =>
+    runBusyOperation(async () => {
+      setBusy(true);
+      try {
+        for (const item of targets) await action(item);
+      } catch {
+        showToast(homeCopy.bulkEditError);
+      } finally {
+        setBusy(false);
+      }
+    });
   const confirm = (title: string, label: string, targets: PackItem[], action: (item: PackItem) => Promise<void>) => {
     showActionSheet(
       title,

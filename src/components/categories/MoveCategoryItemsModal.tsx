@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { DialogShell, DialogSingleAction } from "../shared/DialogShell.tsx";
@@ -39,19 +40,20 @@ export const MoveCategoryItemsModal = ({
     return sortByAlpha ? [...filtered].sort((a, b) => a.name.localeCompare(b.name)) : filtered;
   }, [categories, sourceCategory.id, sortByAlpha]);
 
-  const handleMove = async () => {
-    if (!selectedId || items.length === 0) return;
-    const targetItems = await writeDb.getPackItemsForAllPackingLists();
-    const bottomRank = getBottomRank(targetItems, selectedId);
-    const batch = writeDb.initBatch();
-    let rank = bottomRank;
-    for (const item of items) {
-      writeDb.updatePackItemBatch({ ...item, category: selectedId, rank }, batch);
-      rank--;
-    }
-    await batch.commit();
-    onClose();
-  };
+  const handleMove = () =>
+    runBusyOperation(async () => {
+      if (!selectedId || items.length === 0) return;
+      const targetItems = await writeDb.getPackItemsForAllPackingLists();
+      const bottomRank = getBottomRank(targetItems, selectedId);
+      const batch = writeDb.initBatch();
+      let rank = bottomRank;
+      for (const item of items) {
+        writeDb.updatePackItemBatch({ ...item, category: selectedId, rank }, batch);
+        rank--;
+      }
+      await batch.commit();
+      onClose();
+    });
 
   if (items.length === 0 && visible) {
     return (

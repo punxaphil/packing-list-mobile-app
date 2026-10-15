@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useInvites } from "~/providers/InviteContext.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import { getUserId } from "~/services/firebase.ts";
 import {
   deleteSpace,
@@ -38,16 +39,17 @@ export function useSpaceManagement(onBack: () => void) {
   );
 
   const removeUser = useCallback(
-    async (email: string) => {
-      if (!activeSpace) return;
-      const userId = await findUserIdByEmail(email);
-      if (!userId) {
-        await removeEmailFromSpace(spaceId, email);
-        return;
-      }
-      await unassignUserFromPackItems(spaceId, userId);
-      await finalizeUserRemoval(spaceId, userId, email);
-    },
+    (email: string) =>
+      runBusyOperation(async () => {
+        if (!activeSpace) return;
+        const userId = await findUserIdByEmail(email);
+        if (!userId) {
+          await removeEmailFromSpace(spaceId, email);
+          return;
+        }
+        await unassignUserFromPackItems(spaceId, userId);
+        await finalizeUserRemoval(spaceId, userId, email);
+      }),
     [activeSpace, spaceId]
   );
 
@@ -57,14 +59,18 @@ export function useSpaceManagement(onBack: () => void) {
     switchSpace(fallback);
   }, [profile, spaceId, switchSpace]);
 
-  const leave = useCallback(async () => {
-    const userId = getUserId();
-    suppressRemovalAlert.current = true;
-    await unassignUserFromPackItems(spaceId, userId);
-    await finalizeUserRemoval(spaceId, userId, currentEmail);
-    switchToFallbackSpace();
-    onBack();
-  }, [spaceId, currentEmail, onBack, switchToFallbackSpace, suppressRemovalAlert]);
+  const leave = useCallback(
+    () =>
+      runBusyOperation(async () => {
+        const userId = getUserId();
+        suppressRemovalAlert.current = true;
+        await unassignUserFromPackItems(spaceId, userId);
+        await finalizeUserRemoval(spaceId, userId, currentEmail);
+        switchToFallbackSpace();
+        onBack();
+      }),
+    [spaceId, currentEmail, onBack, switchToFallbackSpace, suppressRemovalAlert]
+  );
 
   const getDeleteError = useCallback(() => {
     if (!activeSpace) return;

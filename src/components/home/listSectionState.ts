@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
+import { runBusyOperation } from "~/services/busyOperation.ts";
 import type { WriteDb } from "~/services/database.ts";
 import type { Image } from "~/types/Image.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
@@ -54,30 +55,32 @@ const useAddList = (
   onListSelect?: (id: string) => void
 ) =>
   useCallback(
-    async (name: string, useTemplate: boolean) => {
-      const trimmed = name.trim();
-      if (!trimmed) return;
-      const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
-      if (useTemplate && templateList) {
-        await writeDb.copyPackItemsToList(templateList.id, id);
-      }
-      if (onListSelect) {
-        onListSelect(id);
-      } else {
-        selection.select(id);
-      }
-    },
+    (name: string, useTemplate: boolean) =>
+      runBusyOperation(async () => {
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
+        if (useTemplate && templateList) {
+          await writeDb.copyPackItemsToList(templateList.id, id);
+        }
+        if (onListSelect) {
+          onListSelect(id);
+        } else {
+          selection.select(id);
+        }
+      }),
     [lists, selection, templateList, writeDb, onListSelect]
   );
 
 const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
   useCallback(
-    async (list: PackingListSummary, onlyIfEmpty = false) => {
-      const wasSelected = selection.selectedId === list.id;
-      animateLayout();
-      await writeDb.deletePackingList(list.id, onlyIfEmpty);
-      if (wasSelected) selection.clear();
-    },
+    (list: PackingListSummary, onlyIfEmpty = false) =>
+      runBusyOperation(async () => {
+        const wasSelected = selection.selectedId === list.id;
+        animateLayout();
+        await writeDb.deletePackingList(list.id, onlyIfEmpty);
+        if (wasSelected) selection.clear();
+      }),
     [selection, writeDb]
   );
 
@@ -89,21 +92,24 @@ const useCopyList = (
   onListSelect?: (id: string) => void
 ) =>
   useCallback(
-    async (list: PackingListSummary) => {
-      const name = buildCopiedListName(list.name, lists);
-      const rank = getNextListRank(lists);
-      const id = await writeDb.addPackingList(name, rank);
-      await Promise.all([
-        writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),
-        writeDb.copyPackItemsToList(list.id, id),
-        copyListImage(images, list.id, id, writeDb),
-      ]);
-      if (onListSelect) {
-        onListSelect(id);
-      } else {
-        selection.select(id);
-      }
-    },
+    (list: PackingListSummary) =>
+      runBusyOperation(async () => {
+        const name = buildCopiedListName(list.name, lists);
+        const rank = getNextListRank(lists);
+        const id = await writeDb.addPackingList(name, rank);
+        const results = await Promise.allSettled([
+          writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),
+          writeDb.copyPackItemsToList(list.id, id),
+          copyListImage(images, list.id, id, writeDb),
+        ]);
+        const failure = results.find((result) => result.status === "rejected");
+        if (failure) throw failure.reason;
+        if (onListSelect) {
+          onListSelect(id);
+        } else {
+          selection.select(id);
+        }
+      }),
     [images, lists, onListSelect, selection, writeDb]
   );
 
@@ -178,9 +184,10 @@ const useRestore = (writeDb: WriteDb) =>
 
 const useUncheckAll = (writeDb: WriteDb) =>
   useCallback(
-    async (list: PackingListSummary) => {
-      await writeDb.uncheckAllItems(list.id);
-    },
+    (list: PackingListSummary) =>
+      runBusyOperation(async () => {
+        await writeDb.uncheckAllItems(list.id);
+      }),
     [writeDb]
   );
 
