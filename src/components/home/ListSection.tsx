@@ -52,9 +52,12 @@ export const ListSection = (props: ListSectionProps) => {
   const listImages = useMemo(() => images.filter((img) => img.type === "packingLists"), [images]);
   const handleMoveToSpace = useCallback(
     (listId: string, targetSpaceId: string) =>
-      runBusyOperation(async () => {
-        await moveListToSpace(spaceId, targetSpaceId, listId);
-      }),
+      runBusyOperation(
+        async () => {
+          await moveListToSpace(spaceId, targetSpaceId, listId);
+        },
+        { message: "movingList" }
+      ),
     [spaceId]
   );
   const actions = useListActions(props.lists, props.selection, templateList, listImages, props.onListSelect);
@@ -66,6 +69,7 @@ export const ListSection = (props: ListSectionProps) => {
     copy: listCopy,
     menuKey: "list.bulkRemoveEmptyCount",
     confirmKey: "list.bulkConfirm",
+    message: "removingEmptyLists",
   });
   const creation = useCreateListDialog(actions.onAdd, props.lists, !!templateList);
   const drag = useDragState();

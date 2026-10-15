@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { PackingKit } from "~/data/packingKits.ts";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { runBusyOperation } from "~/services/busyOperation.ts";
+import { runBusyTasks } from "~/services/busyTasks.ts";
 import { type WriteDb } from "~/services/database.ts";
 import { UNCATEGORIZED } from "~/services/utils.ts";
 import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
@@ -367,39 +368,44 @@ const useAddItemDialog = (
   );
   const addKits = useCallback(
     (kits: PackingKit[]) =>
-      runBusyOperation(async () => {
-        if (!listId) return;
-        animateLayout();
-        const categoryMap = new Map<string, string>();
-        for (const cat of categories) {
-          categoryMap.set(cat.name.toLowerCase(), cat.id);
-        }
-        const totalKitItems = kits.reduce((count, kit) => count + kit.items.length, 0);
-        let currentCategoryRank = getNextCategoryRank(categories);
-        let currentItemRank = addNewItemsOnTop ? getTopItemRank(items, totalKitItems) : getNextItemRank(items);
-        for (const kit of kits) {
-          for (const kitItem of kit.items) {
-            const catKey = kitItem.category.toLowerCase();
-            let categoryId = categoryMap.get(catKey);
-            if (!categoryId) {
+      runBusyOperation(
+        async () => {
+          if (!listId) return;
+          animateLayout();
+          const categoryMap = new Map<string, string>();
+          for (const cat of categories) {
+            categoryMap.set(cat.name.toLowerCase(), cat.id);
+          }
+          const totalKitItems = kits.reduce((count, kit) => count + kit.items.length, 0);
+          let currentCategoryRank = getNextCategoryRank(categories);
+          let currentItemRank = addNewItemsOnTop ? getTopItemRank(items, totalKitItems) : getNextItemRank(items);
+          await runBusyTasks(
+            kits.flatMap((kit) => kit.items),
+            async (kitItem) => {
+              const catKey = kitItem.category.toLowerCase();
+              let categoryId = categoryMap.get(catKey);
+              if (!categoryId) {
+                try {
+                  const newCat = await writeDb.addCategory(kitItem.category, currentCategoryRank++);
+                  categoryId = newCat.id;
+                  categoryMap.set(catKey, categoryId);
+                } catch (e) {
+                  if (!(e instanceof DuplicateNameError)) throw e;
+                  return;
+                }
+              }
               try {
-                const newCat = await writeDb.addCategory(kitItem.category, currentCategoryRank++);
-                categoryId = newCat.id;
-                categoryMap.set(catKey, categoryId);
+                await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank);
+                currentItemRank -= 1;
               } catch (e) {
                 if (!(e instanceof DuplicateNameError)) throw e;
-                continue;
               }
-            }
-            try {
-              await writeDb.addPackItem(kitItem.name, [], categoryId, listId, currentItemRank);
-              currentItemRank -= 1;
-            } catch (e) {
-              if (!(e instanceof DuplicateNameError)) throw e;
-            }
-          }
-        }
-      }),
+            },
+            "addingKits"
+          );
+        },
+        { message: "addingKits" }
+      ),
     [items, categories, writeDb, addNewItemsOnTop, listId]
   );
   return {

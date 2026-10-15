@@ -1,23 +1,31 @@
 export const BUSY_INDICATOR_DELAY_MS = 500;
 
 const listeners = new Set<() => void>();
-let pending = 0;
+type BusyDetails = { message: string; total?: number; completed?: number };
+type PendingOperation = { details?: BusyDetails };
+const pending = new Set<PendingOperation>();
 let timer: ReturnType<typeof setTimeout> | undefined;
-let state = { busy: false, showLoader: false };
+let state: { busy: boolean; showLoader: boolean; details?: BusyDetails } = { busy: false, showLoader: false };
 
 function publish(busy: boolean, showLoader: boolean) {
-  state = { busy, showLoader };
+  const entries = [...pending];
+  const details = (
+    entries.find((entry) => entry.details?.total !== undefined) ?? entries.find((entry) => entry.details)
+  )?.details;
+  state = { busy, showLoader, ...(details && { details }) };
   for (const listener of listeners) listener();
 }
 
-function start() {
-  if (pending++ > 0) return;
+function start(entry: PendingOperation) {
+  pending.add(entry);
+  if (pending.size > 1) return publish(true, state.showLoader);
   publish(true, false);
   timer = setTimeout(() => publish(true, true), BUSY_INDICATOR_DELAY_MS);
 }
 
-function finish() {
-  if (--pending > 0) return;
+function finish(entry: PendingOperation) {
+  pending.delete(entry);
+  if (pending.size) return publish(true, state.showLoader);
   clearTimeout(timer);
   publish(false, false);
 }
@@ -30,11 +38,21 @@ export const busyOperation = {
   },
 };
 
-export async function runBusyOperation<Result>(operation: () => Promise<Result>): Promise<Result> {
-  start();
+export async function runBusyOperation<Result>(
+  operation: (report: (completed: number) => void) => Promise<Result>,
+  details?: BusyDetails
+): Promise<Result> {
+  const entry = { details };
+  start(entry);
   try {
-    return await operation();
+    return await operation((completed) => reportProgress(entry, completed));
   } finally {
-    finish();
+    finish(entry);
   }
+}
+
+function reportProgress(entry: PendingOperation, completed: number) {
+  if (!pending.has(entry) || !entry.details) return;
+  entry.details = { ...entry.details, completed };
+  publish(true, state.showLoader);
 }

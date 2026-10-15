@@ -54,6 +54,7 @@ export const CategoriesScreen = ({ email, onProfile }: CategoriesScreenProps) =>
     copy: CATEGORY_COPY,
     menuKey: "category.bulkRemoveEmptyCount",
     confirmKey: "category.bulkConfirm",
+    message: "removingEmptyCategories",
   });
   const creation = useCreateEntityDialog(actions.onAdd, categories, CATEGORY_COPY.type);
   const drag = useDragState();

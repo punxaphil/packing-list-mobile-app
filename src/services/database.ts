@@ -21,6 +21,7 @@ import { DuplicateNameError } from "~/types/DuplicateNameError.ts";
 import { MemberPackItem } from "~/types/MemberPackItem.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
+import { createBulkPackItemOperations } from "./bulkPackItems.ts";
 import { type ChangeActor, logItemAdded, logItemDeleted, logItemImage, logItemUpdated } from "./changeLog.ts";
 import { firestore } from "./firebase.ts";
 import { getPackItemChecked, normalizePackItem, withPackItemMembers } from "./packItemState.ts";
@@ -167,6 +168,7 @@ async function logPackItemImageChange(spaceId: string, actor: ChangeActor | unde
 
 export function createWriteDb(spaceId: string, actor?: ChangeActor) {
   const db = {
+    ...createBulkPackItemOperations(spaceId, actor),
     addPackItem: async (
       name: string,
       members: MemberPackItem[],

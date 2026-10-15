@@ -1,5 +1,6 @@
 import { addDoc, collection, onSnapshot, query, where } from "firebase/firestore";
 import type { PackItem } from "~/types/PackItem.ts";
+import { createChangeRecord } from "./changeRecord.ts";
 import { firestore } from "./firebase.ts";
 import { getPackItemChecked } from "./packItemState.ts";
 
@@ -55,16 +56,7 @@ async function record(
   fromCategoryId?: string
 ) {
   if (!actor) return;
-  await addDoc(changesCol(spaceId), {
-    packingList: item.packingList,
-    categoryId: item.category,
-    itemName: item.name,
-    userId: actor.id,
-    userName: actor.name,
-    action,
-    createdAt: Date.now(),
-    ...(fromCategoryId === undefined ? {} : { fromCategoryId }),
-  });
+  await addDoc(changesCol(spaceId), createChangeRecord(actor, item, action, fromCategoryId));
 }
 
 export const logItemAdded = (spaceId: string, actor: ChangeActor | undefined, item: PackItem) =>

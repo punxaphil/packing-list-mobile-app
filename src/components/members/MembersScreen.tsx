@@ -60,11 +60,14 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
   };
 
   const moveItems = (target: NamedEntity) =>
-    runBusyOperation(async () => {
-      if (!moveSource) return;
-      await writeDb.moveMemberAssignments(moveSource.id, target.id);
-      setMoveSource(null);
-    });
+    runBusyOperation(
+      async () => {
+        if (!moveSource) return;
+        await writeDb.moveMemberAssignments(moveSource.id, target.id);
+        setMoveSource(null);
+      },
+      { message: "movingMembers" }
+    );
 
   const actions = useEntityActions(members, itemCounts, MEMBER_COPY, memberDb, openMoveItems);
   const bulkEdit = useEmptyEntityBulkEdit({
@@ -75,6 +78,7 @@ export const MembersScreen = ({ email, onProfile }: MembersScreenProps) => {
     copy: MEMBER_COPY,
     menuKey: "member.bulkRemoveEmptyCount",
     confirmKey: "member.bulkConfirm",
+    message: "removingEmptyMembers",
   });
   const creation = useCreateEntityDialog(actions.onAdd, members, MEMBER_COPY.type);
   const drag = useDragState();

@@ -56,31 +56,37 @@ const useAddList = (
 ) =>
   useCallback(
     (name: string, useTemplate: boolean) =>
-      runBusyOperation(async () => {
-        const trimmed = name.trim();
-        if (!trimmed) return;
-        const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
-        if (useTemplate && templateList) {
-          await writeDb.copyPackItemsToList(templateList.id, id);
-        }
-        if (onListSelect) {
-          onListSelect(id);
-        } else {
-          selection.select(id);
-        }
-      }),
+      runBusyOperation(
+        async () => {
+          const trimmed = name.trim();
+          if (!trimmed) return;
+          const id = await writeDb.addPackingList(trimmed, getNextListRank(lists));
+          if (useTemplate && templateList) {
+            await writeDb.copyPackItemsToList(templateList.id, id);
+          }
+          if (onListSelect) {
+            onListSelect(id);
+          } else {
+            selection.select(id);
+          }
+        },
+        { message: "creatingList" }
+      ),
     [lists, selection, templateList, writeDb, onListSelect]
   );
 
 const useDeleteList = (selection: SelectionState, writeDb: WriteDb) =>
   useCallback(
     (list: PackingListSummary, onlyIfEmpty = false) =>
-      runBusyOperation(async () => {
-        const wasSelected = selection.selectedId === list.id;
-        animateLayout();
-        await writeDb.deletePackingList(list.id, onlyIfEmpty);
-        if (wasSelected) selection.clear();
-      }),
+      runBusyOperation(
+        async () => {
+          const wasSelected = selection.selectedId === list.id;
+          animateLayout();
+          await writeDb.deletePackingList(list.id, onlyIfEmpty);
+          if (wasSelected) selection.clear();
+        },
+        { message: "deletingList" }
+      ),
     [selection, writeDb]
   );
 
@@ -93,23 +99,26 @@ const useCopyList = (
 ) =>
   useCallback(
     (list: PackingListSummary) =>
-      runBusyOperation(async () => {
-        const name = buildCopiedListName(list.name, lists);
-        const rank = getNextListRank(lists);
-        const id = await writeDb.addPackingList(name, rank);
-        const results = await Promise.allSettled([
-          writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),
-          writeDb.copyPackItemsToList(list.id, id),
-          copyListImage(images, list.id, id, writeDb),
-        ]);
-        const failure = results.find((result) => result.status === "rejected");
-        if (failure) throw failure.reason;
-        if (onListSelect) {
-          onListSelect(id);
-        } else {
-          selection.select(id);
-        }
-      }),
+      runBusyOperation(
+        async () => {
+          const name = buildCopiedListName(list.name, lists);
+          const rank = getNextListRank(lists);
+          const id = await writeDb.addPackingList(name, rank);
+          const results = await Promise.allSettled([
+            writeDb.updatePackingList(buildCopiedList(list, id, name, rank)),
+            writeDb.copyPackItemsToList(list.id, id),
+            copyListImage(images, list.id, id, writeDb),
+          ]);
+          const failure = results.find((result) => result.status === "rejected");
+          if (failure) throw failure.reason;
+          if (onListSelect) {
+            onListSelect(id);
+          } else {
+            selection.select(id);
+          }
+        },
+        { message: "copyingList" }
+      ),
     [images, lists, onListSelect, selection, writeDb]
   );
 
@@ -185,9 +194,12 @@ const useRestore = (writeDb: WriteDb) =>
 const useUncheckAll = (writeDb: WriteDb) =>
   useCallback(
     (list: PackingListSummary) =>
-      runBusyOperation(async () => {
-        await writeDb.uncheckAllItems(list.id);
-      }),
+      runBusyOperation(
+        async () => {
+          await writeDb.uncheckAllItems(list.id);
+        },
+        { message: "resettingList" }
+      ),
     [writeDb]
   );
 
