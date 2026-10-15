@@ -59,3 +59,6 @@
 - Never hardcode any user-facing text. Always use i18next and add new strings to the appropriate locales file (e.g. `src/i18n/locales/en.json`).
 - If a string is used in multiple places, add it to the `common` section of the locales file and reuse it via `i18next.t("common.stringKey")` instead of duplicating it in multiple places. If it's only used in one place, add it to the relevant section (e.g. `home`, `categories`, etc.) of the locales file.
 - Translate all languages when adding new strings.
+
+# Commit messages and PR titles
+Both should follow conventional commits and prefix with for instance fix, feat or chore.
