@@ -3,6 +3,8 @@ name: Deploy web
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,6 +12,18 @@ permissions:
 
 jobs:
   deploy:
+    if: >-
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository) ||
+      ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+       github.ref == 'refs/heads/main')
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -24,5 +38,6 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PACKING_LIST_448814 }}
-          channelId: live
+          channelId: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'live' }}
+          expires: 7d
           projectId: packing-list-448814
