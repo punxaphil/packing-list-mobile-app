@@ -19,6 +19,7 @@ const item: PackItem = {
   packingList: "list",
   rank: 1,
 };
+const LARGE_LIST_ITEM_COUNT = 250;
 const confirmAction = (index: number) => {
   vi.mocked(showActionSheet).mock.lastCall?.[1][index].onPress?.();
   vi.mocked(showActionSheet).mock.lastCall?.[1][0].onPress?.();
@@ -53,16 +54,22 @@ describe("bulk edit input blocking", () => {
     expect(busyOperation.getSnapshot()).toEqual({ busy: false, showLoader: false });
   });
 
-  it("also blocks removal of ticked items", async () => {
+  it("blocks removal of 250 ticked items until the final deletion finishes", async () => {
     let finish = () => {};
     const pending = new Promise<void>((resolve) => {
       finish = resolve;
     });
-    const deletePackItem = vi.fn().mockReturnValue(pending);
-    useBulkEdit([item], { deletePackItem } as unknown as WriteDb).open();
+    const items = Array.from({ length: LARGE_LIST_ITEM_COUNT }, (_, index) => ({ ...item, id: String(index) }));
+    const lastItem = items[LARGE_LIST_ITEM_COUNT - 1];
+    const deletePackItem = vi.fn((id: string) => (id === lastItem.id ? pending : Promise.resolve()));
+    useBulkEdit(items, { deletePackItem } as unknown as WriteDb).open();
     confirmAction(0);
     expect(busyOperation.getSnapshot().busy).toBe(true);
-    expect(deletePackItem).toHaveBeenCalledWith(item.id);
+    expect(busyOperation.getSnapshot().showLoader).toBe(false);
+    await vi.waitFor(() => expect(deletePackItem).toHaveBeenCalledTimes(LARGE_LIST_ITEM_COUNT));
+    expect(deletePackItem).toHaveBeenLastCalledWith(lastItem.id);
+    expect(busyOperation.getSnapshot().busy).toBe(true);
+    await vi.waitFor(() => expect(busyOperation.getSnapshot().showLoader).toBe(true));
     finish();
     await vi.waitFor(() => expect(busyOperation.getSnapshot().busy).toBe(false));
   });
