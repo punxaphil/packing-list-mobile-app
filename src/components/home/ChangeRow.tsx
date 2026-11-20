@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ChangeLogEntry } from "~/services/changeLog.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import { changeActionVerb, changeCopy } from "./changeCopy.ts";
@@ -20,6 +21,19 @@ const Avatar = ({ name, imageUrl }: { name: string; imageUrl?: string }) => {
   );
 };
 
+const ChangeTimestamp = ({ createdAt }: Pick<ChangeLogEntry, "createdAt">) => {
+  const { i18n } = useTranslation();
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return null;
+  const label = date.toLocaleString(i18n.language, { dateStyle: "medium", timeStyle: "short" });
+  return (
+    <small>
+      <br />
+      <time dateTime={date.toISOString()}>{label}</time>
+    </small>
+  );
+};
+
 export const ChangeRow = ({ entry, categoryName, fromCategoryName, imageUrl }: Props) => (
   <li className="list-changes-row">
     <Avatar name={entry.userName} imageUrl={imageUrl} />
@@ -30,6 +44,7 @@ export const ChangeRow = ({ entry, categoryName, fromCategoryName, imageUrl }: P
       {entry.action === "moved" && fromCategoryName
         ? ` ${changeCopy.from} ${fromCategoryName} ${changeCopy.to} ${categoryName}`
         : ` (${categoryName})`}
+      <ChangeTimestamp createdAt={entry.createdAt} />
     </p>
   </li>
 );
