@@ -7,14 +7,16 @@ import "./appLoadingState.css";
 type AppLoadingStateProps = {
   message?: string;
   children?: ReactNode;
+  variant?: "full" | "screen";
 };
 
 const MESSAGE_SWAP_MS = 1000;
-export function AppLoadingState({ message, children }: AppLoadingStateProps) {
+export function AppLoadingState({ message, children, variant = "full" }: AppLoadingStateProps) {
   const currentMessage = useLoadingMessage(message);
+  const className = variant === "screen" ? "app-loading-state app-loading-state-screen" : "app-loading-state";
 
   return (
-    <div className="app-loading-state" style={{ backgroundColor: homeColors.surface }}>
+    <div className={className} style={{ backgroundColor: homeColors.surface }}>
       <SquirrelLoader />
       <span className="app-loading-message" style={{ color: homeColors.muted, marginTop: homeSpacing.sm }}>
         {currentMessage}

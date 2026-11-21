@@ -6,6 +6,9 @@
   align-items: center;
   justify-content: center;
 }
+.app-loading-state-screen {
+  min-height: 0;
+}
 .app-loading-message {
   min-height: 24px;
   font-size: 16px;

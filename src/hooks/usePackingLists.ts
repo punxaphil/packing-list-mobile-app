@@ -78,14 +78,11 @@ function unsubscribeMissingUser(setState: (value: HookState) => void) {
   return NOOP_UNSUBSCRIBE;
 }
 
-function createSubscription(spaceId: string, setState: (value: HookState) => void) {
+function manageSubscription(spaceId: string | null | undefined, setState: (value: HookState) => void) {
+  if (!spaceId) return unsubscribeMissingUser(setState);
   logInfo("Subscribing to packing lists", { spaceId });
   setState(createInitialState());
   return subscribeToLists(spaceId, setState) ?? NOOP_UNSUBSCRIBE;
-}
-
-function manageSubscription(spaceId: string | null | undefined, setState: (value: HookState) => void) {
-  return spaceId ? createSubscription(spaceId, setState) : unsubscribeMissingUser(setState);
 }
 
 function buildResult(state: HookState) {
@@ -97,7 +94,8 @@ function buildResult(state: HookState) {
 }
 
 export function usePackingLists(spaceId: string | null | undefined) {
-  const [state, setState] = useState<HookState>(() => createInitialState());
-  useEffect(() => manageSubscription(spaceId, setState), [spaceId]);
-  return buildResult(state);
+  const [snapshot, setSnapshot] = useState(() => ({ spaceId, state: createInitialState() }));
+  useEffect(() => manageSubscription(spaceId, (state) => setSnapshot({ spaceId, state })), [spaceId]);
+  if (snapshot.spaceId === spaceId) return buildResult(snapshot.state);
+  return buildResult(spaceId ? createInitialState() : createEmptyState());
 }
