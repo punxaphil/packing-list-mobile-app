@@ -41,6 +41,7 @@
     "detailHeader": "Saker att packa",
     "back": "< Tillbaka",
     "listImage": "Listbild",
+    "viewItemImage": "Visa bild för {name}",
     "avatarFallback": "?",
     "addItem": "Lägg till",
     "addItemQuick": "Lägg till...",

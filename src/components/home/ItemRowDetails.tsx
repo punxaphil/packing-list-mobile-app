@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import type { CSSProperties } from "react";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { CategoryItemRowProps } from "./itemRowProps.ts";
@@ -15,6 +16,7 @@ type DetailsProps = Pick<
   | "checkboxColor"
   | "onToggleMemberPacked"
   | "onOpenRename"
+  | "onOpenImagePicker"
 > & { checked: boolean; wrapItemText: boolean };
 
 export const ItemRowDetails = ({
@@ -26,6 +28,7 @@ export const ItemRowDetails = ({
   checkboxColor,
   onToggleMemberPacked,
   onOpenRename,
+  onOpenImagePicker,
   checked,
   wrapItemText,
 }: DetailsProps) => {
@@ -35,12 +38,16 @@ export const ItemRowDetails = ({
       className="item-row-body"
       style={{ "--item-text": homeColors.text, "--item-muted": homeColors.muted } as CSSProperties}
     >
-      {itemImage &&
-        (emoji ? (
-          <span className="item-row-image">{emoji}</span>
-        ) : (
-          <img className="item-row-image" src={itemImage.url} alt="" />
-        ))}
+      {itemImage && (
+        <button
+          type="button"
+          className="item-row-image"
+          onClick={onOpenImagePicker}
+          aria-label={i18next.t("home.viewItemImage", { name: item.name })}
+        >
+          {emoji ?? <img src={itemImage.url} alt="" />}
+        </button>
+      )}
       <div className="item-row-content">
         <button
           type="button"
