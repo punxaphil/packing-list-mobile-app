@@ -41,6 +41,7 @@
     "detailHeader": "Packing Items",
     "back": "< Back",
     "listImage": "List image",
+    "viewItemImage": "View image for {name}",
     "avatarFallback": "?",
     "addItem": "Add",
     "addItemQuick": "Add...",
