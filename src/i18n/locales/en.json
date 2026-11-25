@@ -244,7 +244,7 @@
     "signingIn": "Signing in...",
     "creatingAccount": "Creating account...",
     "verifyEmail": "Verify your email",
-    "verificationIntro": "We sent a verification link to {{email}}. Check your inbox (and spam folder) and tap the link.",
+    "verificationIntro": "We sent a verification link to {email}. Check your inbox (and spam folder) and tap the link.",
     "verificationSent": "Verification email sent!",
     "verificationSendFailed": "Failed to send email. Try again later.",
     "verificationPending": "Email not yet verified. Check your inbox.",

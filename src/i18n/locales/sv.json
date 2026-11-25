@@ -244,7 +244,7 @@
     "signingIn": "Loggar in...",
     "creatingAccount": "Skapar konto...",
     "verifyEmail": "Verifiera din e-postadress",
-    "verificationIntro": "Vi skickade en verifieringslänk till {{email}}. Kontrollera din inkorg (och skräpposten) och öppna länken.",
+    "verificationIntro": "Vi skickade en verifieringslänk till {email}. Kontrollera din inkorg (och skräpposten) och öppna länken.",
     "verificationSent": "Verifieringsmejl skickat!",
     "verificationSendFailed": "Det gick inte att skicka mejlet. Försök igen senare.",
     "verificationPending": "E-postadressen är inte verifierad än. Kontrollera din inkorg.",
