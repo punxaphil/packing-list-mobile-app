@@ -46,7 +46,7 @@ export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
     (url) => {
       const item = props.renameItem;
       if (!item) return;
-      if (props.renameItemText === item.name) props.onCancelItem();
+      props.onCancelItem();
       void writeDb.updatePackItemUrl(item.id, url).catch(() => show(i18next.t("home.itemUrlSaveFailed")));
     },
     props.onChangeItemText
