@@ -4,34 +4,40 @@ import type { NamedEntity } from "~/types/NamedEntity.ts";
 import type { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { addItemCopy } from "./listCopy.ts";
+import type { useAddItemDialogState } from "./useAddItemDialogState.ts";
 
 export type AddItemSubmit = (
   itemName: string,
   category: NamedEntity | null,
   newCategoryName: string | null,
-  keepOpen: boolean
+  keepOpen: boolean,
+  url?: string
 ) => Promise<NamedEntity>;
 
 export const useAddItemSubmit = (
-  itemName: string,
-  selectedCategory: NamedEntity,
-  newCategoryName: string,
-  hasNewCategory: boolean,
+  state: ReturnType<typeof useAddItemDialogState>,
   items: PackItem[],
-  targetCategoryId: string,
-  setItemName: (value: string) => void,
-  setSelectedCategory: (category: NamedEntity) => void,
-  setNewCategoryName: (value: string) => void,
-  setError: (error: string | null) => void,
-  keepOpen: boolean,
   showToast: (message: string) => void,
   inputRef: RefObject<HTMLInputElement | null>,
   onSubmit: AddItemSubmit
-) =>
-  useCallback(async () => {
+) => {
+  const {
+    itemName,
+    itemUrl,
+    selectedCategory,
+    newCategoryName,
+    keepOpen,
+    setItemName,
+    setItemUrl,
+    setSelectedCategory,
+    setNewCategoryName,
+    setError,
+  } = state;
+  return useCallback(async () => {
     const trimmedName = itemName.trim();
+    const categoryName = newCategoryName.trim();
     if (!trimmedName) return;
-    if (!hasNewCategory && hasDuplicateName(trimmedName, targetCategoryId, items)) {
+    if (!categoryName && hasDuplicateName(trimmedName, selectedCategory.id, items)) {
       setError(addItemCopy.duplicateError);
       return;
     }
@@ -39,9 +45,10 @@ export const useAddItemSubmit = (
     try {
       nextCategory = await onSubmit(
         trimmedName,
-        hasNewCategory ? null : selectedCategory,
-        hasNewCategory ? newCategoryName.trim() : null,
-        keepOpen
+        categoryName ? null : selectedCategory,
+        categoryName || null,
+        keepOpen,
+        itemUrl
       );
     } catch (error) {
       if (error instanceof DuplicateNameError) {
@@ -52,6 +59,7 @@ export const useAddItemSubmit = (
     }
     if (!keepOpen) return;
     setItemName("");
+    setItemUrl(undefined);
     setSelectedCategory(nextCategory);
     setNewCategoryName("");
     setError(null);
@@ -63,9 +71,7 @@ export const useAddItemSubmit = (
     itemName,
     selectedCategory,
     newCategoryName,
-    hasNewCategory,
     items,
-    targetCategoryId,
     setItemName,
     setSelectedCategory,
     setNewCategoryName,
@@ -74,4 +80,7 @@ export const useAddItemSubmit = (
     showToast,
     inputRef,
     onSubmit,
+    itemUrl,
+    setItemUrl,
   ]);
+};

@@ -4,6 +4,7 @@ import type { NamedEntity } from "~/types/NamedEntity.ts";
 
 export const useAddItemDialogState = (visible: boolean, initialCategory?: NamedEntity) => {
   const [itemName, setItemName] = useState("");
+  const [itemUrl, setItemUrl] = useState<string>();
   const [selectedCategory, setSelectedCategory] = useState<NamedEntity>(UNCATEGORIZED);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [keepOpen, setKeepOpen] = useState(false);
@@ -11,6 +12,7 @@ export const useAddItemDialogState = (visible: boolean, initialCategory?: NamedE
   useEffect(() => {
     if (visible) {
       setItemName("");
+      setItemUrl(undefined);
       setSelectedCategory(initialCategory ?? UNCATEGORIZED);
       setNewCategoryName("");
       setError(null);
@@ -19,6 +21,8 @@ export const useAddItemDialogState = (visible: boolean, initialCategory?: NamedE
   return {
     itemName,
     setItemName,
+    itemUrl,
+    setItemUrl,
     selectedCategory,
     setSelectedCategory,
     newCategoryName,

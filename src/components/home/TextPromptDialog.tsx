@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { type ClipboardEventHandler, useRef } from "react";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { HOME_COPY } from "./styles.ts";
 import "./textPromptDialog.css";
@@ -15,6 +15,7 @@ type TextPromptDialogProps = {
   keyboardType?: "email-address" | "default" | "url";
   getError?: (text: string) => string | null;
   onChange: (text: string) => void;
+  onPaste?: ClipboardEventHandler<HTMLInputElement>;
   onSubmitText?: (text: string) => void | Promise<void>;
   onCancel: () => void;
   onSubmit: () => void;
@@ -31,6 +32,7 @@ export const TextPromptDialog = ({
   autoCapitalize,
   keyboardType,
   onChange,
+  onPaste,
   onCancel,
   onSubmit,
 }: TextPromptDialogProps) => {
@@ -59,6 +61,7 @@ export const TextPromptDialog = ({
         inputMode={keyboardType === "url" ? "url" : undefined}
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onPaste={editable ? onPaste : undefined}
         onKeyDown={(event) => {
           if (event.key === "Enter" && !disabled && editable) {
             event.preventDefault();
