@@ -12,7 +12,7 @@ type TextPromptDialogProps = {
   disabled?: boolean;
   editable?: boolean;
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
-  keyboardType?: "email-address" | "default";
+  keyboardType?: "email-address" | "default" | "url";
   getError?: (text: string) => string | null;
   onChange: (text: string) => void;
   onSubmitText?: (text: string) => void | Promise<void>;
@@ -56,6 +56,7 @@ export const TextPromptDialog = ({
         ref={inputRef}
         className={`text-prompt-input${error ? " text-prompt-input-error" : ""}`}
         type={keyboardType === "email-address" ? "email" : "text"}
+        inputMode={keyboardType === "url" ? "url" : undefined}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={(event) => {

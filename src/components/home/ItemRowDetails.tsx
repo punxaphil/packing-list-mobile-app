@@ -1,5 +1,6 @@
 import i18next from "i18next";
 import type { CSSProperties } from "react";
+import { parseItemUrl } from "~/services/itemUrl.ts";
 import { getEmojiValue } from "~/services/mediaValue.ts";
 import type { CategoryItemRowProps } from "./itemRowProps.ts";
 import { MemberInitials } from "./MemberInitials.tsx";
@@ -33,6 +34,8 @@ export const ItemRowDetails = ({
   wrapItemText,
 }: DetailsProps) => {
   const emoji = getEmojiValue(itemImage?.url);
+  const url = parseItemUrl(item.url);
+  const linkLabel = i18next.t("home.openItemUrl", { name: item.name });
   return (
     <div
       className="item-row-body"
@@ -65,6 +68,12 @@ export const ItemRowDetails = ({
           onToggle={onToggleMemberPacked}
         />
       </div>
+      {url && (
+        <a className="item-row-link" href={url} target="_blank" rel="noopener noreferrer" title={linkLabel}>
+          <span className="mdi mdi-link-variant" aria-hidden="true" />
+          <span className="item-row-link-label">{linkLabel}</span>
+        </a>
+      )}
     </div>
   );
 };

@@ -40,6 +40,7 @@ export const areRowPropsEqual = (prev: CategoryItemRowProps, next: CategoryItemR
   prev.item.id === next.item.id &&
   prev.item.checked === next.item.checked &&
   prev.item.name === next.item.name &&
+  prev.item.url === next.item.url &&
   prev.color === next.color &&
   prev.checkboxColor === next.checkboxColor &&
   prev.item.members.length === next.item.members.length &&

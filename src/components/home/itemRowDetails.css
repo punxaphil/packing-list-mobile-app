@@ -37,7 +37,7 @@
   flex: none;
   width: 30px;
   height: 30px;
-  margin-inline: -8px;
+  margin-inline: -8px -4px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -47,7 +47,7 @@
   flex: 1;
   min-width: 0;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 .item-row-image {
   width: 24px;
@@ -97,6 +97,24 @@
 .item-row-name-wrap {
   overflow-wrap: anywhere;
   white-space: normal;
+}
+.item-row-link {
+  display: grid;
+  flex: none;
+  min-width: 24px;
+  min-height: 24px;
+  place-items: center;
+  color: var(--item-muted);
+  font-size: 20px;
+  text-decoration: none;
+}
+.item-row-link-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .item-row-menu {
   padding: 4px 8px;

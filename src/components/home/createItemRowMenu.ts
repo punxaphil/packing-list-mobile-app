@@ -1,10 +1,11 @@
+import i18next from "i18next";
 import { CATEGORY_COPY } from "../shared/entityStyles.ts";
 import { homeCopy } from "./copy.ts";
 import type { CategoryItemRowProps } from "./itemRowProps.ts";
 import { assignMembersCopy, copyToListCopy } from "./listCopy.ts";
 import { showActionSheet } from "./showActionSheet.ts";
 
-export const createItemRowMenu = (props: CategoryItemRowProps) => () =>
+export const createItemRowMenu = (props: CategoryItemRowProps, onOpenUrlEditor: () => void) => () =>
   showActionSheet(
     props.item.name,
     [
@@ -12,6 +13,7 @@ export const createItemRowMenu = (props: CategoryItemRowProps) => () =>
       { text: assignMembersCopy.title, onPress: props.onOpenAssignMembers },
       { text: CATEGORY_COPY.changeCategory, onPress: props.onOpenMoveCategory },
       { text: props.itemImage ? CATEGORY_COPY.updateImage : CATEGORY_COPY.addImage, onPress: props.onOpenImagePicker },
+      { text: i18next.t(props.item.url ? "home.editItemUrl" : "home.addItemUrl"), onPress: onOpenUrlEditor },
       ...(props.hasOtherLists ? [{ text: copyToListCopy.title, onPress: props.onOpenCopyToList }] : []),
       { text: homeCopy.deleteItem, style: "destructive", onPress: () => props.onDeleteItem(props.item.id) },
     ],
