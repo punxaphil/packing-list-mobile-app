@@ -1,4 +1,5 @@
-import type { RefObject } from "react";
+import i18next from "i18next";
+import type { ClipboardEventHandler, RefObject } from "react";
 import type { Image } from "~/types/Image.ts";
 import type { NamedEntity } from "~/types/NamedEntity.ts";
 import type { PackItem } from "~/types/PackItem.ts";
@@ -21,6 +22,7 @@ type AddItemFieldsProps = {
   items: PackItem[];
   submitting: boolean;
   onSubmit: () => void;
+  onPaste: ClipboardEventHandler<HTMLInputElement>;
   onBrowseKits: () => void;
 };
 
@@ -32,6 +34,7 @@ export const AddItemFields = ({
   items,
   submitting,
   onSubmit,
+  onPaste,
   onBrowseKits,
 }: AddItemFieldsProps) => (
   <>
@@ -45,12 +48,29 @@ export const AddItemFields = ({
           state.setItemName(event.target.value);
           state.setError(null);
         }}
+        onPaste={onPaste}
         onKeyDown={(event) => {
           if (event.key === "Enter" && state.itemName.trim() && !submitting) onSubmit();
         }}
         disabled={submitting}
       />
     </FormField>
+    {state.itemUrl && (
+      <FormField label={i18next.t("home.itemUrlLabel")} group>
+        <input
+          className="text-prompt-input"
+          type="url"
+          aria-label={i18next.t("home.itemUrlLabel")}
+          value={state.itemUrl}
+          readOnly
+        />
+        <Button
+          label={i18next.t("home.removeItemUrl")}
+          onPress={() => state.setItemUrl(undefined)}
+          disabled={submitting}
+        />
+      </FormField>
+    )}
     {state.error && (
       <span className="text-prompt-error" role="alert">
         {state.error}

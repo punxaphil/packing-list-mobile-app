@@ -5,11 +5,20 @@ import en from "~/i18n/locales/en.json";
 import { toEmojiValue } from "~/services/mediaValue.ts";
 import { ItemRowDetails } from "./ItemRowDetails.tsx";
 
-const renderRow = (url?: string) =>
+const renderRow = (imageUrl?: string, url?: string) =>
   renderToStaticMarkup(
     <ItemRowDetails
-      item={{ id: "socks", name: "Socks", checked: false, members: [], category: "", packingList: "list", rank: 0 }}
-      itemImage={url ? { id: "image", type: "packItems", typeId: "socks", url } : undefined}
+      item={{
+        id: "socks",
+        name: "Socks",
+        checked: false,
+        members: [],
+        category: "",
+        packingList: "list",
+        rank: 0,
+        url,
+      }}
+      itemImage={imageUrl ? { id: "image", type: "packItems", typeId: "socks", url: imageUrl } : undefined}
       initialsMap={new Map()}
       memberNames={new Map()}
       memberImages={[]}
@@ -41,4 +50,17 @@ it.each([
 
 it("does not render a thumbnail button for an item without an image", () => {
   expect(renderRow()).not.toContain('class="item-row-image"');
+});
+
+it("renders an accessible, isolated external link alongside the item image", () => {
+  const row = renderRow("/socks.png", "https://example.org/socks");
+  expect(row).toContain('class="item-row-image"');
+  expect(row).toContain(
+    '<a class="item-row-link" href="https://example.org/socks" target="_blank" rel="noopener noreferrer"'
+  );
+  expect(row).toContain('<span class="item-row-link-label">Open link for Socks (opens in a new tab)</span>');
+});
+
+it.each([undefined, "javascript:void(0)"])("does not render an icon for %s", (url) => {
+  expect(renderRow(undefined, url)).not.toContain('class="item-row-link"');
 });

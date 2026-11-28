@@ -1,9 +1,13 @@
+import i18next from "i18next";
+import { useSpace } from "~/providers/SpaceContext.ts";
 import { NamedEntity } from "~/types/NamedEntity.ts";
 import { PackItem } from "~/types/PackItem.ts";
 import { hasDuplicateEntityName } from "../shared/entityValidation.ts";
+import { useItemUrlPaste } from "./ItemUrlPastePrompt.tsx";
 import { hasDuplicateName } from "./itemHandlers.ts";
 import { HOME_COPY } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
+import { useToast } from "./Toast.tsx";
 
 type CategoryRenameDialogsProps = {
   renameItem: PackItem | null;
@@ -35,6 +39,18 @@ export const getRenameCategoryError = (category: NamedEntity, text: string, cate
 };
 
 export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
+  const { writeDb } = useSpace();
+  const { show } = useToast();
+  const paste = useItemUrlPaste(
+    !!props.renameItem,
+    (url) => {
+      const item = props.renameItem;
+      if (!item) return;
+      props.onCancelItem();
+      void writeDb.updatePackItemUrl(item.id, url).catch(() => show(i18next.t("home.itemUrlSaveFailed")));
+    },
+    props.onChangeItemText
+  );
   const renameItemError = getRenameItemError(props.renameItem, props.renameItemText, props.allItems);
   const renameCategoryError = getRenameCategoryError(props.category, props.renameCategoryText, props.categories);
   return (
@@ -47,9 +63,11 @@ export const CategoryRenameDialogs = (props: CategoryRenameDialogsProps) => {
         error={renameItemError}
         disabled={!props.renameItemText.trim() || !!renameItemError}
         onChange={props.onChangeItemText}
+        onPaste={paste.onPaste}
         onCancel={props.onCancelItem}
         onSubmit={props.onSubmitItem}
       />
+      {paste.prompt}
       <TextPromptDialog
         visible={props.renameCategoryVisible}
         title={HOME_COPY.renameCategoryPrompt}

@@ -174,28 +174,34 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       members: MemberPackItem[],
       category: string,
       packingList: string,
-      rank: number
+      rank: number,
+      url?: string
     ): Promise<PackItem> => {
       await assertPackingListExists(spaceId, packingList);
       await assertUniqueItemName(spaceId, name, category, packingList);
-      const ref = await add(spaceId, PACK_ITEMS_KEY, {
+      const fields = {
         name,
         members,
         checked: false,
         category,
         packingList,
         rank,
-      });
-      const item: PackItem = { id: ref.id, checked: false, members, name, category, packingList, rank };
+        ...(url ? { url } : {}),
+      };
+      const ref = await add(spaceId, PACK_ITEMS_KEY, fields);
+      const item: PackItem = { id: ref.id, ...fields };
       await logItemAdded(spaceId, actor, item);
       return item;
     },
     updatePackItem: async (packItem: PackItem) => {
       await assertPackingListExists(spaceId, packItem.packingList);
       const before = await getPackItem(spaceId, packItem.id);
-      await update(spaceId, PACK_ITEMS_KEY, packItem.id, packItem);
+      const { url: _url, ...fields } = packItem;
+      await update(spaceId, PACK_ITEMS_KEY, packItem.id, fields);
       await logItemUpdated(spaceId, actor, before, packItem);
     },
+    updatePackItemUrl: (id: string, url: string | null) =>
+      update(spaceId, PACK_ITEMS_KEY, id, { url: url ?? deleteField() }),
     deletePackItem: async (id: string) => {
       const before = await getPackItem(spaceId, id);
       const batch = writeBatch(firestore);
@@ -262,14 +268,13 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       return addBatch(spaceId, MEMBERS_KEY, batch, { name: member });
     },
     updatePackItemBatch<K extends DocumentData>(data: WithFieldValue<K>, batch: WriteBatch) {
-      const { id, ...rest } = data as DocumentData;
+      const { id, url: _url, ...rest } = data as DocumentData;
       batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, id), rest);
     },
     async updatePackItemsBatched(items: PackItem[]) {
       const batch = writeBatch(firestore);
       for (const item of items) {
-        const { id, ...rest } = item as DocumentData;
-        batch.update(spaceDoc(spaceId, PACK_ITEMS_KEY, id), rest);
+        db.updatePackItemBatch(item, batch);
       }
       await batch.commit();
     },
@@ -280,15 +285,16 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       category: string,
       rank: number,
       packingList: string,
-      checked = false
+      url?: string
     ) {
       return addBatch(spaceId, PACK_ITEMS_KEY, batch, {
         name,
         members,
-        checked,
+        checked: false,
         category,
         packingList,
         rank,
+        ...(url ? { url } : {}),
       });
     },
     async deleteCategory(id: string, packingLists: NamedEntity[], deleteEvenIfUsed = false) {
@@ -384,7 +390,7 @@ export function createWriteDb(spaceId: string, actor?: ChangeActor) {
       if (unique.length === 0) return;
       const batch = writeBatch(firestore);
       for (const item of unique) {
-        db.addPackItemBatch(batch, item.name, item.members, item.category, item.rank, targetListId, false);
+        db.addPackItemBatch(batch, item.name, item.members, item.category, item.rank, targetListId, item.url);
       }
       await batch.commit();
     },

@@ -1,12 +1,11 @@
-import i18next from "i18next";
 import { type CSSProperties, memo } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { getPackItemChecked } from "~/services/packItemState.ts";
 import { AppCheckbox } from "./AppCheckbox.tsx";
 import { homeCopy } from "./copy.ts";
-import { createItemRowMenu } from "./createItemRowMenu.ts";
 import { ItemRowDetails } from "./ItemRowDetails.tsx";
 import { ItemRowHighlight } from "./ItemRowHighlight.tsx";
+import { ItemRowMenu } from "./ItemRowMenu.tsx";
 import { areRowPropsEqual, type CategoryItemRowProps } from "./itemRowProps.ts";
 import { MultiCheckbox } from "./MultiCheckbox.tsx";
 import { useToast } from "./Toast.tsx";
@@ -82,16 +81,7 @@ export const CategoryItemRow = memo((props: CategoryItemRowProps) => {
           )}
         </label>
         <ItemRowDetails {...props} checked={checked} wrapItemText={profile?.wrapItemText ?? false} />
-        <button
-          type="button"
-          className="item-row-menu"
-          onClick={createItemRowMenu(props)}
-          style={{ color: homeColors.muted }}
-          aria-label={i18next.t("home.itemMenu")}
-          title={i18next.t("home.itemMenu")}
-        >
-          <span className="mdi mdi-dots-vertical" aria-hidden="true" />
-        </button>
+        <ItemRowMenu {...props} />
       </div>
     </div>
   );

@@ -348,7 +348,13 @@ const useAddItemDialog = (
   }, []);
   const closeKitPicker = useCallback(() => setKitPickerVisible(false), []);
   const submit = useCallback(
-    async (itemName: string, category: NamedEntity | null, newCategoryName: string | null, keepOpen: boolean) => {
+    async (
+      itemName: string,
+      category: NamedEntity | null,
+      newCategoryName: string | null,
+      keepOpen: boolean,
+      url?: string
+    ) => {
       if (!listId) return UNCATEGORIZED;
       animateLayout();
       let categoryId = category?.id ?? UNCATEGORIZED.id;
@@ -360,7 +366,7 @@ const useAddItemDialog = (
       }
       setLastSelectedCategoryId(categoryId);
       const nextItemRank = addNewItemsOnTop ? getTopItemRank(items) : getNextItemRank(items);
-      await writeDb.addPackItem(itemName, [], categoryId, listId, nextItemRank);
+      await writeDb.addPackItem(itemName, [], categoryId, listId, nextItemRank, url);
       if (!keepOpen) close();
       return nextCategory;
     },

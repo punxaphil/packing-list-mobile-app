@@ -125,7 +125,7 @@ export const useCopyToList = () => {
   const { writeDb } = useSpace();
   return useCallback(
     async (item: PackItem, listId: string) => {
-      await writeDb.addPackItem(item.name, item.members, item.category, listId, item.rank);
+      await writeDb.addPackItem(item.name, item.members, item.category, listId, item.rank, item.url);
     },
     [writeDb]
   );

@@ -16,6 +16,7 @@ import { HOME_COPY } from "./styles.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
 import { homeSpacing } from "./theme.ts";
 import { ItemsSectionProps } from "./types.ts";
+import type { AddItemSubmit } from "./useAddItemSubmit.ts";
 import type { FilterDialogState } from "./useFilterDialog.ts";
 import type { SearchState } from "./useSearch.ts";
 
@@ -36,12 +37,7 @@ export type AddItemDialogState = {
   initialCategory?: NamedEntity;
   open: (initialCategory?: NamedEntity) => void;
   close: () => void;
-  submit: (
-    itemName: string,
-    category: NamedEntity | null,
-    newCategoryName: string | null,
-    keepOpen: boolean
-  ) => Promise<NamedEntity>;
+  submit: AddItemSubmit;
   onBrowseKits: () => void;
   kitPickerVisible: boolean;
   closeKitPicker: () => void;
