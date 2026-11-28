@@ -1,4 +1,4 @@
-import { type ClipboardEventHandler, useRef } from "react";
+import { type ClipboardEventHandler, type PropsWithChildren, useRef } from "react";
 import { DialogActions, DialogShell } from "../shared/DialogShell.tsx";
 import { HOME_COPY } from "./styles.ts";
 import "./textPromptDialog.css";
@@ -35,7 +35,8 @@ export const TextPromptDialog = ({
   onPaste,
   onCancel,
   onSubmit,
-}: TextPromptDialogProps) => {
+  children,
+}: PropsWithChildren<TextPromptDialogProps>) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -77,6 +78,7 @@ export const TextPromptDialog = ({
           {error}
         </span>
       )}
+      {children}
     </DialogShell>
   );
 };

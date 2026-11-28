@@ -2,6 +2,7 @@ import i18next from "i18next";
 import { useState } from "react";
 import { useSpace } from "~/providers/SpaceContext.ts";
 import { parseItemUrl } from "~/services/itemUrl.ts";
+import { Button } from "../shared/Button.tsx";
 import { createItemRowMenu } from "./createItemRowMenu.ts";
 import type { CategoryItemRowProps } from "./itemRowProps.ts";
 import { TextPromptDialog } from "./TextPromptDialog.tsx";
@@ -14,8 +15,7 @@ export const ItemRowMenu = (props: CategoryItemRowProps) => {
   const [draft, setDraft] = useState<string | null>(null);
   const url = parseItemUrl(draft);
   const invalid = !!draft?.trim() && !url;
-  const submit = () => {
-    if (draft === null || invalid) return;
+  const saveUrl = (url: string | null) => {
     setDraft(null);
     if (url === (props.item.url ?? null)) return;
     void writeDb.updatePackItemUrl(props.item.id, url).catch(() => showToast(i18next.t("home.itemUrlSaveFailed")));
@@ -44,8 +44,14 @@ export const ItemRowMenu = (props: CategoryItemRowProps) => {
           keyboardType="url"
           onChange={setDraft}
           onCancel={() => setDraft(null)}
-          onSubmit={submit}
-        />
+          onSubmit={() => {
+            if (!invalid) saveUrl(url);
+          }}
+        >
+          {props.item.url && (
+            <Button label={i18next.t("home.removeItemUrl")} variant="danger" onPress={() => saveUrl(null)} />
+          )}
+        </TextPromptDialog>
       )}
     </>
   );
